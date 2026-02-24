@@ -1,13 +1,13 @@
 # Lp-Corr 
 **Corr Web Application | Playwright Framework**
 
-This repository uses a restricted workflow to ensure code stability. The `main` branch is protected; only the Repository Owner can approve and merge changes.
+This repository uses a restricted workflow to ensure code stability. The `master` branch is protected; only the Repository Owner can approve and merge changes.
 
 ---
 
 ## 🛠 Git Workflow & Branching Strategy
 
-To maintain code quality and tracking, all team members must follow this branching convention. Direct pushes to `main` are restricted.
+To maintain code quality and tracking, all team members must follow this branching convention. Direct pushes to `master` are restricted.
 
 ### 1. Branch Naming Convention
 When creating a branch, use the following formats:
@@ -22,11 +22,11 @@ When creating a branch, use the following formats:
 ### 2. Step-by-Step Instructions
 
 #### Step A: Create and Switch to a New Branch
-Before starting any work, ensure you are on the latest version of `main`:
+Before starting any work, ensure you are on the latest version of `master`:
 ```bash
-# 1. Switch to main and get latest changes
-git checkout main
-git pull origin main
+# 1. Switch to master and get latest changes
+git checkout master
+git pull origin master
 
 # 2. Create and switch to your new branch
 git checkout -b feature/your-feature-name-EmployeeID
@@ -62,7 +62,7 @@ Full Workflow Summary
 
 Follow this flow for every new task:
 
-Sync: git checkout main && git pull origin main
+Sync: git checkout master && git pull origin main
 
 Branch: git checkout -b feature/login-ui-98765
 
