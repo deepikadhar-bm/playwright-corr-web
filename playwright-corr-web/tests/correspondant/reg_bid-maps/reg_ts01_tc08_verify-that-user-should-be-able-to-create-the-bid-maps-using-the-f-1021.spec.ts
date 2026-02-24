@@ -1,0 +1,158 @@
+// [POM-APPLIED]
+import { test, expect } from '@playwright/test';
+import path from 'path';
+import * as stepGroups from '../../../src/helpers/step-groups';
+import { BidmapPage } from '../../../src/pages/correspondant/bidmap';
+import { ChaseFieldNamePage } from '../../../src/pages/correspondant/chase-field-name';
+import { CorrespondentPortalPage } from '../../../src/pages/correspondant/correspondent-portal';
+import { EnumerationMappingButtonPage } from '../../../src/pages/correspondant/enumeration-mapping-button';
+import { EnumerationMappingPage } from '../../../src/pages/correspondant/enumeration-mapping';
+import { HeaderMappingPage } from '../../../src/pages/correspondant/header-mapping';
+import { MapNameFieldInBidMapsPage } from '../../../src/pages/correspondant/map-name-field-in-bid-maps';
+import { ProceedWithSavingButtonPage } from '../../../src/pages/correspondant/proceed-with-saving-button';
+import { RulesAndActionsButtonPage } from '../../../src/pages/correspondant/rules-and-actions-button';
+import { SaveAndPublishButtonPage } from '../../../src/pages/correspondant/save-and-publish-button';
+import { SpinnerPage } from '../../../src/pages/correspondant/spinner';
+
+test.describe('Unassigned', () => {
+  let vars: Record<string, string> = {};
+  let bidmapPage: BidmapPage;
+  let chaseFieldNamePage: ChaseFieldNamePage;
+  let correspondentPortalPage: CorrespondentPortalPage;
+  let enumerationMappingButtonPage: EnumerationMappingButtonPage;
+  let enumerationMappingPage: EnumerationMappingPage;
+  let headerMappingPage: HeaderMappingPage;
+  let mapNameFieldInBidMapsPage: MapNameFieldInBidMapsPage;
+  let proceedWithSavingButtonPage: ProceedWithSavingButtonPage;
+  let rulesAndActionsButtonPage: RulesAndActionsButtonPage;
+  let saveAndPublishButtonPage: SaveAndPublishButtonPage;
+  let spinnerPage: SpinnerPage;
+
+  test.beforeEach(async ({ page }) => {
+    vars = {};
+    bidmapPage = new BidmapPage(page);
+    chaseFieldNamePage = new ChaseFieldNamePage(page);
+    correspondentPortalPage = new CorrespondentPortalPage(page);
+    enumerationMappingButtonPage = new EnumerationMappingButtonPage(page);
+    enumerationMappingPage = new EnumerationMappingPage(page);
+    headerMappingPage = new HeaderMappingPage(page);
+    mapNameFieldInBidMapsPage = new MapNameFieldInBidMapsPage(page);
+    proceedWithSavingButtonPage = new ProceedWithSavingButtonPage(page);
+    rulesAndActionsButtonPage = new RulesAndActionsButtonPage(page);
+    saveAndPublishButtonPage = new SaveAndPublishButtonPage(page);
+    spinnerPage = new SpinnerPage(page);
+  });
+
+  test('REG_TS01_TC08_Verify that user should be able to create the bid maps using the file extenstion txt', async ({ page }) => {
+    const testData: Record<string, string> = {
+  "Enum Type": "Loan Purpose"
+}; // Profile: "Enum Type Values.", row: 0
+    const testDataSets: Record<string, string>[] = [
+  {
+    "Enum Type": "Loan Purpose"
+  },
+  {
+    "Enum Type": "Mortgage Limit"
+  },
+  {
+    "Enum Type": "Occupancy Type"
+  },
+  {
+    "Enum Type": "Mortgage Types"
+  },
+  {
+    "Enum Type": "Amortization Type"
+  },
+  {
+    "Enum Type": "First Time Home Buyer"
+  },
+  {
+    "Enum Type": "Attachment Type"
+  },
+  {
+    "Enum Type": "Property Type"
+  },
+  {
+    "Enum Type": "Aus List"
+  },
+  {
+    "Enum Type": "Property Valuation Type"
+  },
+  {
+    "Enum Type": "Buy Down"
+  },
+  {
+    "Enum Type": "Impound Type"
+  },
+  {
+    "Enum Type": "First Time Homebuyer Credit Fee Waiver"
+  },
+  {
+    "Enum Type": "Interest Only"
+  },
+  {
+    "Enum Type": "Ineligible"
+  },
+  {
+    "Enum Type": "TPO"
+  },
+  {
+    "Enum Type": "Loan Term"
+  },
+  {
+    "Enum Type": "Product Name"
+  }
+];
+
+    await stepGroups.stepGroup_Login_to_CORR_Portal(page, vars);
+    await stepGroups.stepGroup_Creation_Of_Bid_Map_Upto_Header_Mapping(page, vars);
+    vars["EnumValues"] = "Loan Purpose";
+    // Loop over test data sets in "Enum Type Values." from set2 to set18
+for (const testDataSet of testDataSets) {
+      vars["EnumValues"] = String(testData["Enum Type"]) + "," + String(vars["EnumValues"]);
+    }
+    vars["ChaseEnumValueCount"] = String(await headerMappingPage.MappedChaseFieldName.count());
+    vars["count"] = "1";
+    vars["ChaseEnumValue"] = "sample";
+    while (parseFloat(String(vars["count"])) < parseFloat(String(vars["ChaseEnumValueCount"]))) {
+      vars["ChaseName"] = await headerMappingPage.Individual_Mapped_Chase_Name.evaluate(el => { const s = el as HTMLSelectElement; return s.options[s.selectedIndex]?.text || ''; });
+      if (String(vars["EnumValues"]).includes(String(vars["ChaseName"]))) {
+        vars["ChaseEnumValue"] = String(vars["ChaseName"]) + "," + String(vars["ChaseEnumValue"]);
+        vars["CorrespondentBidName"] = await headerMappingPage.Correspondent_Bid_sample_name.textContent() || '';
+        await enumerationMappingButtonPage.Enumeration_Mapping_Button.click();
+        await bidmapPage.Yes_Proceed_Button_Text.click();
+        await rulesAndActionsButtonPage.Rules_and_Actions_Button.waitFor({ state: 'visible' });
+        await expect(enumerationMappingPage.Bid_Sample_Name_Field_Enumeration_Mapping).toContainText(vars["CorrespondentBidName"]);
+        await correspondentPortalPage.Header_Mapping1.click();
+        await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+      }
+      vars["count"] = (parseFloat(String("1")) + parseFloat(String(vars["count"]))).toFixed(0);
+    }
+    await enumerationMappingButtonPage.Enumeration_Mapping_Button.click();
+    if (true) /* Element Yes Proceed Button is visible */ {
+      await bidmapPage.Yes_Proceed_Button_Text.click();
+    }
+    if (true) /* Element Proceed with Saving Button is visible */ {
+      await proceedWithSavingButtonPage.Proceed_with_Saving_Button.click();
+    }
+    vars["ChaseEnumNamesCount"] = String(await enumerationMappingPage.Chase_Enum_Names.count());
+    vars["count1"] = "1";
+    while (parseFloat(String(vars["count1"])) <= parseFloat(String(vars["ChaseEnumNamesCount"]))) {
+      vars["ChaseName"] = await chaseFieldNamePage.Chase_Field_Name_common_one_Field.inputValue() || '';
+      expect(String(vars["ChaseEnumValue"])).toBe(vars["ChaseName"]);
+      vars["count1"] = (parseFloat(String("1")) + parseFloat(String(vars["count1"]))).toFixed(0);
+    }
+    await rulesAndActionsButtonPage.Rules_and_Actions_Button.click();
+    if (true) /* Element Yes Proceed Button is visible */ {
+      await bidmapPage.Yes_Proceed_Button_Text.click();
+    }
+    if (true) /* Element Proceed with Saving Button is visible */ {
+      await proceedWithSavingButtonPage.Proceed_with_Saving_Button.click();
+    }
+    await saveAndPublishButtonPage.Save_and_Publish_Button.click();
+    if (true) /* Element Proceed with Saving Button is visible */ {
+      await proceedWithSavingButtonPage.Proceed_with_Saving_Button.click();
+    }
+    await expect(mapNameFieldInBidMapsPage.Bid_Map_Name_Field_In_Row).toBeVisible();
+  });
+});
