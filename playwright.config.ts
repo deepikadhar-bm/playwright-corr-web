@@ -19,9 +19,14 @@ export default defineConfig({
     timeout: 15_000,
   },
   use: {
-    trace: 'on-first-retry',
-    screenshot: 'only-on-failure',
-    actionTimeout: 30_000,
+        launchOptions: {
+      slowMo: 3000,
+    },
+
+    trace: 'on',
+    screenshot: 'on',
+    video: 'on',
+    actionTimeout: 120_000,
     navigationTimeout: 60_000,
   },
   projects: [
