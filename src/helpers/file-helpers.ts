@@ -63,3 +63,76 @@ export function readJsonValue(filePath: string, key: string): string {
 export function fileExists(folderPath: string, fileName: string): boolean {
   return fs.existsSync(path.join(folderPath, fileName));
 }
+
+
+
+
+// import { Page } from '@playwright/test';
+// import path from 'path';
+
+/**
+ * Upload file using hidden input[type=file]
+ */
+// export async function uploadFile(
+//   page: Page,
+//   locator: string,
+//   fileName: string
+// ) {
+//   const filePath = path.resolve('uploads', fileName);
+//   await page.locator(locator).setInputFiles(filePath);
+// }
+
+
+import { Page } from '@playwright/test';
+import { Logger } from './log-helper';
+
+export async function uploadFile(
+  page: Page,
+  locator: string,
+  fileName: string
+): Promise<boolean> {
+
+  try {
+
+    const filePath = path.join(process.cwd(), 'uploads', fileName);
+
+    // ✅ Check file exists
+    if (!fs.existsSync(filePath)) {
+      Logger.error(`Upload failed - File not found: ${filePath}`);
+      return false;
+    }
+
+    // ✅ Validate file type
+    const allowed = ['.xlsx', '.xls', '.json'];
+
+    const ext = path.extname(fileName).toLowerCase();
+
+    if (!allowed.includes(ext)) {
+      Logger.warn(`Unsupported upload file type: ${ext}`);
+      return false;
+    }
+
+    const element = page.locator(locator);
+
+    // ✅ Ensure element exists
+    if (await element.count() === 0) {
+      Logger.error(`Upload failed - Locator not found: ${locator}`);
+      return false;
+    }
+
+    await element.setInputFiles(filePath);
+
+    Logger.success(`File uploaded successfully: ${fileName}`);
+
+    return true;
+
+  } catch (error) {
+
+    Logger.error(`Upload exception: ${error}`);
+
+    // IMPORTANT → do not crash test
+    return false;
+  }
+}
+
+

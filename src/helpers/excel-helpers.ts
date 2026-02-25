@@ -100,3 +100,139 @@ export function getRowCount(filePath: string, sheet = '0'): number {
     return 0;
   }
 }
+
+
+
+// export function readCellByColAndRowIndex(options: ReadCellOptions): CellValue | CellResult {
+//   const {
+//     filePath,
+//     sheetName,
+//     columnIndex,
+//     rowIndex,
+//     cellAddress,
+//     withType = false
+//   } = options;
+
+//   const wb = XLSX.readFile(path.resolve(filePath), {
+//     cellDates: true,
+//     cellNF: true
+//   });
+
+//   const sheet = resolveSheet(wb, sheetName);
+
+//   let cell: XLSX.CellObject | undefined;
+
+//   // ✅ Case 1 — Direct Excel Address
+//   if (cellAddress) {
+//     cell = sheet[cellAddress.toUpperCase()];
+//   }
+
+//   // ✅ Case 2 — Column Index + Row Index
+//   else if (columnIndex !== undefined && rowIndex !== undefined) {
+
+//     // Excel rows are 1-based
+//     const excelRow = rowIndex + 2;
+
+//     // Convert column index → Excel column (A,B,C...)
+//     const columnLetter = XLSX.utils.encode_col(columnIndex);
+
+//     const addr = `${columnLetter}${excelRow}`;
+
+//     cell = sheet[addr];
+//   }
+
+//   else {
+//     throw new Error(
+//       'Provide either (columnIndex + rowIndex) or cellAddress.'
+//     );
+//   }
+
+//   if (withType) return resolveCellResult(cell);
+
+//   if (!cell) return null;
+
+//   return cell.v instanceof Date ? cell.v : (cell.v ?? null);
+// }
+
+
+// export function readCellByColAndRowIndex(
+//   filePath: string,
+//   rowIndex: number | string,
+//   columnIndex: number | string,
+//   sheetName: string
+// ): string {
+
+//   try {
+//     const wb = getWorkbook(filePath);
+
+//     // use sheet name directly
+//     const ws = wb.Sheets[sheetName];
+
+//     if (!ws) {
+//       throw new Error(`Sheet "${sheetName}" not found`);
+//     }
+
+//     const data = XLSX.utils.sheet_to_json<string[]>(ws, { header: 1 });
+
+//     const r = typeof rowIndex === 'string'
+//       ? parseInt(rowIndex)
+//       : rowIndex;
+
+//     const c = typeof columnIndex === 'string'
+//       ? parseInt(columnIndex)
+//       : columnIndex;
+
+//     return String(data[r]?.[c] ?? '');
+
+//   } catch (error) {
+//     console.log('Excel Read Error:', error);
+//     return '';
+//   }
+// }
+
+export function readCellByColAndRowIndex(
+  filePath: string,
+  rowIndex: number | string,
+  columnIndex: number | string,
+  sheetName: string
+): string {
+
+  try {
+
+    if (!filePath)
+      throw new Error('File path is empty');
+
+    if (!sheetName)
+      throw new Error('Sheet name is required');
+
+    const wb = getWorkbook(filePath);
+
+    const ws = wb.Sheets[sheetName];
+
+    if (!ws)
+      throw new Error(`Sheet "${sheetName}" not found`);
+
+    const data = XLSX.utils.sheet_to_json<string[]>(ws, { header: 1 });
+
+    const r = Number(rowIndex);
+    const c = Number(columnIndex);
+
+    if (isNaN(r) || r < 0)
+      throw new Error(`Invalid rowIndex: ${rowIndex}`);
+
+    if (isNaN(c) || c < 0)
+      throw new Error(`Invalid columnIndex: ${columnIndex}`);
+
+    if (r >= data.length)
+      throw new Error(`Row index out of range: ${r}`);
+
+    if (c >= (data[r]?.length ?? 0))
+      throw new Error(`Column index out of range: ${c}`);
+
+    return String(data[r][c]);
+
+  } catch (error) {
+    console.error('Excel Read Error:', error);
+    return '';
+  }
+}
