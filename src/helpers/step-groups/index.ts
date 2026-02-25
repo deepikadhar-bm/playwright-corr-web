@@ -421,7 +421,7 @@ export async function stepGroup_Navigation_and_Verification_of_Customer_Permissi
 export async function stepGroup_Navigating_to_Bulk_Batch_Timing(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const correspondentPortalPage = new CorrespondentPortalPage(page);
   await page.waitForLoadState('networkidle');
-  await page.locator("//span[text()[normalize-space() = \"Administration\"]]").click();
+  git await page.locator("//span[text()[normalize-space() = \"Administration\"]]").click();
   await page.locator("//*[text()[normalize-space() = \"General Settings\"]]").first().click();
   await page.waitForLoadState('networkidle');
   await correspondentPortalPage.Bulk_Batch_Timing.click();
