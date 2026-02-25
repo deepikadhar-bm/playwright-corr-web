@@ -422,7 +422,7 @@ export async function stepGroup_Navigating_to_Bulk_Batch_Timing(page: import('@p
   const correspondentPortalPage = new CorrespondentPortalPage(page);
   await page.waitForLoadState('networkidle');
   await page.locator("//span[text()[normalize-space() = \"Administration\"]]").click();
-  await page.locator("//*[text()[normalize-space() = \"General Settings\"]]").click();
+  await page.locator("//*[text()[normalize-space() = \"General Settings\"]]").first().click();
   await page.waitForLoadState('networkidle');
   await correspondentPortalPage.Bulk_Batch_Timing.click();
   await page.locator("//span[contains(@class,'circle')]").waitFor({ state: 'hidden' });
@@ -3721,6 +3721,7 @@ export async function stepGroup_Modifying_The_batch_Intervals_with_current_est_t
     const fmt = "hh:mm a";
     // Map Java date format to Intl parts
     const parts = new Intl.DateTimeFormat('en-US', { ...opts, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }).formatToParts(d);
+    const opts: Intl.DateTimeFormatOptions = { timeZone: "America/New_York" };
     const p = Object.fromEntries(parts.map(({type, value}) => [type, value]));
     return fmt.replace('yyyy', p.year || '').replace('yy', (p.year||'').slice(-2)).replace('MM', p.month || '').replace('dd', p.day || '').replace('HH', String(d.getHours()).padStart(2,'0')).replace('hh', p.hour || '').replace('mm', p.minute || '').replace('ss', p.second || '').replace('a', p.dayPeriod || '').replace(/M(?!M)/g, String(parseInt(p.month||'0'))).replace(/d(?!d)/g, String(parseInt(p.day||'0'))).replace(/h(?!h)/g, String(parseInt(p.hour||'0')));
   })();
