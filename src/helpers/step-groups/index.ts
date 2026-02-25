@@ -679,7 +679,7 @@ export async function stepGroup_Add_Rule_For_Add_Condition_In_Rules_and_Actions(
   await CorrPortalElem.Operation_Dropdown.selectOption({ label: "LESS" });
   await CorrPortalElem.Bid_Enumeration_Tape_Value_in_Rule.click();
   await CorrPortalElem.Search_Field_in_Bid_Enumerated_Tape_Value.click();
-  await page.locator("(//input[@type=\"search\"])[2]").fill(testData["BidEnumeratedTapeValue"]);
+  await CorrPortalElem.Search_Field.fill(testData["BidEnumeratedTapeValue"]);
   await expect(CorrPortalElem.Search_Field_in_Bid_Enumerated_Tape_Value).toHaveValue(testData["BidEnumeratedTapeValue"]);
   await CorrPortalElem.Select_Button.click();
   vars["RuleBidField"] = vars["BidField"];
@@ -791,7 +791,7 @@ export async function stepGroup_Uploading_the_File(page: import('@playwright/tes
  */
 export async function stepGroup_Add_Actions_in_Rules_and_Actions(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
-  await page.locator("(//select[@id=\"id\"])[2]").selectOption({ index: parseInt("16") });
+  await CorrPortalElem.Chase_Field_Name.selectOption({ index: parseInt("16") });
   await CorrPortalElem.Chase_Value.click();
   await CorrPortalElem.Value_for_chase.click();
   vars["ChaseFiledNameonAddActions"] = await CorrPortalElem.Add_Actions_Chase_Field_Name.evaluate(el => { const s = el as HTMLSelectElement; return s.options[s.selectedIndex]?.text || ''; });
@@ -808,16 +808,16 @@ export async function stepGroup_Add_Actions_in_Rules_and_Actions(page: import('@
 export async function stepGroup_Editing_of_Add_Conditions_and_Add_Actions(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
   const testData: Record<string, string> = {}; // TODO: Load from test data profile
-  await page.locator("(//div[@class=\"flex-grow-1 text-start text-truncate\"])[2]").click();
-  await page.locator("(//input[@type=\"search\"])[2]").fill(testData["BidFields"]);
-  vars["BidField"] = await page.locator("(//input[@type=\"search\"])[2]").inputValue() || '';
+  await CorrPortalElem.When_Bid_Field.click();
+  await CorrPortalElem.Search_Field.fill(testData["BidFields"]);
+  vars["BidField"] = await CorrPortalElem.Search_Field.inputValue() || '';
   await CorrPortalElem.When_Bid_Field_Name.click();
   expect(String(vars["BidField"])).toBe(testData["BidFields"]);
   vars["EditedBidField[RulesAndActions]"] = await CorrPortalElem.Condition_BidField_1.inputValue() || '';
   await page.waitForLoadState('networkidle');
   await CorrPortalElem.Bid_Enumerated.click();
-  await page.locator("(//input[@type=\"search\"])[2]").fill(testData["Bid Enumerated Tape Value"]);
-  vars["BidField"] = await page.locator("(//input[@type=\"search\"])[2]").inputValue() || '';
+  await CorrPortalElem.Search_Field.fill(testData["Bid Enumerated Tape Value"]);
+  vars["BidField"] = await CorrPortalElem.Search_Field.inputValue() || '';
   await CorrPortalElem.Select_Button.click();
   expect(String(vars["BidField"])).toBe(testData["Bid Enumerated Tape Value"]);
   vars["EditedBidTape[RulesAndActions]"] = await CorrPortalElem.Condition_BidTape1.inputValue() || '';
@@ -878,12 +878,12 @@ export async function stepGroup_Import_Rule_In_Rules_and_Actions(page: import('@
  */
 export async function stepGroup_Delete_In_Enumeration_Mapping(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
-  vars["BidTapeValueforBeforeDeleted"] = await page.locator("(//div[contains(@class,\"input-field-name text\")])[1]").inputValue() || '';
+  vars["BidTapeValueforBeforeDeleted"] = await CorrPortalElem.Bid_Tape_Value.inputValue() || '';
   await CorrPortalElem.Delete_In_EnumerationMapping.click();
   await expect(CorrPortalElem.Delete_Enumeration_Pair).toBeVisible();
   await CorrPortalElem.Yes_Go_ahead_Button.click();
   await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
-  vars["Bid Tape Value for After Deleted"] = await page.locator("(//div[contains(@class,\"input-field-name text\")])[1]").inputValue() || '';
+  vars["Bid Tape Value for After Deleted"] = await CorrPortalElem.Bid_Tape_Value.inputValue() || '';
   // [DISABLED] Verify that the element Delete_In_EnumerationMapping is not displayed and With Scrollable FALSE
   // await expect(CorrPortalElem.Delete_In_EnumerationMapping).toBeVisible();
   expect(String(vars["BidTapeValueforBeforeDeleted"])).toBe(vars["Bid Tape Value for After Deleted"]);
@@ -1041,7 +1041,7 @@ export async function stepGroup_Edition_In_Enumeration_Mapping(page: import('@pl
  */
 export async function stepGroup_Deleting_the_Rule_in_Rules_and_Actions_Page(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
-  await page.locator("(//span[text()[normalize-space() = \"Delete Rule\"]])[2]").click();
+  await CorrPortalElem.Delete_Rule_Button.click();
   await expect(CorrPortalElem.Delete_Rule).toBeVisible();
   await CorrPortalElem.Yes_Proceed_Button.click();
   await page.waitForLoadState('networkidle');
@@ -1287,9 +1287,9 @@ export async function stepGroup_Create_NewMap(page: import('@playwright/test').P
  */
 export async function stepGroup_Add_Actions_In_Rules_and_Actions(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
-  await page.locator("(//select[@id=\"id\"])[2]").selectOption({ index: parseInt("2") });
+  await CorrPortalElem.Chase_Field_Name.selectOption({ index: parseInt("2") });
   await CorrPortalElem.Chase_Value.click();
-  await page.locator("//label[text()=\"Chase Value\"]/..//button[@id=\"singleSelectDropDownWithSearch\"]").click();
+  await CorrPortalElem.Chase_Value.click();
   await CorrPortalElem.Search_Field_in_Add_Condition.fill("TS_SEARCH");
   await CorrPortalElem.Select_Button.click();
   vars["ChaseFiledNameonAddActions"] = await CorrPortalElem.Add_Actions_Chase_Field_Name.evaluate(el => { const s = el as HTMLSelectElement; return s.options[s.selectedIndex]?.text || ''; });
@@ -1682,7 +1682,7 @@ export async function stepGroup_Adding_Rules_In_Rules_and_Actions_Screen(page: i
   await CorrPortalElem.Operation_Dropdown.selectOption({ label: testData["Operation1"] });
   await CorrPortalElem.Bid_Enumeration_Tape_Value_in_Rule.click();
   await CorrPortalElem.Search_Field_in_Bid_Enumerated_Tape_Value.click();
-  await page.locator("(//input[@type=\"search\"])[2]").fill(testData["BidEnumeratedTapeValue"]);
+  await CorrPortalElem.Search_Field.fill(testData["BidEnumeratedTapeValue"]);
   await expect(CorrPortalElem.Search_Field_in_Bid_Enumerated_Tape_Value).toHaveValue(testData["BidEnumeratedTapeValue"]);
   await CorrPortalElem.Select_Button.click();
   vars["RuleBidField"] = vars["BidField"];
@@ -2127,9 +2127,9 @@ export async function stepGroup_Add_Actions_In_Rules_and_Actions_2(page: import(
 export async function stepGroup_Adding_Actions_In_Rules_and_Actions_Screen(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
   const testData: Record<string, string> = {}; // TODO: Load from test data profile
-  await page.locator("(//select[@id=\"id\"])[2]").selectOption({ label: testData["Unique Chase Field Name"] });
+  await CorrPortalElem.Chase_Field_Name.selectOption({ label: testData["Unique Chase Field Name"] });
   // [DISABLED] Select option by index 16 in the Chase Field Name list
-  // await page.locator("(//select[@id=\"id\"])[2]").selectOption({ index: parseInt("16") });
+  // await CorrPortalElem.Chase_Field_Name.selectOption({ index: parseInt("16") });
   // [DISABLED] Click on Chase Value
   // await CorrPortalElem.Chase_Value.click();
   await CorrPortalElem.Chase_Value_Dropdown_Rules_Actions.click();
@@ -2147,8 +2147,8 @@ export async function stepGroup_Adding_Actions_In_Rules_and_Actions_Screen(page:
  */
 export async function stepGroup_Exporting_Map_list_for_Advance_Search_New(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
-  await page.locator("//input[@type=\"checkbox\" and contains(@class, 'custom-control-input')]").check();
-  await expect(page.locator("//input[@type=\"checkbox\" and contains(@class, 'custom-control-input')]")).toBeVisible();
+  await CorrPortalElem.Select_All_Checkbox.check();
+  await expect(CorrPortalElem.Select_All_Checkbox).toBeVisible();
   await CorrPortalElem.Export_Selected.waitFor({ state: 'visible' });
   await page.waitForTimeout(5000);
   await expect(CorrPortalElem.Export_Selected).toBeEnabled();
@@ -2587,7 +2587,7 @@ export async function stepGroup_Uploading_Bid_Request(page: import('@playwright/
   await CorrPortalElem.Search_box_Bid_mapping_id.fill(testData["BidMappingID"]);
   await CorrPortalElem.Bid_Mapping_ID_Dropdown_1.waitFor({ state: 'visible' });
   await CorrPortalElem.Bid_Mapping_ID_Dropdown_1.click();
-  await expect(page.locator("//button//div[text()=' @|BidMappingID| ']")).toContainText(testData["BidMappingID"]);
+  await expect(CorrPortalElem.Bid_Mapping_ID_Dropdown).toContainText(testData["BidMappingID"]);
   await expect(CorrPortalElem.Bid_Request_Date).toBeEnabled();
   await CorrPortalElem.Pricing_Return_Time.click();
   // [DISABLED] Scroll down to the element Enabled_PricingReturnTime into view
@@ -2806,7 +2806,7 @@ export async function stepGroup_Uploading_Bid_Request_For_Next_Buisiness_day(pag
   await CorrPortalElem.Bid_Mapping_ID_Dropdown.click();
   await CorrPortalElem.Search_box_Bid_mapping_id.fill(testData["BidMappingID"]);
   await CorrPortalElem.Bid_Mapping_ID_Dropdown_1.click();
-  await expect(page.locator("//button//div[text()=' @|BidMappingID| ']")).toContainText(testData["BidMappingID"]);
+  await expect(CorrPortalElem.Bid_Mapping_ID_Dropdown).toContainText(testData["BidMappingID"]);
   await CorrPortalElem.Off_Radio_Standard_Edit_Permissions_Popup.check();
   await expect(CorrPortalElem.Off_Radio_Standard_Edit_Permissions_Popup).toBeEnabled();
   await CorrPortalElem.Pricing_Return_Time.click();
@@ -3012,7 +3012,7 @@ export async function stepGroup_Upload_Bid_Request_For_Next_Business_Day_With_Ch
   await CorrPortalElem.Bid_Mapping_ID_Dropdown.click();
   await CorrPortalElem.Search_box_Bid_mapping_id.fill(testData["BidMappingID"]);
   await CorrPortalElem.Bid_Mapping_ID_Dropdown_1.click();
-  await expect(page.locator("//button//div[text()=' @|BidMappingID| ']")).toContainText(testData["BidMappingID"]);
+  await expect(CorrPortalElem.Bid_Mapping_ID_Dropdown).toContainText(testData["BidMappingID"]);
   await CorrPortalElem.Off_Radio_Standard_Edit_Permissions_Popup.check();
   await expect(CorrPortalElem.Off_Radio_Standard_Edit_Permissions_Popup).toBeEnabled();
   await CorrPortalElem.Pricing_Return_Time.click();
@@ -3041,7 +3041,7 @@ export async function stepGroup_Uploading_Bid_Request_By_Selecting_both_standard
   await CorrPortalElem.Search_box_Bid_mapping_id.fill(testData["BidMappingID"]);
   await CorrPortalElem.Entered_Bid_Mapping_Id_New.waitFor({ state: 'visible' });
   await CorrPortalElem.Entered_Bid_Mapping_Id_New.click();
-  await expect(page.locator("//button//div[text()=' @|BidMappingID| ']")).toContainText(testData["BidMappingID"]);
+  await expect(CorrPortalElem.Bid_Mapping_ID_Dropdown).toContainText(testData["BidMappingID"]);
   await CorrPortalElem.Pricing_Return_Time.click();
 }
 
@@ -3066,7 +3066,7 @@ export async function stepGroup_Upload_bid_request_with_execution_type_chase(pag
   await CorrPortalElem.Bid_Mapping_ID_Dropdown.click();
   await CorrPortalElem.Search_box_Bid_mapping_id.fill(testData["BidMappingID"]);
   await CorrPortalElem.Bid_Mapping_ID_Dropdown_1.click();
-  await expect(page.locator("//button//div[text()=' @|BidMappingID| ']")).toContainText(testData["BidMappingID"]);
+  await expect(CorrPortalElem.Bid_Mapping_ID_Dropdown).toContainText(testData["BidMappingID"]);
   await CorrPortalElem.Pricing_Return_Time.click();
 }
 
@@ -3648,7 +3648,7 @@ export async function stepGroup_Uploading_Bid_RequestNew(page: import('@playwrig
   await CorrPortalElem.Bid_Mapping_ID_Dropdown.click();
   await CorrPortalElem.Search_box_Bid_mapping_id.fill(testData["BidMappingID"]);
   await CorrPortalElem.Bid_Mapping_ID_Dropdown_1.click();
-  await expect(page.locator("//button//div[text()=' @|BidMappingID| ']")).toContainText(testData["BidMappingID"]);
+  await expect(CorrPortalElem.Bid_Mapping_ID_Dropdown).toContainText(testData["BidMappingID"]);
   await expect(CorrPortalElem.Bid_Request_Date).toBeEnabled();
   await CorrPortalElem.Pricing_Return_Time.click();
   await CorrPortalElem.Enabled_PricingReturnTime.scrollIntoViewIfNeeded();
@@ -3788,7 +3788,7 @@ export async function stepGroup_Deleting_Early_Config_Report_If_Present(page: im
   const CorrPortalElem = new CorrPortalPage(page);
   await expect(CorrPortalElem.Administration_Menu).toBeVisible();
   await CorrPortalElem.Administration_Menu.click();
-  await page.locator("//a[@aria-label=\"General Settings\"]//span[text()=\"General Settings\"]").click();
+  await CorrPortalElem.General_Settings.click();
   await CorrPortalElem.Early_Close_Config.click();
   await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
   await expect(CorrPortalElem.Add_New_Config_Button).toBeVisible();
@@ -4189,7 +4189,7 @@ export async function stepGroup_If_Test_case_fail(page: import('@playwright/test
   const CorrPortalElem = new CorrPortalPage(page);
   if (true) /* Test Case Result is Failed */ {
     await CorrPortalElem.Administration_Menu.click();
-    await page.locator("//a[@aria-label=\"General Settings\"]//span[text()=\"General Settings\"]").click();
+    await CorrPortalElem.General_Settings.click();
     await CorrPortalElem.Market_Thresholds.click();
     await CorrPortalElem.Edit_Map_Button.click();
     await CorrPortalElem.Minimum_Display_value.clear();
@@ -4495,7 +4495,7 @@ export async function stepGroup_Navigating_To_Early_Close_Config(page: import('@
   const CorrPortalElem = new CorrPortalPage(page);
   await expect(CorrPortalElem.Administration_Menu).toBeVisible();
   await CorrPortalElem.Administration_Menu.click();
-  await page.locator("//a[@aria-label=\"General Settings\"]//span[text()=\"General Settings\"]").click();
+  await CorrPortalElem.General_Settings.click();
   await CorrPortalElem.Early_Close_Config.click();
   await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
 }
@@ -4553,8 +4553,8 @@ export async function stepGroup_Undoing_Time_in_Other_Config(page: import('@play
   await CorrPortalElem.Commit_Creation_Cut_Off.fill(vars["CommitCreationTimeBefore"]);
   await CorrPortalElem.Standard_Dropdown.click();
   await CorrPortalElem.Standard_Dropdown.selectOption({ label: vars["CommitCreationTimeStandard"] });
-  await page.locator("//button[text()=\"Save Changes\"]").waitFor({ state: 'visible' });
-  await page.locator("//button[text()=\"Save Changes\"]").click();
+  await CorrPortalElem.Save_Changes_Button.waitFor({ state: 'visible' });
+  await CorrPortalElem.Save_Changes_Button.click();
 }
 
 /**
@@ -4629,7 +4629,7 @@ export async function stepGroup_Uploading_Bid_RequestLatest(page: import('@playw
   await CorrPortalElem.Search_box_Bid_mapping_id.fill(testData["BidMappingID"]);
   await CorrPortalElem.Bid_Mapping_ID_Dropdown_1.waitFor({ state: 'visible' });
   await CorrPortalElem.Bid_Mapping_ID_Dropdown_1.click();
-  await expect(page.locator("//button//div[text()=' @|BidMappingID| ']")).toContainText(testData["BidMappingID"]);
+  await expect(CorrPortalElem.Bid_Mapping_ID_Dropdown).toContainText(testData["BidMappingID"]);
   await expect(CorrPortalElem.Bid_Request_Date).toBeEnabled();
   await CorrPortalElem.Deferred_Radio_Button.click();
   await CorrPortalElem.Deferred_Radio_Button.waitFor({ state: 'visible' });
@@ -4982,7 +4982,7 @@ export async function stepGroup_Verification_of_Total_noof_rows_from_UI_to_Excel
     vars["Count1"] = (parseFloat(String("1")) + parseFloat(String(vars["Count1"]))).toFixed(0);
   }
   await CorrPortalElem.Select_All_Loan_Num.click();
-  vars["ExportedCount"] = await page.locator(" //span[text()=\" Export Selected\"]/following-sibling::span").textContent() || '';
+  vars["ExportedCount"] = await CorrPortalElem.Export_Selected.textContent() || '';
   vars["ExportedCount"] = String(vars["ExportedCount"]).trim();
   vars["ExportedCount"] = String(vars["ExportedCount"]).replace(/\(\)/g, '');
   vars["RowCount"] = String(await CorrPortalElem.Rows_Count_Total_Loans_Tab.count());
@@ -5445,8 +5445,8 @@ export async function stepGroup_Changing_the_Conventional_type_config(page: impo
   const CorrPortalElem = new CorrPortalPage(page);
   await stepGroup_Navigating_To_Bid_Request_Config(page, vars);
   await CorrPortalElem.Pricing_Return_Time.selectOption({ label: "Conventional" });
-  await page.locator("//button[text()=\"Save Changes\"]").waitFor({ state: 'visible' });
-  await page.locator("//button[text()=\"Save Changes\"]").click();
+  await CorrPortalElem.Save_Changes_Button.waitFor({ state: 'visible' });
+  await CorrPortalElem.Save_Changes_Button.click();
   await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
   await expect(CorrPortalElem.Pricing_Return_Time).toHaveValue("Conventional");
 }
@@ -5557,7 +5557,7 @@ export async function stepGroup_Uploading_Bid_Request_for_Real_Time_On(page: imp
   await CorrPortalElem.Search_box_Bid_mapping_id.fill(testData["BidMappingID"]);
   await CorrPortalElem.Bid_Mapping_ID_Dropdown_1.waitFor({ state: 'visible' });
   await CorrPortalElem.Bid_Mapping_ID_Dropdown_1.click();
-  await expect(page.locator("//button//div[text()=' @|BidMappingID| ']")).toContainText(testData["BidMappingID"]);
+  await expect(CorrPortalElem.Bid_Mapping_ID_Dropdown).toContainText(testData["BidMappingID"]);
   await CorrPortalElem.Upload_File.setInputFiles(path.resolve(__dirname, 'test-data', "Bid_Valid_file.xlsx"));
   await expect(CorrPortalElem.UploadBid_Button).toBeVisible();
   await CorrPortalElem.UploadBid_Button.click();
@@ -5583,7 +5583,7 @@ export async function stepGroup_Uploading_Bid_Request_For_both_Real_and_Differed
   await CorrPortalElem.Search_box_Bid_mapping_id.fill(testData["BidMappingID"]);
   await CorrPortalElem.Bid_Mapping_ID_Dropdown_1.waitFor({ state: 'visible' });
   await CorrPortalElem.Bid_Mapping_ID_Dropdown_1.click();
-  await expect(page.locator("//button//div[text()=' @|BidMappingID| ']")).toContainText(testData["BidMappingID"]);
+  await expect(CorrPortalElem.Bid_Mapping_ID_Dropdown).toContainText(testData["BidMappingID"]);
   await expect(CorrPortalElem.Real_Time_Radio_ButtonUpload_Bid).toBeVisible();
   await expect(CorrPortalElem.Deferred_Radio_ButtonUpload_Bid).toBeVisible();
 }
@@ -5907,8 +5907,8 @@ export async function stepGroup_updating_back_text_to_Delegated_Conventional_Man
   await stepGroup_Navigating_To_Bid_Request_Config(page, vars);
   await CorrPortalElem.POS_Validation_Delegated_Conventional_Mandatory.fill(String(vars["PosConventionalTextBeforeEdit"]));
   if (true) /* Element Save Changes Button is enabled */ {
-    await page.locator("//button[text()=\"Save Changes\"]").waitFor({ state: 'visible' });
-    await page.locator("//button[text()=\"Save Changes\"]").click();
+    await CorrPortalElem.Save_Changes_Button.waitFor({ state: 'visible' });
+    await CorrPortalElem.Save_Changes_Button.click();
     await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
     await expect(CorrPortalElem.POS_Validation_Delegated_Conventional_Mandatory).toHaveValue(vars["PosConventionalTextBeforeEdit"]);
   }
@@ -5922,8 +5922,8 @@ export async function stepGroup_updating_back_text_to_Delegated_Conventional_Man
 export async function stepGroup_Deleting_added_email_from_email_config(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
   await CorrPortalElem.Required_Delete_Email_Button.click();
-  await page.locator("//button[contains(@aria-label,\"Yes, Go ahead.\")]").waitFor({ state: 'visible' });
-  await page.locator("//button[contains(@aria-label,\"Yes, Go ahead.\")]").click();
+  await CorrPortalElem.Yes_Go_ahead_Button.waitFor({ state: 'visible' });
+  await CorrPortalElem.Yes_Go_ahead_Button.click();
   await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
   await CorrPortalElem.Close_Button_Loan_Details_Popup.click();
 }
