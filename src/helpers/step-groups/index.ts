@@ -7,6 +7,7 @@ import { expect } from '@playwright/test';
 import path from 'path';
 import * as excelHelper from '../excel-helpers';
 import { CorrPortalPage } from '../../pages/correspondant/CorrPortalPage';
+import { PlaywrightHelpers } from '../../PlaywrightHelpers';
 
 /**
  * Step Group: Login to CORR Portal
@@ -4386,20 +4387,39 @@ export async function stepGroup_Commit_All_Loans_Standard(page: import('@playwri
  * ID: 1615
  * Steps: 12
  */
-export async function stepGroup_Verifying_and_Removing_If_the_Last_Digits_are_Zeroes(page: import('@playwright/test').Page, vars: Record<string, string>) {
-  vars["Count Ref Sec Price"] = String(vars["Ref Sec Price"]).length.toString();
-  vars["Count Ref Sec Price"] = (parseFloat(String(vars["Count Ref Sec Price"])) - parseFloat(String("1"))).toFixed(0);
-  /* charAt 0 */ String('').charAt(0); // TODO: Missing target variable
-  if (String(vars["LastCharacter"]) === String("0")) {
-    while (String(vars["LastCharacter"]) !== String(".")) {
-      /* charAt 0 */ String('').charAt(0); // TODO: Missing target variable
-      if (String(vars["LastCharacter"]) === String("0")) {
-        vars["Ref Sec Price"] = String(vars["Ref Sec Price"]).substring(0, String(vars["Ref Sec Price"]).length - 1);
+export async function stepGroup_Verifying_and_Removing_If_the_Last_Digits_are_Zeroes(
+  page: import('@playwright/test').Page,
+  vars: Record<string, string>
+) {
+  vars["RefSecDigitsCount"] = String(String(vars["RuntimeValue"]).length);
+  vars["RefSecDigitsCount"] =
+    (parseFloat(String(vars["RefSecDigitsCount"])) - 1).toFixed(0);
+
+  vars["RefSecLastCharacter"] =
+    String(vars["RuntimeValue"]).charAt(
+      parseInt(String(vars["RefSecDigitsCount"]))
+    );
+
+  if (String(vars["RefSecLastCharacter"]) === "0") {
+    while (String(vars["RefSecLastCharacter"]) !== ".") {
+      vars["RefSecLastCharacter"] =
+        String(vars["RuntimeValue"]).charAt(
+          parseInt(String(vars["RefSecDigitsCount"]))
+        );
+
+      if (String(vars["RefSecLastCharacter"]) === "0") {
+        vars["RuntimeValue"] =
+          String(vars["RuntimeValue"]).substring(
+            0,
+            String(vars["RuntimeValue"]).length - 1
+          );
       } else {
-        expect(String(vars["LastCharacter"])).toBe("0");
+        expect(String(vars["RefSecLastCharacter"])).not.toBe("0");
         break;
       }
-      vars["Count Ref Sec Price"] = (parseFloat(String(vars["Count Ref Sec Price"])) - parseFloat(String("1"))).toFixed(0);
+
+      vars["RefSecDigitsCount"] =
+        (parseFloat(String(vars["RefSecDigitsCount"])) - 1).toFixed(0);
     }
   }
 }

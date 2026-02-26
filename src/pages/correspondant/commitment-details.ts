@@ -36,7 +36,7 @@ export class CommitmentDetailsPage {
   }
 
   get First_Locked_Loan_NumCommitments_Details(): Locator {
-    return this.page.locator("(//span[contains(@class,\"lock-icon\")]/../..//td[@data-title=\"Corr. Loan#\"])[1]");
+    return this.page.locator("(//span[contains(@class,\"lock-icon\")]/../..//td[@data-title='Corr. Loan#']//button)[1]");
   }
 
 }
