@@ -6,7 +6,9 @@ import { Page, Locator } from '@playwright/test';
  */
 export class PriceOfferedPage {
   constructor(private page: Page) {}
-
+   get  LockSymbolOpen(): Locator {
+    return this.page.locator("//span[contains(@class,'lock-open')]");
+  }
   get Add_to_Commit_Button(): Locator {
     return this.page.locator("//button[@aria-label=\"Add loans to commit\"]");
   }
