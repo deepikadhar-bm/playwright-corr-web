@@ -1,12 +1,15 @@
 // [POM-APPLIED]
 import { test, expect } from '@playwright/test';
 import path from 'path';
+import fs from 'fs';
 import * as stepGroups from '../../../src/helpers/step-groups';
 import { BidRequestDetailsPage } from '../../../src/pages/correspondant/bid-request-details';
 import { CorrespondentPortalPage } from '../../../src/pages/correspondant/correspondent-portal';
 import { PriceOfferedDetailsPage } from '../../../src/pages/correspondant/price-offered-details';
 import { PriceOfferedPage } from '../../../src/pages/correspondant/price-offered';
 import * as fileHelper from '../../../src/helpers/file-helpers';
+import { SpinnerPage } from '@pages/correspondant/spinner';
+import { PlaywrightHelpers } from 'src/PlaywrightHelpers';
 
 test.describe('REG_PriceOffered', () => {
   let vars: Record<string, string> = {};
@@ -14,84 +17,110 @@ test.describe('REG_PriceOffered', () => {
   let correspondentPortalPage: CorrespondentPortalPage;
   let priceOfferedDetailsPage: PriceOfferedDetailsPage;
   let priceOfferedPage: PriceOfferedPage;
+  let spinnerPage: SpinnerPage;
+  let Methods: PlaywrightHelpers;
 
   test.beforeEach(async ({ page }) => {
     vars = {};
+
+    Methods = new PlaywrightHelpers(page, vars);
     bidRequestDetailsPage = new BidRequestDetailsPage(page);
     correspondentPortalPage = new CorrespondentPortalPage(page);
     priceOfferedDetailsPage = new PriceOfferedDetailsPage(page);
     priceOfferedPage = new PriceOfferedPage(page);
+    spinnerPage = new SpinnerPage(page);
   });
 
   test('REG_TS16_TC02_Perform download action for PS file and verify the details', async ({ page }) => {
-    // Set up download handler
-    page.on('download', async (download) => {
-      const filePath = path.join('test-results', 'downloads', download.suggestedFilename());
-      await download.saveAs(filePath);
-      vars['_lastDownloadPath'] = filePath;
-    });
+
+    vars['DownloadDir'] = path.join(process.cwd(), 'downloads');
 
     await stepGroups.stepGroup_Login_to_CORR_Portal(page, vars);
     await correspondentPortalPage.Commitments_Side_Menu.click();
     await correspondentPortalPage.Price_Offered_List_Dropdown.click();
-    await priceOfferedPage.BidReqIDPartially_Committed_or_Committed.click();
-    await bidRequestDetailsPage.PS_button.click();
-    // Wait for download - handled by Playwright download events
-    await page.waitForTimeout(2000);
-    vars[""] = vars['_lastDownloadPath'] ? require('path').basename(vars['_lastDownloadPath']) : '';
+    await priceOfferedPage.BidReqIDPartially_Committed_or_Committed.first().click();
+
+    const psUnlocked = bidRequestDetailsPage.PS_button.first();
+
+    const [download1] = await Promise.all([page.waitForEvent('download'), psUnlocked.evaluate(el => el.dispatchEvent(new MouseEvent('click', { bubbles: true })))]);
+
+    vars['FilePathAllLoans'] = path.join(vars['DownloadDir'], download1.suggestedFilename());
+    await download1.saveAs(vars['FilePathAllLoans']);
+    
     vars["BidReqIDUI"] = await priceOfferedPage.BidRequestIDTextDetails.textContent() || '';
-    vars["SourceLoanNumUI"] = "\"sourceLoanNumber\":\"" + vars["BidReqIDUI"];
+    // vars["SourceLoanNumUI"] = `"sourceLoanNumber":"${vars["BidReqIDUI"]}`;
+    Methods.concatenate(`"sourceLoanNumber":"`, vars["BidReqIDUI"], 'SourceLoanExpected');
+
     vars["CorrLoanNumUI"] = await priceOfferedDetailsPage.First_Loan_NumberCommited_or_Uncommitted.textContent() || '';
-    vars["CorrLoanNumUI1"] = "\"corrLoanNumber\":\"" + vars["CorrLoanNumUI"] + "\"";
-    vars["RefSecProdUI"] = await priceOfferedPage.Ref_Sec_Prod.textContent() || '';
-    vars["RefSecProdUI"] = String(vars["RefSecProdUI"]).trim();
-    vars["RefSecProdUI"] = "\"referenceSecurityName\":\"" + vars["RefSecProdUI"] + "\"";
-    vars["RefSecPriceLoanUI"] = await priceOfferedDetailsPage.Reference_Security_PricePrice_Offered.textContent() || '';
-    vars["RefSecPriceLoanUI"] = String(vars["RefSecPriceLoanUI"]).trim();
+    // vars["CorrLoanNumUI1"] = `"corrLoanNumber":"${vars["CorrLoanNumUI"]}"`;
+    Methods.concatenate(`"corrLoanNumber":"`, vars["CorrLoanNumUI"], 'CorrLoanNumUI1');
+
+    vars["RefSecProdUI"] =(await priceOfferedPage.Ref_Sec_Prod.first().textContent() || '').trim();
+    // vars["RefSecProdUI"] = `"referenceSecurityName":"${vars["RefSecProdUI"]}"`;
+    Methods.concatenate(`"referenceSecurityName":"`, vars["RefSecProdUI"], 'RefSecProdUI');
+
+    vars["RefSecPriceLoanUI"] = (await priceOfferedDetailsPage.Reference_Security_PricePrice_Offered.first().textContent() || '').trim();
+    vars["RuntimeValue"] = vars["RefSecPriceLoanUI"];
     await stepGroups.stepGroup_Verifying_and_Removing_If_the_Last_Digits_are_Zeroes(page, vars);
-    vars["RefSecPriceLoanUI"] = "\"referenceSecurityPrice\":" + vars["RefSecPriceLoanUI"];
+    vars["RefSecPriceLoanUI"] = vars["RuntimeValue"];
+    vars["RefSecPriceLoanUI"] = vars["RefSecPriceLoanUI"].replace(/\./g, '');
+    vars["RefSecPriceLoanUI"] = `"referenceSecurityPrice":${vars["RefSecPriceLoanUI"]}`;
+
     vars["SecMonthName"] = await priceOfferedPage.Sec_Month.textContent() || '';
+    console.log('Extracted Security Month Name from UI:', vars["SecMonthName"]);
     vars["count"] = "1";
-    while (parseFloat(String(vars["count"])) <= parseFloat(String("12"))) {
-      vars[""] = new Date(2000, parseInt(String("MonthName")) - 1, 1).toLocaleString('en-US', { month: 'long' });
-      vars["Position"] = String(vars["MonthName"]).substring(0, parseInt("3"));
-      vars["MonthName2"] = vars["MonthName1"];
-      vars["MonthNames"] = String(vars["MonthName2"]).split(",")["1"] || '';
-      if (String(vars["MonthNames"]) === String(vars["SecMonthName"])) {
+
+    while (parseFloat(vars["count"]) <= 12) {
+      const monthName = new Date(
+        2000,
+        parseInt(vars["count"]) - 1,
+        1
+      ).toLocaleString('en-US', { month: 'short' });
+
+      if (monthName === vars["SecMonthName"]) {
+        console.log('Matched Month Name:', monthName);
         break;
       }
-      vars["count"] = (parseFloat(String("1")) + parseFloat(String(vars["count"]))).toFixed(0);
+
+      vars["count"] = (parseInt(vars["count"]) + 1).toString();
     }
-    vars["MonthNumUI"] = vars["count"];
-    vars["MonthNumUI"] = "\"referenceSecurityMonth\":" + vars["MonthNumUI"];
-    vars["CorrLoanNumUI"] = String('') + String('');
-    expect(String(vars["PSDownloadedFile1"])).toBe(vars["ExpectedFileName"]);
-    vars["PSFilePath1"] = vars['_lastDownloadPath'] || '';
-    vars[""] = fileHelper.readJsonValue('', "");
-    expect(String(vars["PSFileData1"])).toBe(vars["SourceLoanNumUI"]);
-    expect(String(vars["PSFileData1"])).toBe(vars["CorrLoanNumUI1"]);
-    expect(String(vars["PSFileData1"])).toBe(vars["RefSecProdUI"]);
-    expect(String(vars["PSFileData1"])).toBe(vars["RefSecPriceLoanUI"]);
-    expect(String(vars["PSFileData1"])).toBe(vars["MonthNumUI"]);
+
+    vars["MonthNumUI"] = `"referenceSecurityMonth":${vars["count"]}`;
+    vars["PSFileData1"] = fileHelper.readJsonValue(vars["FilePathAllLoans"], "");
+    vars["ExpectedFileName1"] = `pricing-response-${vars["CorrLoanNumUI"]}`;
+    console.log('Expected PS File Name:', vars["ExpectedFileName1"]);
+    expect(String(download1.suggestedFilename())).toContain(vars['ExpectedFileName1']);
+
+    expect(String(vars["PSFileData1"])).toContain(vars["SourceLoanNumUI"]);
+    expect(String(vars["PSFileData1"])).toContain(vars["CorrLoanNumUI1"]);
+    expect(String(vars["PSFileData1"])).toContain(vars["RefSecProdUI"]);
+    expect(String(vars["PSFileData1"])).toContain(vars["RefSecPriceLoanUI"]);
+    expect(String(vars["PSFileData1"])).toContain(vars["MonthNumUI"]);
+
     await priceOfferedPage.LockedCommitted_Loans.click();
-    await priceOfferedPage.PS_Button_Locked_Loan.click();
-    // Wait for download - handled by Playwright download events
-    await page.waitForTimeout(2000);
-    vars[""] = vars['_lastDownloadPath'] ? require('path').basename(vars['_lastDownloadPath']) : '';
-    vars["LockedCorrLoanUI"] = await priceOfferedPage.Locked_CorrLoan.textContent() || '';
-    vars["LockedCorrLoanUI1"] = "\"corrLoanNumber\":\"" + vars["LockedCorrLoanUI"] + "\"";
-    vars["RefSecPriceLockedLoanUI"] = await priceOfferedDetailsPage.Reference_Security_PricePrice_Offered.textContent() || '';
-    vars["RefSecPriceLockedLoansUI"] = String(vars["RefSecPriceLockedLoanUI"]).trim();
+    await priceOfferedPage.LockSymbolOpen.waitFor({ state: 'visible' });
+    const psLocked = priceOfferedPage.PS_Button_Locked_Loan.first();
+
+    const [download2] = await Promise.all([page.waitForEvent('download'),psLocked.evaluate(el =>el.dispatchEvent(new MouseEvent('click', { bubbles: true })))]);
+
+    vars['FilepathLockedLaons'] = path.join(vars['DownloadDir'],download2.suggestedFilename());
+    await download2.saveAs(vars['FilepathLockedLaons']);
+    vars["LockedCorrLoanUI"] =await priceOfferedPage.Locked_CorrLoan.first().textContent() || '';
+    vars["ExpectedFileName2"] = `pricing-response-${vars["LockedCorrLoanUI"]}`;
+    console.log('Expected Locked PS File Name:', vars["ExpectedFileName2"]);
+    expect(String(download2.suggestedFilename())).toContain(vars['ExpectedFileName2']);
+    vars["LockedCorrLoanUI1"] = `"corrLoanNumber":"${vars["LockedCorrLoanUI"]}"`;
+    vars["RefSecPriceLockedLoanUI"] = (await priceOfferedDetailsPage.Reference_Security_PricePrice_Offered.first().textContent() || '').trim();
+    vars["RuntimeValue"] = vars["RefSecPriceLockedLoanUI"];
     await stepGroups.stepGroup_Verifying_and_Removing_If_the_Last_Digits_are_Zeroes(page, vars);
-    vars["RefSecPriceLockedLoansUI"] = "\"referenceSecurityPrice\":" + vars["RefSecPriceLockedLoansUI"];
-    vars["LockedCorrLoanUI"] = String('') + String('');
-    expect(String(vars["PSDownloadedFile2"])).toBe(vars["ExpectedFileNamePSLockedLoan"]);
-    vars["PSFilePath2"] = vars['_lastDownloadPath'] || '';
-    vars[""] = fileHelper.readJsonValue('', "");
-    expect(String(vars["PSFileData2"])).toBe(vars["SourceLoanNumUI"]);
-    expect(String(vars["PSFileData2"])).toBe(vars["RefSecPriceLockedLoansUI"]);
-    expect(String(vars["PSFileData2"])).toBe(vars["LockedCorrLoanUI1"]);
-    expect(String(vars["PSFileData2"])).toBe(vars["RefSecProdUI"]);
-    expect(String(vars["PSFileData2"])).toBe(vars["MonthNumUI"]);
+    vars["RefSecPriceLockedLoanUI"] = vars["RuntimeValue"];
+    vars["RefSecPriceLockedLoanUI"] = vars["RefSecPriceLockedLoanUI"].replace(/\./g, '');
+    vars["RefSecPriceLockedLoansUI"] = `"referenceSecurityPrice":${vars["RefSecPriceLockedLoanUI"]}`;
+    vars["PSFileData2"] = fileHelper.readJsonValue(vars["FilepathLockedLaons"], "");
+    expect(String(vars["PSFileData2"])).toContain(vars["SourceLoanNumUI"]);
+    expect(String(vars["PSFileData2"])).toContain(vars["LockedCorrLoanUI1"]);
+    expect(String(vars["PSFileData2"])).toContain(vars["RefSecProdUI"]);
+    expect(String(vars["PSFileData2"])).toContain(vars["RefSecPriceLockedLoansUI"]);
+    expect(String(vars["PSFileData2"])).toContain(vars["MonthNumUI"]);
   });
 });
