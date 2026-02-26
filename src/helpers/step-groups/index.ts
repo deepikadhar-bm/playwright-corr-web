@@ -421,7 +421,7 @@ export async function stepGroup_Navigation_and_Verification_of_Customer_Permissi
 export async function stepGroup_Navigating_to_Bulk_Batch_Timing(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const correspondentPortalPage = new CorrespondentPortalPage(page);
   await page.waitForLoadState('networkidle');
-  git await page.locator("//span[text()[normalize-space() = \"Administration\"]]").click();
+  await page.locator("//span[text()[normalize-space() = \"Administration\"]]").click();
   await page.locator("//*[text()[normalize-space() = \"General Settings\"]]").first().click();
   await page.waitForLoadState('networkidle');
   await correspondentPortalPage.Bulk_Batch_Timing.click();
@@ -3717,11 +3717,12 @@ export async function stepGroup_Modifying_The_batch_Intervals_with_current_est_t
   await expect(page.getByText("Edit Batch Timing")).toBeVisible();
   vars["CurrentTime"] = (() => {
     const d = new Date();
-    const opts: Intl.DateTimeFormatOptions = { timeZone: "UTC-05:00" };
+    //const opts: Intl.DateTimeFormatOptions = { timeZone: "UTC-05:00" };
     const fmt = "hh:mm a";
     // Map Java date format to Intl parts
-    const parts = new Intl.DateTimeFormat('en-US', { ...opts, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }).formatToParts(d);
     const opts: Intl.DateTimeFormatOptions = { timeZone: "America/New_York" };
+    const parts = new Intl.DateTimeFormat('en-US', { ...opts, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }).formatToParts(d);
+    
     const p = Object.fromEntries(parts.map(({type, value}) => [type, value]));
     return fmt.replace('yyyy', p.year || '').replace('yy', (p.year||'').slice(-2)).replace('MM', p.month || '').replace('dd', p.day || '').replace('HH', String(d.getHours()).padStart(2,'0')).replace('hh', p.hour || '').replace('mm', p.minute || '').replace('ss', p.second || '').replace('a', p.dayPeriod || '').replace(/M(?!M)/g, String(parseInt(p.month||'0'))).replace(/d(?!d)/g, String(parseInt(p.day||'0'))).replace(/h(?!h)/g, String(parseInt(p.hour||'0')));
   })();

@@ -34,7 +34,7 @@ test.describe('REG_PriceOffered', () => {
     await stepGroups.stepGroup_Login_to_CORR_Portal(page, vars);
     await correspondentPortalPage.Commitments_Side_Menu.click();
     await correspondentPortalPage.Price_Offered_List_Dropdown.click();
-    vars["FirstBidReqId"] = await correspondentPortalPage.First_Bid_Request_ID.textContent() || '';
+    vars["FirstBidReqId"] = await correspondentPortalPage.First_Bid_Request_ID.first().textContent() || '';
     vars["FirstBidReqId"] = String(vars["FirstBidReqId"]).trim();
     await bidRequestsPage.Search_by_Bid_Request_ID_Field.fill(vars["FirstBidReqId"]);
     await spinnerPage.Spinner.waitFor({ state: 'hidden' });
@@ -52,7 +52,7 @@ test.describe('REG_PriceOffered', () => {
     while (parseFloat(String(vars["RowCountUI"])) <= parseFloat(String(vars["RowCount"]))) {
       vars["ColumnCountUI"] = "2";
       vars["indexExcel"] = "1";
-      vars["RowDataExcel"] = excelHelper.readRow(vars['_lastDownloadPath'] || '', vars["RowCountExcel"], "0");
+      vars["RowDataExcel"] = excelHelper.getRowDataWithCommaSeperator(vars['_lastDownloadPath'] || '', parseInt(vars["RowCountExcel"]), "0");
       while (parseFloat(String(vars["ColumnCountUI"])) <= parseFloat(String("9"))) {
         vars["CellValueInExcel"] = String(vars["RowDataExcel"]).split(",")[parseInt(String(vars["indexExcel"]))] || '';
         vars["CellValueInExcel"] = String(vars["CellValueInExcel"]).trim();
