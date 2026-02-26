@@ -10,6 +10,9 @@ export class CommitmentListPage {
   get AllFiles_File_Name(): Locator {
     return this.page.locator("(//td[@data-title=\"File Name\"])[last()]");
   }
+  get Lock_Icon(): Locator {  
+    return this.page.locator("//span[contains(@class,'lock-icon')]");
+  }
 
   get Bid_Request_IDCommitment_List_Screen(): Locator {
     return this.page.locator("//td[@data-title=\"Bid Request ID\"]");
