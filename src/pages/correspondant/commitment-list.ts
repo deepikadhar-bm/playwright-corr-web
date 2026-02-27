@@ -146,8 +146,8 @@ export class CommitmentListPage {
     return this.page.locator("//td[@data-title=\"Execution Type\"]//div[normalize-space(text())=\"CHASE_DIRECT\"]//ancestor::tr//td[@data-title=\"Comm. ID\"]//a[contains(@aria-label,\"View details for commitment\")]");
   }
 
-  get Commitment_IDCommitment_List_Page(): Locator {
-    return this.page.locator("//td[@data-title=\"Bid Request ID\"]//div[normalize-space(text())=\"$|BidReqId|\"]//ancestor::tr//td[@data-title=\"Comm. ID\"]");
+  Commitment_IDCommitment_List_Page(BidReqId: string): Locator {
+    return this.page.locator(`//td[@data-title="Bid Request ID"]//div[normalize-space(text())="${BidReqId}"]//ancestor::tr//td[@data-title="Comm. ID"]`);
   }
 
   get Commitment_IDCommitment_List(): Locator {
@@ -491,11 +491,12 @@ export class CommitmentListPage {
   }
 
   get Individual_Mark_Adjust(): Locator {
+
     return this.page.locator("//*[contains(@aria-label,\"Select loan\")]/../..//td[@data-title=\"Mark Adj\"]");
   }
 
-  get Individual_Set_Page_Size(): Locator {
-    return this.page.locator("(//button[contains(@aria-label, \"Set page size to\")])[$|count|]");
+    IndividualSetPageSize(count: string ): Locator {
+    return this.page.locator(`(//button[contains(@aria-label, \"Set page size to\")])[${count}]`);  
   }
 
   get Interest_RateCommitment_List(): Locator {

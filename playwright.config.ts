@@ -20,13 +20,13 @@ export default defineConfig({
   },
   use: {
         launchOptions: {
-      slowMo: 3000,
+      slowMo: 5000,
     },
 
     trace: 'on',
     screenshot: 'on',
     video: 'on',
-    actionTimeout: 120_000,
+    actionTimeout:  2 * 60 * 1000,
     navigationTimeout: 60_000,
   },
   projects: [

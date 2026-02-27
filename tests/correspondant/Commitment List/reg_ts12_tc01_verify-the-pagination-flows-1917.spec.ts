@@ -6,8 +6,10 @@ import { CommitmentListPage } from '../../../src/pages/correspondant/commitment-
 import { CorrespondentPortalPage } from '../../../src/pages/correspondant/correspondent-portal';
 import { PriceOfferedPage } from '../../../src/pages/correspondant/price-offered';
 import { SpinnerPage } from '../../../src/pages/correspondant/spinner';
+import { PlaywrightHelpers } from '../../../src/helpers/AddonHelpers';
 
 test.describe('Commitment List - TS_1', () => {
+  let Methods: PlaywrightHelpers;
   let vars: Record<string, string> = {};
   let commitmentListPage: CommitmentListPage;
   let correspondentPortalPage: CorrespondentPortalPage;
@@ -20,6 +22,7 @@ test.describe('Commitment List - TS_1', () => {
     correspondentPortalPage = new CorrespondentPortalPage(page);
     priceOfferedPage = new PriceOfferedPage(page);
     spinnerPage = new SpinnerPage(page);
+    Methods = new PlaywrightHelpers(page, vars);
   });
 
   test('REG_TS12_TC01_Verify the pagination flows', async ({ page }) => {
@@ -32,11 +35,13 @@ test.describe('Commitment List - TS_1', () => {
     vars["count"] = "1";
     while (parseFloat(String(vars["count"])) <= parseFloat(String(vars["CountOfSetPageSize"]))) {
       await correspondentPortalPage.Change_Page_Size_Dropdown.click();
-      vars["IndividualSetPageSize"] = await commitmentListPage.Individual_Set_Page_Size.textContent() || '';
-      await commitmentListPage.Individual_Set_Page_Size.click();
+      vars["IndividualSetPageSize"] = await commitmentListPage.IndividualSetPageSize(vars["count"]).textContent() || '';
+      await commitmentListPage.IndividualSetPageSize(vars["count"]).click();
       await spinnerPage.Spinner.waitFor({ state: 'hidden' });
       vars["RowsCount"] = String(await priceOfferedPage.Total_Rows_Count_UIDetails.count());
+       Methods.trimWhitespace(vars["IndividualSetPageSize"], "IndividualSetPageSize");
       expect(String(vars["IndividualSetPageSize"])).toBe(vars["RowsCount"]);
+     
       vars["count"] = (parseFloat(String("1")) + parseFloat(String(vars["count"]))).toFixed(0);
     }
   });
