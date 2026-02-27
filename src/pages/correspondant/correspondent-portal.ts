@@ -1144,7 +1144,7 @@ export class CorrespondentPortalPage {
   }
 
   get Go_to_Next_Page_Button(): Locator {
-    return this.page.locator("//button[@aria-label=\"Go to Next Page\"]//span");
+    return this.page.locator("//button[@aria-label=\"Go to Next Page\"]");
   }
 
   get Go_to_Next_Page_Button_2(): Locator {
@@ -1767,8 +1767,8 @@ export class CorrespondentPortalPage {
     return this.page.locator("//div//div[@id=\"companySelect\"]//div//button[@id=\"multiSelectDropDown\"]");
   }
 
-  get Select_Current_DateAdd_Config(): Locator {
-    return this.page.locator("//div[@class=\"ngb-dp-month\"]//div[@aria-label=\"$|CurrentDate|\"]");
+  Select_Current_DateAdd_Config(CurrentDate: string): Locator { 
+    return this.page.locator(`//div[@class=\"ngb-dp-month\"]//div[@aria-label='${CurrentDate}']`);
   }
 
   get Select_Date_From_Calenderyesterday(): Locator {
