@@ -25,9 +25,9 @@ test.describe('Commitment List - TS_1', () => {
     await spinnerPage.Spinner.waitFor({ state: 'hidden' });
     await commitmentListPage.Committed_List_Dropdown.click();
     await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-    await commitmentListPage.Commitment_Letter.click();
-    await correspondentPortalPage.Send_Email_ButtonCommitment_List.waitFor({ state: 'visible' });
-    await correspondentPortalPage.Send_Email_ButtonCommitment_List.click();
+    await commitmentListPage.Commitment_Letter.first().click();
+    await correspondentPortalPage.Send_Email_ButtonCommitment_List.first().waitFor({ state: 'visible' });
+    await correspondentPortalPage.Send_Email_ButtonCommitment_List.first().click();
     await page.getByText("Commitment letter email triggered successfully!").waitFor({ state: 'visible' });
     await expect(page.getByText("Commitment letter email triggered successfully!")).toBeVisible();
     await correspondentPortalPage.OK_ButtonCommitment_List.click();

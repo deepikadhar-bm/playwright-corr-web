@@ -60,7 +60,7 @@ test.describe('Commitment List - TS_1', () => {
     await commitmentListPage.Chase_Loan_Number_DropdownCommitment_List_Page.click();
     await spinnerPage.Spinner.waitFor({ state: 'hidden' });
     await expect(page.getByText(vars["CommitmentID"])).toBeVisible();
-    await commitmentListPage.Commitment_IDCommitment_List_Page.click();
+    await commitmentListPage.Commitment_IDCommitment_List_Page(vars["CommitmentID"]).click();
     await expect(commitmentDetailsPage.Chase_Loan_NumberCommitments_Details).toContainText(vars["ChaseLoanNumber"]);
     await priceOfferedPage.Back_To_Commitment_List.click();
     await spinnerPage.Spinner.waitFor({ state: 'hidden' });
@@ -71,7 +71,7 @@ test.describe('Commitment List - TS_1', () => {
     await commitmentListPage.Correspondent_Loan_Num_DropdownCommitment_List_Page.click();
     await spinnerPage.Spinner.waitFor({ state: 'hidden' });
     await expect(page.getByText(vars["CommitmentID"])).toBeVisible();
-    await commitmentListPage.Commitment_IDCommitment_List_Page.click();
+    await commitmentListPage.Commitment_IDCommitment_List_Page(vars["CommitmentID"]).click();
     await expect(commitmentListPage.Corr_Loan_NumCommitments_Details).toContainText(vars["CorrespondentLoanNumber"]);
   });
 });
