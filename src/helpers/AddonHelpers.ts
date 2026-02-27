@@ -623,7 +623,22 @@ export class PlaywrightHelpers {
       pass(METHOD, `Length of "${sourceString}" is ${count} → vars['${varName}']`);
     } catch (e) { fail(METHOD, `Count chars in "${sourceString}"`, e); }
   }
-
+  // 32. Split string by special character → store specific position in var
+// ==========================================================================
+splitBySpecialChar(sourceString: string, delimiter: string, position: string, varName: string): void {
+  const METHOD = 'splitBySpecialChar';
+  try {
+    const pos = parseInt(position, 10);
+    const parts = sourceString.split(delimiter).map(v => v.trim()).filter(v => v !== '');
+    const value = parts[pos];
+    if (value === undefined) {
+      fail(METHOD, `Position ${pos} does not exist in "${sourceString}" split by "${delimiter}"`, new Error(`Invalid position ${pos}`));
+      return;
+    }
+    this.vars[varName] = value;
+    pass(METHOD, `Split "${sourceString}" by "${delimiter}" → position[${pos}] = "${value}" → vars['${varName}']`);
+  } catch (e) { fail(METHOD, `Split "${sourceString}" by "${delimiter}"`, e); }
+}
   // ==========================================================================
   // 32. Concatenate with special char → store in vars
   // ==========================================================================
@@ -771,5 +786,36 @@ export class PlaywrightHelpers {
   const trimmed = value.trim();
   this.vars[varName] = trimmed;
   console.log(`[trimFrontBack] "${value}" → "${trimmed}" → vars['${varName}']`);
+}
+// 33. Get month name by month number → store in vars
+// ==========================================================================
+getMonthNameByNumber(monthNumber: string, varName: string): void {
+  const METHOD = 'getMonthNameByNumber';
+  try {
+    const monthNames = [
+      'January', 'February', 'March', 'April', 'May', 'June',
+      'July', 'August', 'September', 'October', 'November', 'December'
+    ];
+    const index = parseInt(monthNumber, 10) - 1;
+    if (index < 0 || index > 11) {
+      fail(METHOD, `Invalid month number "${monthNumber}". Must be between 1 and 12.`, new Error(`Invalid month number: ${monthNumber}`));
+      return;
+    }
+    const monthName = monthNames[index];
+    this.vars[varName] = monthName;
+    pass(METHOD, `Month number "${monthNumber}" → "${monthName}" → vars['${varName}']`);
+  } catch (e) { fail(METHOD, `Get month name for month number "${monthNumber}"`, e); }
+}
+// 34. Remove characters from first and last position → store in vars
+// ==========================================================================
+removeCharactersFromPosition(sourceString: string, firstCount: string, lastCount: string, varName: string): void {
+  const METHOD = 'removeCharactersFromPosition';
+  try {
+    const first = parseInt(firstCount, 10) || 0;
+    const last = parseInt(lastCount, 10) || 0;
+    const result = sourceString.substring(first, last === 0 ? undefined : sourceString.length - last);
+    this.vars[varName] = result;
+    pass(METHOD, `Removed ${first} from first and ${last} from last of "${sourceString}" → "${result}" → vars['${varName}']`);
+  } catch (e) { fail(METHOD, `Remove characters from "${sourceString}"`, e); }
 }
 }

@@ -59,7 +59,7 @@ test.describe('Unassigned', () => {
     await priceOfferedPage.Search_Dropdown.fill(vars["BidReqId"]);
     await priceOfferedPage.Bid_Request_ID_DropdownCommitment_List_Page.click();
     await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-    await commitmentListPage.Commitment_IDCommitment_List_Page.click();
+    await commitmentListPage.Commitment_IDCommitment_List_Page(vars[BidReqId]).click();
     await priceOfferedPage.Commit_IDCommitment_List.waitFor({ state: 'visible' });
     vars["CommitID"] = await priceOfferedPage.Commit_IDCommitment_List.textContent() || '';
     vars["CommitOrderScreen"] = await priceOfferedPage.Commit_OrderCommitment_List.textContent() || '';
