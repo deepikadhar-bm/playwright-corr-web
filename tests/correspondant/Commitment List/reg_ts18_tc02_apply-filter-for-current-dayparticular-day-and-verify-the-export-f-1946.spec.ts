@@ -49,7 +49,7 @@ test.describe('Commitment List - TS_1', () => {
       const p = Object.fromEntries(parts.map(({type, value}) => [type, value]));
       return fmt.replace('yyyy', p.year || '').replace('yy', (p.year||'').slice(-2)).replace('MM', p.month || '').replace('dd', p.day || '').replace('HH', String(d.getHours()).padStart(2,'0')).replace('hh', p.hour || '').replace('mm', p.minute || '').replace('ss', p.second || '').replace('a', p.dayPeriod || '').replace(/M(?!M)/g, String(parseInt(p.month||'0'))).replace(/d(?!d)/g, String(parseInt(p.day||'0'))).replace(/h(?!h)/g, String(parseInt(p.hour||'0')));
     })();
-    await correspondentPortalPage.Select_Current_DateAdd_Config.click();
+    await correspondentPortalPage.Select_Current_DateAdd_Config(vars["CurrentDate"]).click();
     await correspondentPortalPage.Apply_Button.click();
     await applyFiltersButtonPage.Apply_Filters_Button.click();
     await spinnerPage.Spinner.waitFor({ state: 'hidden' });

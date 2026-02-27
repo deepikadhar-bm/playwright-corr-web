@@ -48,8 +48,13 @@ export class CustomerPermissionPage {
   }
 
   get CustomerPermission_Menu(): Locator {
-    return this.page.locator("//a[@href=\"#/admin/general-settings/customer-restrictions\"]");
+    return this.page.locator("//a[contains(@class,'dropdown-toggle active')]//following::li//a[@aria-label='Customer Permission']");
   }
+
+  get CustomerPermission_Menu_Active(): Locator {
+    return this.page.locator("//a[contains(@class,'active') and @aria-label='Customer Permission']");
+  }
+  
 
   get Edit_Permission_Button_For_Freedomcompany(): Locator {
     return this.page.locator("//td[contains(text(),\"@|Company Name|\")]/following-sibling::td[@data-title=\"Actions\"]//button[@aria-label=\"Edit Permission\"]//span[contains(@class, 'fa-pencil-alt')]");

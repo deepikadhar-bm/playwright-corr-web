@@ -4045,10 +4045,12 @@
     "versionId": 24,
     "message": null
   },
+  
   {
     "id": 93,
     "testDataName": "Price Offered",
-    "data": {
+    "data": [
+      {
       "CompanyNameInFilters": "Fre",
       "RequestIdfor22-2.1": "87BQ7DB5C69B",
       "RequestIDCreated3rdScenario": "87FXBEEDB1CF",
@@ -4079,7 +4081,8 @@
       "RequestIDFrom28-2": "87CH4A145777",
       "StatusInFilters": "Price",
       "RequestIDCreated4rthScenario": "87P37D465C99"
-    },
+    }
+  ],
     "createdById": 24,
     "updatedById": 29,
     "columns": [

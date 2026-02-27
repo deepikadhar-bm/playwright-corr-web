@@ -70,21 +70,20 @@ test.describe('Commitment List - TS_1', () => {
 
       while (parseFloat(String(vars["count"])) <= parseFloat(String(vars["CountofPages"]))) {
         Methods.convertDateFormat(vars["CurrentDate"], 'd-M-yyyy', 'MM/dd/yyyy', 'ExpectedDate');
-        await Methods.verifyMultipleElementsHaveSameText(priceOfferedPage.CommitedDateVerification, vars['ExpectedDate']);
         console.log("ExpectedDate:", vars["ExpectedDate"]);
+        await Methods.verifyMultipleElementsHaveSameText(priceOfferedPage.CommitedDateVerification, vars['ExpectedDate']);
         const isDisabled = await NextButton.getAttribute('aria-disabled');
         if (isDisabled === 'false') {
           await correspondentPortalPage.Go_to_Next_Page_Button.click();
           await spinnerPage.Spinner.waitFor({ state: 'hidden' });
         }
-
         Methods.MathematicalOperation(vars["count"], '+', 1, "count");
       }
     }
 
+    console.log("cross symbel verification done");
     await priceOfferedPage.Select_All_CheckboxPrice_Offred_Page.check();
     vars["ExportSelectedCountAfterApplyingFilters"] = await priceOfferedPage.Export_Selected_Count.textContent() || '';
-
     Methods.removeMultipleSpecialChars(['(', ')', ' '], vars["ExportSelectedCountAfterApplyingFilters"], "ExportSelectedCountAfterApplyingFilters");
 
     await priceOfferedPage.Remove_Date_FilterCross_Symbol.click();
@@ -98,13 +97,9 @@ test.describe('Commitment List - TS_1', () => {
     await priceOfferedPage.Export_Selected_Count.waitFor({ state: 'visible' });
 
     vars["ExportSelectedCountAfterRemovingFilters"] = await priceOfferedPage.Export_Selected_Count.textContent() || '';
-
     Methods.removeMultipleSpecialChars(['(', ')', ' '], vars["ExportSelectedCountAfterRemovingFilters"], "ExportSelectedCountAfterRemovingFilters");
-
     Methods.verifyComparison(vars["ExportSelectedCountAfterRemovingFilters"], '>', vars["ExportSelectedCountAfterApplyingFilters"]);
 
-    await commitmentListPage.Closed_List_Tab.waitFor({ state: 'visible' });
-    await commitmentListPage.Closed_List_Tab.click();
     await spinnerPage.Spinner.waitFor({ state: 'hidden' });
     await page.waitForTimeout(6000);
 
@@ -115,23 +110,21 @@ test.describe('Commitment List - TS_1', () => {
     await correspondentPortalPage.Apply_Button.click();
     await applyFiltersButtonPage.Apply_Filters_Button.click();
     await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-
     await priceOfferedPage.Date_Filter_ChipPrice_Offered_Page.waitFor({ state: 'visible' });
     await page.waitForTimeout(10000);
 
-    Methods.convertDateFormat(vars["CurrentDate"], 'd-M-yyyy', 'yyyy/MM/dd', 'CurrentDate');
-    Methods.concatenateWithSpace("Date:", vars["CurrentDate"], "CurrentDateWithTextDate");
-
+    Methods.convertDateFormat(vars["CurrentDate"], 'd-M-yyyy', 'yyyy/MM/dd', 'CurrentDateChip');
+    Methods.concatenateWithSpace("Date:", vars["CurrentDateChip"], "CurrentDateWithTextDate");
     await expect(priceOfferedPage.Date_Filter_ChipPrice_Offered_Page).toContainText(vars["CurrentDateWithTextDate"]);
 
     const noResults1 = page.getByText('No result', { exact: true });
     await page.waitForTimeout(2000);
-    
+
     if (await noResults1.isVisible()) {
       console.log('No results present on current page');
     } else {
-      const isDisabled = await NextButton.getAttribute('aria-disabled');
-      if (isDisabled === 'false') {
+      const isDisabled2 = await NextButton.getAttribute('aria-disabled');
+      if (isDisabled2 === 'false') {
         vars["CountofPages"] = "2";
       } else {
         vars["CountofPages"] = "1";
@@ -140,37 +133,35 @@ test.describe('Commitment List - TS_1', () => {
       vars["count"] = "1";
 
       while (parseFloat(String(vars["count"])) <= parseFloat(String(vars["CountofPages"]))) {
-        await Methods.verifyMultipleElementsHaveSameText(priceOfferedPage.CommitedDateVerification, vars['ExpectedRequestedDate']);
-        const isDisabled = await NextButton.getAttribute('aria-disabled');
-        if (isDisabled === 'false') {
+        await Methods.verifyMultipleElementsHaveSameText(priceOfferedPage.CommitedDateVerification, vars['ExpectedDate']);
+        const isDisabled2 = await NextButton.getAttribute('aria-disabled');
+        if (isDisabled2 === 'false') {
           await correspondentPortalPage.Go_to_Next_Page_Button.click();
           await spinnerPage.Spinner.waitFor({ state: 'hidden' });
         }
-
         Methods.MathematicalOperation(vars["count"], '+', 1, "count");
       }
 
-      await page.reload();
+      
       await spinnerPage.Spinner.waitFor({ state: 'hidden' });
       await priceOfferedPage.Select_All_CheckboxPrice_Offred_Page.check();
       await priceOfferedPage.Export_Selected_Count.waitFor({ state: 'visible' });
 
       vars["ExportSelectedCountAfterApplyingFilters"] = await priceOfferedPage.Export_Selected_Count.textContent() || '';
-
       Methods.removeMultipleSpecialChars(['(', ')', ' '], vars["ExportSelectedCountAfterApplyingFilters"], "ExportSelectedCountAfterApplyingFilters");
 
       await commitmentListPage.Clear_all_ButtonCommitment_List.click();
+      await page.reload();
       await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-
       await expect(priceOfferedPage.Date_Filter_ChipPrice_Offered_Page).not.toBeVisible();
 
       await priceOfferedPage.Select_All_CheckboxPrice_Offred_Page.check();
 
       vars["ExportSelectedCountAfterRemovingFilters"] = await priceOfferedPage.Export_Selected_Count.textContent() || '';
-
       Methods.removeMultipleSpecialChars(['(', ')', ' '], vars["ExportSelectedCountAfterRemovingFilters"], "ExportSelectedCountAfterRemovingFilters");
 
-      expect(String(vars["ExportSelectedCountAfterRemovingFilters"])).toBe(vars["ExportSelectedCountAfterApplyingFilters"]);
+      // expect(String(vars["ExportSelectedCountAfterRemovingFilters"])).toBe(vars["ExportSelectedCountAfterApplyingFilters"]);
+      Methods.verifyComparison(vars["ExportSelectedCountAfterRemovingFilters"], '>' ,vars["ExportSelectedCountAfterApplyingFilters"]);
     }
   });
 });

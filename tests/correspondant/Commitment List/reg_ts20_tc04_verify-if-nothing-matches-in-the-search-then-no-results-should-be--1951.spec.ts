@@ -30,7 +30,7 @@ test.describe('Commitment List - TS_1', () => {
     await commitmentListPage.Closed_List_Tab.click();
     await priceOfferedPage.Search_Dropdown.waitFor({ state: 'visible' });
     await priceOfferedPage.Search_Dropdown.click();
-    await priceOfferedPage.Search_Dropdown.fill("Abcd");
+    await priceOfferedPage.Search_Dropdown.type("Abcd1234");
     await priceOfferedPage.Bid_Request_ID_DropdownCommitment_List_Page.click();
     await spinnerPage.Spinner.waitFor({ state: 'hidden' });
     await expect(page.getByText("No result")).toBeVisible();
