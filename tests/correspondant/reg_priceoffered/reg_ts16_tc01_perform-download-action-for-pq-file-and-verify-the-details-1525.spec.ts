@@ -7,7 +7,7 @@ import { CorrespondentPortalPage } from '../../../src/pages/correspondant/corres
 import { PriceOfferedDetailsPage } from '../../../src/pages/correspondant/price-offered-details';
 import { PriceOfferedPage } from '../../../src/pages/correspondant/price-offered';
 import { SpinnerPage } from '@pages/correspondant';
-import { PlaywrightHelpers } from '../../../src/PlaywrightHelpers';
+import { PlaywrightHelpers } from '../../../src/helpers/AddonHelpers';
 
 test.describe('REG_PriceOffered', () => {
   let vars: Record<string, string>;

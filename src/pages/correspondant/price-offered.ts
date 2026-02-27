@@ -1024,6 +1024,9 @@ export class PriceOfferedPage {
   get Date_VErification(): Locator {
     return this.page.locator("//div[contains(@aria-label,\"Requested Date:\")]");
   }
+   get CommitedDateVerification(): Locator {
+    return this.page.locator("//div[contains(@aria-label,'Committed Date:')]");
+  }
 
   get DatePrice_Offered_Screen(): Locator {
     return this.page.locator("//td[@data-title='Bid Req. ID']/a[normalize-space(text())='$|BidReqId|']//ancestor::tr//td[@data-title=\"Date Price Offered\"]");
@@ -1154,7 +1157,7 @@ export class PriceOfferedPage {
   }
 
   get Export_Selected_Count(): Locator {
-    return this.page.locator("//span[contains(text(),\"Export Selected\")]//following-sibling::span");
+    return this.page.locator("//button[not(@disabled)]//span[contains(normalize-space(),'Export Selected')]//following-sibling::span");
   }
 
   get Filter_Dropdown1(): Locator {
