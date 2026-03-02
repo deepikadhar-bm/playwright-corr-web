@@ -9,7 +9,7 @@ import { PriceOfferedDetailsPage } from '../../../src/pages/correspondant/price-
 import { PriceOfferedPage } from '../../../src/pages/correspondant/price-offered';
 import * as fileHelper from '../../../src/helpers/file-helpers';
 import { SpinnerPage } from '@pages/correspondant/spinner';
-import { PlaywrightHelpers } from 'src/PlaywrightHelpers';
+import { AddonHelpers } from 'src/helpers/AddonHelpers';
 
 test.describe('REG_PriceOffered', () => {
   let vars: Record<string, string> = {};
@@ -18,12 +18,12 @@ test.describe('REG_PriceOffered', () => {
   let priceOfferedDetailsPage: PriceOfferedDetailsPage;
   let priceOfferedPage: PriceOfferedPage;
   let spinnerPage: SpinnerPage;
-  let Methods: PlaywrightHelpers;
+  let Methods: AddonHelpers;
 
   test.beforeEach(async ({ page }) => {
     vars = {};
 
-    Methods = new PlaywrightHelpers(page, vars);
+    Methods = new AddonHelpers(page, vars);
     bidRequestDetailsPage = new BidRequestDetailsPage(page);
     correspondentPortalPage = new CorrespondentPortalPage(page);
     priceOfferedDetailsPage = new PriceOfferedDetailsPage(page);

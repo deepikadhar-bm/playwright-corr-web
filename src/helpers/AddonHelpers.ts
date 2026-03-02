@@ -9,7 +9,7 @@
  *   let vars: Record<string, string> = {};
  *   const Methods = new PlaywrightHelpers(page, vars);
  *   Methods.concatenate('pricing-request-', vars['CorrLoanUI'], 'ExpectedFileName1');
- *   console.log(vars['ExpectedFileName1']); // ✅ result in vars directly
+ *   console.log(vars['ExpectedFileName1']); //  result in vars directly
  */
 
 import { Page, Locator } from '@playwright/test';
@@ -38,7 +38,7 @@ function fail(method: string, detail: string, error: unknown): never {
 
 // ─────────────────────────────────────────────────────────────────────────────
 
-export class PlaywrightHelpers {
+export class AddonHelpers {
   private page: Page;
 
   // ── vars — shared reference with test-level vars ───────────────────────────
@@ -50,7 +50,7 @@ export class PlaywrightHelpers {
   //   let vars: Record<string, string> = {};
   //   const Methods = new PlaywrightHelpers(page, vars);
   //   Methods.concatenate('pricing-request-', vars['CorrLoanUI'], 'ExpectedFileName1');
-  //   console.log(vars['ExpectedFileName1']); // ✅ result in vars directly
+  //   console.log(vars['ExpectedFileName1']); // result in vars directly
   public vars: Record<string, string>;
 
   constructor(page: Page, vars?: Record<string, string>) {
@@ -61,15 +61,15 @@ export class PlaywrightHelpers {
   // ── Locator Builder ────────────────────────────────────────────────────────
   private buildLocator(strategy: string, value: string): Locator {
     switch (strategy.toLowerCase()) {
-      case 'id':              return this.page.locator(`#${value}`);
-      case 'name':            return this.page.locator(`[name="${value}"]`);
-      case 'tagname':         return this.page.locator(value);
-      case 'classname':       return this.page.locator(`.${value}`);
-      case 'linktext':        return this.page.getByRole('link', { name: value, exact: true });
+      case 'id': return this.page.locator(`#${value}`);
+      case 'name': return this.page.locator(`[name="${value}"]`);
+      case 'tagname': return this.page.locator(value);
+      case 'classname': return this.page.locator(`.${value}`);
+      case 'linktext': return this.page.getByRole('link', { name: value, exact: true });
       case 'partiallinktext': return this.page.getByRole('link', { name: value });
-      case 'cssselector':     return this.page.locator(value);
-      case 'xpath':           return this.page.locator(`xpath=${value}`);
-      default:                throw new Error(`Unknown locator strategy: "${strategy}"`);
+      case 'cssselector': return this.page.locator(value);
+      case 'xpath': return this.page.locator(`xpath=${value}`);
+      default: throw new Error(`Unknown locator strategy: "${strategy}"`);
     }
   }
 
@@ -77,21 +77,26 @@ export class PlaywrightHelpers {
   // 1. Verify multiple elements have the SAME exact text
   // ==========================================================================
   async verifyMultipleElementsHaveSameText(
-    strategy: string, value: string, expectedText: string
+    locator: Locator,
+    expectedText: string
   ): Promise<void> {
+
     const METHOD = 'verifyMultipleElementsHaveSameText';
     try {
-      const elements = await this.buildLocator(strategy, value).all();
-      if (elements.length === 0) throw new Error(`No elements found using ${strategy}="${value}"`);
+      const elements = await locator.all();
+      if (elements.length === 0) throw new Error('No elements found');
+
       for (let i = 0; i < elements.length; i++) {
-        const actual = (await elements[i].textContent() ?? '').trim();
+        const actual = ((await elements[i].textContent()) ?? '').trim();
         if (actual !== expectedText)
           throw new Error(`Element [${i}] → Expected: "${expectedText}" | Got: "${actual}"`);
       }
-      pass(METHOD, `All ${elements.length} element(s) have exact text: "${expectedText}"`);
-    } catch (e) { fail(METHOD, `[${strategy}="${value}"] text "${expectedText}"`, e); }
-  }
 
+      pass(METHOD, `All ${elements.length} element(s) have exact text: "${expectedText}"`);
+    } catch (e) {
+      fail(METHOD, `Expected text "${expectedText}"`, e);
+    }
+  }
   // ==========================================================================
   // 2. Verify numeric ascending/descending order
   // ==========================================================================
@@ -105,12 +110,12 @@ export class PlaywrightHelpers {
       const numbers: number[] = [];
       for (const el of elements) {
         const text = (await el.textContent() ?? '').replace(/,/g, '').trim();
-        const num  = parseFloat(text);
+        const num = parseFloat(text);
         if (isNaN(num)) throw new Error(`Cannot parse "${text}" as a number`);
         numbers.push(num);
       }
       for (let i = 1; i < numbers.length; i++) {
-        if (order === 'ascending'  && numbers[i] < numbers[i - 1])
+        if (order === 'ascending' && numbers[i] < numbers[i - 1])
           throw new Error(`Order broken at [${i}]: ${numbers[i - 1]} > ${numbers[i]}`);
         if (order === 'descending' && numbers[i] > numbers[i - 1])
           throw new Error(`Order broken at [${i}]: ${numbers[i - 1]} < ${numbers[i]}`);
@@ -133,7 +138,7 @@ export class PlaywrightHelpers {
       for (const el of elements) texts.push((await el.textContent() ?? '').trim());
       for (let i = 1; i < texts.length; i++) {
         const cmp = texts[i - 1].localeCompare(texts[i]);
-        if (order === 'ascending'  && cmp > 0)
+        if (order === 'ascending' && cmp > 0)
           throw new Error(`Order broken at [${i}]: "${texts[i - 1]}" > "${texts[i]}"`);
         if (order === 'descending' && cmp < 0)
           throw new Error(`Order broken at [${i}]: "${texts[i - 1]}" < "${texts[i]}"`);
@@ -217,9 +222,9 @@ export class PlaywrightHelpers {
         const selectedText = await elements[i].evaluate(
           (sel: HTMLSelectElement) => sel.options[sel.selectedIndex]?.text ?? ''
         );
-        if (mode === 'contains'     && !selectedText.includes(expectedText))
+        if (mode === 'contains' && !selectedText.includes(expectedText))
           throw new Error(`Dropdown [${i}] "${selectedText}" does not contain "${expectedText}"`);
-        if (mode === 'not contains' &&  selectedText.includes(expectedText))
+        if (mode === 'not contains' && selectedText.includes(expectedText))
           throw new Error(`Dropdown [${i}] "${selectedText}" unexpectedly contains "${expectedText}"`);
       }
       pass(METHOD, `All ${elements.length} dropdown(s) ${mode} "${expectedText}"`);
@@ -258,10 +263,10 @@ export class PlaywrightHelpers {
       const d2 = parse(date2, format2, new Date());
       let passed = false;
       switch (operator) {
-        case '==': passed =  isEqual(d1, d2);              break;
-        case '!=': passed = !isEqual(d1, d2);              break;
-        case '<=': passed =  isEqual(d1, d2) || isBefore(d1, d2); break;
-        case '>=': passed =  isEqual(d1, d2) || isAfter(d1, d2);  break;
+        case '==': passed = isEqual(d1, d2); break;
+        case '!=': passed = !isEqual(d1, d2); break;
+        case '<=': passed = isEqual(d1, d2) || isBefore(d1, d2); break;
+        case '>=': passed = isEqual(d1, d2) || isAfter(d1, d2); break;
       }
       if (!passed) throw new Error(`"${date1}" ${operator} "${date2}" is false`);
       pass(METHOD, `"${date1}" ${operator} "${date2}" → PASSED`);
@@ -279,12 +284,12 @@ export class PlaywrightHelpers {
     const METHOD = 'verifyTypedComparison';
     try {
       let v1: unknown = testData1, v2: unknown = testData2;
-      if (dataType === 'INT')                              { v1 = parseInt(testData1, 10);            v2 = parseInt(testData2, 10); }
-      else if (dataType === 'FLOAT' || dataType === 'DOUBLE') { v1 = parseFloat(testData1);          v2 = parseFloat(testData2); }
-      else if (dataType === 'BOOLEAN')                    { v1 = testData1.toLowerCase() === 'true'; v2 = testData2.toLowerCase() === 'true'; }
+      if (dataType === 'INT') { v1 = parseInt(testData1, 10); v2 = parseInt(testData2, 10); }
+      else if (dataType === 'FLOAT' || dataType === 'DOUBLE') { v1 = parseFloat(testData1); v2 = parseFloat(testData2); }
+      else if (dataType === 'BOOLEAN') { v1 = testData1.toLowerCase() === 'true'; v2 = testData2.toLowerCase() === 'true'; }
       const areEqual = JSON.stringify(v1) === JSON.stringify(v2);
-      if (operator === 'EQUAL'     && !areEqual) throw new Error(`"${testData1}" EQUAL "${testData2}" failed`);
-      if (operator === 'NOT_EQUAL' &&  areEqual) throw new Error(`"${testData1}" NOT_EQUAL "${testData2}" failed`);
+      if (operator === 'EQUAL' && !areEqual) throw new Error(`"${testData1}" EQUAL "${testData2}" failed`);
+      if (operator === 'NOT_EQUAL' && areEqual) throw new Error(`"${testData1}" NOT_EQUAL "${testData2}" failed`);
       pass(METHOD, `[${dataType}] "${testData1}" ${operator} "${testData2}" → PASSED`);
     } catch (e) { fail(METHOD, `[${dataType}] "${testData1}" ${operator} "${testData2}"`, e); }
   }
@@ -300,11 +305,11 @@ export class PlaywrightHelpers {
     const METHOD = 'verifyDbTypes';
     try {
       let v1: unknown = testData1, v2: unknown = testData2;
-      if (dataType === 'NUMBER')  { v1 = parseFloat(testData1);            v2 = parseFloat(testData2); }
+      if (dataType === 'NUMBER') { v1 = parseFloat(testData1); v2 = parseFloat(testData2); }
       if (dataType === 'BOOLEAN') { v1 = testData1.toLowerCase() === 'true'; v2 = testData2.toLowerCase() === 'true'; }
       const areEqual = JSON.stringify(v1) === JSON.stringify(v2);
-      if (operator === 'EQUAL'     && !areEqual) throw new Error(`"${testData1}" EQUAL "${testData2}" failed`);
-      if (operator === 'NOT_EQUAL' &&  areEqual) throw new Error(`"${testData1}" NOT_EQUAL "${testData2}" failed`);
+      if (operator === 'EQUAL' && !areEqual) throw new Error(`"${testData1}" EQUAL "${testData2}" failed`);
+      if (operator === 'NOT_EQUAL' && areEqual) throw new Error(`"${testData1}" NOT_EQUAL "${testData2}" failed`);
       pass(METHOD, `[${dataType}] "${testData1}" ${operator} "${testData2}" → PASSED`);
     } catch (e) { fail(METHOD, `[${dataType}] "${testData1}" ${operator} "${testData2}"`, e); }
   }
@@ -332,7 +337,7 @@ export class PlaywrightHelpers {
   verifyDateMatchesFormat(dateValue: string, dateFormat: string): void {
     const METHOD = 'verifyDateMatchesFormat';
     try {
-      const parsed      = parse(dateValue, dateFormat, new Date());
+      const parsed = parse(dateValue, dateFormat, new Date());
       const reformatted = format(parsed, dateFormat);
       if (reformatted !== dateValue)
         throw new Error(`"${dateValue}" re-formatted to "${reformatted}" — mismatch`);
@@ -351,9 +356,9 @@ export class PlaywrightHelpers {
       const selectedText = await this.page.locator(locator).evaluate(
         (sel: HTMLSelectElement) => sel.options[sel.selectedIndex]?.text ?? ''
       );
-      if (mode === 'contains'     && !selectedText.includes(expectedText))
+      if (mode === 'contains' && !selectedText.includes(expectedText))
         throw new Error(`"${selectedText}" does not contain "${expectedText}"`);
-      if (mode === 'not contains' &&  selectedText.includes(expectedText))
+      if (mode === 'not contains' && selectedText.includes(expectedText))
         throw new Error(`"${selectedText}" unexpectedly contains "${expectedText}"`);
       pass(METHOD, `"${locator}" selected "${selectedText}" ${mode} "${expectedText}"`);
     } catch (e) { fail(METHOD, `Dropdown "${locator}"`, e); }
@@ -428,8 +433,8 @@ export class PlaywrightHelpers {
       if (elements.length === 0) throw new Error(`No elements found using ${strategy}="${value}"`);
       for (let i = 0; i < elements.length; i++) {
         const isChecked = await elements[i].isChecked();
-        if (state === 'checked'   && !isChecked) throw new Error(`Element [${i}] is NOT checked`);
-        if (state === 'unchecked' &&  isChecked) throw new Error(`Element [${i}] IS checked`);
+        if (state === 'checked' && !isChecked) throw new Error(`Element [${i}] is NOT checked`);
+        if (state === 'unchecked' && isChecked) throw new Error(`Element [${i}] IS checked`);
       }
       pass(METHOD, `All ${elements.length} element(s) are ${state}`);
     } catch (e) { fail(METHOD, `Checked state [${strategy}="${value}"]`, e); }
@@ -493,7 +498,7 @@ export class PlaywrightHelpers {
       if (endPosition < 0 || endPosition > sourceString.length)
         throw new Error(`End position ${endPosition} out of range for "${sourceString}"`);
       const insertAt = sourceString.length - endPosition;
-      const result   = sourceString.substring(0, insertAt) + charToAdd + sourceString.substring(insertAt);
+      const result = sourceString.substring(0, insertAt) + charToAdd + sourceString.substring(insertAt);
       this.vars[varName] = result;
       pass(METHOD, `"${charToAdd}" at end-offset ${endPosition} → "${result}" → vars['${varName}']`);
     } catch (e) { fail(METHOD, `Add "${charToAdd}" at end-pos ${endPosition}`, e); }
@@ -618,7 +623,22 @@ export class PlaywrightHelpers {
       pass(METHOD, `Length of "${sourceString}" is ${count} → vars['${varName}']`);
     } catch (e) { fail(METHOD, `Count chars in "${sourceString}"`, e); }
   }
-
+  // 32. Split string by special character → store specific position in var
+// ==========================================================================
+splitBySpecialChar(sourceString: string, delimiter: string, position: string, varName: string): void {
+  const METHOD = 'splitBySpecialChar';
+  try {
+    const pos = parseInt(position, 10);
+    const parts = sourceString.split(delimiter).map(v => v.trim()).filter(v => v !== '');
+    const value = parts[pos];
+    if (value === undefined) {
+      fail(METHOD, `Position ${pos} does not exist in "${sourceString}" split by "${delimiter}"`, new Error(`Invalid position ${pos}`));
+      return;
+    }
+    this.vars[varName] = value;
+    pass(METHOD, `Split "${sourceString}" by "${delimiter}" → position[${pos}] = "${value}" → vars['${varName}']`);
+  } catch (e) { fail(METHOD, `Split "${sourceString}" by "${delimiter}"`, e); }
+}
   // ==========================================================================
   // 32. Concatenate with special char → store in vars
   // ==========================================================================
@@ -664,12 +684,24 @@ export class PlaywrightHelpers {
     const METHOD = 'removeSpecialChar';
     try {
       const escaped = specialChar.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-      const result  = sourceString.replace(new RegExp(escaped, 'g'), '');
+      const result = sourceString.replace(new RegExp(escaped, 'g'), '');
       this.vars[varName] = result;
       pass(METHOD, `Removed "${specialChar}" from "${sourceString}" → "${result}" → vars['${varName}']`);
     } catch (e) { fail(METHOD, `Remove "${specialChar}" from "${sourceString}"`, e); }
   }
-
+  removeMultipleSpecialChars(specialChars: string[], sourceString: string, varName: string): void {
+    const METHOD = 'removeMultipleSpecialChars';
+    try {
+      let result = sourceString;
+      for (const char of specialChars) {
+        const escaped = char.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        result = result.replace(new RegExp(escaped, 'g'), '');
+      }
+      this.vars[varName] = result;
+      pass(METHOD, `Removed [${specialChars.map(c => `"${c}"`).join(', ')}] from "${sourceString}" → "${result}" → vars['${varName}']`);
+    }
+    catch (e) { fail(METHOD, `Remove multiple chars from "${sourceString}"`, e); }
+  }
   // ==========================================================================
   // 36. Verify NOT contains
   // ==========================================================================
@@ -699,12 +731,91 @@ export class PlaywrightHelpers {
   // ==========================================================================
   // 38. Get current timestamp in given format → store in vars
   // ==========================================================================
-  getCurrentTimestamp(timestampFormat: string, varName: string): void {
+  getCurrentTimestamp(timestampFormat: string, varName: string, timeZone: string = 'America/New_York'): void {
     const METHOD = 'getCurrentTimestamp';
     try {
-      const result = format(new Date(), timestampFormat);
+      const tzDate = new Date(new Date().toLocaleString('en-US', { timeZone }));
+      const result = format(tzDate, timestampFormat);
       this.vars[varName] = result;
-      pass(METHOD, `Current timestamp "${result}" (${timestampFormat}) → vars['${varName}']`);
-    } catch (e) { fail(METHOD, `Get current timestamp with format "${timestampFormat}"`, e); }
+      pass(METHOD, `Current "${timeZone}" timestamp "${result}" (${timestampFormat}) → vars['${varName}']`);
+    } catch (e) { fail(METHOD, `Get current timestamp [${timeZone}] with format "${timestampFormat}"`, e); }
   }
+
+  //39.verifying the mathematic operation
+    MathematicalOperation(a: string | number, operator: string, b: string | number, varName: string): void {
+    const METHOD = 'MathematicalOperation';
+    try {
+      const numA = parseFloat(String(a));
+      const numB = parseFloat(String(b));
+      if (isNaN(numA)) throw new Error(`"${a}" is not a valid number`);
+      if (isNaN(numB)) throw new Error(`"${b}" is not a valid number`);
+      const ops: Record<string, () => number> = {
+        '+': () => numA + numB,
+        '-': () => numA - numB,
+        '*': () => numA * numB,
+        '/': () => { if (numB === 0) throw new Error('Division by zero'); return numA / numB; },
+      };
+      if (!ops[operator]) throw new Error(`Invalid operator: "${operator}"`);
+      const result = ops[operator]();
+      this.vars[varName] = String(result);
+      pass(METHOD, `${numA} ${operator} ${numB} = ${result} → vars['${varName}']`);
+    } catch (e) { fail(METHOD, `${a} ${operator} ${b}`, e); }
+  }
+  //verifying the comparison
+  verifyComparison(value1: string, operator: '>' | '<' | '>=' | '<=' | '==' | '!=', value2: string): void {
+    const METHOD = 'verifyComparison';
+    try {
+      const a = parseFloat(value1);
+      const b = parseFloat(value2);
+      if (isNaN(a)) throw new Error(`"${value1}" is not a valid number`);
+      if (isNaN(b)) throw new Error(`"${value2}" is not a valid number`);
+      const ops: Record<string, boolean> = {
+        '>': a > b,
+        '<': a < b,
+        '>=': a >= b,
+        '<=': a <= b,
+        '==': a == b,
+        '!=': a != b,
+      };
+      if (!ops[operator]) throw new Error(`"${value1}" ${operator} "${value2}" → FAILED`);
+      pass(METHOD, `${a} ${operator} ${b} → PASSED`);
+    } catch (e) { fail(METHOD, `${value1} ${operator} ${value2}`, e); }
+  }
+  //Trim the string and store in vars
+   trimtestdata(value: string, varName: string): void {
+  const trimmed = value.trim();
+  this.vars[varName] = trimmed;
+  console.log(`[trimFrontBack] "${value}" → "${trimmed}" → vars['${varName}']`);
+}
+// 33. Get month name by month number → store in vars
+// ==========================================================================
+getMonthNameByNumber(monthNumber: string, varName: string): void {
+  const METHOD = 'getMonthNameByNumber';
+  try {
+    const monthNames = [
+      'January', 'February', 'March', 'April', 'May', 'June',
+      'July', 'August', 'September', 'October', 'November', 'December'
+    ];
+    const index = parseInt(monthNumber, 10) - 1;
+    if (index < 0 || index > 11) {
+      fail(METHOD, `Invalid month number "${monthNumber}". Must be between 1 and 12.`, new Error(`Invalid month number: ${monthNumber}`));
+      return;
+    }
+    const monthName = monthNames[index];
+    this.vars[varName] = monthName;
+    pass(METHOD, `Month number "${monthNumber}" → "${monthName}" → vars['${varName}']`);
+  } catch (e) { fail(METHOD, `Get month name for month number "${monthNumber}"`, e); }
+}
+// 34. Remove characters from first and last position → store in vars
+// ==========================================================================
+removeCharactersFromPosition(sourceString: string, firstCount: string, lastCount: string, varName: string): void {
+  const METHOD = 'removeCharactersFromPosition';
+  try {
+    const first = parseInt(firstCount, 10) || 0;
+    const last = parseInt(lastCount, 10) || 0;
+    const result = sourceString.substring(first, last === 0 ? undefined : sourceString.length - last);
+    this.vars[varName] = result;
+    pass(METHOD, `Removed ${first} from first and ${last} from last of "${sourceString}" → "${result}" → vars['${varName}']`);
+  } catch (e) { fail(METHOD, `Remove characters from "${sourceString}"`, e); }
+}
 }

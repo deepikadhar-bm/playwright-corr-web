@@ -7,6 +7,7 @@ import { CommitmentListPage } from '../../../src/pages/correspondant/commitment-
 import { CorrespondentPortalPage } from '../../../src/pages/correspondant/correspondent-portal';
 import { PriceOfferedPage } from '../../../src/pages/correspondant/price-offered';
 import { SpinnerPage } from '../../../src/pages/correspondant/spinner';
+import { AddonHelpers } from '@helpers/AddonHelpers';
 
 test.describe('Commitment List - TS_1', () => {
   let vars: Record<string, string> = {};
@@ -15,6 +16,7 @@ test.describe('Commitment List - TS_1', () => {
   let correspondentPortalPage: CorrespondentPortalPage;
   let priceOfferedPage: PriceOfferedPage;
   let spinnerPage: SpinnerPage;
+  let Methods: AddonHelpers;
 
   test.beforeEach(async ({ page }) => {
     vars = {};
@@ -23,6 +25,7 @@ test.describe('Commitment List - TS_1', () => {
     correspondentPortalPage = new CorrespondentPortalPage(page);
     priceOfferedPage = new PriceOfferedPage(page);
     spinnerPage = new SpinnerPage(page);
+    Methods = new AddonHelpers(page, vars);
   });
 
   test('REG_TS21_TC06_Perform cancel filter action in closed list for one of the filter applied, and then verify that the filter is cleared in both the closed and open list sections', async ({ page }) => {
@@ -38,53 +41,80 @@ test.describe('Commitment List - TS_1', () => {
     await correspondentPortalPage.Last_One_Month_Button.click();
     await correspondentPortalPage.Select_CompanyCCode_Dropdown1.waitFor({ state: 'visible' });
     await correspondentPortalPage.Select_CompanyCCode_Dropdown1.click();
-    await priceOfferedPage.Check_Company.check();
+    await priceOfferedPage.Check_Company.first().check();
     await correspondentPortalPage.Apply_Selected.waitFor({ state: 'visible' });
+    await expect(correspondentPortalPage.Apply_Selected).toBeEnabled
     await correspondentPortalPage.Apply_Selected.click();
     await applyFiltersButtonPage.Apply_Filters_Button.waitFor({ state: 'visible' });
     await applyFiltersButtonPage.Apply_Filters_Button.click();
     await priceOfferedPage.Date_Filter_ChipPrice_Offered_Page.waitFor({ state: 'visible' });
     await expect(priceOfferedPage.Date_Filter_ChipPrice_Offered_Page).toBeVisible();
     await expect(priceOfferedPage.Company_Filter_ChipPrice_Offered_Page).toBeVisible();
-    if (true) /* Verify that the current page displays text No result */ {
+
+    const noResultsClosedList = page.getByText('No result', { exact: true });
+    await page.waitForTimeout(2000);
+
+    if (await noResultsClosedList.isVisible()) {
       vars["RecordsCountWithFilterClosedList"] = "0";
     } else {
       await priceOfferedPage.Select_all_for_Checkbox.check();
+      await expect(correspondentPortalPage.Export_Selected_1_Button).toBeEnabled();
       vars["RecordsCountWithFilterClosedList"] = await commitmentListPage.Export_Selected.textContent() || '';
-      vars["RecordsCountWithFilterClosedList"] = String(vars["RecordsCountWithFilterClosedList"]).replace(/\(\)/g, '');
-      vars["RecordsCountWithFilterClosedList"] = String(vars["RecordsCountWithFilterClosedList"]).trim();
+      Methods.removeMultipleSpecialChars(['(', ')', ' '], vars["RecordsCountWithFilterClosedList"], "RecordsCountWithFilterClosedList");
+      console.log("RecordsCountWithFilterClosedList:", vars["RecordsCountWithFilterClosedList"]);
     }
+
     await commitmentListPage.Open_List_Tab.click();
     await priceOfferedPage.Date_Filter_ChipPrice_Offered_Page.waitFor({ state: 'visible' });
     await expect(priceOfferedPage.Date_Filter_ChipPrice_Offered_Page).toBeVisible();
     await expect(priceOfferedPage.Company_Filter_ChipPrice_Offered_Page).toBeVisible();
-    if (true) /* Verify that the current page displays text No result */ {
+
+    const noResultsOpenList = page.getByText('No result', { exact: true });
+    await page.waitForTimeout(2000);
+
+    if (await noResultsOpenList.isVisible()) {
       vars["RecordsCountWithFilterOpenList"] = "0";
     } else {
-      await priceOfferedPage.Select_all_for_Checkbox.check();
+      if (!(await priceOfferedPage.Select_all_for_Checkbox.isChecked())) {
+        await priceOfferedPage.Select_all_for_Checkbox.check();
+      }
+      await expect(correspondentPortalPage.Export_Selected_1_Button).toBeEnabled();
       vars["RecordsCountWithFilterOpenList"] = await commitmentListPage.Export_Selected.textContent() || '';
-      vars["RecordsCountWithFilterOpenList"] = String(vars["RecordsCountWithFilterOpenList"]).replace(/\(\)/g, '');
-      vars["RecordsCountWithFilterOpenList"] = String(vars["RecordsCountWithFilterOpenList"]).trim();
+      Methods.removeMultipleSpecialChars(['(', ')', ' '], vars["RecordsCountWithFilterOpenList"], "RecordsCountWithFilterOpenList");
+      console.log("RecordsCountWithFilterOpenList:", vars["RecordsCountWithFilterOpenList"]);
     }
+
     await commitmentListPage.Closed_List_Tab.click();
     await priceOfferedPage.Remove_Date_FilterCross_Symbol.waitFor({ state: 'visible' });
     await priceOfferedPage.Remove_Date_FilterCross_Symbol.click();
     await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-    await expect(priceOfferedPage.Date_Filter_ChipPrice_Offered_Page).toBeVisible();
+    await expect(priceOfferedPage.Date_Filter_ChipPrice_Offered_Page).not.toBeVisible();
     await expect(priceOfferedPage.Company_Filter_ChipPrice_Offered_Page).toBeVisible();
-    await priceOfferedPage.Select_all_for_Checkbox.check();
+    // await priceOfferedPage.Select_all_for_Checkbox.check();
+    if (!(await priceOfferedPage.Select_all_for_Checkbox.isChecked())) {
+      await priceOfferedPage.Select_all_for_Checkbox.check();
+    }
+    await page.waitForTimeout(10000);
+    await expect(correspondentPortalPage.Export_Selected_1_Button).toBeEnabled();
     vars["RecordsCountWithoutFilterClosedList"] = await commitmentListPage.Export_Selected.textContent() || '';
-    vars["RecordsCountWithoutFilterClosedList"] = String(vars["RecordsCountWithoutFilterClosedList"]).replace(/\(\)/g, '');
-    vars["RecordsCountWithoutFilterClosedList"] = String(vars["RecordsCountWithoutFilterClosedList"]).trim();
-    expect(String(vars["RecordsCountWithFilterClosedList"])).toBe(vars["RecordsCountWithoutFilterClosedList"]);
+    Methods.removeMultipleSpecialChars(['(', ')', ' '], vars["RecordsCountWithoutFilterClosedList"], "RecordsCountWithoutFilterClosedList");
+    console.log("RecordsCountWithoutFilterClosedList:", vars["RecordsCountWithoutFilterClosedList"]);
+    Methods.verifyComparison(vars["RecordsCountWithFilterClosedList"], "<", vars["RecordsCountWithoutFilterClosedList"]);
+    console.log("verification done in closed list");
+
     await commitmentListPage.Open_List_Tab.click();
     await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-    await expect(priceOfferedPage.Date_Filter_ChipPrice_Offered_Page).toBeVisible();
+    await expect(priceOfferedPage.Date_Filter_ChipPrice_Offered_Page).not.toBeVisible();
     await expect(priceOfferedPage.Company_Filter_ChipPrice_Offered_Page).toBeVisible();
-    await priceOfferedPage.Select_all_for_Checkbox.check();
+    // await priceOfferedPage.Select_all_for_Checkbox.check();
+    if (!(await priceOfferedPage.Select_all_for_Checkbox.isChecked())) {
+      await priceOfferedPage.Select_all_for_Checkbox.check();
+    }
+    await page.waitForTimeout(10000);
+    await expect(correspondentPortalPage.Export_Selected_1_Button).toBeEnabled();
     vars["RecordsCountWithoutFilterOpenList"] = await commitmentListPage.Export_Selected.textContent() || '';
-    vars["RecordsCountWithoutFilterOpenList"] = String(vars["RecordsCountWithoutFilterOpenList"]).replace(/\(\)/g, '');
-    vars["RecordsCountWithoutFilterOpenList"] = String(vars["RecordsCountWithoutFilterOpenList"]).trim();
-    expect(String(vars["RecordsCountWithFilterOpenList"])).toBe(vars["RecordsCountWithoutFilterOpenList"]);
+    console.log("RecordsCountWithoutFilterOpenList:", vars["RecordsCountWithoutFilterOpenList"]);
+    Methods.removeMultipleSpecialChars(['(', ')', ' '], vars["RecordsCountWithoutFilterOpenList"], "RecordsCountWithoutFilterOpenList");
+    Methods.verifyComparison(vars["RecordsCountWithFilterOpenList"], "<", vars["RecordsCountWithoutFilterOpenList"]);
   });
 });
