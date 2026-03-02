@@ -29,7 +29,7 @@ test.describe('Commitment List - TS_2', () => {
   });
 
   test('REG_TS01_TC01_Verify that once when the user performs commit action from the price offered module, then a newly created commitment will be displayed', async ({ page }) => {
-
+   
     vars["CurrentEstDate"] = (() => {
       const d = new Date();
       const opts: Intl.DateTimeFormatOptions = { timeZone: "UTC-05:00" };
