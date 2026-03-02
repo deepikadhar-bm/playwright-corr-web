@@ -5,12 +5,12 @@ import { Page, Locator } from '@playwright/test';
  * Elements: 219
  */
 export class CommitmentListPage {
-  constructor(private page: Page) {}
+  constructor(private page: Page) { }
 
   get AllFiles_File_Name(): Locator {
     return this.page.locator("(//td[@data-title=\"File Name\"])[last()]");
   }
-  get Lock_Icon(): Locator {  
+  get Lock_Icon(): Locator {
     return this.page.locator("//span[contains(@class,'lock-icon')]");
   }
 
@@ -466,8 +466,8 @@ export class CommitmentListPage {
     return this.page.locator("(//th//div[@role=\"button\"])[$|count|]");
   }
 
-  get Individual_Commitment_IDList_Screen(): Locator {
-    return this.page.locator("(//td[@data-title=\"Comm. ID\"]//a)[$|count|]");
+  Individual_Commitment_IDList_Screen(count :string): Locator {
+    return this.page.locator(`(//td[@data-title=\"Comm. ID\"]//a)[${count}]`);
   }
 
   get Individual_Corr_Loan_Num(): Locator {
@@ -495,8 +495,8 @@ export class CommitmentListPage {
     return this.page.locator("//*[contains(@aria-label,\"Select loan\")]/../..//td[@data-title=\"Mark Adj\"]");
   }
 
-    IndividualSetPageSize(count: string ): Locator {
-    return this.page.locator(`(//button[contains(@aria-label, \"Set page size to\")])[${count}]`);  
+  IndividualSetPageSize(count: string): Locator {
+    return this.page.locator(`(//button[contains(@aria-label, \"Set page size to\")])[${count}]`);
   }
 
   get Interest_RateCommitment_List(): Locator {
@@ -619,8 +619,8 @@ export class CommitmentListPage {
     return this.page.locator("//button[text()=\"$|CommittedCorrLoan|\"]//ancestor::tr//td[@data-title=\"Ref Sec Prod.\"]");
   }
 
-  get Req_CarrLoan_Num(): Locator {
-    return this.page.locator("//h5[text()='$|CommitID|']/ancestor::div[@id=\"accordionHeader\"]/following-sibling::div//tbody//tr//td[@data-title=\"Corr. Loan#\"]//button[contains(text(),'$|CorrespondentLoanNumber|') or contains(text(),\"tes\")]");
+  Req_CarrLoan_Num(CommitID: string, CorrespondentLoanNumber: string): Locator {
+    return this.page.locator(`//h5[text()='${CommitID}']/ancestor::div[@id=\"accordionHeader\"]/following-sibling::div//tbody//tr//td[@data-title=\"Corr. Loan#\"]//button[contains(text(),'${CorrespondentLoanNumber}') or contains(text(),\"tes\")]`);
   }
 
   get Req_Committed_First_Loan_NumTotal_Committed_Loans(): Locator {
@@ -635,8 +635,8 @@ export class CommitmentListPage {
     return this.page.locator("//tbody//input[@type=\"checkbox\"]");
   }
 
-  get Required_Chase_Loan_Num(): Locator {
-    return this.page.locator("//div[@id=\"accordionHeader\"]//div[text()=\"Commit. ID\"]//following-sibling::h5[text()=\"$|CommitID|\"]//following::div[@class=\"accordion-body\"]//td[@data-title=\"Chase Loan#\"]//div[contains(text(),\"$|ChaseLoanNumber|\")]\n");
+  Required_Chase_Loan_Num(CommitID: string, chaseLoanNumber: string): Locator {
+    return this.page.locator(`//div[@id="accordionHeader"]//div[text()="Commit. ID"]//following-sibling::h5[text()="${CommitID}"]//following::div[@class="accordion-body"]//td[@data-title="Chase Loan#"]//div[contains(text(),"${chaseLoanNumber}")]`);
   }
 
   get Required_Record(): Locator {
