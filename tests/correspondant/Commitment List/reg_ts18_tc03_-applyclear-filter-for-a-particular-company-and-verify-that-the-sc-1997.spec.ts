@@ -104,9 +104,6 @@ test.describe('Commitment List - TS_1', () => {
     vars["Ccount"] = "1";
     while (parseFloat(String(vars["Ccount"])) <= parseFloat(String("2"))) {
       await priceOfferedPage.Price_Offered_Company_Name_Column_Data.first().waitFor({ state: 'visible' });
-      // for (let i = 0; i < await priceOfferedPage.Price_Offered_Company_Name_Column_Data.count(); i++) {
-      //   await expect(priceOfferedPage.Price_Offered_Company_Name_Column_Data.nth(i)).toHaveText(String(vars["SelectedCompanyName"]));
-      // }
       await Methods.verifyMultipleElementsHaveSameText(priceOfferedPage.Price_Offered_Company_Name_Column_Data, vars["SelectedCompanyName"]);
       const isDisabled = await NextButton.getAttribute('aria-disabled');
       if (isDisabled === 'false') {
@@ -133,9 +130,6 @@ test.describe('Commitment List - TS_1', () => {
     const NextButton1 = correspondentPortalPage.Go_to_Next_Page_Button;
     vars["TotalCompanyCountCustomerPermission"] = "0";
     vars["PageCount"] = await correspondentPortalPage.Pagination_Count.textContent() || '';
-    // vars["PageCount"] = String(vars["PageCount"]).substring(10);
-    // Methods.removeCharactersFromPosition(PageCount)
-    // Methods.removeCharactersFromPosition(vars["PageCount"], 'first', varName: string)
     Methods.removeCharactersFromPosition(vars["PageCount"], "0", "10", "PageCount");
 
     while (parseFloat(String(vars["Count"])) <= parseFloat(String(vars["PageCount"]))) {
@@ -148,8 +142,6 @@ test.describe('Commitment List - TS_1', () => {
       }
       Methods.MathematicalOperation(vars["Count"], '+', 1, "Count");
     }
-    // expect(String(vars["TotalCompanyCountCustomerPermission"])).toBe(vars["TotalCompanyCountInFilter"]);
-    // expect(String(vars["TotalCompanyCountCustomerPermission"])).toBe(vars["CountOfItemsSelected"]);
     expect(Methods.verifyComparison(vars["TotalCompanyCountCustomerPermission"], "==", vars["CountOfItemsSelected"]));
     expect(Methods.verifyComparison(vars["TotalCompanyCountCustomerPermission"], "==", vars["TotalCompanyCountInFilter"]));
     

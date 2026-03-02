@@ -39,6 +39,7 @@ test.describe('Commitment List - TS_1', () => {
     await correspondentPortalPage.Select_CompanyCCode_Dropdown1.waitFor({ state: 'visible' });
     await correspondentPortalPage.Select_CompanyCCode_Dropdown1.click();
     await priceOfferedPage.Check_Company.first().check();
+    await expect(priceOfferedPage.Check_Company.first()).toBeChecked();
     await correspondentPortalPage.Apply_Selected.waitFor({ state: 'visible' });
     await correspondentPortalPage.Apply_Selected.click();
     await applyFiltersButtonPage.Apply_Filters_Button.waitFor({ state: 'visible' });
@@ -83,8 +84,8 @@ test.describe('Commitment List - TS_1', () => {
     await expect(priceOfferedPage.Company_Filter_ChipPrice_Offered_Page).not.toBeVisible();
     await page.waitForTimeout(2000)
     if (!(await priceOfferedPage.Select_all_for_Checkbox.isChecked())) {
-        await priceOfferedPage.Select_all_for_Checkbox.check();
-      }
+      await priceOfferedPage.Select_all_for_Checkbox.check();
+    }
     vars["RecordsCountWithoutFilterOpenList"] = await commitmentListPage.Export_Selected.textContent() || '';
     Methods.removeMultipleSpecialChars(['(', ')', ' '], vars["RecordsCountWithoutFilterOpenList"], "RecordsCountWithoutFilterOpenList");
     Methods.verifyComparison(vars["RecordsCountWithFilterOpenList"], "<", vars["RecordsCountWithoutFilterOpenList"]);
@@ -95,8 +96,8 @@ test.describe('Commitment List - TS_1', () => {
     await expect(priceOfferedPage.Company_Filter_ChipPrice_Offered_Page).not.toBeVisible();
     await page.waitForTimeout(2000)
     if (!(await priceOfferedPage.Select_all_for_Checkbox.isChecked())) {
-        await priceOfferedPage.Select_all_for_Checkbox.check();
-      }
+      await priceOfferedPage.Select_all_for_Checkbox.check();
+    }
     vars["RecordsCountWithoutFilterClosedList"] = await commitmentListPage.Export_Selected.textContent() || '';
     Methods.removeMultipleSpecialChars(['(', ')', ' '], vars["RecordsCountWithoutFilterClosedList"], "RecordsCountWithoutFilterClosedList");
     Methods.trimtestdata(vars["RecordsCountWithoutFilterClosedList"], "RecordsCountWithoutFilterClosedList");
