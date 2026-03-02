@@ -7,8 +7,8 @@ import { expect } from '@playwright/test';
 import path from 'path';
 import * as excelHelper from '../excel-helpers';
 import { CorrPortalPage } from '../../pages/correspondant/CorrPortalPage';
-import { PlaywrightHelpers } from '../../PlaywrightHelpers';
-
+// import { PlaywrightHelpers } from '../../PlaywrightHelpers';
+import { AddonHelpers } from '../../../src/helpers/AddonHelpers';
 /**
  * Step Group: Login to CORR Portal
  * ID: 773
@@ -4906,25 +4906,38 @@ export async function stepGroup_Verifying_the_Committed_Loan_DetailsPrice_Offere
  */
 export async function stepGroup_Data_Verification_After_Applying_FiltersCommitment_List(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
-  if (true) /* Element Go to Next Page Button is enabled */ {
-    vars["CountofPages"] = "2";
-  } else {
-    vars["CountofPages"] = "1";
-  }
+  const Methods = new AddonHelpers(page, vars);
+
+  const NextButton = CorrPortalElem.Go_to_Next_Page_Button;
+  const nextButtonCount = await NextButton.count();
   vars["count"] = "1";
-  while (parseFloat(String(vars["count"])) <= parseFloat(String(vars["CountofPages"]))) {
-    await CorrPortalElem.Committed_Date.waitFor({ state: 'visible' });
-    for (let i = 0; i < await CorrPortalElem.Committed_Date.count(); i++) {
-      await expect(CorrPortalElem.Committed_Date.nth(i)).toHaveText(String(new Date().toLocaleDateString('en-US') /* format: MM/dd/yyyy */));
+  vars["CountofPages"] = "1";
+
+  if (nextButtonCount > 0) {
+    const isDisabled = await NextButton.getAttribute('aria-disabled');
+    console.log("isDisabled:", isDisabled);
+    if (isDisabled === 'false') {
+      vars["CountofPages"] = "2";
     }
-    for (let i = 0; i < await CorrPortalElem.BidRequest_Company_Column_Data.count(); i++) {
-      await expect(CorrPortalElem.BidRequest_Company_Column_Data.nth(i)).toHaveText(String(vars["SelectedCompanyName"]));
+  }
+
+  const noResults = page.getByText('No result', { exact: true });
+  await page.waitForTimeout(2000);
+
+  if (await noResults.isVisible()) {
+    console.log('No results present on current page');
+  } else {
+    while (parseFloat(String(vars["count"])) <= parseFloat(String(vars["CountofPages"]))) {
+      await CorrPortalElem.Committed_Date.first().waitFor({ state: 'visible' });
+      await Methods.verifyMultipleElementsHaveSameText(CorrPortalElem.Committed_Date, vars["ExpectedDate"]);
+      await Methods.verifyMultipleElementsHaveSameText(CorrPortalElem.BidRequest_Company_Column_Data, vars["SelectedCompanyName"].trim());
+      const isNextDisabled = nextButtonCount > 0 ? await NextButton.getAttribute('aria-disabled') : 'true';
+      if (isNextDisabled === 'false') {
+        await CorrPortalElem.Go_to_Next_Page_Button.click();
+        await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
+      }
+      Methods.MathematicalOperation(vars["count"], '+', 1, "count");
     }
-    if (true) /* Element Go to Next Page Button is enabled */ {
-      await CorrPortalElem.Go_to_Next_Page_Button.click();
-      await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
-    }
-    vars["count"] = (parseFloat(String("1")) + parseFloat(String(vars["count"]))).toFixed(0);
   }
 }
 
@@ -4935,18 +4948,16 @@ export async function stepGroup_Data_Verification_After_Applying_FiltersCommitme
  */
 export async function stepGroup_Selecting_Date_from_the_filters_by_fetching_the_first_comm_d(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
-  vars["FirstCommDate"] = await CorrPortalElem.First_Comm_Date_Commiment_list.textContent() || '';
-  vars["FirstCommDate"] = String(vars["FirstCommDate"]).trim();
+  // let Methods: PlaywrightHelpers;
+  const Methods = new AddonHelpers(page, vars);
+  vars["FirstCommDate"] = await CorrPortalElem.First_Comm_Date_Commiment_list.first().textContent() || '';
+  Methods.trimtestdata(vars["FirstCommDate"], "FirstCommDate");
   vars["ExpectedCommDate"] = vars["FirstCommDate"];
-  vars["MonthCommDate"] = String(vars["FirstCommDate"]).split("/")["1"] || '';
-  vars["CommDate"] = String(vars["FirstCommDate"]).split("/")["2"] || '';
-  vars["YearCommDate"] = String(vars["FirstCommDate"]).split("/")["3"] || '';
-  vars[""] = new Date(2000, parseInt(String("MonthName")) - 1, 1).toLocaleString('en-US', { month: 'long' });
-  vars["DateFormatFilter"] = (() => {
-    const d = new Date(String(vars["FirstCommDate"]));
-    const _p = { yyyy: String(d.getFullYear()), yy: String(d.getFullYear()).slice(-2), MM: String(d.getMonth()+1).padStart(2,'0'), M: String(d.getMonth()+1), dd: String(d.getDate()).padStart(2,'0'), d: String(d.getDate()), HH: String(d.getHours()).padStart(2,'0'), hh: String(d.getHours()%12||12).toString().padStart(2,'0'), h: String(d.getHours()%12||12), mm: String(d.getMinutes()).padStart(2,'0'), ss: String(d.getSeconds()).padStart(2,'0'), a: d.getHours() >= 12 ? 'PM' : 'AM' };
-    return "d-M-yyyy".replace('yyyy',_p.yyyy).replace('yy',_p.yy).replace('MM',_p.MM).replace('dd',_p.dd).replace('HH',_p.HH).replace('hh',_p.hh).replace('mm',_p.mm).replace('ss',_p.ss).replace(/a/g,_p.a).replace(/M(?!M)/g,_p.M).replace(/d(?!d)/g,_p.d).replace(/h(?!h)/g,_p.h);
-  })();
+  Methods.splitBySpecialChar(vars["FirstCommDate"], "/", "0", "MonthCommDate");
+  Methods.splitBySpecialChar(vars["FirstCommDate"], "/", "1", "CommDate");
+  Methods.splitBySpecialChar(vars["FirstCommDate"], "/", "2", "YearCommDate");
+  Methods.convertDateFormat(vars["FirstCommDate"], 'MM/dd/yyyy', 'd-M-yyyy', 'DateFormatFilter');
+  Methods.getMonthNameByNumber(vars["FirstCommDate"], "MonthName");
   await CorrPortalElem.Filter_Dropdown.click();
   await CorrPortalElem.Select_Date_Range_Dropdown.click();
   await CorrPortalElem.Date_Range_DropdownFilter.click();
@@ -4954,7 +4965,7 @@ export async function stepGroup_Selecting_Date_from_the_filters_by_fetching_the_
   await CorrPortalElem.Select_month_Dropdownfilters.selectOption({ label: vars["MonthName"] });
   await CorrPortalElem.Select_year_Dropdownfilters.click();
   await CorrPortalElem.Select_year_Dropdownfilters.selectOption({ label: vars["YearCommDate"] });
-  await CorrPortalElem.Required_Date_Filters.click();
+  await CorrPortalElem.Required_Date_Filters(vars["DateFormatFilter"]).click();
   await CorrPortalElem.Apply_Button.waitFor({ state: 'visible' });
   await CorrPortalElem.Apply_Button.click();
   // [DISABLED] Click on Apply Filters Button

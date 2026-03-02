@@ -1136,7 +1136,7 @@ export class CorrespondentPortalPage {
   }
 
   get GeneralSettings_Menu(): Locator {
-    return this.page.locator("//span[text()[normalize-space() = \"General Settings\"]]");
+    return this.page.locator("//a[contains(@class,'show')]//following-sibling::ul[contains(@class,'dropdown-menu')]//a[@aria-label='General Settings']");
   }
 
   get Get_Price_Button(): Locator {
