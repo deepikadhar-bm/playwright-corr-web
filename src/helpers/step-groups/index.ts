@@ -8,7 +8,7 @@ import path from 'path';
 import * as excelHelper from '../excel-helpers';
 import { CorrPortalPage } from '../../pages/correspondant/CorrPortalPage';
 // import { PlaywrightHelpers } from '../../PlaywrightHelpers';
-import { PlaywrightHelpers } from '../../../src/helpers/AddonHelpers';
+import { AddonHelpers } from '../../../src/helpers/AddonHelpers';
 /**
  * Step Group: Login to CORR Portal
  * ID: 773
@@ -4906,7 +4906,7 @@ export async function stepGroup_Verifying_the_Committed_Loan_DetailsPrice_Offere
  */
 export async function stepGroup_Data_Verification_After_Applying_FiltersCommitment_List(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
-  const Methods = new PlaywrightHelpers(page, vars);
+  const Methods = new AddonHelpers(page, vars);
 
   const NextButton = CorrPortalElem.Go_to_Next_Page_Button;
   const nextButtonCount = await NextButton.count();
@@ -4949,7 +4949,7 @@ export async function stepGroup_Data_Verification_After_Applying_FiltersCommitme
 export async function stepGroup_Selecting_Date_from_the_filters_by_fetching_the_first_comm_d(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
   // let Methods: PlaywrightHelpers;
-  const Methods = new PlaywrightHelpers(page, vars);
+  const Methods = new AddonHelpers(page, vars);
   vars["FirstCommDate"] = await CorrPortalElem.First_Comm_Date_Commiment_list.first().textContent() || '';
   Methods.trimtestdata(vars["FirstCommDate"], "FirstCommDate");
   vars["ExpectedCommDate"] = vars["FirstCommDate"];
