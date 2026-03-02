@@ -7,7 +7,7 @@ import { CommitmentListPage } from '../../../src/pages/correspondant/commitment-
 import { CorrespondentPortalPage } from '../../../src/pages/correspondant/correspondent-portal';
 import { PriceOfferedPage } from '../../../src/pages/correspondant/price-offered';
 import { SpinnerPage } from '../../../src/pages/correspondant/spinner';
-import { PlaywrightHelpers } from '@helpers/AddonHelpers';
+import { AddonHelpers } from '@helpers/AddonHelpers';
 import { testDataManager } from 'testdata/TestDataManager';
 
 test.describe('Commitment List - TS_1', () => {
@@ -17,7 +17,7 @@ test.describe('Commitment List - TS_1', () => {
   let correspondentPortalPage: CorrespondentPortalPage;
   let priceOfferedPage: PriceOfferedPage;
   let spinnerPage: SpinnerPage;
-  let Methods: PlaywrightHelpers;
+  let Methods: AddonHelpers;
 
   test.beforeEach(async ({ page }) => {
     vars = {};
@@ -26,7 +26,7 @@ test.describe('Commitment List - TS_1', () => {
     correspondentPortalPage = new CorrespondentPortalPage(page);
     priceOfferedPage = new PriceOfferedPage(page);
     spinnerPage = new SpinnerPage(page);
-    Methods = new PlaywrightHelpers(page, vars);
+    Methods = new AddonHelpers(page, vars);
   });
   const profileName = 'Price Offered';
   const profile = testDataManager.getProfileByName(profileName);
@@ -126,9 +126,7 @@ test.describe('Commitment List - TS_1', () => {
     } else {
       while (parseFloat(String(vars["count"])) <= parseFloat(String(vars["CountofPages"]))) {
         await commitmentListPage.Committed_Date.waitFor({ state: 'visible' });
-        // for (let i = 0; i < await commitmentListPage.Committed_Date.count(); i++) {
-        //   await expect(commitmentListPage.Committed_Date.nth(i)).toHaveText(String(vars["ExpectedCommDate"]));
-        // }
+    
         await Methods.verifyMultipleElementsHaveSameText(commitmentListPage.Committed_Date, vars["ExpectedCommDate"]);
         // for (let i = 0; i < await priceOfferedPage.Price_Offered_Company_Name_Column_Data.count(); i++) {
         //   await expect(priceOfferedPage.Price_Offered_Company_Name_Column_Data.nth(i)).toHaveText(String(vars["SelectedCompanyName"]));

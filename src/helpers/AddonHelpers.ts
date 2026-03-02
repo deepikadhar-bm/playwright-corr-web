@@ -59,17 +59,25 @@ export class AddonHelpers {
   }
 
   // ── Locator Builder ────────────────────────────────────────────────────────
-  private buildLocator(strategy: string, value: string): Locator {
-    switch (strategy.toLowerCase()) {
-      case 'id': return this.page.locator(`#${value}`);
-      case 'name': return this.page.locator(`[name="${value}"]`);
-      case 'tagname': return this.page.locator(value);
-      case 'classname': return this.page.locator(`.${value}`);
-      case 'linktext': return this.page.getByRole('link', { name: value, exact: true });
-      case 'partiallinktext': return this.page.getByRole('link', { name: value });
-      case 'cssselector': return this.page.locator(value);
-      case 'xpath': return this.page.locator(`xpath=${value}`);
-      default: throw new Error(`Unknown locator strategy: "${strategy}"`);
+  private buildLocator(strategyOrLocator: string | Locator, value?: string): Locator {
+    // If a Locator is passed directly (from POM), return it as-is
+    if (typeof strategyOrLocator !== 'string') return strategyOrLocator as Locator;
+
+    const val = value as string;
+    switch (strategyOrLocator.toLowerCase()) {
+      case 'id':              return this.page.locator(`#${val}`);
+      case 'name':            return this.page.locator(`[name="${val}"]`);
+      case 'tagname':         return this.page.locator(`${val}`);
+      case 'classname':       return this.page.locator(`.${val}`);
+      case 'linktext':        return this.page.getByRole('link', { name: val, exact: true });
+      case 'partiallinktext': return this.page.getByRole('link', { name: val });
+      case 'cssselector':     return this.page.locator(val);
+      case 'xpath':           return this.page.locator(`xpath=${val}`);
+      case 'text':            return this.page.getByText(val);
+      case 'testid':          return this.page.getByTestId(val);
+      case 'placeholder':     return this.page.getByPlaceholder(val);
+      case 'label':           return this.page.getByLabel(val);
+      default: throw new Error(`Unknown locator strategy: "${strategyOrLocator}"`);
     }
   }
 
@@ -101,12 +109,12 @@ export class AddonHelpers {
   // 2. Verify numeric ascending/descending order
   // ==========================================================================
   async verifyNumericOrder(
-    strategy: string, value: string, order: 'ascending' | 'descending'
+    strategyOrLocator: string | Locator, value: string | undefined, order: 'ascending' | 'descending'
   ): Promise<void> {
     const METHOD = 'verifyNumericOrder';
     try {
-      const elements = await this.buildLocator(strategy, value).all();
-      if (elements.length === 0) throw new Error(`No elements found using ${strategy}="${value}"`);
+      const elements = await this.buildLocator(strategyOrLocator, value).all();
+      if (elements.length === 0) throw new Error(`No elements found`);
       const numbers: number[] = [];
       for (const el of elements) {
         const text = (await el.textContent() ?? '').replace(/,/g, '').trim();
@@ -121,19 +129,19 @@ export class AddonHelpers {
           throw new Error(`Order broken at [${i}]: ${numbers[i - 1]} < ${numbers[i]}`);
       }
       pass(METHOD, `${numbers.length} values in ${order} order: [${numbers.join(', ')}]`);
-    } catch (e) { fail(METHOD, `Numeric ${order} order [${strategy}="${value}"]`, e); }
+    } catch (e) { fail(METHOD, `Numeric ${order} order`, e); }
   }
 
   // ==========================================================================
   // 3. Verify string ascending/descending order
   // ==========================================================================
   async verifyStringOrder(
-    strategy: string, value: string, order: 'ascending' | 'descending'
+    strategyOrLocator: string | Locator, value: string | undefined, order: 'ascending' | 'descending'
   ): Promise<void> {
     const METHOD = 'verifyStringOrder';
     try {
-      const elements = await this.buildLocator(strategy, value).all();
-      if (elements.length === 0) throw new Error(`No elements found using ${strategy}="${value}"`);
+      const elements = await this.buildLocator(strategyOrLocator, value).all();
+      if (elements.length === 0) throw new Error(`No elements found`);
       const texts: string[] = [];
       for (const el of elements) texts.push((await el.textContent() ?? '').trim());
       for (let i = 1; i < texts.length; i++) {
@@ -144,7 +152,7 @@ export class AddonHelpers {
           throw new Error(`Order broken at [${i}]: "${texts[i - 1]}" < "${texts[i]}"`);
       }
       pass(METHOD, `${texts.length} strings in ${order} order`);
-    } catch (e) { fail(METHOD, `String ${order} order [${strategy}="${value}"]`, e); }
+    } catch (e) { fail(METHOD, `String ${order} order`, e); }
   }
 
   // ==========================================================================
@@ -167,57 +175,57 @@ export class AddonHelpers {
   // 5. Verify element text contains (case-insensitive)
   // ==========================================================================
   async verifyElementTextContainsCaseInsensitive(
-    strategy: string, value: string, testData: string
+    strategyOrLocator: string | Locator, value: string | undefined, testData: string
   ): Promise<void> {
     const METHOD = 'verifyElementTextContainsCaseInsensitive';
     try {
-      const actual = (await this.buildLocator(strategy, value).textContent() ?? '').trim();
+      const actual = (await this.buildLocator(strategyOrLocator, value).textContent() ?? '').trim();
       if (!actual.toLowerCase().includes(testData.toLowerCase()))
         throw new Error(`"${actual}" does not contain "${testData}"`);
       pass(METHOD, `"${actual}" contains "${testData}" (case-insensitive)`);
-    } catch (e) { fail(METHOD, `[${strategy}="${value}"] does not contain "${testData}"`, e); }
+    } catch (e) { fail(METHOD, `Does not contain "${testData}"`, e); }
   }
 
   // ==========================================================================
   // 6. Verify attribute contains (case-insensitive)
   // ==========================================================================
   async verifyAttributeContainsCaseInsensitive(
-    strategy: string, value: string, attributeName: string, testData: string
+    strategyOrLocator: string | Locator, value: string | undefined, attributeName: string, testData: string
   ): Promise<void> {
     const METHOD = 'verifyAttributeContainsCaseInsensitive';
     try {
-      const attrValue = (await this.buildLocator(strategy, value).getAttribute(attributeName) ?? '');
+      const attrValue = (await this.buildLocator(strategyOrLocator, value).getAttribute(attributeName) ?? '');
       if (!attrValue.toLowerCase().includes(testData.toLowerCase()))
         throw new Error(`"${attributeName}"="${attrValue}" does not contain "${testData}"`);
       pass(METHOD, `"${attributeName}"="${attrValue}" contains "${testData}" (case-insensitive)`);
-    } catch (e) { fail(METHOD, `[${strategy}="${value}"] attr "${attributeName}"`, e); }
+    } catch (e) { fail(METHOD, `attr "${attributeName}" does not contain "${testData}"`, e); }
   }
 
   // ==========================================================================
   // 7. Verify input value contains (case-insensitive)
   // ==========================================================================
   async verifyElementValueContainsCaseInsensitive(
-    strategy: string, value: string, testData: string
+    strategyOrLocator: string | Locator, value: string | undefined, testData: string
   ): Promise<void> {
     const METHOD = 'verifyElementValueContainsCaseInsensitive';
     try {
-      const inputValue = await this.buildLocator(strategy, value).inputValue();
+      const inputValue = await this.buildLocator(strategyOrLocator, value).inputValue();
       if (!inputValue.toLowerCase().includes(testData.toLowerCase()))
         throw new Error(`"${inputValue}" does not contain "${testData}"`);
       pass(METHOD, `Input value "${inputValue}" contains "${testData}" (case-insensitive)`);
-    } catch (e) { fail(METHOD, `[${strategy}="${value}"] input value`, e); }
+    } catch (e) { fail(METHOD, `Input value does not contain "${testData}"`, e); }
   }
 
   // ==========================================================================
   // 8. Verify selected option in multiple dropdowns
   // ==========================================================================
   async verifySelectedOptionInMultipleDropdowns(
-    strategy: string, value: string, mode: 'contains' | 'not contains', expectedText: string
+    strategyOrLocator: string | Locator, value: string | undefined, mode: 'contains' | 'not contains', expectedText: string
   ): Promise<void> {
     const METHOD = 'verifySelectedOptionInMultipleDropdowns';
     try {
-      const elements = await this.buildLocator(strategy, value).all();
-      if (elements.length === 0) throw new Error(`No elements found using ${strategy}="${value}"`);
+      const elements = await this.buildLocator(strategyOrLocator, value).all();
+      if (elements.length === 0) throw new Error(`No elements found`);
       for (let i = 0; i < elements.length; i++) {
         const selectedText = await elements[i].evaluate(
           (sel: HTMLSelectElement) => sel.options[sel.selectedIndex]?.text ?? ''
@@ -228,7 +236,7 @@ export class AddonHelpers {
           throw new Error(`Dropdown [${i}] "${selectedText}" unexpectedly contains "${expectedText}"`);
       }
       pass(METHOD, `All ${elements.length} dropdown(s) ${mode} "${expectedText}"`);
-    } catch (e) { fail(METHOD, `Dropdown check [${strategy}="${value}"]`, e); }
+    } catch (e) { fail(METHOD, `Dropdown check`, e); }
   }
 
   // ==========================================================================
@@ -368,76 +376,83 @@ export class AddonHelpers {
   // 16. Verify multiple elements attribute same text
   // ==========================================================================
   async verifyMultipleElementsAttributeSameText(
-    strategy: string, value: string, attributeName: string, expectedText: string
+    strategyOrLocator: string | Locator, value: string | undefined, attributeName: string, expectedText: string
   ): Promise<void> {
     const METHOD = 'verifyMultipleElementsAttributeSameText';
     try {
-      const elements = await this.buildLocator(strategy, value).all();
-      if (elements.length === 0) throw new Error(`No elements found using ${strategy}="${value}"`);
+      const elements = await this.buildLocator(strategyOrLocator, value).all();
+      if (elements.length === 0) throw new Error(`No elements found`);
       for (let i = 0; i < elements.length; i++) {
         const attrVal = await elements[i].getAttribute(attributeName) ?? '';
         if (attrVal !== expectedText)
           throw new Error(`Element [${i}] "${attributeName}"="${attrVal}" ≠ "${expectedText}"`);
       }
       pass(METHOD, `All ${elements.length} element(s) "${attributeName}" = "${expectedText}"`);
-    } catch (e) { fail(METHOD, `Attribute same-text [${strategy}="${value}"] "${attributeName}"`, e); }
+    } catch (e) { fail(METHOD, `Attribute same-text "${attributeName}"`, e); }
   }
 
   // ==========================================================================
   // 17. Verify multiple elements have partial text
   // ==========================================================================
   async verifyMultipleElementsHavePartialText(
-    strategy: string, value: string, expectedText: string
+    strategyOrLocator: string | Locator,
+    value: string | undefined,
+    expectedText?: string
   ): Promise<void> {
     const METHOD = 'verifyMultipleElementsHavePartialText';
     try {
-      const elements = await this.buildLocator(strategy, value).all();
-      if (elements.length === 0) throw new Error(`No elements found using ${strategy}="${value}"`);
-      for (let i = 0; i < elements.length; i++) {
-        const actual = (await elements[i].textContent() ?? '').trim();
-        if (!actual.includes(expectedText))
-          throw new Error(`Element [${i}] "${actual}" does not contain "${expectedText}"`);
-      }
-      pass(METHOD, `All ${elements.length} element(s) contain "${expectedText}"`);
-    } catch (e) { fail(METHOD, `Partial text [${strategy}="${value}"]`, e); }
-  }
+      // If first arg is Locator: (locator, expectedText)
+      // If first arg is string strategy: (strategy, value, expectedText)
+      const locator = this.buildLocator(strategyOrLocator, typeof strategyOrLocator !== 'string' ? undefined : value);
+      const text = typeof strategyOrLocator !== 'string' ? value as string : expectedText as string;
+      const elements = await locator.all();
+      if (elements.length === 0) throw new Error(`No elements found`);
 
+      for (const el of elements) {
+        const elText = await el.textContent() || '';
+        if (!elText.trim().toLowerCase().includes(text.trim().toLowerCase())) {
+          throw new Error(`Element text "${elText.trim()}" does not contain "${text}"`);
+        }
+      }
+      pass(METHOD, `All ${elements.length} element(s) partially match: "${text}"`);
+    } catch (e) { fail(METHOD, `verifyMultipleElementsHavePartialText`, e); }
+  }
   // ==========================================================================
   // 18. Verify multiple elements attribute partial text
   // ==========================================================================
   async verifyMultipleElementsAttributePartialText(
-    strategy: string, value: string, attributeName: string, expectedText: string
+    strategyOrLocator: string | Locator, value: string | undefined, attributeName: string, expectedText: string
   ): Promise<void> {
     const METHOD = 'verifyMultipleElementsAttributePartialText';
     try {
-      const elements = await this.buildLocator(strategy, value).all();
-      if (elements.length === 0) throw new Error(`No elements found using ${strategy}="${value}"`);
+      const elements = await this.buildLocator(strategyOrLocator, value).all();
+      if (elements.length === 0) throw new Error(`No elements found`);
       for (let i = 0; i < elements.length; i++) {
         const attrVal = await elements[i].getAttribute(attributeName) ?? '';
         if (!attrVal.includes(expectedText))
           throw new Error(`Element [${i}] "${attributeName}"="${attrVal}" does not contain "${expectedText}"`);
       }
       pass(METHOD, `All ${elements.length} element(s) "${attributeName}" contains "${expectedText}"`);
-    } catch (e) { fail(METHOD, `Attr partial text [${strategy}="${value}"] "${attributeName}"`, e); }
+    } catch (e) { fail(METHOD, `Attr partial text "${attributeName}"`, e); }
   }
 
   // ==========================================================================
   // 19. Verify multiple elements checked/unchecked
   // ==========================================================================
   async verifyMultipleElementsCheckedState(
-    strategy: string, value: string, state: 'checked' | 'unchecked'
+    strategyOrLocator: string | Locator, value: string | undefined, state: 'checked' | 'unchecked'
   ): Promise<void> {
     const METHOD = 'verifyMultipleElementsCheckedState';
     try {
-      const elements = await this.buildLocator(strategy, value).all();
-      if (elements.length === 0) throw new Error(`No elements found using ${strategy}="${value}"`);
+      const elements = await this.buildLocator(strategyOrLocator, value).all();
+      if (elements.length === 0) throw new Error(`No elements found`);
       for (let i = 0; i < elements.length; i++) {
         const isChecked = await elements[i].isChecked();
         if (state === 'checked' && !isChecked) throw new Error(`Element [${i}] is NOT checked`);
         if (state === 'unchecked' && isChecked) throw new Error(`Element [${i}] IS checked`);
       }
       pass(METHOD, `All ${elements.length} element(s) are ${state}`);
-    } catch (e) { fail(METHOD, `Checked state [${strategy}="${value}"]`, e); }
+    } catch (e) { fail(METHOD, `Checked state [${state}]`, e); }
   }
 
   // ==========================================================================
@@ -523,34 +538,34 @@ export class AddonHelpers {
   // 25. Fetch texts from multiple elements → store JSON array in vars
   // ==========================================================================
   async fetchTextFromMultipleElements(
-    strategy: string, value: string, varName: string
+    strategyOrLocator: string | Locator, value: string | undefined, varName: string
   ): Promise<void> {
     const METHOD = 'fetchTextFromMultipleElements';
     try {
-      const elements = await this.buildLocator(strategy, value).all();
-      if (elements.length === 0) throw new Error(`No elements found using ${strategy}="${value}"`);
+      const elements = await this.buildLocator(strategyOrLocator, value).all();
+      if (elements.length === 0) throw new Error(`No elements found`);
       const texts: string[] = [];
       for (const el of elements) texts.push((await el.textContent() ?? '').trim());
       this.vars[varName] = JSON.stringify(texts);
       pass(METHOD, `Fetched ${texts.length} text(s) → vars['${varName}']`);
-    } catch (e) { fail(METHOD, `Fetch texts [${strategy}="${value}"]`, e); }
+    } catch (e) { fail(METHOD, `Fetch texts`, e); }
   }
 
   // ==========================================================================
   // 26. Fetch attributes from multiple elements → store JSON array in vars
   // ==========================================================================
   async fetchAttributeFromMultipleElements(
-    strategy: string, value: string, attributeName: string, varName: string
+    strategyOrLocator: string | Locator, value: string | undefined, attributeName: string, varName: string
   ): Promise<void> {
     const METHOD = 'fetchAttributeFromMultipleElements';
     try {
-      const elements = await this.buildLocator(strategy, value).all();
-      if (elements.length === 0) throw new Error(`No elements found using ${strategy}="${value}"`);
+      const elements = await this.buildLocator(strategyOrLocator, value).all();
+      if (elements.length === 0) throw new Error(`No elements found`);
       const values: string[] = [];
       for (const el of elements) values.push(await el.getAttribute(attributeName) ?? '');
       this.vars[varName] = JSON.stringify(values);
       pass(METHOD, `Fetched ${values.length} "${attributeName}" → vars['${varName}']`);
-    } catch (e) { fail(METHOD, `Fetch "${attributeName}" [${strategy}="${value}"]`, e); }
+    } catch (e) { fail(METHOD, `Fetch "${attributeName}"`, e); }
   }
 
   // ==========================================================================
@@ -583,17 +598,17 @@ export class AddonHelpers {
   // 29. Clear element and enter text
   // ==========================================================================
   async clearAndEnterText(
-    strategy: string, value: string, testData: string
+    strategyOrLocator: string | Locator, value: string | undefined, testData: string
   ): Promise<void> {
     const METHOD = 'clearAndEnterText';
     try {
-      const el = this.buildLocator(strategy, value);
+      const el = this.buildLocator(strategyOrLocator, value);
       await el.clear();
       await el.fill(testData);
       const actual = await el.inputValue();
       if (actual !== testData) throw new Error(`After fill got "${actual}", expected "${testData}"`);
-      pass(METHOD, `[${strategy}="${value}"] filled with "${testData}"`);
-    } catch (e) { fail(METHOD, `Clear and enter "${testData}" into [${strategy}="${value}"]`, e); }
+      pass(METHOD, `Filled with "${testData}"`);
+    } catch (e) { fail(METHOD, `Clear and enter "${testData}"`, e); }
   }
 
   // ==========================================================================
@@ -817,5 +832,56 @@ removeCharactersFromPosition(sourceString: string, firstCount: string, lastCount
     this.vars[varName] = result;
     pass(METHOD, `Removed ${first} from first and ${last} from last of "${sourceString}" → "${result}" → vars['${varName}']`);
   } catch (e) { fail(METHOD, `Remove characters from "${sourceString}"`, e); }
+}
+//verifying the element contains text with ignore case
+async verifyElementContainsTextIgnoreCase(element: Locator, expectedText: string): Promise<void> {
+  const actualText = await element.textContent() || '';
+  const actual = actualText.trim().toLowerCase();
+  const expected = expectedText.trim().toLowerCase();
+
+  if (actual.includes(expected)) {
+    console.log(`[PASS] Element contains text (case-insensitive): "${expectedText}"`);
+  } else {
+    throw new Error(`[FAIL] Expected element to contain "${expectedText}" (case-insensitive), but got "${actualText.trim()}"`);
+  }
+}
+splitRangeOfCharacters(source: string, start: number, end: number, varName: string): void {
+  const METHOD = 'splitRangeOfCharacters';
+  try {
+    if (!source) throw new Error(`Source string is empty or undefined`);
+    if (start < 0 || end > source.length || start >= end) throw new Error(`Invalid range [${start}:${end}] for string of length ${source.length}`);
+    const result = source.substring(start, end);
+    this.vars[varName] = result;
+    pass(METHOD, `Split range [${start}:${end}] from "${source}" = "${result}" → vars['${varName}']`);
+  } catch (e) { fail(METHOD, `Split range [${start}:${end}] from "${source}"`, e); }
+}
+//verification of ascending or descending order of based on date formate
+async verifyDateOrder(
+  locator: Locator,
+  order: 'ascending' | 'descending',
+  dateFormat: string
+): Promise<void> {
+  const METHOD = 'verifyDateOrder';
+  try {
+    const elements = await locator.all();
+    if (elements.length === 0) throw new Error(`No elements found`);
+
+    const dates: Date[] = [];
+    for (const el of elements) {
+      const text = (await el.textContent() ?? '').trim();
+      const parsed = parse(text, dateFormat, new Date());
+      if (isNaN(parsed.getTime())) throw new Error(`Cannot parse "${text}" as date with format "${dateFormat}"`);
+      dates.push(parsed);
+    }
+
+    for (let i = 1; i < dates.length; i++) {
+      if (order === 'ascending' && dates[i] < dates[i - 1])
+        throw new Error(`Order broken at [${i}]: "${format(dates[i - 1], dateFormat)}" > "${format(dates[i], dateFormat)}"`);
+      if (order === 'descending' && dates[i] > dates[i - 1])
+        throw new Error(`Order broken at [${i}]: "${format(dates[i - 1], dateFormat)}" < "${format(dates[i], dateFormat)}"`);
+    }
+
+    pass(METHOD, `${dates.length} dates in ${order} order with format "${dateFormat}"`);
+  } catch (e) { fail(METHOD, `Date ${order} order`, e); }
 }
 }
