@@ -7,11 +7,11 @@ import { CorrespondentPortalPage } from '../../../src/pages/correspondant/corres
 import { PriceOfferedDetailsPage } from '../../../src/pages/correspondant/price-offered-details';
 import { PriceOfferedPage } from '../../../src/pages/correspondant/price-offered';
 import { SpinnerPage } from '@pages/correspondant';
-import { PlaywrightHelpers } from '../../../src/helpers/AddonHelpers';
+import { AddonHelpers } from '../../../src/helpers/AddonHelpers';
 
 test.describe('REG_PriceOffered', () => {
   let vars: Record<string, string>;
-  let Methods: PlaywrightHelpers;
+  let Methods: AddonHelpers;
   let bidRequestDetailsPage: BidRequestDetailsPage;
   let correspondentPortalPage: CorrespondentPortalPage;
   let priceOfferedDetailsPage: PriceOfferedDetailsPage;
@@ -20,7 +20,7 @@ test.describe('REG_PriceOffered', () => {
 
   test.beforeEach(async ({ page }) => {
     vars = {};
-    Methods = new PlaywrightHelpers(page, vars);
+    Methods = new AddonHelpers(page, vars);
 
     bidRequestDetailsPage = new BidRequestDetailsPage(page);
     correspondentPortalPage = new CorrespondentPortalPage(page);

@@ -7,6 +7,7 @@ import { CommitmentListPage } from '../../../src/pages/correspondant/commitment-
 import { CorrespondentPortalPage } from '../../../src/pages/correspondant/correspondent-portal';
 import { PriceOfferedPage } from '../../../src/pages/correspondant/price-offered';
 import { SpinnerPage } from '../../../src/pages/correspondant/spinner';
+import { AddonHelpers } from '../../../src/helpers/AddonHelpers';
 
 test.describe('Commitment List - TS_1', () => {
   let vars: Record<string, string> = {};
@@ -15,6 +16,7 @@ test.describe('Commitment List - TS_1', () => {
   let correspondentPortalPage: CorrespondentPortalPage;
   let priceOfferedPage: PriceOfferedPage;
   let spinnerPage: SpinnerPage;
+  let Methods: AddonHelpers;
 
   test.beforeEach(async ({ page }) => {
     vars = {};
@@ -23,6 +25,7 @@ test.describe('Commitment List - TS_1', () => {
     correspondentPortalPage = new CorrespondentPortalPage(page);
     priceOfferedPage = new PriceOfferedPage(page);
     spinnerPage = new SpinnerPage(page);
+    Methods = new AddonHelpers(page, vars);
   });
 
   test('REG_TS21_TC01_Verify the Apply/Clear filter for current day and Verify the list should display the records from current day only', async ({ page }) => {
@@ -31,50 +34,68 @@ test.describe('Commitment List - TS_1', () => {
     await commitmentListPage.Committed_List_Dropdown.click();
     await spinnerPage.Spinner.waitFor({ state: 'hidden' });
     await commitmentListPage.Closed_List_Tab.click();
+    await page.waitForTimeout(10000);
     await spinnerPage.Spinner.waitFor({ state: 'hidden' });
     await stepGroups.stepGroup_Selecting_Date_from_the_filters_by_fetching_the_first_comm_d(page, vars);
     await applyFiltersButtonPage.Apply_Filters_Button.click();
-    if (true) /* Element Go to Next Page Button is enabled */ {
-      vars["CountofPages"] = "2";
-    } else {
-      vars["CountofPages"] = "1";
-    }
+
+    const NextButton = correspondentPortalPage.Go_to_Next_Page_Button;
+    const nextButtonCount = await NextButton.count();
     vars["count"] = "1";
-    while (parseFloat(String(vars["count"])) <= parseFloat(String(vars["CountofPages"]))) {
-      vars["ActualCommDate"] = await commitmentListPage.Comm_Date_column.textContent() || '';
-      for (let i = 0; i < await commitmentListPage.Comm_Date_column.count(); i++) {
-        await expect(commitmentListPage.Comm_Date_column.nth(i)).toHaveText(String(vars["ExpectedCommDate"]));
+    vars["CountofPages"] = "1";
+
+    if (nextButtonCount > 0) {
+      const isDisabled = await NextButton.getAttribute('aria-disabled');
+      console.log("isDisabled:", isDisabled);
+      if (isDisabled === 'false') {
+        vars["CountofPages"] = "2";
       }
-      if (true) /* Element Go to Next Page Button is enabled */ {
+    }
+
+    while (parseFloat(String(vars["count"])) <= parseFloat(String(vars["CountofPages"]))) {
+      await commitmentListPage.Comm_Date_column.first().waitFor({ state: 'visible' });
+      vars["ActualCommDate"] = await commitmentListPage.Comm_Date_column.first().textContent() || '';
+      Methods.trimtestdata(vars["ExpectedCommDate"], "ExpectedCommDate");
+      await Methods.verifyMultipleElementsHaveSameText(commitmentListPage.Comm_Date_column, vars["ExpectedCommDate"]);
+      const isNextDisabled = nextButtonCount > 0 ? await NextButton.getAttribute('aria-disabled') : 'true';
+      if (isNextDisabled === 'false') {
         await correspondentPortalPage.Go_to_Next_Page_Button.click();
         await spinnerPage.Spinner.waitFor({ state: 'hidden' });
       }
-      vars["count"] = (parseFloat(String("1")) + parseFloat(String(vars["count"]))).toFixed(0);
+      Methods.MathematicalOperation(vars["count"], '+', 1, "count");
     }
+
     await priceOfferedPage.Select_All_CheckboxPrice_Offred_Page.check();
+    await expect(correspondentPortalPage.Export_Selected_1_Button).toBeEnabled();
     vars["ExportSelectedCountAfterApplyingFilters"] = await priceOfferedPage.Export_Selected_Count.textContent() || '';
-    vars["ExportSelectedCountAfterApplyingFilters"] = String(vars["ExportSelectedCountAfterApplyingFilters"]).replace(/\(\)/g, '');
+    Methods.removeMultipleSpecialChars(['(', ')', ' '], vars["ExportSelectedCountAfterApplyingFilters"], "ExportSelectedCountAfterApplyingFilters");
     await priceOfferedPage.Remove_Date_FilterCross_Symbol.click();
     await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-    await expect(priceOfferedPage.Date_Filter_ChipPrice_Offered_Page).toBeVisible();
+    await expect(priceOfferedPage.Date_Filter_ChipPrice_Offered_Page).not.toBeVisible();
     await priceOfferedPage.Select_All_CheckboxPrice_Offred_Page.check();
+    // await priceOfferedPage.SelectAllCheckBox.waitFor({ state: 'visible' });
+    await expect(correspondentPortalPage.Export_Selected_1_Button).toBeEnabled();
     vars["ExportSelectedCountAfterRemovingFilters"] = await priceOfferedPage.Export_Selected_Count.textContent() || '';
-    vars["ExportSelectedCountAfterRemovingFilters"] = String(vars["ExportSelectedCountAfterRemovingFilters"]).replace(/\(\)/g, '');
-    expect(String(vars["ExportSelectedCountAfterRemovingFilters"])).toBe(vars["ExportSelectedCountAfterApplyingFilters"]);
+    Methods.removeMultipleSpecialChars(['(', ')', ' '], vars["ExportSelectedCountAfterRemovingFilters"], "ExportSelectedCountAfterRemovingFilters");
+    Methods.verifyComparison(vars["ExportSelectedCountAfterRemovingFilters"], '>', vars["ExportSelectedCountAfterApplyingFilters"]);
+    await priceOfferedPage.Select_All_CheckboxPrice_Offred_Page.uncheck();
     await stepGroups.stepGroup_Selecting_Date_from_the_filters_by_fetching_the_first_comm_d(page, vars);
     await applyFiltersButtonPage.Apply_Filters_Button.click();
     await spinnerPage.Spinner.waitFor({ state: 'hidden' });
     await priceOfferedPage.Select_All_CheckboxPrice_Offred_Page.check();
-    await page.waitForTimeout(3000);
+    await expect(correspondentPortalPage.Export_Selected_1_Button).toBeEnabled();    // await page.waitForTimeout(3000);
     vars["ExportSelectedCountAfterApplyingFilters"] = await priceOfferedPage.Export_Selected_Count.textContent() || '';
-    vars["ExportSelectedCountAfterApplyingFilters"] = String(vars["ExportSelectedCountAfterApplyingFilters"]).replace(/\(\)/g, '');
+    Methods.removeMultipleSpecialChars(['(', ')', ' '], vars["ExportSelectedCountAfterApplyingFilters"], "ExportSelectedCountAfterApplyingFilters");
     await commitmentListPage.Clear_all_ButtonCommitment_List.click();
     await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-    await expect(priceOfferedPage.Date_Filter_ChipPrice_Offered_Page).toBeVisible();
+    await expect(priceOfferedPage.Date_Filter_ChipPrice_Offered_Page).not.toBeVisible();
     await priceOfferedPage.Select_All_CheckboxPrice_Offred_Page.check();
+    // await priceOfferedPage.SelectAllCheckBox.waitFor({ state: 'visible' });
+    await expect(correspondentPortalPage.Export_Selected_1_Button).toBeEnabled();
     await page.waitForTimeout(3000);
     vars["ExportSelectedCountAfterRemovingFilters"] = await priceOfferedPage.Export_Selected_Count.textContent() || '';
-    vars["ExportSelectedCountAfterRemovingFilters"] = String(vars["ExportSelectedCountAfterRemovingFilters"]).replace(/\(\)/g, '');
-    expect(String(vars["ExportSelectedCountAfterRemovingFilters"])).toBe(vars["ExportSelectedCountAfterApplyingFilters"]);
+    Methods.removeMultipleSpecialChars(['(', ')', ' '], vars["ExportSelectedCountAfterRemovingFilters"], "ExportSelectedCountAfterRemovingFilters");
+    // expect(String(vars["ExportSelectedCountAfterRemovingFilters"])).toBe(vars["ExportSelectedCountAfterApplyingFilters"]);
+    Methods.verifyComparison(vars["ExportSelectedCountAfterRemovingFilters"], '>', vars["ExportSelectedCountAfterApplyingFilters"]);
   });
 });

@@ -1,4 +1,3 @@
-// [POM-APPLIED]
 import { test, expect } from '@playwright/test';
 import path from 'path';
 import * as stepGroups from '../../../src/helpers/step-groups';
@@ -7,6 +6,7 @@ import { CommitmentListPage } from '../../../src/pages/correspondant/commitment-
 import { CorrespondentPortalPage } from '../../../src/pages/correspondant/correspondent-portal';
 import { PriceOfferedPage } from '../../../src/pages/correspondant/price-offered';
 import { SpinnerPage } from '../../../src/pages/correspondant/spinner';
+import { AddonHelpers } from '@helpers/AddonHelpers';
 
 test.describe('Commitment List - TS_1', () => {
   let vars: Record<string, string> = {};
@@ -15,6 +15,7 @@ test.describe('Commitment List - TS_1', () => {
   let correspondentPortalPage: CorrespondentPortalPage;
   let priceOfferedPage: PriceOfferedPage;
   let spinnerPage: SpinnerPage;
+  let Methods: AddonHelpers;
 
   test.beforeEach(async ({ page }) => {
     vars = {};
@@ -23,6 +24,7 @@ test.describe('Commitment List - TS_1', () => {
     correspondentPortalPage = new CorrespondentPortalPage(page);
     priceOfferedPage = new PriceOfferedPage(page);
     spinnerPage = new SpinnerPage(page);
+    Methods = new AddonHelpers(page, vars);
   });
 
   test('REG_TS21_TC07_Perform clear search button action in open list for one of the filter applied, and then verify that the filter is cleared in both the closed and open list sections', async ({ page }) => {
@@ -36,7 +38,7 @@ test.describe('Commitment List - TS_1', () => {
     await correspondentPortalPage.Last_One_Month_Button.click();
     await correspondentPortalPage.Select_CompanyCCode_Dropdown1.waitFor({ state: 'visible' });
     await correspondentPortalPage.Select_CompanyCCode_Dropdown1.click();
-    await priceOfferedPage.Check_Company.check();
+    await priceOfferedPage.Check_Company.first().check();
     await correspondentPortalPage.Apply_Selected.waitFor({ state: 'visible' });
     await correspondentPortalPage.Apply_Selected.click();
     await applyFiltersButtonPage.Apply_Filters_Button.waitFor({ state: 'visible' });
@@ -44,45 +46,61 @@ test.describe('Commitment List - TS_1', () => {
     await priceOfferedPage.Date_Filter_ChipPrice_Offered_Page.waitFor({ state: 'visible' });
     await expect(priceOfferedPage.Date_Filter_ChipPrice_Offered_Page).toBeVisible();
     await expect(priceOfferedPage.Company_Filter_ChipPrice_Offered_Page).toBeVisible();
-    if (true) /* Verify that the current page displays text No result */ {
+
+    const noResultsOpenList = page.getByText('No result', { exact: true });
+    await page.waitForTimeout(2000);
+
+    if (await noResultsOpenList.isVisible()) {
       vars["RecordsCountWithFilterOpenList"] = "0";
     } else {
       await priceOfferedPage.Select_all_for_Checkbox.check();
       vars["RecordsCountWithFilterOpenList"] = await commitmentListPage.Export_Selected.textContent() || '';
-      vars["RecordsCountWithFilterOpenList"] = String(vars["RecordsCountWithFilterOpenList"]).replace(/\(\)/g, '');
-      vars["RecordsCountWithFilterOpenList"] = String(vars["RecordsCountWithFilterOpenList"]).trim();
+      Methods.removeMultipleSpecialChars(['(', ')', ' '], vars["RecordsCountWithFilterOpenList"], "RecordsCountWithFilterOpenList");
+      Methods.trimtestdata(vars["RecordsCountWithFilterOpenList"], "RecordsCountWithFilterOpenList");
     }
+
     await commitmentListPage.Closed_List_Tab.click();
     await priceOfferedPage.Date_Filter_ChipPrice_Offered_Page.waitFor({ state: 'visible' });
     await expect(priceOfferedPage.Date_Filter_ChipPrice_Offered_Page).toBeVisible();
     await expect(priceOfferedPage.Company_Filter_ChipPrice_Offered_Page).toBeVisible();
-    if (true) /* Verify that the current page displays text No result */ {
+
+    const noResultsClosedList = page.getByText('No result', { exact: true });
+    await page.waitForTimeout(2000);
+
+    if (await noResultsClosedList.isVisible()) {
       vars["RecordsCountWithFilterClosedList"] = "0";
     } else {
       await priceOfferedPage.Select_all_for_Checkbox.check();
       vars["RecordsCountWithFilterClosedList"] = await commitmentListPage.Export_Selected.textContent() || '';
-      vars["RecordsCountWithFilterClosedList"] = String(vars["RecordsCountWithFilterClosedList"]).replace(/\(\)/g, '');
-      vars["RecordsCountWithFilterClosedList"] = String(vars["RecordsCountWithFilterClosedList"]).trim();
+      Methods.removeMultipleSpecialChars(['(', ')', ' '], vars["RecordsCountWithFilterClosedList"], "RecordsCountWithFilterClosedList");
+      Methods.trimtestdata(vars["RecordsCountWithFilterClosedList"], "RecordsCountWithFilterClosedList");
     }
     await commitmentListPage.Open_List_Tab.click();
     await commitmentListPage.Clear_all_ButtonCommitment_List.waitFor({ state: 'visible' });
     await commitmentListPage.Clear_all_ButtonCommitment_List.click();
     await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-    await expect(priceOfferedPage.Date_Filter_ChipPrice_Offered_Page).toBeVisible();
-    await expect(priceOfferedPage.Company_Filter_ChipPrice_Offered_Page).toBeVisible();
-    await priceOfferedPage.Select_all_for_Checkbox.check();
+    await expect(priceOfferedPage.Date_Filter_ChipPrice_Offered_Page).not.toBeVisible();
+    await expect(priceOfferedPage.Company_Filter_ChipPrice_Offered_Page).not.toBeVisible();
+    await page.waitForTimeout(2000)
+    if (!(await priceOfferedPage.Select_all_for_Checkbox.isChecked())) {
+        await priceOfferedPage.Select_all_for_Checkbox.check();
+      }
     vars["RecordsCountWithoutFilterOpenList"] = await commitmentListPage.Export_Selected.textContent() || '';
-    vars["RecordsCountWithoutFilterOpenList"] = String(vars["RecordsCountWithoutFilterOpenList"]).replace(/\(\)/g, '');
-    vars["RecordsCountWithoutFilterOpenList"] = String(vars["RecordsCountWithoutFilterOpenList"]).trim();
-    expect(String(vars["RecordsCountWithFilterOpenList"])).toBe(vars["RecordsCountWithoutFilterOpenList"]);
+    Methods.removeMultipleSpecialChars(['(', ')', ' '], vars["RecordsCountWithoutFilterOpenList"], "RecordsCountWithoutFilterOpenList");
+    Methods.verifyComparison(vars["RecordsCountWithFilterOpenList"], "<", vars["RecordsCountWithoutFilterOpenList"]);
+
     await commitmentListPage.Closed_List_Tab.click();
     await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-    await expect(priceOfferedPage.Date_Filter_ChipPrice_Offered_Page).toBeVisible();
-    await expect(priceOfferedPage.Company_Filter_ChipPrice_Offered_Page).toBeVisible();
-    await priceOfferedPage.Select_all_for_Checkbox.check();
+    await expect(priceOfferedPage.Date_Filter_ChipPrice_Offered_Page).not.toBeVisible();
+    await expect(priceOfferedPage.Company_Filter_ChipPrice_Offered_Page).not.toBeVisible();
+    await page.waitForTimeout(2000)
+    if (!(await priceOfferedPage.Select_all_for_Checkbox.isChecked())) {
+        await priceOfferedPage.Select_all_for_Checkbox.check();
+      }
     vars["RecordsCountWithoutFilterClosedList"] = await commitmentListPage.Export_Selected.textContent() || '';
-    vars["RecordsCountWithoutFilterClosedList"] = String(vars["RecordsCountWithoutFilterClosedList"]).replace(/\(\)/g, '');
-    vars["RecordsCountWithoutFilterClosedList"] = String(vars["RecordsCountWithoutFilterClosedList"]).trim();
-    expect(String(vars["RecordsCountWithFilterClosedList"])).toBe(vars["RecordsCountWithoutFilterClosedList"]);
+    Methods.removeMultipleSpecialChars(['(', ')', ' '], vars["RecordsCountWithoutFilterClosedList"], "RecordsCountWithoutFilterClosedList");
+    Methods.trimtestdata(vars["RecordsCountWithoutFilterClosedList"], "RecordsCountWithoutFilterClosedList");
+    Methods.verifyComparison(vars["RecordsCountWithFilterClosedList"], "<", vars["RecordsCountWithoutFilterClosedList"]);
   });
 });
+

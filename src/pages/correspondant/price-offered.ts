@@ -850,7 +850,7 @@ export class PriceOfferedPage {
   }
 
   get Company_Count_In_Filters(): Locator {
-    return this.page.locator("(//div[@class=\"dropdown-overflow\"])[1]//input[@type=\"checkbox\"]\n");
+    return this.page.locator("(//div[@class='dropdown-overflow'])[1]//input[@type='checkbox']");
   }
 
   get Company_Filter_ChipPrice_Offered_Page(): Locator {
@@ -2066,6 +2066,9 @@ export class PriceOfferedPage {
 
   get Select_All_In_Filters(): Locator {
     return this.page.locator("(//span[@title=\"Select All\"])");
+  }
+  get SelectAllCheckBox(): Locator {
+    return this.page.locator("//span[@title='Select All']//preceding::input[@type='checkbox']");
   }
 
   get Select_All_In_Status(): Locator {

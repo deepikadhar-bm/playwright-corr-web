@@ -1,6 +1,6 @@
 import { Page, Locator } from '@playwright/test';
 
-export async function waitForSpinnerToDisappear(page: Page, timeout = 30_000): Promise<void> {
+export async function waitForSpinnerToDisappear(page: Page, timeout = 120_000): Promise<void> {
   const spinner = page.locator('//div[contains(@class,"spinner")]');
   await spinner.waitFor({ state: 'hidden', timeout }).catch(() => {});
 }

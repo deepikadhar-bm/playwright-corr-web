@@ -33,8 +33,8 @@ test.describe('Commitment List - TS_1', () => {
     vars["count"] = "1";
     while (parseFloat(String(vars["count"])) <= parseFloat(String(vars["CountOfSetPageSize"]))) {
       await correspondentPortalPage.Change_Page_Size_Dropdown.click();
-      vars["IndividualSetPageSize"] = await commitmentListPage.Individual_Set_Page_Size.textContent() || '';
-      await commitmentListPage.Individual_Set_Page_Size.click();
+      vars["IndividualSetPageSize"] = await commitmentListPage.IndividualSetPageSize(vars["count"]).textContent() || '';
+      await commitmentListPage.IndividualSetPageSize(vars["count"]).click();
       await spinnerPage.Spinner.waitFor({ state: 'hidden' });
       vars["RowsCount"] = String(await priceOfferedPage.Total_Rows_Count_UIDetails.count());
       expect(String(vars["IndividualSetPageSize"])).toBe(vars["RowsCount"]);
