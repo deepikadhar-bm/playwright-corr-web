@@ -9,8 +9,9 @@ import { CustomerPermissionPage } from '../../../src/pages/correspondant/custome
 import { PriceOfferedPage } from '../../../src/pages/correspondant/price-offered';
 import { SpinnerPage } from '../../../src/pages/correspondant/spinner';
 import { StatusInactivePage } from '../../../src/pages/correspondant/status-inactive-';
-import { testDataManager } from 'testdataprofiles/TestDataManager';
-import { PlaywrightHelpers } from '@helpers/AddonHelpers';
+import { testDataManager } from 'testdata/TestDataManager';
+import { AddonHelpers } from '@helpers/AddonHelpers';
+
 test.describe('Commitment List - TS_1', () => {
   let vars: Record<string, string> = {};
   let applyFiltersButtonPage: ApplyFiltersButtonPage;
@@ -20,7 +21,7 @@ test.describe('Commitment List - TS_1', () => {
   let priceOfferedPage: PriceOfferedPage;
   let spinnerPage: SpinnerPage;
   let statusInactivePage: StatusInactivePage;
-  let Methods: PlaywrightHelpers;
+  let Methods: AddonHelpers;
 
   test.beforeEach(async ({ page }) => {
     vars = {};
@@ -31,12 +32,18 @@ test.describe('Commitment List - TS_1', () => {
     priceOfferedPage = new PriceOfferedPage(page);
     spinnerPage = new SpinnerPage(page);
     statusInactivePage = new StatusInactivePage(page);
-    Methods = new PlaywrightHelpers(page, vars);
+    Methods = new AddonHelpers(page, vars);
   });
+  const profileName = 'Price Offered';
+  const profile = testDataManager.getProfileByName(profileName);
 
 
   test('REG_TS18_TC03_ Apply/Clear filter for a particular company and verify that the screen should display only those company bids', async ({ page }) => {
-    vars["CompanyNameInFilters"] = "Fre";
+    if (profile && profile.data) {
+      const companyName = profile.data[0]['CompanyNameInFilters'];
+      console.log("company name from tdp:", companyName);
+      vars["CompanyNameInFilters"] = companyName;
+    }
     await stepGroups.stepGroup_Login_to_CORR_Portal(page, vars);
     await correspondentPortalPage.Commitments_Side_Menu.click();
     await commitmentListPage.Committed_List_Dropdown.click();
@@ -129,7 +136,7 @@ test.describe('Commitment List - TS_1', () => {
     // vars["PageCount"] = String(vars["PageCount"]).substring(10);
     // Methods.removeCharactersFromPosition(PageCount)
     // Methods.removeCharactersFromPosition(vars["PageCount"], 'first', varName: string)
-     Methods.removeCharactersFromPosition(vars["PageCount"], "0","10", "PageCount");
+    Methods.removeCharactersFromPosition(vars["PageCount"], "0", "10", "PageCount");
 
     while (parseFloat(String(vars["Count"])) <= parseFloat(String(vars["PageCount"]))) {
       vars["CompanyNameCount"] = String(await statusInactivePage.Company_Names.count());
@@ -145,5 +152,6 @@ test.describe('Commitment List - TS_1', () => {
     // expect(String(vars["TotalCompanyCountCustomerPermission"])).toBe(vars["CountOfItemsSelected"]);
     expect(Methods.verifyComparison(vars["TotalCompanyCountCustomerPermission"], "==", vars["CountOfItemsSelected"]));
     expect(Methods.verifyComparison(vars["TotalCompanyCountCustomerPermission"], "==", vars["TotalCompanyCountInFilter"]));
+    
   });
 });

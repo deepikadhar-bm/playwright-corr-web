@@ -7,7 +7,7 @@ import { CommitmentListPage } from '../../../src/pages/correspondant/commitment-
 import { CorrespondentPortalPage } from '../../../src/pages/correspondant/correspondent-portal';
 import { PriceOfferedPage } from '../../../src/pages/correspondant/price-offered';
 import { SpinnerPage } from '../../../src/pages/correspondant/spinner';
-import { PlaywrightHelpers } from '@helpers/AddonHelpers';
+import { AddonHelpers } from '@helpers/AddonHelpers';
 import { waitForSpinnerToDisappear } from '@helpers/wait-helpers';
 import { TIMEOUT } from 'dns/promises';
 
@@ -18,7 +18,7 @@ test.describe('Commitment List - TS_1', () => {
   let correspondentPortalPage: CorrespondentPortalPage;
   let priceOfferedPage: PriceOfferedPage;
   let spinnerPage: SpinnerPage;
-  let Methods: PlaywrightHelpers;
+  let Methods: AddonHelpers;
 
   test.beforeEach(async ({ page }) => {
     vars = {};
@@ -27,7 +27,7 @@ test.describe('Commitment List - TS_1', () => {
     correspondentPortalPage = new CorrespondentPortalPage(page);
     priceOfferedPage = new PriceOfferedPage(page);
     spinnerPage = new SpinnerPage(page);
-    Methods = new PlaywrightHelpers(page, vars);
+    Methods = new AddonHelpers(page, vars);
   });
 
   test('REG_TS19_TC03_Verify the search action, Search by commitment ID, Bid request ID, Chase loan number and the Correspondent loan number for input', async ({ page }) => {
@@ -47,8 +47,8 @@ test.describe('Commitment List - TS_1', () => {
     await priceOfferedPage.Commitment_Id_DropdownCommitment_List_Page.waitFor({ state: 'visible' });
     await priceOfferedPage.Commitment_Id_DropdownCommitment_List_Page.click();
     await spinnerPage.Spinner.waitFor({ state: 'hidden', timeout: 20000 });    
-    await page.locator('[role="tooltip"]').waitFor({ state: 'hidden' });
-    await page.waitForTimeout(6000);
+    // await page.locator('[role="tooltip"]').waitFor({ state: 'hidden' });
+    // await page.waitForTimeout(6000);
     await expect(commitmentListPage.Commit_IDCommitment_List_Screen.first()).toContainText(vars["CommitmentID"]);
     await commitmentListPage.Search_Cancel_Button.click();
     await spinnerPage.Spinner.waitFor({ state: 'hidden' });
@@ -57,7 +57,7 @@ test.describe('Commitment List - TS_1', () => {
     await priceOfferedPage.Bid_Request_ID_DropdownCommitment_List_Page.click();
     await spinnerPage.Spinner.waitFor({ state: 'hidden' });
     await page.waitForTimeout(6000);
-    Methods.verifyMultipleElementsHaveSameText(commitmentListPage.First_Bid_Req_IDCommitment_List, vars["BidReqId"]);
+    await expect(Methods.verifyMultipleElementsHaveSameText(commitmentListPage.First_Bid_Req_IDCommitment_List, vars["BidReqId"]));
     await commitmentListPage.Search_Cancel_Button.click();
     await spinnerPage.Spinner.waitFor({ state: 'hidden' });
     await priceOfferedPage.Search_Dropdown.click();
@@ -65,7 +65,7 @@ test.describe('Commitment List - TS_1', () => {
 
     await commitmentListPage.Chase_Loan_Number_DropdownCommitment_List_Page.click();
     await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-     await page.waitForTimeout(6000);
+    //  await page.waitForTimeout(6000);
     await expect(page.getByText(vars["CommitmentID"])).toBeVisible();
     await commitmentListPage.Commitment_IDCommitment_List_Page(vars["BidReqId"]).click();
     await expect(commitmentDetailsPage.Chase_Loan_NumberCommitments_Details.first()).toContainText(vars["ChaseLoanNumber"]);
@@ -77,7 +77,7 @@ test.describe('Commitment List - TS_1', () => {
     await priceOfferedPage.Search_Dropdown.type(vars["CorrespondentLoanNumber"]);
     await commitmentListPage.Correspondent_Loan_Num_DropdownCommitment_List_Page.click();
     await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-     await page.waitForTimeout(10000);
+    // await page.waitForTimeout(10000);
     await expect(page.getByText(vars["CommitmentID"])).toBeVisible();
     await commitmentListPage.Commitment_IDCommitment_List_Page(vars["BidReqId"]).click();
     await expect(commitmentListPage.Corr_Loan_NumCommitments_Details.first()).toContainText(vars["CorrespondentLoanNumber"]);

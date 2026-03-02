@@ -38,7 +38,7 @@ function fail(method: string, detail: string, error: unknown): never {
 
 // ─────────────────────────────────────────────────────────────────────────────
 
-export class PlaywrightHelpers {
+export class AddonHelpers {
   private page: Page;
 
   // ── vars — shared reference with test-level vars ───────────────────────────
