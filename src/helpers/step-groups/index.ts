@@ -2098,9 +2098,9 @@ export async function stepGroup_Navigating_to_Upload_New_Bid_Request(page: impor
   const CorrPortalElem = new CorrPortalPage(page);
   await CorrPortalElem.BidRequests_Menu.click();
   await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
-  await expect(page.getByText("Bid Requests")).toBeVisible();
+  await expect(page.getByText("Bid Requests").first()).toBeVisible();
   await CorrPortalElem.Upload_New_Bid_Request_Button.click();
-  await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
+  await CorrPortalElem.Spinner.first().waitFor({ state: 'hidden' });
 }
 
 /**
@@ -4322,31 +4322,65 @@ export async function stepGroup_Commits_an_Fresh_Loan_Num_Standard(page: import(
  * ID: 1576
  * Steps: 17
  */
+// export async function stepGroup_Headers_Verification(page: import('@playwright/test').Page, vars: Record<string, string>) {
+//   const CorrPortalElem = new CorrPortalPage(page);
+//   vars["Count"] = "1";
+//   vars["count"] = "1";
+//   vars["ExcelHeader"] = "0";
+//   vars["CountOfHeaders"] = String(await CorrPortalElem.Headers_UI.count());
+//   vars["HeaderValuesExcel"] = excelHelper.readRow(vars['_lastDownloadPath'] || '', vars["ExcelHeader"], "0");
+//   while (parseFloat(String(vars["Count"])) <= parseFloat(String(vars["CountOfHeaders"]))) {
+//     vars["IndividualHeaders"] = await CorrPortalElem.Individual_Headers.textContent() || '';
+//     vars["IndividualHeadersUI"] = String(vars["IndividualHeaders"]).trim();
+//     vars["IndividualExcelHeaders"] = String(vars["HeaderValuesExcel"]).split(",")[parseInt(String(vars["count"]))] || '';
+//     vars["IndividualExcelHeaders"] = String(vars["IndividualExcelHeaders"]).trim();
+//     if (String(vars["IndividualHeadersUI"]) === String("BidReq.ID")) {
+//       vars["IndividualHeadersUI"] = "BidRequestID";
+//     }
+//     if (String(vars["IndividualHeadersUI"]) === String("ExecutionType")) {
+//       // [DISABLED] Store Exe.Type in IndividualHeadersUI
+//       // vars["IndividualHeadersUI"] = "Exe.Type";
+//     }
+//     expect(String(vars["IndividualHeadersUI"]).toLowerCase()).toContain(String(vars["IndividualExcelHeaders"]).toLowerCase());
+//     vars["Count"] = (parseFloat(String("1")) + parseFloat(String(vars["Count"]))).toFixed(0);
+//     vars["count"] = (parseFloat(String("1")) + parseFloat(String(vars["count"]))).toFixed(0);
+//   }
+// }
 export async function stepGroup_Headers_Verification(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
-  vars["Count"] = "1";
-  vars["count"] = "1";
+
+  // Validate download path before proceeding
+  const downloadPath = vars['_lastDownloadPath'];
+  if (!downloadPath) {
+    throw new Error('[stepGroup_Headers_Verification] vars["_lastDownloadPath"] is not set. Ensure the download was captured before calling this step group.');
+  }
+
   vars["ExcelHeader"] = "0";
   vars["CountOfHeaders"] = String(await CorrPortalElem.Headers_UI.count());
-  vars["HeaderValuesExcel"] = excelHelper.readRow(vars['_lastDownloadPath'] || '', vars["ExcelHeader"], "0");
-  while (parseFloat(String(vars["Count"])) <= parseFloat(String(vars["CountOfHeaders"]))) {
-    vars["IndividualHeaders"] = await CorrPortalElem.Individual_Headers.textContent() || '';
-    vars["IndividualHeadersUI"] = String(vars["IndividualHeaders"]).trim();
-    vars["IndividualExcelHeaders"] = String(vars["HeaderValuesExcel"]).split(",")[parseInt(String(vars["count"]))] || '';
-    vars["IndividualExcelHeaders"] = String(vars["IndividualExcelHeaders"]).trim();
-    if (String(vars["IndividualHeadersUI"]) === String("BidReq.ID")) {
-      vars["IndividualHeadersUI"] = "BidRequestID";
+  console.log(`[Headers Verification] Found ${vars["CountOfHeaders"]} headers in the UI.`);
+
+  // readRow returns Record<string, CellValue> — extract header values as an ordered array
+  const headerRowRecord = excelHelper.readRow(downloadPath, 0);
+  const excelHeaders: string[] = Object.keys(headerRowRecord); // Excel column header names
+
+  const countOfHeaders = parseInt(vars["CountOfHeaders"]);
+
+  for (let i = 0; i < countOfHeaders; i++) {
+    // Use nth(i) to get each individual header element
+    //let uiHeader = (await CorrPortalElem.Individual_Headers.nth(i).textContent() || '').trim();
+    let uiHeader = (await CorrPortalElem.Headers_UI.nth(i).textContent() || '').trim();
+    let excelHeader = (excelHeaders[i] || '').trim();
+
+    // Normalize known UI label differences
+    if (uiHeader === 'BidReq.ID') {
+      uiHeader = 'BidRequestID';
     }
-    if (String(vars["IndividualHeadersUI"]) === String("ExecutionType")) {
-      // [DISABLED] Store Exe.Type in IndividualHeadersUI
-      // vars["IndividualHeadersUI"] = "Exe.Type";
-    }
-    expect(String(vars["IndividualHeadersUI"]).toLowerCase()).toContain(String(vars["IndividualExcelHeaders"]).toLowerCase());
-    vars["Count"] = (parseFloat(String("1")) + parseFloat(String(vars["Count"]))).toFixed(0);
-    vars["count"] = (parseFloat(String("1")) + parseFloat(String(vars["count"]))).toFixed(0);
+
+    console.log(`[Header ${i + 1}] UI: "${uiHeader}" | Excel: "${excelHeader}"`);
+
+    expect(uiHeader.toLowerCase()).toContain(excelHeader.toLowerCase());
   }
 }
-
 /**
  * Step Group: Commit All Loans Chase Direct
  * ID: 1592
@@ -5692,41 +5726,97 @@ export async function stepGroup_Splitting_the_amount_through_cama_from_the_excel
  * ID: 2305
  * Steps: 25
  */
+// export async function stepGroup_Verification_of_Data_from_Excel_to_UI_Excluding_Headers_Comm(page: import('@playwright/test').Page, vars: Record<string, string>) {
+//   const CorrPortalElem = new CorrPortalPage(page);
+//   vars["RowCount"] = String(await CorrPortalElem.Total_Rows_Count_UITotal_Loans.count());
+//   vars["RowCountUI"] = "1";
+//   vars["RowCountExcel"] = "1";
+//   while (parseFloat(String(vars["RowCountUI"])) <= parseFloat(String(vars["RowCount"]))) {
+//     vars["ColumnCountUI"] = "2";
+//     vars["indexExcel"] = "1";
+//     vars["RowDataExcel"] = excelHelper.readRow(vars['_lastDownloadPath'] || '', vars["RowCountExcel"], "0");
+//     // const rowDataRecord = excelHelper.readRow(vars['_lastDownloadPath'] || '', vars["RowCountExcel"]);
+//     // vars["RowDataExcel"] = Object.values(rowDataRecord).join(",");
+//     while (parseFloat(String(vars["ColumnCountUI"])) <= parseFloat(String("13"))) {
+//       vars["CellValueInExcel"] = String(vars["RowDataExcel"]).split(",")[parseInt(String(vars["indexExcel"]))] || '';
+//       vars["HeadersUI"] = await CorrPortalElem.Headers.textContent() || '';
+//       vars["HeadersUI"] = String(vars["HeadersUI"]).trim();
+//       vars["CellValuesUI "] = await CorrPortalElem.Individual_Cell_Value_UI.textContent() || '';
+//       vars["CellValuesUI"] = String(vars["CellValuesUI "]).trim();
+//       if (String(vars["indexExcel"]) === String("5")) {
+//         vars["CountofCama"] = String((String(vars["CellValuesUI"]).split(",").length - 1));
+//         vars["count"] = "1";
+//         while (parseFloat(String(vars["count"])) < parseFloat(String(vars["CountofCama"]))) {
+//           // [DISABLED] Split the RowDataExcel with the , and store the value from the indexExcel in the CellValueInExcel
+//           // vars["CellValueInExcel"] = String(vars["RowDataExcel"]).split(",")[parseInt(String(vars["indexExcel"]))] || '';
+//           vars["indexExcel"] = (parseFloat(String(vars["indexExcel"])) + parseFloat(String("1"))).toFixed(0);
+//           vars["CellValueInExcel2"] = String(vars["RowDataExcel"]).split(",")[parseInt(String(vars["indexExcel"]))] || '';
+//           vars["CellValueInExcel"] = String(vars["CellValueInExcel"]) + "," + String(vars["CellValueInExcel2"]);
+//           vars["count"] = (parseFloat(String(vars["count"])) + parseFloat(String("1"))).toFixed(0);
+//         // [DISABLED] Concate CellValueInExcel and CellValueInExcel2 with SpecialCharacter , and store into a variable CellValueInExcel
+//         // vars["CellValueInExcel"] = String(vars["CellValueInExcel"]) + "," + String(vars["CellValueInExcel2"]);
+//         }
+//       }
+//       await stepGroup_Splitting_the_amount_through_cama_from_the_excel_cell_value(page, vars);
+//       vars["CellValueInExcel"] = String(vars["CellValueInExcel"]).trim();
+//     }
+//   }
+// }
+
 export async function stepGroup_Verification_of_Data_from_Excel_to_UI_Excluding_Headers_Comm(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
+
+  const downloadPath = vars['_lastDownloadPath'];
+  if (!downloadPath) {
+    throw new Error('[stepGroup_Verification_of_Data_from_Excel_to_UI_Excluding_Headers_Comm] vars["_lastDownloadPath"] is not set.');
+  }
+
   vars["RowCount"] = String(await CorrPortalElem.Total_Rows_Count_UITotal_Loans.count());
   vars["RowCountUI"] = "1";
   vars["RowCountExcel"] = "1";
+
   while (parseFloat(String(vars["RowCountUI"])) <= parseFloat(String(vars["RowCount"]))) {
     vars["ColumnCountUI"] = "2";
     vars["indexExcel"] = "1";
-    vars["RowDataExcel"] = excelHelper.readRow(vars['_lastDownloadPath'] || '', vars["RowCountExcel"], "0");
+
+    const rowDataRecord = excelHelper.readRow(downloadPath, parseInt(vars["RowCountExcel"]));
+    vars["RowDataExcel"] = Object.values(rowDataRecord).join(",");
+
     while (parseFloat(String(vars["ColumnCountUI"])) <= parseFloat(String("13"))) {
       vars["CellValueInExcel"] = String(vars["RowDataExcel"]).split(",")[parseInt(String(vars["indexExcel"]))] || '';
-      vars["HeadersUI"] = await CorrPortalElem.Headers.textContent() || '';
-      vars["HeadersUI"] = String(vars["HeadersUI"]).trim();
-      vars["CellValuesUI "] = await CorrPortalElem.Individual_Cell_Value_UI.textContent() || '';
-      vars["CellValuesUI"] = String(vars["CellValuesUI "]).trim();
+
+      vars["CellValuesUI "] = await CorrPortalElem.Total_Rows_Count_UITotal_Loans
+        .nth(parseInt(vars["RowCountUI"]) - 1)
+        .locator('td')
+        .nth(parseInt(vars["ColumnCountUI"]) - 1)
+        .textContent() || '';
+      vars["CellValuesUI"] = String(vars["CellValuesUI "]).trim();
+
+      // ✅ Console log matching header verification style
+      console.log(`[Row ${vars["RowCountUI"]}][Col ${vars["ColumnCountUI"]}] UI: "${vars["CellValuesUI"]}" | Excel: "${vars["CellValueInExcel"].trim()}"`);
+
       if (String(vars["indexExcel"]) === String("5")) {
         vars["CountofCama"] = String((String(vars["CellValuesUI"]).split(",").length - 1));
         vars["count"] = "1";
         while (parseFloat(String(vars["count"])) < parseFloat(String(vars["CountofCama"]))) {
-          // [DISABLED] Split the RowDataExcel with the , and store the value from the indexExcel in the CellValueInExcel
-          // vars["CellValueInExcel"] = String(vars["RowDataExcel"]).split(",")[parseInt(String(vars["indexExcel"]))] || '';
           vars["indexExcel"] = (parseFloat(String(vars["indexExcel"])) + parseFloat(String("1"))).toFixed(0);
           vars["CellValueInExcel2"] = String(vars["RowDataExcel"]).split(",")[parseInt(String(vars["indexExcel"]))] || '';
           vars["CellValueInExcel"] = String(vars["CellValueInExcel"]) + "," + String(vars["CellValueInExcel2"]);
           vars["count"] = (parseFloat(String(vars["count"])) + parseFloat(String("1"))).toFixed(0);
-        // [DISABLED] Concate CellValueInExcel and CellValueInExcel2 with SpecialCharacter , and store into a variable CellValueInExcel
-        // vars["CellValueInExcel"] = String(vars["CellValueInExcel"]) + "," + String(vars["CellValueInExcel2"]);
         }
       }
+
       await stepGroup_Splitting_the_amount_through_cama_from_the_excel_cell_value(page, vars);
       vars["CellValueInExcel"] = String(vars["CellValueInExcel"]).trim();
+
+      vars["ColumnCountUI"] = (parseFloat(String(vars["ColumnCountUI"])) + 1).toFixed(0);
+      vars["indexExcel"] = (parseFloat(String(vars["indexExcel"])) + 1).toFixed(0);
     }
+
+    vars["RowCountUI"] = (parseFloat(String(vars["RowCountUI"])) + 1).toFixed(0);
+    vars["RowCountExcel"] = (parseFloat(String(vars["RowCountExcel"])) + 1).toFixed(0);
   }
 }
-
 /**
  * Step Group: Adjust Time by adding and subtracting one min from Last Commited Time
  * ID: 2314

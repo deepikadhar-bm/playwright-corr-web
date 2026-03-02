@@ -5,39 +5,36 @@ import * as stepGroups from '../../../src/helpers/step-groups';
 import { CommitmentListPage } from '../../../src/pages/correspondant/commitment-list';
 import { CorrespondentPortalPage } from '../../../src/pages/correspondant/correspondent-portal';
 import { PriceOfferedPage } from '../../../src/pages/correspondant/price-offered';
-import { SpinnerPage } from '../../../src/pages/correspondant/spinner';
 
 test.describe('Commitment List - TS_1', () => {
   let vars: Record<string, string> = {};
   let commitmentListPage: CommitmentListPage;
   let correspondentPortalPage: CorrespondentPortalPage;
   let priceOfferedPage: PriceOfferedPage;
-  let spinnerPage: SpinnerPage;
 
   test.beforeEach(async ({ page }) => {
     vars = {};
     commitmentListPage = new CommitmentListPage(page);
     correspondentPortalPage = new CorrespondentPortalPage(page);
     priceOfferedPage = new PriceOfferedPage(page);
-    spinnerPage = new SpinnerPage(page);
   });
 
-  test('REG_TS23_TC02_Closed List : Perform search action by inputting any keyword and verify the export action', async ({ page }) => {
+  test('REG_TS23_TC01_Closed List : Verify the Export action', async ({ page }) => {
+    // Set up download handler to capture exported Excel file
+    page.on('download', async (download) => {
+      const filePath = path.join('test-results', 'downloads', download.suggestedFilename());
+      await download.saveAs(filePath);
+      vars['_lastDownloadPath'] = filePath;
+    });
+
     await stepGroups.stepGroup_Login_to_CORR_Portal(page, vars);
     await correspondentPortalPage.Commitments_Side_Menu.click();
     await commitmentListPage.Committed_List_Dropdown.click();
     await commitmentListPage.Closed_List_Tab.waitFor({ state: 'visible' });
     await commitmentListPage.Closed_List_Tab.click();
-    await commitmentListPage.First_Bid_Req_IDCommitment_List.waitFor({ state: 'visible' });
-    vars["FirstBidReqId"] = await commitmentListPage.First_Bid_Req_IDCommitment_List.textContent() || '';
-    vars["FirstBidReqId"] = String(vars["FirstBidReqId"]).trim();
-    await priceOfferedPage.Search_Dropdown.click();
-    await priceOfferedPage.Search_Dropdown.fill(vars["FirstBidReqId"]);
-    await priceOfferedPage.Bid_Request_ID_DropdownCommitment_List_Page.click();
-    await page.keyboard.press('Enter');
-    await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-    await priceOfferedPage.Select_all_for_Checkbox.check();
-    await expect(priceOfferedPage.Select_all_for_Checkbox).toBeVisible();
+    await priceOfferedPage.Check_Bid_Loan_NumChase_Exe.first().waitFor({ state: 'visible' });
+    await priceOfferedPage.Check_Bid_Loan_NumChase_Exe.first().check();
+    await expect(priceOfferedPage.Check_Bid_Loan_NumChase_Exe.first()).toBeVisible();
     vars["TotalRowsCountUI"] = String(await commitmentListPage.Row_CountClosed_List.count());
     await correspondentPortalPage.Export_Selected_1_Button.waitFor({ state: 'visible' });
     await correspondentPortalPage.Export_Selected_1_Button.click();
