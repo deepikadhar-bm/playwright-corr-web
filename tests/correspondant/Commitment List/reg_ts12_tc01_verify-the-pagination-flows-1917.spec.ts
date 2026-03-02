@@ -6,10 +6,10 @@ import { CommitmentListPage } from '../../../src/pages/correspondant/commitment-
 import { CorrespondentPortalPage } from '../../../src/pages/correspondant/correspondent-portal';
 import { PriceOfferedPage } from '../../../src/pages/correspondant/price-offered';
 import { SpinnerPage } from '../../../src/pages/correspondant/spinner';
-import { PlaywrightHelpers } from '../../../src/helpers/AddonHelpers';
+import { AddonHelpers } from '../../../src/helpers/AddonHelpers';
 
 test.describe('Commitment List - TS_1', () => {
-  let Methods: PlaywrightHelpers;
+  let Methods: AddonHelpers;
   let vars: Record<string, string> = {};
   let commitmentListPage: CommitmentListPage;
   let correspondentPortalPage: CorrespondentPortalPage;
@@ -22,7 +22,7 @@ test.describe('Commitment List - TS_1', () => {
     correspondentPortalPage = new CorrespondentPortalPage(page);
     priceOfferedPage = new PriceOfferedPage(page);
     spinnerPage = new SpinnerPage(page);
-    Methods = new PlaywrightHelpers(page, vars);
+    Methods = new AddonHelpers(page, vars);
   });
 
   test('REG_TS12_TC01_Verify the pagination flows', async ({ page }) => {

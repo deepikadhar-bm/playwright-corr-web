@@ -7,7 +7,7 @@ import { CommitmentListPage } from '../../../src/pages/correspondant/commitment-
 import { CorrespondentPortalPage } from '../../../src/pages/correspondant/correspondent-portal';
 import { PriceOfferedPage } from '../../../src/pages/correspondant/price-offered';
 import { SpinnerPage } from '../../../src/pages/correspondant/spinner';
-import { PlaywrightHelpers } from '@helpers/AddonHelpers';
+import { AddonHelpers } from '@helpers/AddonHelpers';
 
 test.describe('Commitment List - TS_1', () => {
   let vars: Record<string, string> = {};
@@ -16,7 +16,7 @@ test.describe('Commitment List - TS_1', () => {
   let correspondentPortalPage: CorrespondentPortalPage;
   let priceOfferedPage: PriceOfferedPage;
   let spinnerPage: SpinnerPage;
-  let Methods: PlaywrightHelpers;
+  let Methods: AddonHelpers;
 
   test.beforeEach(async ({ page }) => {
     vars = {};
@@ -25,7 +25,7 @@ test.describe('Commitment List - TS_1', () => {
     correspondentPortalPage = new CorrespondentPortalPage(page);
     priceOfferedPage = new PriceOfferedPage(page);
     spinnerPage = new SpinnerPage(page);
-    Methods = new PlaywrightHelpers(page, vars);
+    Methods = new AddonHelpers(page, vars);
   });
 
   test('REG_TS21_TC06_Perform cancel filter action in closed list for one of the filter applied, and then verify that the filter is cleared in both the closed and open list sections', async ({ page }) => {

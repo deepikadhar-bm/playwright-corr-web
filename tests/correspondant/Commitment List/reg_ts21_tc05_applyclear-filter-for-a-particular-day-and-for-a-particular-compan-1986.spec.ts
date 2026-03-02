@@ -8,7 +8,7 @@ import { CorrespondentPortalPage } from '../../../src/pages/correspondant/corres
 import { PriceOfferedPage } from '../../../src/pages/correspondant/price-offered';
 import { SpinnerPage } from '../../../src/pages/correspondant/spinner';
 import { PlaywrightHelpers } from '@helpers/AddonHelpers';
-
+import { testDataManager } from 'testdata/TestDataManager';
 test.describe('Commitment List - TS_1', () => {
   let vars: Record<string, string> = {};
   let applyFiltersButtonPage: ApplyFiltersButtonPage;
@@ -27,9 +27,14 @@ test.describe('Commitment List - TS_1', () => {
     spinnerPage = new SpinnerPage(page);
     Methods = new PlaywrightHelpers(page, vars);
   });
-
+  const profileName = 'Price Offered';
+  const profile = testDataManager.getProfileByName(profileName);
   test('REG_TS21_TC05_Apply/Clear filter for a particular day and for a particular company in open list list and verify that same filter should be applied in closed list', async ({ page }) => {
-    vars["CompanyNameInFilters"] = "Fre";
+    if (profile && profile.data) {
+      const companyName = profile.data[0]['CompanyNameInFilters'];
+      console.log("company name from tdp:", companyName);
+      vars["CompanyNameInFilters"] = companyName;
+    }
 
     await stepGroups.stepGroup_Login_to_CORR_Portal(page, vars);
     await correspondentPortalPage.Commitments_Side_Menu.click();
