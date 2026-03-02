@@ -22,29 +22,35 @@ test.describe('Commitment List - TS_1', () => {
     spinnerPage = new SpinnerPage(page);
   });
 
-  test('REG_TS11_TC01_Verify the Export action ', async ({ page }) => {
+  test('REG_TS23_TC02_Closed List : Perform search action by inputting any keyword and verify the export action', async ({ page }) => {
+    // Set up download handler to capture exported Excel file
+    page.on('download', async (download) => {
+      const filePath = path.join('test-results', 'downloads', download.suggestedFilename());
+      await download.saveAs(filePath);
+      vars['_lastDownloadPath'] = filePath;
+    });
+
     await stepGroups.stepGroup_Login_to_CORR_Portal(page, vars);
     await correspondentPortalPage.Commitments_Side_Menu.click();
     await commitmentListPage.Committed_List_Dropdown.click();
-    vars["FirstCommitmentId"] = await commitmentListPage.First_Commitment_IDCommitment_List.textContent() || '';
-    vars["FirstCommitmentId"] = String(vars["FirstCommitmentId"]).trim();
+    await commitmentListPage.Closed_List_Tab.waitFor({ state: 'visible' });
+    await commitmentListPage.Closed_List_Tab.click();
+    await commitmentListPage.First_Bid_Req_IDCommitment_List.waitFor({ state: 'visible' });
+    vars["FirstBidReqId"] = await commitmentListPage.First_Bid_Req_IDCommitment_List.textContent() || '';
+    vars["FirstBidReqId"] = String(vars["FirstBidReqId"]).trim();
     await priceOfferedPage.Search_Dropdown.click();
-    await priceOfferedPage.Search_Dropdown.fill(vars["FirstCommitmentId"]);
-    await priceOfferedPage.Commitment_Id_DropdownCommitment_List_Page.click();
+    await priceOfferedPage.Search_Dropdown.fill(vars["FirstBidReqId"]);
+    await priceOfferedPage.Bid_Request_ID_DropdownCommitment_List_Page.click();
+    await page.keyboard.press('Enter');
     await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-    vars["RowCount"] = String(await priceOfferedPage.Total_Rows_Count_UIDetails.count());
-    vars["RowCountUI"] = "1";
-    vars["RowCountExcel"] = "1";
-    await priceOfferedPage.Select_All_Loan_Num.click();
+    await priceOfferedPage.Select_all_for_Checkbox.check();
+    await expect(priceOfferedPage.Select_all_for_Checkbox).toBeVisible();
+    vars["TotalRowsCountUI"] = String(await commitmentListPage.Row_CountClosed_List.count());
     await correspondentPortalPage.Export_Selected_1_Button.waitFor({ state: 'visible' });
     await correspondentPortalPage.Export_Selected_1_Button.click();
     // Wait for download - handled by Playwright download events
     await page.waitForTimeout(2000);
-    await stepGroups.stepGroup_Headers_Verification(page, vars);
-    // [DISABLED] Verification of Data from Excel to UI - Excluding Headers(Commitments)
-    // await stepGroups.stepGroup_Verification_of_Data_from_Excel_to_UI_Excluding_HeadersCommi(page, vars);
-    // [DISABLED] Verification of Data from Excel to UI - Excluding Headers (Commitments) - 2
-    // await stepGroups.stepGroup_Verification_of_Data_from_Excel_to_UI_Excluding_Headers_Comm(page, vars);
-    await stepGroups.stepGroup_Verification_of_Data_from_Excel_to_UI_Excluding_Headers_Comm(page, vars);
+    await stepGroups.stepGroup_Headers_Verification_in_Closed_List(page, vars);
+    await stepGroups.stepGroup_Verification_of_Data_from_Excel_to_UIClosed_List(page, vars);
   });
 });
