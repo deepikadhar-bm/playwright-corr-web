@@ -74,14 +74,17 @@ export class CommitmentListPage {
     return this.page.locator("//div[normalize-space()=\"Closed List\"]");
   }
 
-  get Column_Count_UICommitment_List(): Locator {
-    return this.page.locator("(//table[@role='table']//tbody//tr[$|count|]//td[@data-title][position() > 2 and position() != 4 and position() != 12])");
+  Column_Count_UICommitment_List(count:string): Locator {
+    return this.page.locator(`(//table[@role='table']//tbody//tr[${count}]//td[@data-title][position() > 2 and position() != 4 and position() != 12])`);
   }
 
-  get Column_Count_UICommitted_Loans(): Locator {
-    return this.page.locator("(//table)[1]//tbody//tr[$|count|]//td[@data-title][position() >= 3]");
+  Column_Count_UICommitted_Loans(count: string): Locator {
+    return this.page.locator(`(//table)[1]//tbody//tr[${count}]//td[@data-title][position() >= 3]`);
   }
 
+Column_Count_UICommitted_Loans1(count: string): Locator {
+  return this.page.locator(`(//table)[1]//tbody//tr[${count}]//td[ not(descendant::input[@type='checkbox']) and not(descendant::div[contains(@class,'commit-order')])]`);
+  }
   get Column_Count_UILocked_Loans(): Locator {
     return this.page.locator("(//span[contains(@class,\"fa fas fa-lock lock-icon\")])[$|count|]//ancestor::tr//td[@data-title][position() >2 and position()!= 4 and position()!= 12]");
   }
@@ -434,14 +437,17 @@ export class CommitmentListPage {
     return this.page.locator("((//span[contains(@class,\"fa fas fa-lock lock-icon\")])[$|count|]//ancestor::tr//td[@data-title][position() >2 and position()!= 4 and position()!= 12])[$|Count|]");
   }
 
-  get Individual_Cell_Data_UITotal_Loans_Tab(): Locator {
-    return this.page.locator("(//table[@role='table']//tbody//tr[$|count|]//td[@data-title][position() >2 and position()!= 4and  position()!= 12])[$|Count|]");
+  Individual_Cell_Data_UITotal_Loans_Tab(count:string,Count:string): Locator {
+    return this.page.locator(`(//table[@role='table']//tbody//tr[${count}]//td[@data-title][position() >2 and position()!= 4and  position()!= 12])[${Count}]`);
   }
 
-  get Individual_Cell_DataCommitted_Loans(): Locator {
-    return this.page.locator("((//table)[1]//tbody//tr[$|count|]//td[@data-title][position() >= 3])[$|Count|]");
+ Individual_Cell_DataCommitted_Loans(count:string,Count:string ): Locator {
+    return this.page.locator(`((//table)[1]//tbody//tr[${count}]//td[@data-title][position() >= 3])[${Count}]`);
   }
+ Individual_Cell_DataCommitted_Loans1(count:string,Count:string ): Locator {
 
+  return this.page.locator(`((//table)[1]//tbody//tr[${count}]//td[ not(descendant::input[@type='checkbox']) and not(descendant::div[contains(@class,'commit-order')])])[${Count}]`);
+  }
   get Individual_Cell_ValueClosed_List(): Locator {
     return this.page.locator("(//tr[contains(@class,'row')][$|RowCount|]//td[position() >= 2 and position() <= 14])[$|ColumnCountUI|]");
   }
@@ -478,8 +484,8 @@ export class CommitmentListPage {
     return this.page.locator("((//div[contains(@aria-label,\"Sort by\")])[position() <= 13])[$|Count|]");
   }
 
-  get Individual_Header_Names_UICommitment_List(): Locator {
-    return this.page.locator("((//div[contains(@aria-label,\"Sort by\")])[position() != 2 and position() != 10])[$|count|]");
+  Individual_Header_Names_UICommitment_List(count:string): Locator {
+    return this.page.locator(`((//div[contains(@aria-label,\"Sort by\")])[position() != 2 and position() != 10])[${count}]`);
   }
 
   get Individual_Headers_Commitment_List(): Locator {

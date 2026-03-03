@@ -684,14 +684,13 @@ splitBySpecialChar(sourceString: string, delimiter: string, position: string, va
   // 34. Trim whitespace → store in vars
   // ==========================================================================
   trimWhitespace(testData: string, varName: string): void {
-    const METHOD = 'trimWhitespace';
-    try {
-      const result = testData.trim();
-      this.vars[varName] = result;
-      pass(METHOD, `Trimmed "${testData}" → "${result}" → vars['${varName}']`);
-    } catch (e) { fail(METHOD, `Trim "${testData}"`, e); }
-  }
-
+  const METHOD = 'trimWhitespace';
+  try {
+    const result = testData.replace(/\s+/g, ''); // removes ALL whitespace including between words
+    this.vars[varName] = result;
+    pass(METHOD, `Trimmed "${testData}" → "${result}" → vars['${varName}']`);
+  } catch (e) { fail(METHOD, `Trim "${testData}"`, e); }
+}
   // ==========================================================================
   // 35. Remove special char → store in vars
   // ==========================================================================
@@ -883,5 +882,26 @@ async verifyDateOrder(
 
     pass(METHOD, `${dates.length} dates in ${order} order with format "${dateFormat}"`);
   } catch (e) { fail(METHOD, `Date ${order} order`, e); }
+}
+splitStringByRegConditionWithPosition(sourceString: string, delimiter: string, position: string | number, varName: string): void {
+  const METHOD = 'splitStringByPosition';
+  try {
+    if (!sourceString) throw new Error(`Source string is empty or undefined`);
+    if (!delimiter) throw new Error(`Delimiter is empty or undefined`);
+
+    const parts = sourceString.split(delimiter);
+    // Accept both runtime vars (string) and hardcoded (number), position starts from 1
+    const pos = typeof position === 'string' ? parseInt(position, 10) : position;
+
+    if (isNaN(pos)) throw new Error(`Position "${position}" is not a valid number`);
+
+    const index = pos - 1;
+    if (index < 0 || index >= parts.length)
+      throw new Error(`Position ${pos} out of range. "${sourceString}" split by "${delimiter}" has ${parts.length} part(s) [1 to ${parts.length}]`);
+
+    const result = parts[index];
+    this.vars[varName] = result;
+    pass(METHOD, `Split "${sourceString}" by "${delimiter}" → position[${pos}] = "${result}" → vars['${varName}']`);
+  } catch (e) { fail(METHOD, `Split "${sourceString}" by "${delimiter}" at position ${position}`, e); }
 }
 }

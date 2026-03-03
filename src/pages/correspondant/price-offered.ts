@@ -1340,8 +1340,8 @@ export class PriceOfferedPage {
     return this.page.locator("((//th//div[@role=\"button\"])[position() >=1 and position() <= 13])[$|count|]");
   }
 
-  get Individual_Header_Name_UI(): Locator {
-    return this.page.locator("(//div[contains(@aria-label,\"Sort by\")])[$|count|]");
+  Individual_Header_Name_UI(count:string): Locator {
+    return this.page.locator(`(//div[contains(@aria-label,\"Sort by\")])[${count}]`);
   }
 
   get Individual_Headers(): Locator {
