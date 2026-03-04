@@ -9,6 +9,7 @@ import { PriceOfferedPage } from '../../../src/pages/correspondant/price-offered
 import { SpinnerPage } from '../../../src/pages/correspondant/spinner';
 import * as excelHelper from '../../../src/helpers/excel-helpers';
 import { AddonHelpers } from '@helpers/AddonHelpers';
+import { Logger as log } from '@helpers/log-helper';
 
 test.describe('Commitment List - TS_1', () => {
 
@@ -53,6 +54,7 @@ test.describe('Commitment List - TS_1', () => {
     Methods.getCurrentTimestamp('dd-MM-yyyy HH-mm-ss','TimeStamp','Asia/Kolkata');
 
     const [download] = await Promise.all([page.waitForEvent('download'), priceOfferedPage.Download_File.first().click()]);
+    log.info("File was downloaded successfully")
     Methods.getCurrentTimestamp('MM/dd/yyyy HH:mm', 'CurresntEstDateAndTime', 'America/New_York');
     Methods.concatenateWithSpace(vars["CurresntEstDateAndTime"], "ET", "ExpectedReportGenTime");
     vars['SavedFileName'] = vars['TimeStamp'] + '_' + download.suggestedFilename();

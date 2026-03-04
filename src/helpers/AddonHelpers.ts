@@ -186,9 +186,7 @@ export class AddonHelpers {
     } catch (e) { fail(METHOD, `Does not contain "${testData}"`, e); }
   }
 
-  // ==========================================================================
   // 6. Verify attribute contains (case-insensitive)
-  // ==========================================================================
   async verifyAttributeContainsCaseInsensitive(
     strategyOrLocator: string | Locator, value: string | undefined, attributeName: string, testData: string
   ): Promise<void> {
@@ -844,6 +842,26 @@ async verifyElementContainsTextIgnoreCase(element: Locator, expectedText: string
     throw new Error(`[FAIL] Expected element to contain "${expectedText}" (case-insensitive), but got "${actualText.trim()}"`);
   }
 }
+//verifying testdata with ignore case
+async verifyTestdataIgnoreCase(
+  textData1: string,
+  matchType: 'equals' | 'contains',
+  textData2: string
+): Promise<void> {
+  const actual = textData1.trim().toLowerCase();
+  const expected = textData2.trim().toLowerCase();
+
+  const isMatch = matchType === 'equals'
+    ? actual === expected
+    : actual.includes(expected);
+
+  if (isMatch) {
+    console.log(`[PASS] "${textData1}" ${matchType} "${textData2}" (case-insensitive)`);
+  } else {
+    throw new Error(`[FAIL] Expected "${textData1}" to ${matchType} "${textData2}" (case-insensitive)`);
+  }
+}
+//spliting the string with foirst and last positions
 splitRangeOfCharacters(source: string, start: number, end: number, varName: string): void {
   const METHOD = 'splitRangeOfCharacters';
   try {
