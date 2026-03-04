@@ -10,6 +10,7 @@ import { CorrPortalPage } from '../../pages/correspondant/CorrPortalPage';
 // import { PlaywrightHelpers } from '../../PlaywrightHelpers';
 import { AddonHelpers } from '../../../src/helpers/AddonHelpers';
 import { CommitmentListPage } from '../../../src/pages/correspondant/commitment-list';
+import { Logger as log } from '@helpers/log-helper';
 /**
  * Step Group: Login to CORR Portal
  * ID: 773
@@ -4774,6 +4775,7 @@ export async function stepGroup_Verifying_Header_Names_From_UI_to_ExcelCommitmen
       expect(vars["IndividualHeaderNameLockedLoansExcel"]).toBe("LoanAmt");
     } else {
       expect(vars["IndividualHeaderNameLockedLoansUI"]).toContain(vars["IndividualHeaderNameLockedLoansExcel"]);
+      log.info(vars["IndividualHeaderNameLockedLoansUI"] + " contains " + vars["IndividualHeaderNameLockedLoansExcel"]);
     }
 
     Methods.MathematicalOperation(vars["count"], "+", "1", "count");
@@ -4814,9 +4816,12 @@ export async function stepGroup_Verifying_Locked_Loans_Data_UI_to_Excel_Commitme
       // [DISABLED] Verify if IndividualCellDataAllLoansUI == IndividualRowDataExcelAllLoans
       // expect(String(vars["IndividualCellDataAllLoansUI"])).toBe(vars["IndividualRowDataExcelAllLoans"]);
       expect(String(vars["IndividualCellDataLockedLoansUI"])).toContain(vars["IndividualRowDataLockedLoansExcel"]);
-      vars["Count"] = (parseFloat(String("1")) + parseFloat(String(vars["Count"]))).toFixed(0);
+      log.info(vars["IndividualCellDataLockedLoansUI"] + " contains " + vars["IndividualRowDataLockedLoansExcel"]);
+      // vars["Count"] = (parseFloat(String("1")) + parseFloat(String(vars["Count"]))).toFixed(0);
+      Methods.MathematicalOperation(vars["Count"], "+", "1", "Count");
     }
-    vars["count"] = (parseFloat(String("1")) + parseFloat(String(vars["count"]))).toFixed(0);
+    // vars["count"] = (parseFloat(String("1")) + parseFloat(String(vars["count"]))).toFixed(0);
+    Methods.MathematicalOperation(vars["count"], "+", "1", "count");
   }
 }
 

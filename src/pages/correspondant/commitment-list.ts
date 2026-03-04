@@ -480,8 +480,8 @@ Column_Count_UICommitted_Loans1(count: string): Locator {
     return this.page.locator("(//td[@data-title=\"Corr. Loan#\"]//button[1])[$|RowCount|]");
   }
 
-  get Individual_Header_Name_UIClosed_List(): Locator {
-    return this.page.locator("((//div[contains(@aria-label,\"Sort by\")])[position() <= 13])[$|Count|]");
+  Individual_Header_Name_UIClosed_List(Count:string): Locator {
+    return this.page.locator(`((//div[contains(@aria-label,\"Sort by\")])[position() <= 13])[${Count}]`);
   }
 
   Individual_Header_Names_UICommitment_List(count:string): Locator {
