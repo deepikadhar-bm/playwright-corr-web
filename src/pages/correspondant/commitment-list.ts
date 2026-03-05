@@ -884,6 +884,9 @@ Column_Count_UICommitted_Loans1(count: string): Locator {
   get Total_Rows_Count_UIFirst_Commitment(): Locator {
     return this.page.locator("(//table)[1]//tbody//tr[@role=\"row\"]");
   }
+  get First_Company_CommitmentClosedList(): Locator {
+    return this.page.locator(`(//div[contains(@class,"active") and contains(text(),'Closed List')]//following::td[@data-title='Company'])[1]`);
+  }
 
   get Total_Rows_Count_UITotal_Loans(): Locator {
     return this.page.locator("//tbody//tr[@role=\"row\"]");

@@ -5123,16 +5123,18 @@ export async function stepGroup_Headers_Verification_Closed_List(page: import('@
  */
 export async function stepGroup_Headers_Verification_in_Closed_List(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
+  const Methods = new AddonHelpers(page, vars);
   vars["Count"] = "1";
   vars["CountOfHeaders"] = String(await CorrPortalElem.Headers_UI_Closed_List.count());
-  vars["EntireHeadersExcel"] = excelHelper.readRow(vars['_lastDownloadPath'] || '', "0", "0");
+  vars["EntireHeadersExcel"] = excelHelper.readEntireRow(vars["ExportsFilePath"], 0, 0, "EntireHeadersExcel");
   while (parseFloat(String(vars["Count"])) <= parseFloat(String(vars["CountOfHeaders"]))) {
-    vars["IndividualHeaderNameUI"] = await CorrPortalElem.Individual_Headers_Commitment_List.textContent() || '';
-    vars["IndividualHeaderNameUI"] = String(vars["IndividualHeaderNameUI"]).trim();
-    vars["IndividualHeaderNameExcel"] = String(vars["EntireHeadersExcel"]).split(",")[parseInt(String(vars["Count"]))] || '';
-    expect(String(vars["IndividualHeaderNameExcel"])).toBe(vars["IndividualHeaderNameUI"]);
-    vars["Count"] = (parseFloat(String("1")) + parseFloat(String(vars["Count"]))).toFixed(0);
+    vars["IndividualHeaderNameUI"] = await CorrPortalElem.Individual_Headers_Commitment_List(vars["Count"]).textContent() || '';
+    Methods.trimtestdata(vars["IndividualHeaderNameUI"], "IndividualHeaderNameUI");
+    Methods.splitStringByRegConditionWithPosition(vars["EntireHeadersExcel"], ",", vars["Count"], "IndividualHeaderNameExcel");
+    expect(Methods.verifyString(vars["IndividualHeaderNameExcel"], "equals", vars["IndividualHeaderNameUI"]));
+    Methods.MathematicalOperation(vars["Count"], "+", "1", "Count");
   }
+  log.info("step group Headers Verification in Closed List is completed");
 }
 
 /**
@@ -5142,36 +5144,60 @@ export async function stepGroup_Headers_Verification_in_Closed_List(page: import
  */
 export async function stepGroup_Verification_of_Data_from_Excel_to_UIClosed_List(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
+  const Methods = new AddonHelpers(page, vars);
   vars["RowCount"] = "1";
+
   while (parseFloat(String(vars["RowCount"])) <= parseFloat(String(vars["TotalRowsCountUI"]))) {
     vars["ColumnCountUI"] = "1";
     vars["IndexCountExcel"] = "1";
-    vars["EntireRowDataExcel"] = excelHelper.readRow(vars['_lastDownloadPath'] || '', vars["RowCount"], "0");
+
+    vars["EntireRowDataExcel"] = excelHelper.readEntireRow(vars["ExportsFilePath"], 0, vars["RowCount"], "EntireRowDataExcel");
+
     await CorrPortalElem.Commitment_List_Text.click();
-    while (parseFloat(String(vars["ColumnCountUI"])) <= parseFloat(String("13"))) {
-      vars["IndividualCellValueExcel"] = String(vars["EntireRowDataExcel"]).split(",")[parseInt(String(vars["IndexCountExcel"]))] || '';
-      vars["IndividualCellValueUI"] = await CorrPortalElem.Individual_Cell_Value_Closed_List.textContent() || '';
-      vars["IndividualCellValueUI"] = String(vars["IndividualCellValueUI"]).trim();
-      if (String(vars["ColumnCountUI"]) === String("5")) {
-        vars["CountofCama"] = String((String(vars["IndividualCellValueUI"]).split(",").length - 1));
+
+    while (parseFloat(vars["ColumnCountUI"]) <= 13) {
+      Methods.splitStringByRegConditionWithPosition(vars["EntireRowDataExcel"], ",", vars["IndexCountExcel"], "IndividualCellValueExcel");
+
+      vars["IndividualCellValueUI"] = await CorrPortalElem.Individual_Cell_Value_Closed_List(vars["RowCount"], vars["ColumnCountUI"]).textContent() || '';
+
+      Methods.trimWhitespace(vars["IndividualCellValueUI"], "IndividualCellValueUI");
+
+      if (String(vars["ColumnCountUI"]) === "5") {
+        Methods.countCharacter(vars["IndividualCellValueUI"], ",", "CountofCama");
+
         vars["count"] = "1";
-        while (parseFloat(String(vars["count"])) < parseFloat(String(vars["CountofCama"]))) {
-          vars["IndexCountExcel"] = (parseFloat(String(vars["IndexCountExcel"])) + parseFloat(String("1"))).toFixed(0);
-          vars["CellValueInExcel2"] = String(vars["EntireRowDataExcel"]).split(",")[parseInt(String(vars["IndexCountExcel"]))] || '';
-          vars["IndividualCellValueExcel"] = String(vars["IndividualCellValueExcel"]) + "," + String(vars["CellValueInExcel2"]);
-          vars["count"] = (parseFloat(String(vars["count"])) + parseFloat(String("1"))).toFixed(0);
+
+        while (parseFloat(vars["count"]) <= parseFloat(vars["CountofCama"])) {
+          Methods.MathematicalOperation(vars["IndexCountExcel"], "+", "1", "IndexCountExcel");
+          Methods.splitStringByRegConditionWithPosition(vars["EntireRowDataExcel"], ",", vars["IndexCountExcel"], "CellValueInExcel2");
+          Methods.concatenateWithSpecialChar(vars["IndividualCellValueExcel"],vars["CellValueInExcel2"], ",", "IndividualCellValueExcel");
+          Methods.MathematicalOperation(vars["count"], "+", "1", "count");
         }
-      } else if (String(vars["ColumnCountUI"]) === String("13")) {
-        vars["CountofCama"] = String((String(vars["IndividualCellValueUI"]).split(",").length - 1));
+
+      } else if (String(vars["ColumnCountUI"]) === "13") {
+        Methods.countCharacter(vars["IndividualCellValueUI"], ",", "CountofCama");
+
         vars["count"] = "1";
-        while (parseFloat(String(vars["count"])) < parseFloat(String(vars["CountofCama"]))) {
-          vars["IndexCountExcel"] = (parseFloat(String(vars["IndexCountExcel"])) + parseFloat(String("1"))).toFixed(0);
-          vars["CellValueInExcel2"] = String(vars["EntireRowDataExcel"]).split(",")[parseInt(String(vars["IndexCountExcel"]))] || '';
-          vars["IndividualCellValueExcel"] = String(vars["IndividualCellValueExcel"]) + "," + String(vars["CellValueInExcel2"]);
+
+        while (parseFloat(vars["count"]) <= parseFloat(vars["CountofCama"])) {
+          Methods.MathematicalOperation(vars["IndexCountExcel"], "+", "1", "IndexCountExcel");
+          Methods.splitStringByRegConditionWithPosition(vars["EntireRowDataExcel"], ",", vars["IndexCountExcel"], "CellValueInExcel2");
+          Methods.concatenateWithSpecialChar(vars["IndividualCellValueExcel"],vars["CellValueInExcel2"], ",", "IndividualCellValueExcel");
+          Methods.MathematicalOperation(vars["count"], "+", "1", "count");
         }
       }
+
+      Methods.trimWhitespace(vars["IndividualCellValueExcel"], "IndividualCellValueExcel");
+      expect(Methods.verifyString(vars["IndividualCellValueExcel"], "contains", vars["IndividualCellValueUI"]));
+
+      Methods.MathematicalOperation(vars["ColumnCountUI"], "+", "1", "ColumnCountUI");
+      Methods.MathematicalOperation(vars["IndexCountExcel"], "+", "1", "IndexCountExcel");
     }
+
+    Methods.MathematicalOperation(vars["RowCount"], "+", "1", "RowCount");
   }
+
+  log.info("stepGroup Verification of Data from Excel to UIClosed List is completed");
 }
 
 /**
