@@ -65,18 +65,18 @@ export class AddonHelpers {
 
     const val = value as string;
     switch (strategyOrLocator.toLowerCase()) {
-      case 'id':              return this.page.locator(`#${val}`);
-      case 'name':            return this.page.locator(`[name="${val}"]`);
-      case 'tagname':         return this.page.locator(`${val}`);
-      case 'classname':       return this.page.locator(`.${val}`);
-      case 'linktext':        return this.page.getByRole('link', { name: val, exact: true });
+      case 'id': return this.page.locator(`#${val}`);
+      case 'name': return this.page.locator(`[name="${val}"]`);
+      case 'tagname': return this.page.locator(`${val}`);
+      case 'classname': return this.page.locator(`.${val}`);
+      case 'linktext': return this.page.getByRole('link', { name: val, exact: true });
       case 'partiallinktext': return this.page.getByRole('link', { name: val });
-      case 'cssselector':     return this.page.locator(val);
-      case 'xpath':           return this.page.locator(`xpath=${val}`);
-      case 'text':            return this.page.getByText(val);
-      case 'testid':          return this.page.getByTestId(val);
-      case 'placeholder':     return this.page.getByPlaceholder(val);
-      case 'label':           return this.page.getByLabel(val);
+      case 'cssselector': return this.page.locator(val);
+      case 'xpath': return this.page.locator(`xpath=${val}`);
+      case 'text': return this.page.getByText(val);
+      case 'testid': return this.page.getByTestId(val);
+      case 'placeholder': return this.page.getByPlaceholder(val);
+      case 'label': return this.page.getByLabel(val);
       default: throw new Error(`Unknown locator strategy: "${strategyOrLocator}"`);
     }
   }
@@ -637,21 +637,21 @@ export class AddonHelpers {
     } catch (e) { fail(METHOD, `Count chars in "${sourceString}"`, e); }
   }
   // 32. Split string by special character → store specific position in var
-// ==========================================================================
-splitBySpecialChar(sourceString: string, delimiter: string, position: string, varName: string): void {
-  const METHOD = 'splitBySpecialChar';
-  try {
-    const pos = parseInt(position, 10);
-    const parts = sourceString.split(delimiter).map(v => v.trim()).filter(v => v !== '');
-    const value = parts[pos];
-    if (value === undefined) {
-      fail(METHOD, `Position ${pos} does not exist in "${sourceString}" split by "${delimiter}"`, new Error(`Invalid position ${pos}`));
-      return;
-    }
-    this.vars[varName] = value;
-    pass(METHOD, `Split "${sourceString}" by "${delimiter}" → position[${pos}] = "${value}" → vars['${varName}']`);
-  } catch (e) { fail(METHOD, `Split "${sourceString}" by "${delimiter}"`, e); }
-}
+  // ==========================================================================
+  splitBySpecialChar(sourceString: string, delimiter: string, position: string, varName: string): void {
+    const METHOD = 'splitBySpecialChar';
+    try {
+      const pos = parseInt(position, 10);
+      const parts = sourceString.split(delimiter).map(v => v.trim()).filter(v => v !== '');
+      const value = parts[pos];
+      if (value === undefined) {
+        fail(METHOD, `Position ${pos} does not exist in "${sourceString}" split by "${delimiter}"`, new Error(`Invalid position ${pos}`));
+        return;
+      }
+      this.vars[varName] = value;
+      pass(METHOD, `Split "${sourceString}" by "${delimiter}" → position[${pos}] = "${value}" → vars['${varName}']`);
+    } catch (e) { fail(METHOD, `Split "${sourceString}" by "${delimiter}"`, e); }
+  }
   // ==========================================================================
   // 32. Concatenate with special char → store in vars
   // ==========================================================================
@@ -682,13 +682,13 @@ splitBySpecialChar(sourceString: string, delimiter: string, position: string, va
   // 34. Trim whitespace → store in vars
   // ==========================================================================
   trimWhitespace(testData: string, varName: string): void {
-  const METHOD = 'trimWhitespace';
-  try {
-    const result = testData.replace(/\s+/g, ''); // removes ALL whitespace including between words
-    this.vars[varName] = result;
-    pass(METHOD, `Trimmed "${testData}" → "${result}" → vars['${varName}']`);
-  } catch (e) { fail(METHOD, `Trim "${testData}"`, e); }
-}
+    const METHOD = 'trimWhitespace';
+    try {
+      const result = testData.replace(/\s+/g, ''); // removes ALL whitespace including between words
+      this.vars[varName] = result;
+      pass(METHOD, `Trimmed "${testData}" → "${result}" → vars['${varName}']`);
+    } catch (e) { fail(METHOD, `Trim "${testData}"`, e); }
+  }
   // ==========================================================================
   // 35. Remove special char → store in vars
   // ==========================================================================
@@ -717,13 +717,26 @@ splitBySpecialChar(sourceString: string, delimiter: string, position: string, va
   // ==========================================================================
   // 36. Verify NOT contains
   // ==========================================================================
-  verifyNotContains(testData: string, testData1: string): void {
-    const METHOD = 'verifyNotContains';
+  verifyString(
+    testData: string,
+    condition: 'contains' | 'notContains' | 'equals' | 'notEquals',
+    testData1: string
+  ): void {
+    const METHOD = 'verifyString';
     try {
-      if (testData.includes(testData1))
-        throw new Error(`"${testData}" unexpectedly contains "${testData1}"`);
-      pass(METHOD, `"${testData}" does NOT contain "${testData1}"`);
-    } catch (e) { fail(METHOD, `"${testData}" should not contain "${testData1}"`, e); }
+      const conditions: Record<string, { result: boolean; pass: string; fail: string }> = {
+        contains: { result: testData.includes(testData1), pass: `"${testData}" contains "${testData1}"`, fail: `"${testData}" does not contain "${testData1}"` },
+        notContains: { result: !testData.includes(testData1), pass: `"${testData}" does not contain "${testData1}"`, fail: `"${testData}" unexpectedly contains "${testData1}"` },
+        equals: { result: testData === testData1, pass: `"${testData}" equals "${testData1}"`, fail: `"${testData}" does not equal "${testData1}"` },
+        notEquals: { result: testData !== testData1, pass: `"${testData}" does not equal "${testData1}"`, fail: `"${testData}" unexpectedly equals "${testData1}"` },
+      };
+
+      const check = conditions[condition];
+      if (!check) throw new Error(`Invalid condition "${condition}"`);
+      if (!check.result) throw new Error(check.fail);
+
+      pass(METHOD, check.pass);
+    } catch (e) { fail(METHOD, `verifyString | "${testData}" ${condition} "${testData1}"`, e); }
   }
 
   // ==========================================================================
@@ -754,7 +767,7 @@ splitBySpecialChar(sourceString: string, delimiter: string, position: string, va
   }
 
   //39.verifying the mathematic operation
-    MathematicalOperation(a: string | number, operator: string, b: string | number, varName: string): void {
+  MathematicalOperation(a: string | number, operator: string, b: string | number, varName: string): void {
     const METHOD = 'MathematicalOperation';
     try {
       const numA = parseFloat(String(a));
@@ -794,132 +807,145 @@ splitBySpecialChar(sourceString: string, delimiter: string, position: string, va
     } catch (e) { fail(METHOD, `${value1} ${operator} ${value2}`, e); }
   }
   //Trim the string and store in vars
-   trimtestdata(value: string, varName: string): void {
-  const trimmed = value.trim();
-  this.vars[varName] = trimmed;
-  console.log(`[trimFrontBack] "${value}" → "${trimmed}" → vars['${varName}']`);
-}
-// 33. Get month name by month number → store in vars
-// ==========================================================================
-getMonthNameByNumber(monthNumber: string, varName: string): void {
-  const METHOD = 'getMonthNameByNumber';
-  try {
-    const monthNames = [
-      'January', 'February', 'March', 'April', 'May', 'June',
-      'July', 'August', 'September', 'October', 'November', 'December'
-    ];
-    const index = parseInt(monthNumber, 10) - 1;
-    if (index < 0 || index > 11) {
-      fail(METHOD, `Invalid month number "${monthNumber}". Must be between 1 and 12.`, new Error(`Invalid month number: ${monthNumber}`));
-      return;
-    }
-    const monthName = monthNames[index];
-    this.vars[varName] = monthName;
-    pass(METHOD, `Month number "${monthNumber}" → "${monthName}" → vars['${varName}']`);
-  } catch (e) { fail(METHOD, `Get month name for month number "${monthNumber}"`, e); }
-}
-// 34. Remove characters from first and last position → store in vars
-// ==========================================================================
-removeCharactersFromPosition(sourceString: string, firstCount: string, lastCount: string, varName: string): void {
-  const METHOD = 'removeCharactersFromPosition';
-  try {
-    const first = parseInt(firstCount, 10) || 0;
-    const last = parseInt(lastCount, 10) || 0;
-    const result = sourceString.substring(first, last === 0 ? undefined : sourceString.length - last);
-    this.vars[varName] = result;
-    pass(METHOD, `Removed ${first} from first and ${last} from last of "${sourceString}" → "${result}" → vars['${varName}']`);
-  } catch (e) { fail(METHOD, `Remove characters from "${sourceString}"`, e); }
-}
-//verifying the element contains text with ignore case
-async verifyElementContainsTextIgnoreCase(element: Locator, expectedText: string): Promise<void> {
-  const actualText = await element.textContent() || '';
-  const actual = actualText.trim().toLowerCase();
-  const expected = expectedText.trim().toLowerCase();
-
-  if (actual.includes(expected)) {
-    console.log(`[PASS] Element contains text (case-insensitive): "${expectedText}"`);
-  } else {
-    throw new Error(`[FAIL] Expected element to contain "${expectedText}" (case-insensitive), but got "${actualText.trim()}"`);
+  trimtestdata(value: string, varName: string): void {
+    const trimmed = value.trim();
+    this.vars[varName] = trimmed;
+    console.log(`[trimFrontBack] "${value}" → "${trimmed}" → vars['${varName}']`);
   }
-}
-//verifying testdata with ignore case
-async verifyTestdataIgnoreCase(
-  textData1: string,
-  matchType: 'equals' | 'contains',
-  textData2: string
-): Promise<void> {
-  const actual = textData1.trim().toLowerCase();
-  const expected = textData2.trim().toLowerCase();
-
-  const isMatch = matchType === 'equals'
-    ? actual === expected
-    : actual.includes(expected);
-
-  if (isMatch) {
-    console.log(`[PASS] "${textData1}" ${matchType} "${textData2}" (case-insensitive)`);
-  } else {
-    throw new Error(`[FAIL] Expected "${textData1}" to ${matchType} "${textData2}" (case-insensitive)`);
+  // 33. Get month name by month number → store in vars
+  // ==========================================================================
+  getMonthNameByNumber(monthNumber: string, varName: string): void {
+    const METHOD = 'getMonthNameByNumber';
+    try {
+      const monthNames = [
+        'January', 'February', 'March', 'April', 'May', 'June',
+        'July', 'August', 'September', 'October', 'November', 'December'
+      ];
+      const index = parseInt(monthNumber, 10) - 1;
+      if (index < 0 || index > 11) {
+        fail(METHOD, `Invalid month number "${monthNumber}". Must be between 1 and 12.`, new Error(`Invalid month number: ${monthNumber}`));
+        return;
+      }
+      const monthName = monthNames[index];
+      this.vars[varName] = monthName;
+      pass(METHOD, `Month number "${monthNumber}" → "${monthName}" → vars['${varName}']`);
+    } catch (e) { fail(METHOD, `Get month name for month number "${monthNumber}"`, e); }
   }
-}
-//spliting the string with foirst and last positions
-splitRangeOfCharacters(source: string, start: number, end: number, varName: string): void {
-  const METHOD = 'splitRangeOfCharacters';
-  try {
-    if (!source) throw new Error(`Source string is empty or undefined`);
-    if (start < 0 || end > source.length || start >= end) throw new Error(`Invalid range [${start}:${end}] for string of length ${source.length}`);
-    const result = source.substring(start, end);
-    this.vars[varName] = result;
-    pass(METHOD, `Split range [${start}:${end}] from "${source}" = "${result}" → vars['${varName}']`);
-  } catch (e) { fail(METHOD, `Split range [${start}:${end}] from "${source}"`, e); }
-}
-//verification of ascending or descending order of based on date formate
-async verifyDateOrder(
-  locator: Locator,
-  order: 'ascending' | 'descending',
-  dateFormat: string
-): Promise<void> {
-  const METHOD = 'verifyDateOrder';
-  try {
-    const elements = await locator.all();
-    if (elements.length === 0) throw new Error(`No elements found`);
+  // 34. Remove characters from first and last position → store in vars
+  // ==========================================================================
+  removeCharactersFromPosition(sourceString: string, firstCount: string, lastCount: string, varName: string): void {
+    const METHOD = 'removeCharactersFromPosition';
+    try {
+      const first = parseInt(firstCount, 10) || 0;
+      const last = parseInt(lastCount, 10) || 0;
+      const result = sourceString.substring(first, last === 0 ? undefined : sourceString.length - last);
+      this.vars[varName] = result;
+      pass(METHOD, `Removed ${first} from first and ${last} from last of "${sourceString}" → "${result}" → vars['${varName}']`);
+    } catch (e) { fail(METHOD, `Remove characters from "${sourceString}"`, e); }
+  }
+  //verifying the element contains text with ignore case
+  async verifyElementContainsTextIgnoreCase(element: Locator, expectedText: string): Promise<void> {
+    const actualText = await element.textContent() || '';
+    const actual = actualText.trim().toLowerCase();
+    const expected = expectedText.trim().toLowerCase();
 
-    const dates: Date[] = [];
-    for (const el of elements) {
-      const text = (await el.textContent() ?? '').trim();
-      const parsed = parse(text, dateFormat, new Date());
-      if (isNaN(parsed.getTime())) throw new Error(`Cannot parse "${text}" as date with format "${dateFormat}"`);
-      dates.push(parsed);
+    if (actual.includes(expected)) {
+      console.log(`[PASS] Element contains text (case-insensitive): "${expectedText}"`);
+    } else {
+      throw new Error(`[FAIL] Expected element to contain "${expectedText}" (case-insensitive), but got "${actualText.trim()}"`);
     }
+  }
+  //verifying testdata with ignore case
+  async verifyTestdataIgnoreCase(
+    textData1: string,
+    matchType: 'equals' | 'contains',
+    textData2: string
+  ): Promise<void> {
+    const actual = textData1.trim().toLowerCase();
+    const expected = textData2.trim().toLowerCase();
 
-    for (let i = 1; i < dates.length; i++) {
-      if (order === 'ascending' && dates[i] < dates[i - 1])
-        throw new Error(`Order broken at [${i}]: "${format(dates[i - 1], dateFormat)}" > "${format(dates[i], dateFormat)}"`);
-      if (order === 'descending' && dates[i] > dates[i - 1])
-        throw new Error(`Order broken at [${i}]: "${format(dates[i - 1], dateFormat)}" < "${format(dates[i], dateFormat)}"`);
+    const isMatch = matchType === 'equals'
+      ? actual === expected
+      : actual.includes(expected);
+
+    if (isMatch) {
+      console.log(`[PASS] "${textData1}" ${matchType} "${textData2}" (case-insensitive)`);
+    } else {
+      throw new Error(`[FAIL] Expected "${textData1}" to ${matchType} "${textData2}" (case-insensitive)`);
     }
+  }
+  //count the substrings
+  countCharacter(text: string, character: string, varName: string): void {
+    const METHOD = 'countCharacter';
+    try {
+      if (!text) throw new Error(`Input text is null or undefined`);
+      if (!character) throw new Error(`Character to count is null or undefined`);
 
-    pass(METHOD, `${dates.length} dates in ${order} order with format "${dateFormat}"`);
-  } catch (e) { fail(METHOD, `Date ${order} order`, e); }
-}
-splitStringByRegConditionWithPosition(sourceString: string, delimiter: string, position: string | number, varName: string): void {
-  const METHOD = 'splitStringByPosition';
-  try {
-    if (!sourceString) throw new Error(`Source string is empty or undefined`);
-    if (!delimiter) throw new Error(`Delimiter is empty or undefined`);
+      const count = text.split(character).length - 1;
+      this.vars[varName] = String(count);
 
-    const parts = sourceString.split(delimiter);
-    // Accept both runtime vars (string) and hardcoded (number), position starts from 1
-    const pos = typeof position === 'string' ? parseInt(position, 10) : position;
+      pass(METHOD, `Count of "${character}" in "${text}" = ${count} → vars['${varName}']`);
+    } catch (e) { fail(METHOD, `Count "${character}" in "${text}"`, e); }
+  }
+  //spliting the string with foirst and last positions
+  splitRangeOfCharacters(source: string, start: number, end: number, varName: string): void {
+    const METHOD = 'splitRangeOfCharacters';
+    try {
+      if (!source) throw new Error(`Source string is empty or undefined`);
+      if (start < 0 || end > source.length || start >= end) throw new Error(`Invalid range [${start}:${end}] for string of length ${source.length}`);
+      const result = source.substring(start, end);
+      this.vars[varName] = result;
+      pass(METHOD, `Split range [${start}:${end}] from "${source}" = "${result}" → vars['${varName}']`);
+    } catch (e) { fail(METHOD, `Split range [${start}:${end}] from "${source}"`, e); }
+  }
+  //verification of ascending or descending order of based on date formate
+  async verifyDateOrder(
+    locator: Locator,
+    order: 'ascending' | 'descending',
+    dateFormat: string
+  ): Promise<void> {
+    const METHOD = 'verifyDateOrder';
+    try {
+      const elements = await locator.all();
+      if (elements.length === 0) throw new Error(`No elements found`);
 
-    if (isNaN(pos)) throw new Error(`Position "${position}" is not a valid number`);
+      const dates: Date[] = [];
+      for (const el of elements) {
+        const text = (await el.textContent() ?? '').trim();
+        const parsed = parse(text, dateFormat, new Date());
+        if (isNaN(parsed.getTime())) throw new Error(`Cannot parse "${text}" as date with format "${dateFormat}"`);
+        dates.push(parsed);
+      }
 
-    const index = pos - 1;
-    if (index < 0 || index >= parts.length)
-      throw new Error(`Position ${pos} out of range. "${sourceString}" split by "${delimiter}" has ${parts.length} part(s) [1 to ${parts.length}]`);
+      for (let i = 1; i < dates.length; i++) {
+        if (order === 'ascending' && dates[i] < dates[i - 1])
+          throw new Error(`Order broken at [${i}]: "${format(dates[i - 1], dateFormat)}" > "${format(dates[i], dateFormat)}"`);
+        if (order === 'descending' && dates[i] > dates[i - 1])
+          throw new Error(`Order broken at [${i}]: "${format(dates[i - 1], dateFormat)}" < "${format(dates[i], dateFormat)}"`);
+      }
 
-    const result = parts[index];
-    this.vars[varName] = result;
-    pass(METHOD, `Split "${sourceString}" by "${delimiter}" → position[${pos}] = "${result}" → vars['${varName}']`);
-  } catch (e) { fail(METHOD, `Split "${sourceString}" by "${delimiter}" at position ${position}`, e); }
-}
+      pass(METHOD, `${dates.length} dates in ${order} order with format "${dateFormat}"`);
+    } catch (e) { fail(METHOD, `Date ${order} order`, e); }
+  }
+  splitStringByRegConditionWithPosition(sourceString: string, delimiter: string, position: string | number, varName: string): void {
+    const METHOD = 'splitStringByPosition';
+    try {
+      if (!sourceString) throw new Error(`Source string is empty or undefined`);
+      if (!delimiter) throw new Error(`Delimiter is empty or undefined`);
+
+      const parts = sourceString.split(delimiter);
+      // Accept both runtime vars (string) and hardcoded (number), position starts from 1
+      const pos = typeof position === 'string' ? parseInt(position, 10) : position;
+
+      if (isNaN(pos)) throw new Error(`Position "${position}" is not a valid number`);
+
+      const index = pos - 1;
+      if (index < 0 || index >= parts.length)
+        throw new Error(`Position ${pos} out of range. "${sourceString}" split by "${delimiter}" has ${parts.length} part(s) [1 to ${parts.length}]`);
+
+      const result = parts[index];
+      this.vars[varName] = result;
+      pass(METHOD, `Split "${sourceString}" by "${delimiter}" → position[${pos}] = "${result}" → vars['${varName}']`);
+    } catch (e) { fail(METHOD, `Split "${sourceString}" by "${delimiter}" at position ${position}`, e); }
+  }
 }

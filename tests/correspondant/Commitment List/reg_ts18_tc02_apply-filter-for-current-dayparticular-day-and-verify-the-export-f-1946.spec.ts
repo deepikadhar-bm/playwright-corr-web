@@ -40,7 +40,7 @@ test.describe('Commitment List - TS_1', () => {
     await correspondentPortalPage.Current_Date_On_Filters.click();
     Methods.getCurrentTimestamp('d-M-yyyy', 'CurrentDate', 'America/New_York');
     console.log("CurrentDate:", vars["CurrentDate"]);
-    vars["CurrentDate"] = "3-3-2026";
+    vars["CurrentDate"]="3-3-2026";
     await correspondentPortalPage.Select_Current_DateAdd_Config(vars["CurrentDate"]).click();
     await correspondentPortalPage.Apply_Button.click();
     await applyFiltersButtonPage.Apply_Filters_Button.click();
@@ -69,7 +69,7 @@ test.describe('Commitment List - TS_1', () => {
       vars["RowCountUI"] = String(await priceOfferedPage.RowCount.count());
       Methods.MathematicalOperation(vars["TotalRowsAllPagesUI"], '+', vars["RowCountUI"], "TotalRowsAllPagesUI");
       const nextButton = correspondentPortalPage.Go_to_Next_Page_Button;
-      if (await nextButton.isEnabled()) {
+      if (await nextButton.isVisible()) {
         await nextButton.click();
         console.log("Clicked Next Page button");
       }
