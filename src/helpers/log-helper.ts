@@ -59,4 +59,6 @@ export class Logger {
         this.writeLog("debug", message);
     }
 
+
+    
 }
