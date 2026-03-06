@@ -11,10 +11,9 @@ export default defineConfig({
   retries: process.env.CI ? 1 : 0,
   workers: 1,
 
-  reporter: [
-    ['html', { open: 'never' }],
-    [path.join(__dirname, "reports/qa-reporter.js")],
-    ['list']
+  reporter: [["html", { outputFolder: "playwright-report", open: "never" }],
+  [path.join(__dirname, "reports/qa-reporter.js")],
+  ['list'],
   ],
 
   timeout: 120_000,
