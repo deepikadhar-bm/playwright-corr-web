@@ -67,7 +67,7 @@ export class CommitmentListPage {
   }
 
   get Closed_Date(): Locator {
-    return this.page.locator("(//td[@data-title=\"Closed Date\"]/parent::*//div[contains(@aria-label,'Expiration Date')])[1]");
+    return this.page.locator("(//td[@data-title='Closed Date']//div[contains(@aria-label,'Expiration Date')])[1]");
   }
 
   get Closed_List_Tab(): Locator {
@@ -162,7 +162,7 @@ Column_Count_UICommitted_Loans1(count: string): Locator {
   }
 
   get Commitment_IDMore_Than_one_Commited_Loan(): Locator {
-    return this.page.locator("//td[@data-title=\"Comm. Loans\"]//div[not(contains(text(),'1'))]//ancestor::tr//td[@data-title=\"Comm. ID\"] ");
+    return this.page.locator(`//td[@data-title="Comm. Loans"]//div[not(contains(text(),'1'))]//ancestor::tr//td[@data-title="Comm. ID"]`);
   }
 
   get Commitment_IDSame_Loan_Num(): Locator {
@@ -464,12 +464,12 @@ Column_Count_UICommitted_Loans1(count: string): Locator {
     return this.page.locator("(//tbody//tr[$|RowCount|]//td[position()=3 or position()=4 or position()=5 or position()=6 or position()=10])[$|ColumnCountUI|]");
   }
 
-  get Individual_Column_Header_Details_Screen_Commitment_List(): Locator {
-    return this.page.locator("((//th//div[@role=\"button\"])[position() >=1 and position() <= 12])[$|count|]");
+  Individual_Column_Header_Details_Screen_Commitment_List(count:string): Locator {
+    return this.page.locator(`((//th//div[@role="button"])[position() >=1 and position() <= 12])[${count}]`);
   }
 
-  get Individual_Column_Header_UI_Commitment_List(): Locator {
-    return this.page.locator("(//th//div[@role=\"button\"])[$|count|]");
+ Individual_Column_Header_UI_Commitment_List(count:string): Locator {
+    return this.page.locator(`(//th//div[@role=\"button\"])[${count}]`);
   }
 
   Individual_Commitment_IDList_Screen(count :string): Locator {
