@@ -8,6 +8,7 @@ import { CommitmentListPage } from '../../../src/pages/correspondant/commitment-
 import { CorrespondentPortalPage } from '../../../src/pages/correspondant/correspondent-portal';
 import { PriceOfferedPage } from '../../../src/pages/correspondant/price-offered';
 import { SpinnerPage } from '../../../src/pages/correspondant/spinner';
+import { ENV } from '@config/environments'; // 1
 
 test.describe('Commitment List - TS_2', () => {
   let vars: Record<string, string> = {};
@@ -17,6 +18,7 @@ test.describe('Commitment List - TS_2', () => {
   let correspondentPortalPage: CorrespondentPortalPage;
   let priceOfferedPage: PriceOfferedPage;
   let spinnerPage: SpinnerPage;
+  const crederntials = ENV.getCredentials('internal'); // 2
 
   test.beforeEach(async ({ page }) => {
     vars = {};
@@ -30,17 +32,23 @@ test.describe('Commitment List - TS_2', () => {
 
   test('REG_TS02_TC01_Verify the Bid details in the commitment List screen summary', async ({ page }) => {
     const testData: Record<string, string> = {
-  "RequestIDFromPRE_PR_1-1": "87YTD25F4356",
-  "Requestidfrom4-2": "873O84593BB5",
-  "RequestIdfrom6-1.1": "57HK54C5AE2A",
-  "RequestIDfrom14-1": "876U855F6483",
-  "CommitmentIdfrom8-8": "87JU2DDD",
-  "RequestIdFrom5-1": "876YA587E147",
-  "RequestIdFrom5-5": "87CKA7D37EB6",
-  "RequestIdFrom6-4": "87MWF9C278BC",
-  "CommitmentIDfrom8-10": "87JU2DDD",
-  "RequestIdFrom8-8": "87BI08DD054F"
-}; // Profile: "Commitment List", row: 0
+      "RequestIDFromPRE_PR_1-1": "87YTD25F4356",
+      "Requestidfrom4-2": "873O84593BB5",
+      "RequestIdfrom6-1.1": "57HK54C5AE2A",
+      "RequestIDfrom14-1": "876U855F6483",
+      "CommitmentIdfrom8-8": "87JU2DDD",
+      "RequestIdFrom5-1": "876YA587E147",
+      "RequestIdFrom5-5": "87CKA7D37EB6",
+      "RequestIdFrom6-4": "87MWF9C278BC",
+      "CommitmentIDfrom8-10": "87JU2DDD",
+      "RequestIdFrom8-8": "87BI08DD054F"
+    }; // Profile: "Commitment List", row: 0
+
+    vars["Username"] = crederntials.username;// 3
+    vars["Password"] = crederntials.password;// 4
+    // console.log("Test Data: ", testData);
+    console.log("Credentials: ", crederntials.username, crederntials.password);
+console.log("Credentials:==> ",  vars["Username"], vars["Password"]);
 
     await stepGroups.stepGroup_Login_to_CORR_Portal(page, vars);
     await correspondentPortalPage.Commitments_Side_Menu.click();
