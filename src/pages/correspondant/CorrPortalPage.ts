@@ -501,11 +501,11 @@ export class CorrPortalPage {
     return this.page.locator("//button[@data-dismiss=\"modal\"]");
   }
 
-  get Column_Count_UI_Locked_Loans(): Locator {
-    return this.page.locator("(//span[contains(@class,\"fa fas fa-lock lock-icon\")])[$|count|]//ancestor::tr//td[@data-title][position() >2 and position()!= 4 and position()!= 12]");
+  Column_Count_UI_Locked_Loans(count:string): Locator {
+    return this.page.locator(`(//span[contains(@class,\"fa fas fa-lock lock-icon\")])[${count}]//ancestor::tr//td[@data-title][position() >2 and position()!= 4 and position()!= 12]`);
   }
 
-  get Column_Count_UI_Price_Offered_Details(): Locator {
+  Column_Count_UI_Price_Offered_Details(): Locator {
     return this.page.locator("//table[@role='table']//tbody//tr[$|count|]//td[@data-title][position() >= 3]");
   }
 
@@ -1109,12 +1109,12 @@ export class CorrPortalPage {
     return this.page.locator("(//table[@role='table']//tbody//tr[$|count|]//td[@data-title][position() >= 3])[$|Count|]");
   }
 
-  get Individual_Cell_Data_UI_Locked_Loans(): Locator {
-    return this.page.locator("((//span[contains(@class,\"fa fas fa-lock lock-icon\")])[$|count|]//ancestor::tr//td[@data-title][position() >2 and position()!= 4 and position()!= 12])[$|Count|]");
+  Individual_Cell_Data_UI_Locked_Loans(count:string, Count:string): Locator {
+    return this.page.locator(`((//span[contains(@class,\"fa fas fa-lock lock-icon\")])[${count}]//ancestor::tr//td[@data-title][position() >2 and position()!= 4 and position()!= 12])[${Count}]`);
   }
 
-  get Individual_Cell_Value_Closed_List(): Locator {
-    return this.page.locator("(//tr[contains(@class,'row')][$|RowCount|]//td[position() >= 2 and position() <= 14])[$|ColumnCountUI|]");
+  Individual_Cell_Value_Closed_List(RowCount:string,ColumnCountUI:string): Locator {
+    return this.page.locator(`(//tr[contains(@class,'row')][${RowCount}]//td[position() >= 2 and position() <= 14])[${ColumnCountUI}]`);
   }
 
   get Individual_Cell_Value_UI(): Locator {
@@ -1165,8 +1165,8 @@ export class CorrPortalPage {
     return this.page.locator("((//div[contains(@aria-label,\"Sort by\")])[position() <= 8])[$|Count|]");
   }
 
-  get Individual_Headers_Commitment_List(): Locator {
-    return this.page.locator("((//div[contains(@aria-label,\"Sort by\")])[position() <= 13])[$|Count|]");
+  Individual_Headers_Commitment_List(Count:string): Locator {
+    return this.page.locator(`((//div[contains(@aria-label,\"Sort by\")])[position() <= 13])[${Count}]`);
   }
 
   get Individual_Loan_Num_Price_Offered(): Locator {

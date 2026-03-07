@@ -545,20 +545,20 @@ export class PriceOfferedPage {
     return this.page.locator("//table[@role='table']//tbody//tr[$|count|]//td[@data-title][position() >= 3]");
   }
 
-  get Column_Data_Details_Screen(): Locator {
-    return this.page.locator("//td[@data-title=\"$|IndividualHeaderScreenDetails|\"]//div\n");
+  Column_Data_Details_Screen(IndividualHeaderScreenDetails:string): Locator {
+    return this.page.locator(`//td[@data-title=\"${IndividualHeaderScreenDetails}\"]//div`);
   }
 
-  get Column_Data_UI(): Locator {
-    return this.page.locator("//td[@data-title=\"$|IndividualHeaderUI|\"]//*[not(@aria-label=\"Expiration Date: \")]");
+  Column_Data_UI(IndividualHeaderUI:string): Locator {
+    return this.page.locator(`//td[@data-title=\"${IndividualHeaderUI}\"]//*[not(@aria-label=\"Expiration Date: \")]`);
   }
 
-  get Column_Data_UI_Commom_xpath(): Locator {
-    return this.page.locator("//td[@data-title=\"$|IndividualHeaderUI|\"]");
+  Column_Data_UI_Commom_xpath(IndividualHeaderUI:string): Locator {
+    return this.page.locator(`//td[@data-title=\"${IndividualHeaderUI}\"]`);
   }
 
-  get Column_Header_Data(): Locator {
-    return this.page.locator("(//th[@aria-label=\"$|IndividualHeaderScreenDetails|\"])[1]");
+  Column_Header_Data(IndividualHeaderScreenDetails:string): Locator {
+    return this.page.locator(`(//th[@aria-label='${IndividualHeaderScreenDetails}'])[1]`);
   }
 
   get Column_Headers_Details_ScreenUI(): Locator {
@@ -1196,8 +1196,8 @@ export class PriceOfferedPage {
     return this.page.locator("(//input[@type=\"checkbox\" and contains(@aria-label,\"Select loan\")])[1]");
   }
 
-  get First_Column_Data_UI(): Locator {
-    return this.page.locator("(//td[@data-title=\"$|IndividualHeaderUI|\"])[1]");
+  First_Column_Data_UI(IndividualHeaderUI:string): Locator {
+    return this.page.locator(`(//td[@data-title=\"${IndividualHeaderUI}\"])[1]`);
   }
 
   get First_Comitted_loan_Number(): Locator {
@@ -1336,12 +1336,12 @@ export class PriceOfferedPage {
     return this.page.locator("((//th//div[@role=\"button\"])[position() >=1 and position() <= 10])[$|count|]");
   }
 
-  get Individual_Column_Header_UI(): Locator {
-    return this.page.locator("((//th//div[@role=\"button\"])[position() >=1 and position() <= 13])[$|count|]");
+  Individual_Column_Header_UI(count:string): Locator {
+    return this.page.locator(`((//th//div[@role=\"button\"])[position() >=1 and position() <= 13])[${count}]`);
   }
 
-  get Individual_Header_Name_UI(): Locator {
-    return this.page.locator("(//div[contains(@aria-label,\"Sort by\")])[$|count|]");
+  Individual_Header_Name_UI(count:string): Locator {
+    return this.page.locator(`(//div[contains(@aria-label,\"Sort by\")])[${count}]`);
   }
 
   get Individual_Headers(): Locator {
