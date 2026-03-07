@@ -109,29 +109,29 @@ export class AddonHelpers {
   // 2. Verify numeric ascending/descending order
   // ==========================================================================
   async verifyNumericOrder(
-    strategyOrLocator: string | Locator, value: string | undefined, order: 'ascending' | 'descending'
-  ): Promise<void> {
-    const METHOD = 'verifyNumericOrder';
-    try {
-      const elements = await this.buildLocator(strategyOrLocator, value).all();
-      if (elements.length === 0) throw new Error(`No elements found`);
-      const numbers: number[] = [];
-      for (const el of elements) {
-        const text = (await el.textContent() ?? '').replace(/,/g, '').trim();
-        const num = parseFloat(text);
-        if (isNaN(num)) throw new Error(`Cannot parse "${text}" as a number`);
-        numbers.push(num);
-      }
-      for (let i = 1; i < numbers.length; i++) {
-        if (order === 'ascending' && numbers[i] < numbers[i - 1])
-          throw new Error(`Order broken at [${i}]: ${numbers[i - 1]} > ${numbers[i]}`);
-        if (order === 'descending' && numbers[i] > numbers[i - 1])
-          throw new Error(`Order broken at [${i}]: ${numbers[i - 1]} < ${numbers[i]}`);
-      }
-      pass(METHOD, `${numbers.length} values in ${order} order: [${numbers.join(', ')}]`);
-    } catch (e) { fail(METHOD, `Numeric ${order} order`, e); }
-  }
-
+  strategyOrLocator: string | Locator, value: string | undefined, order: 'ascending' | 'descending'
+): Promise<void> {
+  const METHOD = 'verifyNumericOrder';
+  try {
+    const elements = await this.buildLocator(strategyOrLocator, value).all();
+    if (elements.length === 0) throw new Error(`No elements found`);
+    const numbers: number[] = [];
+    for (const el of elements) {
+      const raw = (await el.textContent() ?? '').trim();
+      const cleaned = raw.replace(/[^0-9.\-]/g, '').trim();
+      const num = parseFloat(cleaned);
+      if (isNaN(num)) throw new Error(`Cannot parse "${raw}" as a number`);
+      numbers.push(num);
+    }
+    for (let i = 1; i < numbers.length; i++) {
+      if (order === 'ascending' && numbers[i] < numbers[i - 1])
+        throw new Error(`Order broken at [${i}]: ${numbers[i - 1]} > ${numbers[i]}`);
+      if (order === 'descending' && numbers[i] > numbers[i - 1])
+        throw new Error(`Order broken at [${i}]: ${numbers[i - 1]} < ${numbers[i]}`);
+    }
+    pass(METHOD, `${numbers.length} values in ${order} order: [${numbers.join(', ')}]`);
+  } catch (e) { fail(METHOD, `Numeric ${order} order`, e); }
+}
   // ==========================================================================
   // 3. Verify string ascending/descending order
   // ==========================================================================

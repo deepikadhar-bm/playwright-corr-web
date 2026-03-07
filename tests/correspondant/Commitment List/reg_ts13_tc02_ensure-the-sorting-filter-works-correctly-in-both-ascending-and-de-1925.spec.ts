@@ -1,11 +1,12 @@
 // [POM-APPLIED]
 import { test, expect } from '@playwright/test';
-import path from 'path';
 import * as stepGroups from '../../../src/helpers/step-groups';
 import { CommitmentListPage } from '../../../src/pages/correspondant/commitment-list';
 import { CorrespondentPortalPage } from '../../../src/pages/correspondant/correspondent-portal';
 import { PriceOfferedPage } from '../../../src/pages/correspondant/price-offered';
 import { SpinnerPage } from '../../../src/pages/correspondant/spinner';
+import { AddonHelpers } from '@helpers/AddonHelpers';
+import { testDataManager } from 'testdata/TestDataManager';
 
 test.describe('Commitment List - TS_1', () => {
   let vars: Record<string, string> = {};
@@ -13,6 +14,7 @@ test.describe('Commitment List - TS_1', () => {
   let correspondentPortalPage: CorrespondentPortalPage;
   let priceOfferedPage: PriceOfferedPage;
   let spinnerPage: SpinnerPage;
+  let Methods: AddonHelpers;
 
   test.beforeEach(async ({ page }) => {
     vars = {};
@@ -20,147 +22,86 @@ test.describe('Commitment List - TS_1', () => {
     correspondentPortalPage = new CorrespondentPortalPage(page);
     priceOfferedPage = new PriceOfferedPage(page);
     spinnerPage = new SpinnerPage(page);
+    Methods = new AddonHelpers(page, vars);
   });
-
-  test('REG_TS13_TC02_Ensure the sorting filter works correctly in both ascending and descending order - Verify for the detail screen', async ({ page }) => {
-    const testData: Record<string, string> = {
-  "CommitmentIDfrom8-10": "87JU2DDD",
-  "Requestidfrom4-2": "873O84593BB5",
-  "RequestIdfrom6-1.1": "57HK54C5AE2A",
-  "RequestIDfrom14-1": "876U855F6483",
-  "CommitmentIdfrom8-8": "87JU2DDD",
-  "RequestIdFrom5-1": "876YA587E147",
-  "RequestIdFrom5-5": "87CKA7D37EB6",
-  "RequestIdFrom6-4": "87MWF9C278BC",
-  "RequestIDFromPRE_PR_1-1": "87YTD25F4356",
-  "RequestIdFrom8-8": "87BI08DD054F"
-}; // Profile: "Commitment List", row: 0
+  const profileName = 'CommitmentList';
+  const profile = testDataManager.getProfileByName(profileName);
+  test('REG_TS13_TC01_Ensure the sorting filter works correctly in both ascending and descending order - Verify for the list screen)', async ({ page }) => {
+    if (profile && profile.data) {
+      const commitmentId = profile.data[0]['CommitmentIDfrom8-10'];
+      console.log("Commitment ID from TDP:", commitmentId);
+      vars["CommitmentId"] = commitmentId;
+    }
 
     await stepGroups.stepGroup_Login_to_CORR_Portal(page, vars);
     await correspondentPortalPage.Commitments_Side_Menu.click();
     await commitmentListPage.Committed_List_Dropdown.click();
-    vars["CommitmentId"] = testData["CommitmentIDfrom8-10"];
-    await priceOfferedPage.Search_Dropdown.click();
-    await priceOfferedPage.Search_Dropdown.fill(vars["CommitmentId"]);
-    await priceOfferedPage.Commitment_Id_DropdownCommitment_List_Page.click();
     await page.waitForLoadState('networkidle');
-    vars["IndividualHeadersCommitmentList"] = "Loan Amount and Ref Sec Price and Gross Price and Hedge Ratio and Curr Market Value and Curr Gross and Chase Loan# ";
-    vars["HeadersUI1"] = " Comm. Date and Closed Date and  Expiration Date  ";
-    await commitmentListPage.First_Commitment_IDCommitment_List.click();
-    vars["ColumnHeadersDetailsScreenUI"] = String(await priceOfferedPage.Column_Headers_Details_ScreenUI.count());
-    vars["HeadersUI1"] = " Comm. Date and Closed Date and  Expiration Date  ";
-    vars["count"] = "1";
-    while (parseFloat(String(vars["count"])) <= parseFloat(String(vars["ColumnHeadersDetailsScreenUI"]))) {
-      vars["IndividualHeaderScreenDetails"] = await commitmentListPage.Individual_Column_Header_Details_Screen_Commitment_List.textContent() || '';
-      vars["IndividualHeaderScreenDetails"] = String(vars["IndividualHeaderScreenDetails"]).trim();
-      await commitmentListPage.Individual_Column_Header_Details_Screen_Commitment_List.click();
-      await expect(correspondentPortalPage.Header_Sort_Down).toBeVisible();
-      await priceOfferedPage.Column_Header_Data.waitFor({ state: 'visible' });
-      if (String(vars["IndividualHeadersCommitmentList"]).includes(String(vars["IndividualHeaderScreenDetails"]))) {
-        {
-          const texts = await priceOfferedPage.Column_Data_Details_Screen.allTextContents();
-          const nums = texts.map(t => parseFloat(t));
-          const sorted = [...nums].sort((a, b) => a - b);
-          expect(nums).toEqual(sorted);
-        }
-      } else if (String(vars["HeadersUI1"]).includes(String(vars["IndividualHeaderScreenDetails"]))) {
-        {
-          const texts = await priceOfferedPage.Column_Data_Details_Screen.allTextContents();
-          const dates = texts.map(t => new Date(t).getTime());
-          const sorted = [...dates].sort((a, b) => a - b);
-          expect(dates).toEqual(sorted);
-        }
-      } else {
-        {
-          const texts = await priceOfferedPage.Column_Data_Details_Screen.allTextContents();
-          const sorted = [...texts].sort((a, b) => a.localeCompare(b));
-          expect(texts).toEqual(sorted);
-        }
-      }
-      await commitmentListPage.Individual_Column_Header_Details_Screen_Commitment_List.click();
-      await expect(priceOfferedPage.Header_Sort_Up_Symbol).toBeVisible();
-      await priceOfferedPage.Column_Header_Data.waitFor({ state: 'visible' });
-      await page.waitForTimeout(4000);
-      if (String(vars["IndividualHeadersCommitmentList"]).includes(String(vars["IndividualHeaderScreenDetails"]))) {
-        {
-          const texts = await priceOfferedPage.Column_Data_Details_Screen.allTextContents();
-          const nums = texts.map(t => parseFloat(t));
-          const sorted = [...nums].sort((a, b) => a - b);
-          expect(nums).toEqual(sorted);
-        }
-      } else if (String(vars["HeadersUI1"]).includes(String(vars["IndividualHeaderScreenDetails"]))) {
-        {
-          const texts = await priceOfferedPage.Column_Data_Details_Screen.allTextContents();
-          const dates = texts.map(t => new Date(t).getTime());
-          const sorted = [...dates].sort((a, b) => a - b);
-          expect(dates).toEqual(sorted);
-        }
-      } else {
-        {
-          const texts = await priceOfferedPage.Column_Data_Details_Screen.allTextContents();
-          const sorted = [...texts].sort((a, b) => a.localeCompare(b));
-          expect(texts).toEqual(sorted);
-        }
-      }
-      vars["count"] = (parseFloat(String("1")) + parseFloat(String(vars["count"]))).toFixed(0);
-    }
-    vars["count"] = "1";
-    await commitmentListPage.Total_LoansCommitment_List.click();
     await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-    vars["ColumnHeadersDetailsScreenUI"] = String(await priceOfferedPage.Column_Headers_Details_ScreenUI.count());
-    while (parseFloat(String(vars["count"])) <= parseFloat(String(vars["ColumnHeadersDetailsScreenUI"]))) {
-      vars["IndividualHeaderScreenDetails"] = await commitmentListPage.Individual_Column_Header_Details_Screen_Commitment_List.textContent() || '';
-      vars["IndividualHeaderScreenDetails"] = String(vars["IndividualHeaderScreenDetails"]).trim();
-      await commitmentListPage.Individual_Column_Header_Details_Screen_Commitment_List.click();
-      await expect(correspondentPortalPage.Header_Sort_Down).toBeVisible();
-      await priceOfferedPage.Column_Header_Data.waitFor({ state: 'visible' });
-      if (String(vars["IndividualHeadersCommitmentList"]).includes(String(vars["IndividualHeaderScreenDetails"]))) {
-        {
-          const texts = await priceOfferedPage.Column_Data_Details_Screen.allTextContents();
-          const nums = texts.map(t => parseFloat(t));
-          const sorted = [...nums].sort((a, b) => a - b);
-          expect(nums).toEqual(sorted);
-        }
-      } else if (String(vars["HeadersUI1"]).includes(String(vars["IndividualHeaderScreenDetails"]))) {
-        {
-          const texts = await priceOfferedPage.Column_Data_Details_Screen.allTextContents();
-          const dates = texts.map(t => new Date(t).getTime());
-          const sorted = [...dates].sort((a, b) => a - b);
-          expect(dates).toEqual(sorted);
-        }
+    await priceOfferedPage.Search_Dropdown.click();
+    await priceOfferedPage.Search_Dropdown.type(vars["CommitmentId"]);
+    await priceOfferedPage.Commitment_Id_DropdownCommitment_List_Page.click();
+   
+    await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+    await page.waitForLoadState('networkidle');
+    await commitmentListPage.First_Commitment_IDCommitment_List.first().waitFor({ state: 'visible' });
+    await page.waitForTimeout(6000);
+    await commitmentListPage.First_Commitment_IDCommitment_List.first().click();
+    await expect(commitmentListPage.Total_LoansCommitment_List).toBeVisible();
+    vars["CountOfColumnHeaders"] = String(await priceOfferedPage.Columns_Headers.count());
+    vars["HeadersUI"] = "Comm. Loans and Comm. Amount and Amt. Delivered";
+    vars["HeadersUI1"] = "Comm. Date and Closed Date and Expiration Date";
+    vars["count"] = "1";
+
+    while (parseFloat(vars["count"]) <= 10) {
+      vars["IndividualHeaderUI"] = await priceOfferedPage.Individual_Column_Header_UI(vars["count"]).textContent() || '';
+      Methods.trimtestdata(vars["IndividualHeaderUI"], "IndividualHeaderUI");
+      if (vars["HeadersUI"].includes(vars["IndividualHeaderUI"])) {
+        await page.waitForLoadState('networkidle');
+        await commitmentListPage.Individual_Column_Header_UI_Commitment_List(vars["count"]).click();
+        await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+        await expect(correspondentPortalPage.Header_Sort_Down).toBeVisible();
+        await priceOfferedPage.First_Column_Data_UI(vars["IndividualHeaderUI"]).waitFor({ state: 'visible' });
+        await Methods.verifyNumericOrder(priceOfferedPage.Column_Data_UI(vars["IndividualHeaderUI"]), undefined, 'ascending');
+
+        await commitmentListPage.Individual_Column_Header_UI_Commitment_List(vars["count"]).click();
+        await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+        await expect(priceOfferedPage.Header_Sort_Up_Symbol).toBeVisible();
+        await priceOfferedPage.First_Column_Data_UI(vars["IndividualHeaderUI"]).waitFor({ state: 'visible' });
+        await page.waitForTimeout(4000);
+        await Methods.verifyNumericOrder(priceOfferedPage.Column_Data_UI(vars["IndividualHeaderUI"]), undefined, 'descending');
+
+      } else if (vars["HeadersUI1"].includes(vars["IndividualHeaderUI"])) {
+        await page.waitForLoadState('networkidle');
+        await commitmentListPage.Individual_Column_Header_UI_Commitment_List(vars["count"]).click();
+        await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+        await expect(correspondentPortalPage.Header_Sort_Down).toBeVisible();
+        await priceOfferedPage.First_Column_Data_UI(vars["IndividualHeaderUI"]).waitFor({ state: 'visible' });
+        await Methods.verifyDateOrder(priceOfferedPage.Column_Data_UI(vars["IndividualHeaderUI"]), 'ascending', 'MM/dd/yyyy');
+
+        await commitmentListPage.Individual_Column_Header_UI_Commitment_List(vars["count"]).click();
+        await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+        await expect(priceOfferedPage.Header_Sort_Up_Symbol).toBeVisible();
+        await priceOfferedPage.First_Column_Data_UI(vars["IndividualHeaderUI"]).waitFor({ state: 'visible' });
+        await page.waitForTimeout(4000);
+        await Methods.verifyDateOrder(priceOfferedPage.Column_Data_UI(vars["IndividualHeaderUI"]), 'descending', 'MM/dd/yyyy');
+
       } else {
-        {
-          const texts = await priceOfferedPage.Column_Data_Details_Screen.allTextContents();
-          const sorted = [...texts].sort((a, b) => a.localeCompare(b));
-          expect(texts).toEqual(sorted);
-        }
+        await commitmentListPage.Individual_Column_Header_UI_Commitment_List(vars["count"]).click();
+        await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+        await expect(correspondentPortalPage.Header_Sort_Down).toBeVisible();
+        await priceOfferedPage.First_Column_Data_UI(vars["IndividualHeaderUI"]).waitFor({ state: 'visible' });
+        await Methods.verifyStringOrder(priceOfferedPage.Column_Data_UI(vars["IndividualHeaderUI"]), undefined, 'ascending');
+
+        await commitmentListPage.Individual_Column_Header_UI_Commitment_List(vars["count"]).click();
+        await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+        await expect(priceOfferedPage.Header_Sort_Up_Symbol).toBeVisible();
+        await priceOfferedPage.First_Column_Data_UI(vars["IndividualHeaderUI"]).waitFor({ state: 'visible' });
+        await page.waitForTimeout(4000);
+        await Methods.verifyStringOrder(priceOfferedPage.Column_Data_UI(vars["IndividualHeaderUI"]), undefined, 'descending');
       }
-      await commitmentListPage.Individual_Column_Header_Details_Screen_Commitment_List.click();
-      await expect(priceOfferedPage.Header_Sort_Up_Symbol).toBeVisible();
-      await priceOfferedPage.Column_Header_Data.waitFor({ state: 'visible' });
-      await page.waitForTimeout(4000);
-      if (String(vars["IndividualHeadersCommitmentList"]).includes(String(vars["IndividualHeaderScreenDetails"]))) {
-        {
-          const texts = await priceOfferedPage.Column_Data_Details_Screen.allTextContents();
-          const nums = texts.map(t => parseFloat(t));
-          const sorted = [...nums].sort((a, b) => a - b);
-          expect(nums).toEqual(sorted);
-        }
-      } else if (String(vars["HeadersUI1"]).includes(String(vars["IndividualHeaderScreenDetails"]))) {
-        {
-          const texts = await priceOfferedPage.Column_Data_Details_Screen.allTextContents();
-          const dates = texts.map(t => new Date(t).getTime());
-          const sorted = [...dates].sort((a, b) => a - b);
-          expect(dates).toEqual(sorted);
-        }
-      } else {
-        {
-          const texts = await priceOfferedPage.Column_Data_Details_Screen.allTextContents();
-          const sorted = [...texts].sort((a, b) => a.localeCompare(b));
-          expect(texts).toEqual(sorted);
-        }
-      }
-      vars["count"] = (parseFloat(String("1")) + parseFloat(String(vars["count"]))).toFixed(0);
+
+      Methods.MathematicalOperation(vars["count"], "+", "1", "count");
     }
   });
 });
