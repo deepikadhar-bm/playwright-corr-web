@@ -1,8 +1,8 @@
 import { defineConfig, devices } from '@playwright/test';
-import dotenv from 'dotenv';
+import { ENV } from './src/config/environments';
 import path from 'path';
 
-dotenv.config({ path: path.resolve(__dirname, '.env') });
+
 
 export default defineConfig({
   testDir: './tests',
@@ -49,7 +49,7 @@ export default defineConfig({
         timezoneId: 'UTC',
 
         viewport: { width: 1920, height: 1080 },
-
+        baseURL: ENV.CORR_QA_URL,
         launchOptions: {
           args: [
             '--no-sandbox',
@@ -59,7 +59,7 @@ export default defineConfig({
           ]
         },
 
-        baseURL: process.env.CORR_QA_URL || 'https://ext-qa.lpcorrtest.com/cp/',
+
       },
     },
   ],
