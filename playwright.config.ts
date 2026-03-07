@@ -1,8 +1,8 @@
 import { defineConfig, devices } from '@playwright/test';
-import dotenv from 'dotenv';
+import { ENV } from './src/config/environments';
 import path from 'path';
 
-dotenv.config({ path: path.resolve(__dirname, '.env') });
+
 
 export default defineConfig({
   testDir: './tests',
@@ -10,14 +10,16 @@ export default defineConfig({
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 1 : 0,
   workers: 1,
-  reporter: [
-    ['html', { open: 'never' }],
-    ['list']
+
+  reporter: [["html", { outputFolder: "playwright-report", open: "never" }],
+  [path.join(__dirname, "reports/qa-reporter.js")],
+  ['list'],
   ],
   timeout: 1800_000,
   expect: {
     timeout: 15_000,
   },
+
   use: {
     browserName: 'chromium',
     viewport: null,
@@ -33,13 +35,19 @@ export default defineConfig({
     actionTimeout: 1 * 60 * 1000,
     navigationTimeout: 60_000,
   },
+
   projects: [
     {
       name: 'correspondant',
       testDir: './tests/correspondant',
+
       use: {
         browserName: 'chromium',
-        viewport: null,
+
+        timezoneId: 'UTC',
+
+        viewport: { width: 1920, height: 1080 },
+        baseURL: ENV.CORR_QA_URL,
         launchOptions: {
           args: ['--start-maximized', '--no-sandbox', '--disable-setuid-sandbox', '--force-device-scale-factor=0.9'],
           slowMo: 2000, // ⬅️ Added slowMo to project config as well

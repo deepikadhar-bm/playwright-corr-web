@@ -95,7 +95,6 @@ test.describe('Commitment List - TS_1', () => {
     await priceOfferedPage.Select_All_CheckboxPrice_Offred_Page.check();
     await spinnerPage.Spinner.waitFor({ state: 'hidden' });
     await priceOfferedPage.Export_Selected_Count.waitFor({ state: 'visible' });
-
     vars["ExportSelectedCountAfterRemovingFilters"] = await priceOfferedPage.Export_Selected_Count.textContent() || '';
     Methods.removeMultipleSpecialChars(['(', ')', ' '], vars["ExportSelectedCountAfterRemovingFilters"], "ExportSelectedCountAfterRemovingFilters");
     Methods.verifyComparison(vars["ExportSelectedCountAfterRemovingFilters"], '>', vars["ExportSelectedCountAfterApplyingFilters"]);

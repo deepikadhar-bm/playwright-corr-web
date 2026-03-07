@@ -1,16 +1,15 @@
-// [POM-APPLIED]
 import { test, expect } from '@playwright/test';
 import path from 'path';
-import * as stepGroups from '../../../src/helpers/step-groups';
-import { BidRequestDetailsPage } from '../../../src/pages/correspondant/bid-request-details';
-import { CommitmentListPage } from '../../../src/pages/correspondant/commitment-list';
-import { CorrespondentPortalPage } from '../../../src/pages/correspondant/correspondent-portal';
-import { PriceOfferedPage } from '../../../src/pages/correspondant/price-offered';
-import { SpinnerPage } from '../../../src/pages/correspondant/spinner';
-import * as excelHelper from '../../../src/helpers/excel-helpers';
+import * as stepGroups from '../../../../src/helpers/step-groups';
+import { BidRequestDetailsPage } from '../../../../src/pages/correspondant/bid-request-details';
+import { CommitmentListPage } from '../../../../src/pages/correspondant/commitment-list';
+import { CorrespondentPortalPage } from '../../../../src/pages/correspondant/correspondent-portal';
+import { PriceOfferedPage } from '../../../../src/pages/correspondant/price-offered';
+import { SpinnerPage } from '../../../../src/pages/correspondant/spinner';
+import * as excelHelper from '../../../../src/helpers/excel-helpers';
 import { AddonHelpers } from '@helpers/AddonHelpers';
 import { Logger as log } from '@helpers/log-helper';
-
+test.describe('Commitment List Suite', () => {
 test.describe('Commitment List - TS_1', () => {
 
   let vars: Record<string, string> = {};
@@ -61,6 +60,7 @@ test.describe('Commitment List - TS_1', () => {
     vars['FilePathTotalCommittedLoans'] = path.join(vars['DownloadDir'], vars['SavedFileName']);
     await download.saveAs(vars['FilePathTotalCommittedLoans']);
     expect(vars['SavedFileName']).toContain(vars['ExpectedFileName']);
+    log.info(vars['SavedFileName'] + "conains" + vars['ExpectedFileName'])
 
     // Validate Row Count UI
     vars["TotalLoansRowsCountUI"] = String(await commitmentListPage.First_Commitment_Rows.count());
@@ -71,7 +71,7 @@ test.describe('Commitment List - TS_1', () => {
     expect(vars["TotalLoansRowsCountUI"]).toBe(vars["AllLoansRowsCountExcel"]);
 
     // HEADER VALIDATION
-
+    log.info("Headers verification UI to excel")
     vars["HeaderNamesAllCommitmentLoansExcel"] = excelHelper.readEntireRow(vars["FilePathTotalCommittedLoans"], 0,0,"HeaderNamesAllCommitmentLoansExcel");
     console.log("HeaderNamesAllCommitmentLoansExcel:", vars["HeaderNamesAllCommitmentLoansExcel"]);
     Methods.removeSpecialChar(".", vars["HeaderNamesAllCommitmentLoansExcel"], "HeaderNamesAllCommitmentLoansExcel");
@@ -94,10 +94,11 @@ test.describe('Commitment List - TS_1', () => {
         expect(String(vars["IndividualHeaderNameAllCommitmentsLoansExcel"])).toBe("CurrentMarketValue");
       } else {
         expect(String(vars["IndividualHeaderNameCommittedLoansUI"])).toContain(vars["IndividualHeaderNameAllCommitmentsLoansExcel"]);
-      }
-      vars["count"] = (parseFloat(String("1")) + parseFloat(String(vars["count"]))).toFixed(0);
+        log.info(vars["IndividualHeaderNameCommittedLoansUI"] + " contains " + vars["IndividualHeaderNameAllCommitmentsLoansExcel"]);      }
+      // vars["count"] = (parseFloat(String("1")) + parseFloat(String(vars["count"]))).toFixed(0);
+         Methods.MathematicalOperation(vars["count"], "+", "1", "count");
     }
-    console.log("verification UI data");
+    log.info("verification of UI data to excel data")
     vars["TotalRowsCountUIFirstCommitment"] = String(await commitmentListPage.Total_Rows_Count_UIFirst_Commitment.count());
     await bidRequestDetailsPage.Last_Name_Sort_Button.first().click();
     await priceOfferedPage.Last_Name_Down_ArrowDetails.first().waitFor({ state: 'visible' });
@@ -121,10 +122,14 @@ test.describe('Commitment List - TS_1', () => {
         Methods.splitStringByRegConditionWithPosition(vars["EntireRowDataAllCommitmentLoansExcel"],",",vars["Count"],"IndividualRowDataAllCommitmentLoansExcel");
         console.log("IndividualRowDataAllCommitmentLoansExcel:",vars["IndividualRowDataAllCommitmentLoansExcel"]);
         expect(String(vars["IndividualCellDataTotalCommittedLoansUI"])).toContain(vars["IndividualRowDataAllCommitmentLoansExcel"]);
-        vars["Count"] = (parseFloat(String("1")) + parseFloat(String(vars["Count"]))).toFixed(0);
+        log.info(vars["IndividualCellDataTotalCommittedLoansUI"] + " contains " + vars["IndividualRowDataAllCommitmentLoansExcel"]);      
+        // vars["Count"] = (parseFloat(String("1")) + parseFloat(String(vars["Count"]))).toFixed(0);
+        Methods.MathematicalOperation(vars["Count"], "+", "1", "Count");
       }
-      vars["count"] = (parseFloat(String("1")) + parseFloat(String(vars["count"]))).toFixed(0);
+      // vars["count"] = (parseFloat(String("1")) + parseFloat(String(vars["count"]))).toFixed(0);
+      Methods.MathematicalOperation(vars["count"], "+", "1", "count");
     }
+    log.info("verification of UI data to excel data")
     vars["EntireRowDataExcelMetaInfo1"] = excelHelper.readEntireRow(vars["FilePathTotalCommittedLoans"], 1,0,"EntireRowDataExcelMetaInfo1");
     Methods.splitStringByRegConditionWithPosition(vars["EntireRowDataExcelMetaInfo1"],",",1,"BidReqNumTextExcelMetaInfo");
     expect(String(vars["BidReqNumTextExcelMetaInfo"])).toBe("BID REQUEST NUMBER");
@@ -140,5 +145,7 @@ test.describe('Commitment List - TS_1', () => {
     expect(String(vars["ReportGenerationTextExcelMetaInfo"])).toBe("REPORT GENERATION TIME");
     Methods.splitStringByRegConditionWithPosition(vars["EntireRowDataExcelMetaInfo3"],",",2,"ReportGenTimeExcelMetaInfo");
     expect(String(vars["ExpectedReportGenTime"])).toBe(vars["ReportGenTimeExcelMetaInfo"]);
+    log.info("Successfully completed testcase-TS15_TC01")
   });
+});
 });

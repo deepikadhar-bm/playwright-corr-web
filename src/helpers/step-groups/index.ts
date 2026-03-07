@@ -20,9 +20,9 @@ import { SpinnerPage } from '@pages/correspondant';
  */
 export async function stepGroup_Login_to_CORR_Portal(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
-  await page.goto("https://ext-qa.lpcorrtest.com/cp/#/auth/login");
-  await CorrPortalElem.Username_Field.fill("testsigma_internal");
-  await CorrPortalElem.Password_Field.fill("Welcome@123");
+  await page.goto("/");
+  await CorrPortalElem.Username_Field.fill(vars["Username"]);
+  await CorrPortalElem.Password_Field.fill(vars["Password"]);
   await CorrPortalElem.Login_Button.click();
   await CorrPortalElem.Logo.waitFor({ state: 'visible' });
 }
@@ -310,18 +310,18 @@ export async function stepGroup_Show_Unidentified_Headers(page: import('@playwri
   expect(await CorrPortalElem.All_Select_in_header.textContent() || '').toContain(String("Select"));
   // [DISABLED] Element Bid_Sample_Field_Name_in_Header_Mapping is visible
   // await expect(CorrPortalElem.Bid_Sample_Field_Name_in_Header_Mapping).toBeVisible();
-    // [DISABLED] Store the count of elements identified by locator Bid_Sample_Field_Name in Header Mapping into a variable BidSamleField
-    // vars["BidSamleField"] = String(await CorrPortalElem.Bid_Sample_Field_Name_in_Header_Mapping.count());
-    // [DISABLED] Store 2 in Headercount
-    // vars["Headercount"] = "2";
+  // [DISABLED] Store the count of elements identified by locator Bid_Sample_Field_Name in Header Mapping into a variable BidSamleField
+  // vars["BidSamleField"] = String(await CorrPortalElem.Bid_Sample_Field_Name_in_Header_Mapping.count());
+  // [DISABLED] Store 2 in Headercount
+  // vars["Headercount"] = "2";
   // [DISABLED] Verify that the element Header Mapping Show Unidentified Header displays text (10) and With Scrollable FALSE
   // await expect(CorrPortalElem.Header_Mapping_Show_Unidentified_Header).toContainText("(10)");
   // [DISABLED] Verify if Headercount <= BidSampleField
   // while (parseFloat(String(vars["Headercount"])) <= parseFloat(String(vars["BidSampleField"])))
-    // [DISABLED] Verify that the Header Mapping for Unidentified Headers. list has option with text Select selected and With Scrollable FALSE
-    // await expect(CorrPortalElem.Header_Mapping_for_Unidentified_Headers).toHaveValue("Select");
-    // [DISABLED] Perform addition on 1 and Headercount and store the result inside a Headercount considering 0 decimal places
-    // vars["Headercount"] = (parseFloat(String("1")) + parseFloat(String(vars["Headercount"]))).toFixed(0);
+  // [DISABLED] Verify that the Header Mapping for Unidentified Headers. list has option with text Select selected and With Scrollable FALSE
+  // await expect(CorrPortalElem.Header_Mapping_for_Unidentified_Headers).toHaveValue("Select");
+  // [DISABLED] Perform addition on 1 and Headercount and store the result inside a Headercount considering 0 decimal places
+  // vars["Headercount"] = (parseFloat(String("1")) + parseFloat(String(vars["Headercount"]))).toFixed(0);
 }
 
 /**
@@ -342,10 +342,10 @@ export async function stepGroup_Show_Unused_Headers(page: import('@playwright/te
   // vars["Count"] = "2";
   // [DISABLED] Verify if Count <= BidSampleField
   // while (parseFloat(String(vars["Count"])) <= parseFloat(String(vars["BidSampleField"])))
-    // [DISABLED] Verify that the element Show All Headers in Header Mappings. is present and With Scrollable FALSE
-    // await expect(CorrPortalElem.Show_All_Headers_in_Header_Mappings).toBeVisible();
-    // [DISABLED] Perform addition on 1 and Count and store the result inside a Count considering 0 decimal places
-    // vars["Count"] = (parseFloat(String("1")) + parseFloat(String(vars["Count"]))).toFixed(0);
+  // [DISABLED] Verify that the element Show All Headers in Header Mappings. is present and With Scrollable FALSE
+  // await expect(CorrPortalElem.Show_All_Headers_in_Header_Mappings).toBeVisible();
+  // [DISABLED] Perform addition on 1 and Count and store the result inside a Count considering 0 decimal places
+  // vars["Count"] = (parseFloat(String("1")) + parseFloat(String(vars["Count"]))).toFixed(0);
 }
 
 /**
@@ -846,7 +846,7 @@ export async function stepGroup_Editing_of_Add_Conditions_and_Add_Actions(page: 
 export async function stepGroup_Add_Field_in_Enumeration_Mapping(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
   await CorrPortalElem.Add_Field_Button1.click();
-  await CorrPortalElem.Bid_Tape_Value.fill(Array.from({length: 7}, () => "abc".charAt(Math.floor(Math.random() * 3))).join(''));
+  await CorrPortalElem.Bid_Tape_Value.fill(Array.from({ length: 7 }, () => "abc".charAt(Math.floor(Math.random() * 3))).join(''));
   vars["BidTapeValue"] = await CorrPortalElem.Bid_Tape_Value.inputValue() || '';
   await expect(CorrPortalElem.Bid_Tape_Value).toHaveValue(vars["BidTapeValue"]);
 }
@@ -946,7 +946,7 @@ export async function stepGroup_Storing_All_Enum_TDP_Values_into_a_Variable(page
   const testDataSets: Record<string, string>[] = []; // TODO: Load test data sets
   vars["EnumValues"] = "Loan Purpose";
   // Loop over test data sets in "Enum Type Values." from set2 to set18
-for (const testDataSet of testDataSets) {
+  for (const testDataSet of testDataSets) {
     vars["EnumValues"] = String(testData["Enum Type"]) + "," + String(vars["EnumValues"]);
   }
 }
@@ -1022,7 +1022,7 @@ export async function stepGroup_Deleting_In_Rules_and_Actions(page: import('@pla
 export async function stepGroup_Adding_Field_In_Enumeration_Mapping(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
   await CorrPortalElem.Add_Field_Button1.click();
-  await CorrPortalElem.Bid_Tape_Value.fill(Array.from({length: 7}, () => "abc".charAt(Math.floor(Math.random() * 3))).join(''));
+  await CorrPortalElem.Bid_Tape_Value.fill(Array.from({ length: 7 }, () => "abc".charAt(Math.floor(Math.random() * 3))).join(''));
   vars["AddedBidTapeValue[EnumerationMapping]"] = await CorrPortalElem.Bid_Tape_Value.inputValue() || '';
   await CorrPortalElem.New_Field_Chase_Dropdown2.click();
   await CorrPortalElem.New_Field_Chase_Dropdown2.selectOption({ index: parseInt("2") });
@@ -1100,8 +1100,8 @@ export async function stepGroup_Creating_New_BidMap_Upto_Upload_File(page: impor
     const fmt = "MM/dd/yyyy";
     // Map Java date format to Intl parts
     const parts = new Intl.DateTimeFormat('en-US', { ...opts, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }).formatToParts(d);
-    const p = Object.fromEntries(parts.map(({type, value}) => [type, value]));
-    return fmt.replace('yyyy', p.year || '').replace('yy', (p.year||'').slice(-2)).replace('MM', p.month || '').replace('dd', p.day || '').replace('HH', String(d.getHours()).padStart(2,'0')).replace('hh', p.hour || '').replace('mm', p.minute || '').replace('ss', p.second || '').replace('a', p.dayPeriod || '').replace(/M(?!M)/g, String(parseInt(p.month||'0'))).replace(/d(?!d)/g, String(parseInt(p.day||'0'))).replace(/h(?!h)/g, String(parseInt(p.hour||'0')));
+    const p = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
+    return fmt.replace('yyyy', p.year || '').replace('yy', (p.year || '').slice(-2)).replace('MM', p.month || '').replace('dd', p.day || '').replace('HH', String(d.getHours()).padStart(2, '0')).replace('hh', p.hour || '').replace('mm', p.minute || '').replace('ss', p.second || '').replace('a', p.dayPeriod || '').replace(/M(?!M)/g, String(parseInt(p.month || '0'))).replace(/d(?!d)/g, String(parseInt(p.day || '0'))).replace(/h(?!h)/g, String(parseInt(p.hour || '0')));
   })();
   vars["Create New Map"] = new Date().toLocaleDateString('en-US') /* format: MM/dd/yyyy/HH:mm:ss */;
   vars["Create New Map"] = "Testsigma_" + vars["Create New Map"];
@@ -1137,8 +1137,8 @@ export async function stepGroup_Creating_of_Add_New_Header(page: import('@playwr
     const fmt = "MM/dd/yyyy";
     // Map Java date format to Intl parts
     const parts = new Intl.DateTimeFormat('en-US', { ...opts, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }).formatToParts(d);
-    const p = Object.fromEntries(parts.map(({type, value}) => [type, value]));
-    return fmt.replace('yyyy', p.year || '').replace('yy', (p.year||'').slice(-2)).replace('MM', p.month || '').replace('dd', p.day || '').replace('HH', String(d.getHours()).padStart(2,'0')).replace('hh', p.hour || '').replace('mm', p.minute || '').replace('ss', p.second || '').replace('a', p.dayPeriod || '').replace(/M(?!M)/g, String(parseInt(p.month||'0'))).replace(/d(?!d)/g, String(parseInt(p.day||'0'))).replace(/h(?!h)/g, String(parseInt(p.hour||'0')));
+    const p = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
+    return fmt.replace('yyyy', p.year || '').replace('yy', (p.year || '').slice(-2)).replace('MM', p.month || '').replace('dd', p.day || '').replace('HH', String(d.getHours()).padStart(2, '0')).replace('hh', p.hour || '').replace('mm', p.minute || '').replace('ss', p.second || '').replace('a', p.dayPeriod || '').replace(/M(?!M)/g, String(parseInt(p.month || '0'))).replace(/d(?!d)/g, String(parseInt(p.day || '0'))).replace(/h(?!h)/g, String(parseInt(p.hour || '0')));
   })();
   vars["Create New Map"] = new Date().toLocaleDateString('en-US') /* format: MM/dd/yyyy/HH:mm:ss */;
   vars["Create New Map"] = "Testsigma_" + vars["Create New Map"];
@@ -1229,8 +1229,8 @@ export async function stepGroup_Advanced_Search_For_Rules(page: import('@playwri
   // await expect(CorrPortalElem.BidMap1_Advanced_Search).toBeVisible();
   // [DISABLED] Verify if BidMapCount > 1
   // if (String(vars["BidMapCount"]) > String("1"))
-    // [DISABLED] Verify that the current page displays an element Second Bid Map and With Scrollable FALSE
-    // await expect(CorrPortalElem.Second_Bid_Map).toBeVisible();
+  // [DISABLED] Verify that the current page displays an element Second Bid Map and With Scrollable FALSE
+  // await expect(CorrPortalElem.Second_Bid_Map).toBeVisible();
 }
 
 /**
@@ -1260,8 +1260,8 @@ export async function stepGroup_Advance_Search_For_Actions(page: import('@playwr
   // vars["BidMapCount"] = String(await CorrPortalElem.Bid_Maps.count());
   // [DISABLED] Verify if BidMapCount > 1
   // if (String(vars["BidMapCount"]) > String("1"))
-    // [DISABLED] Verify that the current page displays an element Second Bid Map and With Scrollable FALSE
-    // await expect(CorrPortalElem.Second_Bid_Map).toBeVisible();
+  // [DISABLED] Verify that the current page displays an element Second Bid Map and With Scrollable FALSE
+  // await expect(CorrPortalElem.Second_Bid_Map).toBeVisible();
 }
 
 /**
@@ -1322,7 +1322,7 @@ export async function stepGroup_Fetching_Enum_From_Header_Mapping_Screen_and_Ver
   const testDataSets: Record<string, string>[] = []; // TODO: Load test data sets
   vars["EnumValues"] = "Loan Purpose";
   // Loop over test data sets in "Enum Type Values." from set2 to set18
-for (const testDataSet of testDataSets) {
+  for (const testDataSet of testDataSets) {
     vars["EnumValues"] = String(testData["Enum Type"]) + "," + String(vars["EnumValues"]);
   }
   vars["MappedChaseFieldCount"] = String(await CorrPortalElem.MappedChaseFieldName.count());
@@ -1369,8 +1369,8 @@ export async function stepGroup_Verifying_ChaseValue_In_EnumerationMapping(page:
     vars["value"] = String(vars["values"]).trim();
     if (String(vars["value"]) === String("Select")) {
       await CorrPortalElem.Chases_Values_1.selectOption({ index: parseInt("1") });
-    // [DISABLED] Step group
-    // // TODO: No template - Unknown step
+      // [DISABLED] Step group
+      // // TODO: No template - Unknown step
     }
     vars["count"] = (parseFloat(String("1")) + parseFloat(String(vars["count"]))).toFixed(0);
   }
@@ -1651,7 +1651,7 @@ export async function stepGroup_Fetching_Enum_from_Header_Mapping_and_verifying_
   const testDataSets: Record<string, string>[] = []; // TODO: Load test data sets
   vars["EnumValues"] = "Loan Purpose";
   // Loop over test data sets in "Enum Type Values." from set2 to set18
-for (const testDataSet of testDataSets) {
+  for (const testDataSet of testDataSets) {
     vars["EnumValues"] = String(testData["Enum Type"]) + "," + String(vars["EnumValues"]);
   }
   vars["MappedChaseFieldCount"] = String(await CorrPortalElem.MappedChaseFieldName.count());
@@ -1761,8 +1761,8 @@ export async function stepGroup_Fetching_Income_Value_From_XLS(page: import('@pl
         vars["index"] = (parseFloat(String(vars["index"])) + parseFloat(String("1"))).toFixed(0);
         vars["index1"] = (parseFloat(String(vars["index1"])) + parseFloat(String("1"))).toFixed(0);
         await CorrPortalElem.Rules_and_Actions_Heading.click();
-  // [DISABLED] Verify if DuplicateIncome == 1
-  // expect(String(vars["DuplicateIncome"])).toBe("1");
+        // [DISABLED] Verify if DuplicateIncome == 1
+        // expect(String(vars["DuplicateIncome"])).toBe("1");
       }
     }
   }
@@ -1795,7 +1795,7 @@ export async function stepGroup_Save_Draft_Exit_Action_and_Navigate_from_new_map
  */
 export async function stepGroup_Editing_In_New_Map_After_Save_draft(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
-  await CorrPortalElem.New_Map_Name_Input.fill(Array.from({length: 4}, () => "abcd".charAt(Math.floor(Math.random() * 4))).join(''));
+  await CorrPortalElem.New_Map_Name_Input.fill(Array.from({ length: 4 }, () => "abcd".charAt(Math.floor(Math.random() * 4))).join(''));
   vars["EditedMapName"] = await CorrPortalElem.New_Map_Name_Input.inputValue() || '';
   await CorrPortalElem.Save_Draft_Button.click();
   await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
@@ -1847,7 +1847,7 @@ export async function stepGroup_Fetching_the_data_based_on_Enum_value_in_Header_
   const testDataSets: Record<string, string>[] = []; // TODO: Load test data sets
   vars["EnumValues"] = "Loan Purpose";
   // Loop over test data sets in "Enum_Type_Values_For_Happy_Flow" from set2 to set18
-for (const testDataSet of testDataSets) {
+  for (const testDataSet of testDataSets) {
     vars["EnumValues"] = String(testData["Parameter 1"]) + "," + String(vars["EnumValues"]);
   }
   vars["MappedChaseFieldCount"] = String(await CorrPortalElem.MappedChaseFieldName.count());
@@ -1949,7 +1949,7 @@ export async function stepGroup_Creating_New_Bid_Map(page: import('@playwright/t
   await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
   await CorrPortalElem.Add_New_Mapping_Button.click();
   vars["Common KeyWord"] = "Testsigma_" + vars["RandomName"];
-  vars["LastName"] = ['Smith','Johnson','Williams','Brown','Jones','Davis','Miller','Wilson'][Math.floor(Math.random() * 8)];
+  vars["LastName"] = ['Smith', 'Johnson', 'Williams', 'Brown', 'Jones', 'Davis', 'Miller', 'Wilson'][Math.floor(Math.random() * 8)];
   vars["BidMap Name"] = "Testsigma_" + vars["RandomName"] + "_" + vars["LastName"] + "_" + "SeachField";
   await CorrPortalElem.Map_Name_Field_in_Bid_Maps.fill(vars["BidMap Name"]);
   await expect(CorrPortalElem.Compare_Button).toBeVisible();
@@ -2272,8 +2272,8 @@ export async function stepGroup_Getting_Last_Month_From_Current_Month(page: impo
     const fmt = "MM";
     // Map Java date format to Intl parts
     const parts = new Intl.DateTimeFormat('en-US', { ...opts, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }).formatToParts(d);
-    const p = Object.fromEntries(parts.map(({type, value}) => [type, value]));
-    return fmt.replace('yyyy', p.year || '').replace('yy', (p.year||'').slice(-2)).replace('MM', p.month || '').replace('dd', p.day || '').replace('HH', String(d.getHours()).padStart(2,'0')).replace('hh', p.hour || '').replace('mm', p.minute || '').replace('ss', p.second || '').replace('a', p.dayPeriod || '').replace(/M(?!M)/g, String(parseInt(p.month||'0'))).replace(/d(?!d)/g, String(parseInt(p.day||'0'))).replace(/h(?!h)/g, String(parseInt(p.hour||'0')));
+    const p = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
+    return fmt.replace('yyyy', p.year || '').replace('yy', (p.year || '').slice(-2)).replace('MM', p.month || '').replace('dd', p.day || '').replace('HH', String(d.getHours()).padStart(2, '0')).replace('hh', p.hour || '').replace('mm', p.minute || '').replace('ss', p.second || '').replace('a', p.dayPeriod || '').replace(/M(?!M)/g, String(parseInt(p.month || '0'))).replace(/d(?!d)/g, String(parseInt(p.day || '0'))).replace(/h(?!h)/g, String(parseInt(p.hour || '0')));
   })();
   if (String(vars["Current Month"]) === String("01")) {
     vars["Last Month"] = "12";
@@ -2388,8 +2388,8 @@ export async function stepGroup_Modifying_The_Batch_Intervals(page: import('@pla
     const fmt = "hh";
     // Map Java date format to Intl parts
     const parts = new Intl.DateTimeFormat('en-US', { ...opts, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }).formatToParts(d);
-    const p = Object.fromEntries(parts.map(({type, value}) => [type, value]));
-    return fmt.replace('yyyy', p.year || '').replace('yy', (p.year||'').slice(-2)).replace('MM', p.month || '').replace('dd', p.day || '').replace('HH', String(d.getHours()).padStart(2,'0')).replace('hh', p.hour || '').replace('mm', p.minute || '').replace('ss', p.second || '').replace('a', p.dayPeriod || '').replace(/M(?!M)/g, String(parseInt(p.month||'0'))).replace(/d(?!d)/g, String(parseInt(p.day||'0'))).replace(/h(?!h)/g, String(parseInt(p.hour||'0')));
+    const p = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
+    return fmt.replace('yyyy', p.year || '').replace('yy', (p.year || '').slice(-2)).replace('MM', p.month || '').replace('dd', p.day || '').replace('HH', String(d.getHours()).padStart(2, '0')).replace('hh', p.hour || '').replace('mm', p.minute || '').replace('ss', p.second || '').replace('a', p.dayPeriod || '').replace(/M(?!M)/g, String(parseInt(p.month || '0'))).replace(/d(?!d)/g, String(parseInt(p.day || '0'))).replace(/h(?!h)/g, String(parseInt(p.hour || '0')));
   })();
   await CorrPortalElem.StartTime_In_Hour.fill(vars["Time_Hour"]);
   vars["Time_Min"] = (() => {
@@ -2398,8 +2398,8 @@ export async function stepGroup_Modifying_The_Batch_Intervals(page: import('@pla
     const fmt = "hh:mm";
     // Map Java date format to Intl parts
     const parts = new Intl.DateTimeFormat('en-US', { ...opts, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }).formatToParts(d);
-    const p = Object.fromEntries(parts.map(({type, value}) => [type, value]));
-    return fmt.replace('yyyy', p.year || '').replace('yy', (p.year||'').slice(-2)).replace('MM', p.month || '').replace('dd', p.day || '').replace('HH', String(d.getHours()).padStart(2,'0')).replace('hh', p.hour || '').replace('mm', p.minute || '').replace('ss', p.second || '').replace('a', p.dayPeriod || '').replace(/M(?!M)/g, String(parseInt(p.month||'0'))).replace(/d(?!d)/g, String(parseInt(p.day||'0'))).replace(/h(?!h)/g, String(parseInt(p.hour||'0')));
+    const p = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
+    return fmt.replace('yyyy', p.year || '').replace('yy', (p.year || '').slice(-2)).replace('MM', p.month || '').replace('dd', p.day || '').replace('HH', String(d.getHours()).padStart(2, '0')).replace('hh', p.hour || '').replace('mm', p.minute || '').replace('ss', p.second || '').replace('a', p.dayPeriod || '').replace(/M(?!M)/g, String(parseInt(p.month || '0'))).replace(/d(?!d)/g, String(parseInt(p.day || '0'))).replace(/h(?!h)/g, String(parseInt(p.hour || '0')));
   })();
   vars["Time_Minute"] = String(vars["Time_Min"]).split(":")["2"] || '';
   await CorrPortalElem.StartTime_In_Minutes.fill(vars["Time_Minute"]);
@@ -2444,8 +2444,8 @@ export async function stepGroup_Modifying_Batch_Intervals_For_next_bussiness_day
     const fmt = "hh";
     // Map Java date format to Intl parts
     const parts = new Intl.DateTimeFormat('en-US', { ...opts, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }).formatToParts(d);
-    const p = Object.fromEntries(parts.map(({type, value}) => [type, value]));
-    return fmt.replace('yyyy', p.year || '').replace('yy', (p.year||'').slice(-2)).replace('MM', p.month || '').replace('dd', p.day || '').replace('HH', String(d.getHours()).padStart(2,'0')).replace('hh', p.hour || '').replace('mm', p.minute || '').replace('ss', p.second || '').replace('a', p.dayPeriod || '').replace(/M(?!M)/g, String(parseInt(p.month||'0'))).replace(/d(?!d)/g, String(parseInt(p.day||'0'))).replace(/h(?!h)/g, String(parseInt(p.hour||'0')));
+    const p = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
+    return fmt.replace('yyyy', p.year || '').replace('yy', (p.year || '').slice(-2)).replace('MM', p.month || '').replace('dd', p.day || '').replace('HH', String(d.getHours()).padStart(2, '0')).replace('hh', p.hour || '').replace('mm', p.minute || '').replace('ss', p.second || '').replace('a', p.dayPeriod || '').replace(/M(?!M)/g, String(parseInt(p.month || '0'))).replace(/d(?!d)/g, String(parseInt(p.day || '0'))).replace(/h(?!h)/g, String(parseInt(p.hour || '0')));
   })();
   await CorrPortalElem.StartTime_In_Hour.fill(vars["Time_Hour"]);
   vars["Time_Min"] = (() => {
@@ -2454,8 +2454,8 @@ export async function stepGroup_Modifying_Batch_Intervals_For_next_bussiness_day
     const fmt = "hh:mm";
     // Map Java date format to Intl parts
     const parts = new Intl.DateTimeFormat('en-US', { ...opts, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }).formatToParts(d);
-    const p = Object.fromEntries(parts.map(({type, value}) => [type, value]));
-    return fmt.replace('yyyy', p.year || '').replace('yy', (p.year||'').slice(-2)).replace('MM', p.month || '').replace('dd', p.day || '').replace('HH', String(d.getHours()).padStart(2,'0')).replace('hh', p.hour || '').replace('mm', p.minute || '').replace('ss', p.second || '').replace('a', p.dayPeriod || '').replace(/M(?!M)/g, String(parseInt(p.month||'0'))).replace(/d(?!d)/g, String(parseInt(p.day||'0'))).replace(/h(?!h)/g, String(parseInt(p.hour||'0')));
+    const p = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
+    return fmt.replace('yyyy', p.year || '').replace('yy', (p.year || '').slice(-2)).replace('MM', p.month || '').replace('dd', p.day || '').replace('HH', String(d.getHours()).padStart(2, '0')).replace('hh', p.hour || '').replace('mm', p.minute || '').replace('ss', p.second || '').replace('a', p.dayPeriod || '').replace(/M(?!M)/g, String(parseInt(p.month || '0'))).replace(/d(?!d)/g, String(parseInt(p.day || '0'))).replace(/h(?!h)/g, String(parseInt(p.hour || '0')));
   })();
   vars["Time_Minute"] = String(vars["Time_Min"]).split(":")["2"] || '';
   await CorrPortalElem.StartTime_In_Minutes.fill(vars["Time_Minute"]);
@@ -2649,8 +2649,8 @@ export async function stepGroup_Adding_a_batch_In_bulk_batch_screen(page: import
     const fmt = "hh:mm a";
     // Map Java date format to Intl parts
     const parts = new Intl.DateTimeFormat('en-US', { ...opts, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }).formatToParts(d);
-    const p = Object.fromEntries(parts.map(({type, value}) => [type, value]));
-    return fmt.replace('yyyy', p.year || '').replace('yy', (p.year||'').slice(-2)).replace('MM', p.month || '').replace('dd', p.day || '').replace('HH', String(d.getHours()).padStart(2,'0')).replace('hh', p.hour || '').replace('mm', p.minute || '').replace('ss', p.second || '').replace('a', p.dayPeriod || '').replace(/M(?!M)/g, String(parseInt(p.month||'0'))).replace(/d(?!d)/g, String(parseInt(p.day||'0'))).replace(/h(?!h)/g, String(parseInt(p.hour||'0')));
+    const p = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
+    return fmt.replace('yyyy', p.year || '').replace('yy', (p.year || '').slice(-2)).replace('MM', p.month || '').replace('dd', p.day || '').replace('HH', String(d.getHours()).padStart(2, '0')).replace('hh', p.hour || '').replace('mm', p.minute || '').replace('ss', p.second || '').replace('a', p.dayPeriod || '').replace(/M(?!M)/g, String(parseInt(p.month || '0'))).replace(/d(?!d)/g, String(parseInt(p.day || '0'))).replace(/h(?!h)/g, String(parseInt(p.hour || '0')));
   })();
   vars["ExtendedTime"] = (() => {
     const d = new Date('2000-01-01 ' + String(vars["CurrentTime"]));
@@ -2709,8 +2709,8 @@ export async function stepGroup_Modifying_The_Batch_Intervals_For_one_Hour_Prior
     const fmt = "hh:mm a";
     // Map Java date format to Intl parts
     const parts = new Intl.DateTimeFormat('en-US', { ...opts, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }).formatToParts(d);
-    const p = Object.fromEntries(parts.map(({type, value}) => [type, value]));
-    return fmt.replace('yyyy', p.year || '').replace('yy', (p.year||'').slice(-2)).replace('MM', p.month || '').replace('dd', p.day || '').replace('HH', String(d.getHours()).padStart(2,'0')).replace('hh', p.hour || '').replace('mm', p.minute || '').replace('ss', p.second || '').replace('a', p.dayPeriod || '').replace(/M(?!M)/g, String(parseInt(p.month||'0'))).replace(/d(?!d)/g, String(parseInt(p.day||'0'))).replace(/h(?!h)/g, String(parseInt(p.hour||'0')));
+    const p = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
+    return fmt.replace('yyyy', p.year || '').replace('yy', (p.year || '').slice(-2)).replace('MM', p.month || '').replace('dd', p.day || '').replace('HH', String(d.getHours()).padStart(2, '0')).replace('hh', p.hour || '').replace('mm', p.minute || '').replace('ss', p.second || '').replace('a', p.dayPeriod || '').replace(/M(?!M)/g, String(parseInt(p.month || '0'))).replace(/d(?!d)/g, String(parseInt(p.day || '0'))).replace(/h(?!h)/g, String(parseInt(p.hour || '0')));
   })();
   vars["CurrentTime"] = (() => {
     const d = new Date('2000-01-01 ' + String(vars["CurrentTime"]));
@@ -2788,8 +2788,8 @@ export async function stepGroup_Creating_Of_Bid_Maps(page: import('@playwright/t
     const fmt = "MM/dd/yyyy";
     // Map Java date format to Intl parts
     const parts = new Intl.DateTimeFormat('en-US', { ...opts, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }).formatToParts(d);
-    const p = Object.fromEntries(parts.map(({type, value}) => [type, value]));
-    return fmt.replace('yyyy', p.year || '').replace('yy', (p.year||'').slice(-2)).replace('MM', p.month || '').replace('dd', p.day || '').replace('HH', String(d.getHours()).padStart(2,'0')).replace('hh', p.hour || '').replace('mm', p.minute || '').replace('ss', p.second || '').replace('a', p.dayPeriod || '').replace(/M(?!M)/g, String(parseInt(p.month||'0'))).replace(/d(?!d)/g, String(parseInt(p.day||'0'))).replace(/h(?!h)/g, String(parseInt(p.hour||'0')));
+    const p = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
+    return fmt.replace('yyyy', p.year || '').replace('yy', (p.year || '').slice(-2)).replace('MM', p.month || '').replace('dd', p.day || '').replace('HH', String(d.getHours()).padStart(2, '0')).replace('hh', p.hour || '').replace('mm', p.minute || '').replace('ss', p.second || '').replace('a', p.dayPeriod || '').replace(/M(?!M)/g, String(parseInt(p.month || '0'))).replace(/d(?!d)/g, String(parseInt(p.day || '0'))).replace(/h(?!h)/g, String(parseInt(p.hour || '0')));
   })();
   vars["Create New Map"] = new Date().toLocaleDateString('en-US') /* format: MM/dd/yyyy/HH:mm:ss */;
   vars["Create New Map"] = "Testsigma_" + vars["Create New Map"];
@@ -2877,29 +2877,29 @@ export async function stepGroup_Getting_Next_Bussiness_day_by_handling_weekend(p
     const fmt = "MM/dd/yyyy";
     // Map Java date format to Intl parts
     const parts = new Intl.DateTimeFormat('en-US', { ...opts, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }).formatToParts(d);
-    const p = Object.fromEntries(parts.map(({type, value}) => [type, value]));
-    return fmt.replace('yyyy', p.year || '').replace('yy', (p.year||'').slice(-2)).replace('MM', p.month || '').replace('dd', p.day || '').replace('HH', String(d.getHours()).padStart(2,'0')).replace('hh', p.hour || '').replace('mm', p.minute || '').replace('ss', p.second || '').replace('a', p.dayPeriod || '').replace(/M(?!M)/g, String(parseInt(p.month||'0'))).replace(/d(?!d)/g, String(parseInt(p.day||'0'))).replace(/h(?!h)/g, String(parseInt(p.hour||'0')));
+    const p = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
+    return fmt.replace('yyyy', p.year || '').replace('yy', (p.year || '').slice(-2)).replace('MM', p.month || '').replace('dd', p.day || '').replace('HH', String(d.getHours()).padStart(2, '0')).replace('hh', p.hour || '').replace('mm', p.minute || '').replace('ss', p.second || '').replace('a', p.dayPeriod || '').replace(/M(?!M)/g, String(parseInt(p.month || '0'))).replace(/d(?!d)/g, String(parseInt(p.day || '0'))).replace(/h(?!h)/g, String(parseInt(p.hour || '0')));
   })();
   vars["TomorrowsDateList"] = (() => {
     const d = new Date(String(vars["CurrentDateList"]));
     d.setDate(d.getDate() + parseInt(String("1")));
-    const _p = { yyyy: String(d.getFullYear()), yy: String(d.getFullYear()).slice(-2), MM: String(d.getMonth()+1).padStart(2,'0'), M: String(d.getMonth()+1), dd: String(d.getDate()).padStart(2,'0'), d: String(d.getDate()), HH: String(d.getHours()).padStart(2,'0'), hh: String(d.getHours()%12||12).toString().padStart(2,'0'), h: String(d.getHours()%12||12), mm: String(d.getMinutes()).padStart(2,'0'), ss: String(d.getSeconds()).padStart(2,'0'), a: d.getHours() >= 12 ? 'PM' : 'AM' };
-    return "MM/dd/yyyy".replace('yyyy',_p.yyyy).replace('yy',_p.yy).replace('MM',_p.MM).replace('dd',_p.dd).replace('HH',_p.HH).replace('hh',_p.hh).replace('mm',_p.mm).replace('ss',_p.ss).replace(/a/g,_p.a).replace(/M(?!M)/g,_p.M).replace(/d(?!d)/g,_p.d).replace(/h(?!h)/g,_p.h);
+    const _p = { yyyy: String(d.getFullYear()), yy: String(d.getFullYear()).slice(-2), MM: String(d.getMonth() + 1).padStart(2, '0'), M: String(d.getMonth() + 1), dd: String(d.getDate()).padStart(2, '0'), d: String(d.getDate()), HH: String(d.getHours()).padStart(2, '0'), hh: String(d.getHours() % 12 || 12).toString().padStart(2, '0'), h: String(d.getHours() % 12 || 12), mm: String(d.getMinutes()).padStart(2, '0'), ss: String(d.getSeconds()).padStart(2, '0'), a: d.getHours() >= 12 ? 'PM' : 'AM' };
+    return "MM/dd/yyyy".replace('yyyy', _p.yyyy).replace('yy', _p.yy).replace('MM', _p.MM).replace('dd', _p.dd).replace('HH', _p.HH).replace('hh', _p.hh).replace('mm', _p.mm).replace('ss', _p.ss).replace(/a/g, _p.a).replace(/M(?!M)/g, _p.M).replace(/d(?!d)/g, _p.d).replace(/h(?!h)/g, _p.h);
   })();
   vars[""] = new Date(String("TomorrowsDay")).toLocaleDateString('en-US', { weekday: 'long' });
   if (String(vars["TomorrowsDay"]) === String("Saturday")) {
     vars["NextBusinessDate"] = (() => {
       const d = new Date(String(vars["TomorrowsDateList"]));
       d.setDate(d.getDate() + parseInt(String("2")));
-      const _p = { yyyy: String(d.getFullYear()), yy: String(d.getFullYear()).slice(-2), MM: String(d.getMonth()+1).padStart(2,'0'), M: String(d.getMonth()+1), dd: String(d.getDate()).padStart(2,'0'), d: String(d.getDate()), HH: String(d.getHours()).padStart(2,'0'), hh: String(d.getHours()%12||12).toString().padStart(2,'0'), h: String(d.getHours()%12||12), mm: String(d.getMinutes()).padStart(2,'0'), ss: String(d.getSeconds()).padStart(2,'0'), a: d.getHours() >= 12 ? 'PM' : 'AM' };
-      return "MM/dd/yyyy".replace('yyyy',_p.yyyy).replace('yy',_p.yy).replace('MM',_p.MM).replace('dd',_p.dd).replace('HH',_p.HH).replace('hh',_p.hh).replace('mm',_p.mm).replace('ss',_p.ss).replace(/a/g,_p.a).replace(/M(?!M)/g,_p.M).replace(/d(?!d)/g,_p.d).replace(/h(?!h)/g,_p.h);
+      const _p = { yyyy: String(d.getFullYear()), yy: String(d.getFullYear()).slice(-2), MM: String(d.getMonth() + 1).padStart(2, '0'), M: String(d.getMonth() + 1), dd: String(d.getDate()).padStart(2, '0'), d: String(d.getDate()), HH: String(d.getHours()).padStart(2, '0'), hh: String(d.getHours() % 12 || 12).toString().padStart(2, '0'), h: String(d.getHours() % 12 || 12), mm: String(d.getMinutes()).padStart(2, '0'), ss: String(d.getSeconds()).padStart(2, '0'), a: d.getHours() >= 12 ? 'PM' : 'AM' };
+      return "MM/dd/yyyy".replace('yyyy', _p.yyyy).replace('yy', _p.yy).replace('MM', _p.MM).replace('dd', _p.dd).replace('HH', _p.HH).replace('hh', _p.hh).replace('mm', _p.mm).replace('ss', _p.ss).replace(/a/g, _p.a).replace(/M(?!M)/g, _p.M).replace(/d(?!d)/g, _p.d).replace(/h(?!h)/g, _p.h);
     })();
   } else if (String(vars["TomorrowsDay"]) === String("Sunday")) {
     vars["NextBusinessDate"] = (() => {
       const d = new Date(String(vars["TomorrowsDateList"]));
       d.setDate(d.getDate() + parseInt(String("1")));
-      const _p = { yyyy: String(d.getFullYear()), yy: String(d.getFullYear()).slice(-2), MM: String(d.getMonth()+1).padStart(2,'0'), M: String(d.getMonth()+1), dd: String(d.getDate()).padStart(2,'0'), d: String(d.getDate()), HH: String(d.getHours()).padStart(2,'0'), hh: String(d.getHours()%12||12).toString().padStart(2,'0'), h: String(d.getHours()%12||12), mm: String(d.getMinutes()).padStart(2,'0'), ss: String(d.getSeconds()).padStart(2,'0'), a: d.getHours() >= 12 ? 'PM' : 'AM' };
-      return "MM/dd/yyyy".replace('yyyy',_p.yyyy).replace('yy',_p.yy).replace('MM',_p.MM).replace('dd',_p.dd).replace('HH',_p.HH).replace('hh',_p.hh).replace('mm',_p.mm).replace('ss',_p.ss).replace(/a/g,_p.a).replace(/M(?!M)/g,_p.M).replace(/d(?!d)/g,_p.d).replace(/h(?!h)/g,_p.h);
+      const _p = { yyyy: String(d.getFullYear()), yy: String(d.getFullYear()).slice(-2), MM: String(d.getMonth() + 1).padStart(2, '0'), M: String(d.getMonth() + 1), dd: String(d.getDate()).padStart(2, '0'), d: String(d.getDate()), HH: String(d.getHours()).padStart(2, '0'), hh: String(d.getHours() % 12 || 12).toString().padStart(2, '0'), h: String(d.getHours() % 12 || 12), mm: String(d.getMinutes()).padStart(2, '0'), ss: String(d.getSeconds()).padStart(2, '0'), a: d.getHours() >= 12 ? 'PM' : 'AM' };
+      return "MM/dd/yyyy".replace('yyyy', _p.yyyy).replace('yy', _p.yy).replace('MM', _p.MM).replace('dd', _p.dd).replace('HH', _p.HH).replace('hh', _p.hh).replace('mm', _p.mm).replace('ss', _p.ss).replace(/a/g, _p.a).replace(/M(?!M)/g, _p.M).replace(/d(?!d)/g, _p.d).replace(/h(?!h)/g, _p.h);
     })();
   } else {
     vars["NextBusinessDate"] = vars["TomorrowsDateList"];
@@ -2922,8 +2922,8 @@ export async function stepGroup_Modifying_The_Batch_Intervals_For_Next_bussiness
     const fmt = "hh:mm a";
     // Map Java date format to Intl parts
     const parts = new Intl.DateTimeFormat('en-US', { ...opts, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }).formatToParts(d);
-    const p = Object.fromEntries(parts.map(({type, value}) => [type, value]));
-    return fmt.replace('yyyy', p.year || '').replace('yy', (p.year||'').slice(-2)).replace('MM', p.month || '').replace('dd', p.day || '').replace('HH', String(d.getHours()).padStart(2,'0')).replace('hh', p.hour || '').replace('mm', p.minute || '').replace('ss', p.second || '').replace('a', p.dayPeriod || '').replace(/M(?!M)/g, String(parseInt(p.month||'0'))).replace(/d(?!d)/g, String(parseInt(p.day||'0'))).replace(/h(?!h)/g, String(parseInt(p.hour||'0')));
+    const p = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
+    return fmt.replace('yyyy', p.year || '').replace('yy', (p.year || '').slice(-2)).replace('MM', p.month || '').replace('dd', p.day || '').replace('HH', String(d.getHours()).padStart(2, '0')).replace('hh', p.hour || '').replace('mm', p.minute || '').replace('ss', p.second || '').replace('a', p.dayPeriod || '').replace(/M(?!M)/g, String(parseInt(p.month || '0'))).replace(/d(?!d)/g, String(parseInt(p.day || '0'))).replace(/h(?!h)/g, String(parseInt(p.hour || '0')));
   })();
   vars["OnehourPrior"] = (() => {
     const d = new Date('2000-01-01 ' + String(vars["CurrentTime"]));
@@ -3792,9 +3792,9 @@ export async function stepGroup_Verifying_the_bidsample_to_bidtape_mapping_in_En
           vars["BidTapeValue"] = await CorrPortalElem.Individual_Bid_Tape_Value_2.textContent() || '';
           vars["IndividualBidTapeValue"] = String(vars["BidTapeValue"]) + "," + String(vars["IndividualBidTapeValue"]);
           vars["count2"] = (parseFloat(String("1")) + parseFloat(String(vars["count2"]))).toFixed(0);
-      // [DISABLED] Write value IndividualBidTapeValue to BidSampleNamesWithBidTapeValues(EnumPage) column EnumBidTapeValues
-      // // Write to test data profile: "EnumBidTapeValues" = vars["IndividualBidTapeValue"]
-      // // TODO: Test data profile writes need custom implementation
+          // [DISABLED] Write value IndividualBidTapeValue to BidSampleNamesWithBidTapeValues(EnumPage) column EnumBidTapeValues
+          // // Write to test data profile: "EnumBidTapeValues" = vars["IndividualBidTapeValue"]
+          // // TODO: Test data profile writes need custom implementation
         }
       }
       expect(String(vars["IndividualBidTapeValue"])).toBe(testData["EnumBidTapeValues"]);
@@ -3972,8 +3972,8 @@ export async function stepGroup_Getting_Next_Month_From_Current_Month(page: impo
     const fmt = "MM";
     // Map Java date format to Intl parts
     const parts = new Intl.DateTimeFormat('en-US', { ...opts, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }).formatToParts(d);
-    const p = Object.fromEntries(parts.map(({type, value}) => [type, value]));
-    return fmt.replace('yyyy', p.year || '').replace('yy', (p.year||'').slice(-2)).replace('MM', p.month || '').replace('dd', p.day || '').replace('HH', String(d.getHours()).padStart(2,'0')).replace('hh', p.hour || '').replace('mm', p.minute || '').replace('ss', p.second || '').replace('a', p.dayPeriod || '').replace(/M(?!M)/g, String(parseInt(p.month||'0'))).replace(/d(?!d)/g, String(parseInt(p.day||'0'))).replace(/h(?!h)/g, String(parseInt(p.hour||'0')));
+    const p = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
+    return fmt.replace('yyyy', p.year || '').replace('yy', (p.year || '').slice(-2)).replace('MM', p.month || '').replace('dd', p.day || '').replace('HH', String(d.getHours()).padStart(2, '0')).replace('hh', p.hour || '').replace('mm', p.minute || '').replace('ss', p.second || '').replace('a', p.dayPeriod || '').replace(/M(?!M)/g, String(parseInt(p.month || '0'))).replace(/d(?!d)/g, String(parseInt(p.day || '0'))).replace(/h(?!h)/g, String(parseInt(p.hour || '0')));
   })();
   if (String(vars["CurrentMonth"]) === String("12")) {
     vars["NextMonth"] = "1";
@@ -4068,8 +4068,8 @@ export async function stepGroup_Uploading_bid_for_American_Pacific_Company(page:
     const fmt = "hh:mm ";
     // Map Java date format to Intl parts
     const parts = new Intl.DateTimeFormat('en-US', { ...opts, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }).formatToParts(d);
-    const p = Object.fromEntries(parts.map(({type, value}) => [type, value]));
-    return fmt.replace('yyyy', p.year || '').replace('yy', (p.year||'').slice(-2)).replace('MM', p.month || '').replace('dd', p.day || '').replace('HH', String(d.getHours()).padStart(2,'0')).replace('hh', p.hour || '').replace('mm', p.minute || '').replace('ss', p.second || '').replace('a', p.dayPeriod || '').replace(/M(?!M)/g, String(parseInt(p.month||'0'))).replace(/d(?!d)/g, String(parseInt(p.day||'0'))).replace(/h(?!h)/g, String(parseInt(p.hour||'0')));
+    const p = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
+    return fmt.replace('yyyy', p.year || '').replace('yy', (p.year || '').slice(-2)).replace('MM', p.month || '').replace('dd', p.day || '').replace('HH', String(d.getHours()).padStart(2, '0')).replace('hh', p.hour || '').replace('mm', p.minute || '').replace('ss', p.second || '').replace('a', p.dayPeriod || '').replace(/M(?!M)/g, String(parseInt(p.month || '0'))).replace(/d(?!d)/g, String(parseInt(p.day || '0'))).replace(/h(?!h)/g, String(parseInt(p.hour || '0')));
   })();
   vars["TimeDifference"] = Math.abs(new Date('2000-01-01 ' + String(vars["QueuedTime"])).getTime() - new Date('2000-01-01 ' + String(vars["CurrentEstTime"])).getTime()) / 60000 + '';
   if (String(vars["TimeDifference"]) > String("4")) {
@@ -4337,7 +4337,8 @@ export async function stepGroup_Verifying_Locked_Loans_Data_from_UI_to_Excel(pag
   vars["count"] = "1";
   while (parseFloat(String(vars["count"])) <= parseFloat(String(vars["TotalRowsCountUILockedLoans"]))) {
     await CorrPortalElem.BidRequestIDText_Details.click();
-    vars["EntireRowDataExcelLockedLoans"] = excelHelper.readRow(vars['_lastDownloadPath'] || '', vars["count"], "2");
+    // vars["EntireRowDataExcelLockedLoans"] = excelHelper.readRow(vars['_lastDownloadPath'] || '', vars["count"], "2");
+    vars["EntireRowDataExcelLockedLoans"] = excelHelper.readEntireRow(vars["FilePathTotalLoans"], 0, vars["count"], "EntireRowDataExcelLockedLoans");
     vars["ColumnCountUILockedLoans"] = String(await CorrPortalElem.Column_Count_UI_Price_Offered_Details.count());
     vars["Count"] = "1";
     while (parseFloat(String(vars["Count"])) <= parseFloat(String(vars["ColumnCountUILockedLoans"]))) {
@@ -4637,8 +4638,8 @@ export async function stepGroup_Add_Early_Config_With_Current_Est_Time(page: imp
     const fmt = "hh:mma";
     // Map Java date format to Intl parts
     const parts = new Intl.DateTimeFormat('en-US', { ...opts, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }).formatToParts(d);
-    const p = Object.fromEntries(parts.map(({type, value}) => [type, value]));
-    return fmt.replace('yyyy', p.year || '').replace('yy', (p.year||'').slice(-2)).replace('MM', p.month || '').replace('dd', p.day || '').replace('HH', String(d.getHours()).padStart(2,'0')).replace('hh', p.hour || '').replace('mm', p.minute || '').replace('ss', p.second || '').replace('a', p.dayPeriod || '').replace(/M(?!M)/g, String(parseInt(p.month||'0'))).replace(/d(?!d)/g, String(parseInt(p.day||'0'))).replace(/h(?!h)/g, String(parseInt(p.hour||'0')));
+    const p = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
+    return fmt.replace('yyyy', p.year || '').replace('yy', (p.year || '').slice(-2)).replace('MM', p.month || '').replace('dd', p.day || '').replace('HH', String(d.getHours()).padStart(2, '0')).replace('hh', p.hour || '').replace('mm', p.minute || '').replace('ss', p.second || '').replace('a', p.dayPeriod || '').replace(/M(?!M)/g, String(parseInt(p.month || '0'))).replace(/d(?!d)/g, String(parseInt(p.day || '0'))).replace(/h(?!h)/g, String(parseInt(p.hour || '0')));
   })();
   vars["CurrentEstTime"] = (() => {
     const d = new Date('2000-01-01 ' + String(vars["CurrentEstTime"]));
@@ -4781,8 +4782,8 @@ export async function stepGroup_Updating_the_Loan_Numbers_in_a_file(page: import
     const fmt = "dd-MM-yyyy";
     // Map Java date format to Intl parts
     const parts = new Intl.DateTimeFormat('en-US', { ...opts, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }).formatToParts(d);
-    const p = Object.fromEntries(parts.map(({type, value}) => [type, value]));
-    return fmt.replace('yyyy', p.year || '').replace('yy', (p.year||'').slice(-2)).replace('MM', p.month || '').replace('dd', p.day || '').replace('HH', String(d.getHours()).padStart(2,'0')).replace('hh', p.hour || '').replace('mm', p.minute || '').replace('ss', p.second || '').replace('a', p.dayPeriod || '').replace(/M(?!M)/g, String(parseInt(p.month||'0'))).replace(/d(?!d)/g, String(parseInt(p.day||'0'))).replace(/h(?!h)/g, String(parseInt(p.hour||'0')));
+    const p = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
+    return fmt.replace('yyyy', p.year || '').replace('yy', (p.year || '').slice(-2)).replace('MM', p.month || '').replace('dd', p.day || '').replace('HH', String(d.getHours()).padStart(2, '0')).replace('hh', p.hour || '').replace('mm', p.minute || '').replace('ss', p.second || '').replace('a', p.dayPeriod || '').replace(/M(?!M)/g, String(parseInt(p.month || '0'))).replace(/d(?!d)/g, String(parseInt(p.day || '0'))).replace(/h(?!h)/g, String(parseInt(p.hour || '0')));
   })();
   vars["Str1"] = String("TestSigma_") + String(vars["CurrentDate"]);
   vars["Str2"] = String(vars["Str1"]) + String("_SC1");
@@ -4790,7 +4791,7 @@ export async function stepGroup_Updating_the_Loan_Numbers_in_a_file(page: import
   vars["count"] = "1";
   vars["RowsCountExcel"] = String(excelHelper.getRowCount(vars["File"], "0"));
   while (parseFloat(String(vars["count"])) < parseFloat(String(vars["RowsCountExcel"]))) {
-    vars["RandomString"] = Array.from({length: 2}, () => 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'.charAt(Math.floor(Math.random() * 62))).join('');
+    vars["RandomString"] = Array.from({ length: 2 }, () => 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'.charAt(Math.floor(Math.random() * 62))).join('');
     vars["RandomNumber"] = String(Math.floor(Math.random() * (999 - 100 + 1)) + 100);
     vars["FormattedLoanNumber"] = vars["Str2"] + "_" + vars["RandomString"] + "_" + vars["RandomNumber"];
     excelHelper.writeCell(vars["File"], vars["count"], vars["ColumnCount"], String(vars["FormattedLoanNumber"]), "0");
@@ -4843,64 +4844,79 @@ export async function stepGroup_Verifying_Loan_Details(page: import('@playwright
  */
 export async function stepGroup_Verifying_Header_Names_From_UI_to_ExcelCommitment_List(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
-  vars["HeaderNamesTotalLoansExcel"] = excelHelper.readRow(vars['_lastDownloadPath'] || '', "0", "1");
-  vars["HeaderNamesTotalLoansExcel"] = String(vars["HeaderNamesTotalLoansExcel"]).replace(/\./g, '');
-  vars["CountofHeaderNamesUI"] = String(await CorrPortalElem.Headers_Names_UI_Commitment_List.count());
+  const commitmentListPage = new CommitmentListPage(page);
+  const Methods = new AddonHelpers(page, vars);
+
+  vars["HeaderNamesLockedLoansExcel"] = excelHelper.readEntireRow(vars["FilePathTotalLoans"], 1, 0, "HeaderNamesLockedLoansExcel");
+  Methods.removeSpecialChar(".", vars["HeaderNamesLockedLoansExcel"], "HeaderNamesLockedLoansExcel");
+
+  vars["CountofHeaderNamesUI"] = String(await commitmentListPage.Headers_Names_UICommitment_List.count());
   vars["count"] = "1";
-  while (parseFloat(String(vars["count"])) <= parseFloat(String(vars["CountofHeaderNamesUI"]))) {
-    vars["IndividualHeaderNameTotalLoansUI"] = await CorrPortalElem.Individual_Header_Names_UI_Commitment_List.textContent() || '';
-    if (String(vars["IndividualHeaderNameTotalLoansUI"]).includes(String("."))) {
-      vars["IndividualHeaderNameTotalLoansUI"] = String(vars["IndividualHeaderNameTotalLoansUI"]).replace(/\./g, '');
+
+  while (parseFloat(vars["count"]) <= parseFloat(vars["CountofHeaderNamesUI"])) {
+    vars["IndividualHeaderNameLockedLoansUI"] = await commitmentListPage.Individual_Header_Names_UICommitment_List(vars["count"]).textContent() || '';
+
+    if (vars["IndividualHeaderNameLockedLoansUI"].includes(".")) {
+      Methods.removeSpecialChar(".", vars["IndividualHeaderNameLockedLoansUI"], "IndividualHeaderNameLockedLoansUI");
     }
-    vars["IndividualHeaderNameTotalLoansUI"] = String(vars["IndividualHeaderNameTotalLoansUI"]).trim();
-    vars["IndividualHeaderNameTotalLoansExcel"] = String(vars["HeaderNamesTotalLoansExcel"]).split(",")[parseInt(String(vars["count"]))] || '';
-    vars["IndividualHeaderNameTotalLoansExcel"] = String(vars["IndividualHeaderNameTotalLoansExcel"]).trim();
-    if (String(vars["IndividualHeaderNameTotalLoansUI"]) === String("LoanAmount")) {
-      expect(String(vars["IndividualHeaderNameTotalLoansExcel"])).toBe("LoanAmt");
+
+    Methods.trimWhitespace(vars["IndividualHeaderNameLockedLoansUI"], "IndividualHeaderNameLockedLoansUI");
+
+    Methods.splitStringByRegConditionWithPosition(vars["HeaderNamesLockedLoansExcel"], ",", vars["count"], "IndividualHeaderNameLockedLoansExcel");
+
+    Methods.trimWhitespace(vars["IndividualHeaderNameLockedLoansExcel"], "IndividualHeaderNameLockedLoansExcel");
+
+    if (vars["IndividualHeaderNameLockedLoansUI"] === "LoanAmount") {
+      expect(vars["IndividualHeaderNameLockedLoansExcel"]).toBe("LoanAmt");
     } else {
-      expect(String(vars["IndividualHeaderNameTotalLoansUI"])).toBe(vars["IndividualHeaderNameTotalLoansExcel"]);
+      expect(vars["IndividualHeaderNameLockedLoansUI"]).toContain(vars["IndividualHeaderNameLockedLoansExcel"]);
+      log.info(vars["IndividualHeaderNameLockedLoansUI"] + " contains " + vars["IndividualHeaderNameLockedLoansExcel"]);
     }
-    vars["count"] = (parseFloat(String("1")) + parseFloat(String(vars["count"]))).toFixed(0);
+
+    Methods.MathematicalOperation(vars["count"], "+", "1", "count");
   }
 }
-
 /**
  * Step Group: Verifying Locked Loans Data UI to Excel(Commitment List)
  * ID: 1836
  * Steps: 24
  */
-export async function stepGroup_Verifying_Locked_Loans_Data_UI_to_ExcelCommitment_List(page: import('@playwright/test').Page, vars: Record<string, string>) {
+export async function stepGroup_Verifying_Locked_Loans_Data_UI_to_Excel_CommitmentList(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
+  const Methods = new AddonHelpers(page, vars);
   vars["TotalRowsCountUILockedLoans"] = String(await CorrPortalElem.Locked_Loans_Rows_Count_Commitment_List.count());
   vars["count"] = "1";
   while (parseFloat(String(vars["count"])) <= parseFloat(String(vars["TotalRowsCountUILockedLoans"]))) {
     await CorrPortalElem.BidRequestIDText_Details.click();
-    vars["EntireRowDataLockedLoansExcel"] = excelHelper.readRow(vars['_lastDownloadPath'] || '', vars["count"], "2");
-    vars["ColumnCountUILockedLoans"] = String(await CorrPortalElem.Column_Count_UI_Locked_Loans.count());
+    vars["EntireRowDataLockedLoansExcel"] = excelHelper.readEntireRow(vars["FilePathTotalLoans"], 1, vars["count"], "EntireRowDataLockedLoansExcel");
+    vars["ColumnCountUILockedLoans"] = String(await CorrPortalElem.Column_Count_UI_Locked_Loans(vars["count"]).count());
     vars["Count"] = "1";
     while (parseFloat(String(vars["Count"])) <= parseFloat(String(vars["ColumnCountUILockedLoans"]))) {
-      vars["IndividualCellDataLockedLoansUI"] = await CorrPortalElem.Individual_Cell_Data_UI_Locked_Loans.textContent() || '';
+      vars["IndividualCellDataLockedLoansUI"] = await CorrPortalElem.Individual_Cell_Data_UI_Locked_Loans(vars["count"], vars["Count"]).textContent() || '';
       if (String(vars["IndividualCellDataLockedLoansUI"]).includes(String("$"))) {
-        vars["IndividualCellDataLockedLoansUI"] = String(vars["IndividualCellDataLockedLoansUI"]).replace(/\$\,/g, '');
+        Methods.removeMultipleSpecialChars(['$', ',', ' '], vars["IndividualCellDataLockedLoansUI"], "IndividualCellDataLockedLoansUI");
       } else if (String(vars["IndividualCellDataLockedLoansUI"]).includes(String("| PQ | PS"))) {
-        vars["IndividualCellDataLockedLoansUI"] = String(vars["IndividualCellDataLockedLoansUI"]).substring(0, String(vars["IndividualCellDataLockedLoansUI"]).length - 10);
+        Methods.removeCharactersFromPosition(vars["IndividualCellDataLockedLoansUI"], "0", "10", "IndividualCellDataLockedLoansUI");
       } else if (String(vars["IndividualCellDataLockedLoansUI"]).includes(String("%"))) {
-        vars["IndividualCellDataLockedLoansUI"] = String(vars["IndividualCellDataLockedLoansUI"]).replace(/%/g, '');
+        Methods.removeSpecialChar("%", vars["IndividualCellDataLockedLoansUI"], "IndividualCellDataLockedLoansUI");
       }
-      vars["IndividualCellDataLockedLoansUI"] = String(vars["IndividualCellDataLockedLoansUI"]).trim();
-      vars["IndividualRowDataLockedLoansExcel"] = String(vars["EntireRowDataLockedLoansExcel"]).split(",")[parseInt(String(vars["Count"]))] || '';
+      Methods.trimtestdata(vars["IndividualCellDataLockedLoansUI"], "IndividualCellDataLockedLoansUI");
+      Methods.splitStringByRegConditionWithPosition(vars["EntireRowDataLockedLoansExcel"], ",", vars["Count"], "IndividualRowDataLockedLoansExcel");
       // [DISABLED] Verify if IndividualCellDataAllLoansUI == -
       // if (String(vars["IndividualCellDataAllLoansUI"]) === String("-"))
-        // [DISABLED] Verify if IndividualRowDataExcelAllLoans == 0.000
-        // expect(String(vars["IndividualRowDataExcelAllLoans"])).toBe("0.000");
+      // [DISABLED] Verify if IndividualRowDataExcelAllLoans == 0.000
+      // expect(String(vars["IndividualRowDataExcelAllLoans"])).toBe("0.000");
       // [DISABLED] Step group
       // // TODO: No template - Unknown step
-        // [DISABLED] Verify if IndividualCellDataAllLoansUI == IndividualRowDataExcelAllLoans
-        // expect(String(vars["IndividualCellDataAllLoansUI"])).toBe(vars["IndividualRowDataExcelAllLoans"]);
-      expect(String(vars["IndividualCellDataLockedLoansUI"])).toBe(vars["IndividualRowDataLockedLoansExcel"]);
-      vars["Count"] = (parseFloat(String("1")) + parseFloat(String(vars["Count"]))).toFixed(0);
+      // [DISABLED] Verify if IndividualCellDataAllLoansUI == IndividualRowDataExcelAllLoans
+      // expect(String(vars["IndividualCellDataAllLoansUI"])).toBe(vars["IndividualRowDataExcelAllLoans"]);
+      expect(String(vars["IndividualCellDataLockedLoansUI"])).toContain(vars["IndividualRowDataLockedLoansExcel"]);
+      log.info(vars["IndividualCellDataLockedLoansUI"] + " contains " + vars["IndividualRowDataLockedLoansExcel"]);
+      // vars["Count"] = (parseFloat(String("1")) + parseFloat(String(vars["Count"]))).toFixed(0);
+      Methods.MathematicalOperation(vars["Count"], "+", "1", "Count");
     }
-    vars["count"] = (parseFloat(String("1")) + parseFloat(String(vars["count"]))).toFixed(0);
+    // vars["count"] = (parseFloat(String("1")) + parseFloat(String(vars["count"]))).toFixed(0);
+    Methods.MathematicalOperation(vars["count"], "+", "1", "count");
   }
 }
 
@@ -5156,8 +5172,8 @@ export async function stepGroup_Verification_of_Data_from_Excel_to_UI_Excluding_
           vars["CellValueInExcel2"] = String(vars["RowDataExcel"]).split(",")[parseInt(String(vars["indexExcel"]))] || '';
           vars["CellValueInExcel"] = String(vars["CellValueInExcel"]) + "," + String(vars["CellValueInExcel2"]);
           vars["count"] = (parseFloat(String(vars["count"])) + parseFloat(String("1"))).toFixed(0);
-        // [DISABLED] Concate CellValueInExcel and CellValueInExcel2 with SpecialCharacter , and store into a variable CellValueInExcel
-        // vars["CellValueInExcel"] = String(vars["CellValueInExcel"]) + "," + String(vars["CellValueInExcel2"]);
+          // [DISABLED] Concate CellValueInExcel and CellValueInExcel2 with SpecialCharacter , and store into a variable CellValueInExcel
+          // vars["CellValueInExcel"] = String(vars["CellValueInExcel"]) + "," + String(vars["CellValueInExcel2"]);
         }
       }
       vars["CellValueInExcel"] = String(vars["CellValueInExcel"]).trim();
@@ -5202,16 +5218,18 @@ export async function stepGroup_Headers_Verification_Closed_List(page: import('@
  */
 export async function stepGroup_Headers_Verification_in_Closed_List(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
+  const Methods = new AddonHelpers(page, vars);
   vars["Count"] = "1";
   vars["CountOfHeaders"] = String(await CorrPortalElem.Headers_UI_Closed_List.count());
-  vars["EntireHeadersExcel"] = excelHelper.readRow(vars['_lastDownloadPath'] || '', "0", "0");
+  vars["EntireHeadersExcel"] = excelHelper.readEntireRow(vars["ExportsFilePath"], 0, 0, "EntireHeadersExcel");
   while (parseFloat(String(vars["Count"])) <= parseFloat(String(vars["CountOfHeaders"]))) {
-    vars["IndividualHeaderNameUI"] = await CorrPortalElem.Individual_Headers_Commitment_List.textContent() || '';
-    vars["IndividualHeaderNameUI"] = String(vars["IndividualHeaderNameUI"]).trim();
-    vars["IndividualHeaderNameExcel"] = String(vars["EntireHeadersExcel"]).split(",")[parseInt(String(vars["Count"]))] || '';
-    expect(String(vars["IndividualHeaderNameExcel"])).toBe(vars["IndividualHeaderNameUI"]);
-    vars["Count"] = (parseFloat(String("1")) + parseFloat(String(vars["Count"]))).toFixed(0);
+    vars["IndividualHeaderNameUI"] = await CorrPortalElem.Individual_Headers_Commitment_List(vars["Count"]).textContent() || '';
+    Methods.trimtestdata(vars["IndividualHeaderNameUI"], "IndividualHeaderNameUI");
+    Methods.splitStringByRegConditionWithPosition(vars["EntireHeadersExcel"], ",", vars["Count"], "IndividualHeaderNameExcel");
+    expect(Methods.verifyString(vars["IndividualHeaderNameExcel"], "equals", vars["IndividualHeaderNameUI"]));
+    Methods.MathematicalOperation(vars["Count"], "+", "1", "Count");
   }
+  log.info("step group Headers Verification in Closed List is completed");
 }
 
 /**
@@ -5221,36 +5239,60 @@ export async function stepGroup_Headers_Verification_in_Closed_List(page: import
  */
 export async function stepGroup_Verification_of_Data_from_Excel_to_UIClosed_List(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
+  const Methods = new AddonHelpers(page, vars);
   vars["RowCount"] = "1";
+
   while (parseFloat(String(vars["RowCount"])) <= parseFloat(String(vars["TotalRowsCountUI"]))) {
     vars["ColumnCountUI"] = "1";
     vars["IndexCountExcel"] = "1";
-    vars["EntireRowDataExcel"] = excelHelper.readRow(vars['_lastDownloadPath'] || '', vars["RowCount"], "0");
+
+    vars["EntireRowDataExcel"] = excelHelper.readEntireRow(vars["ExportsFilePath"], 0, vars["RowCount"], "EntireRowDataExcel");
+
     await CorrPortalElem.Commitment_List_Text.click();
-    while (parseFloat(String(vars["ColumnCountUI"])) <= parseFloat(String("13"))) {
-      vars["IndividualCellValueExcel"] = String(vars["EntireRowDataExcel"]).split(",")[parseInt(String(vars["IndexCountExcel"]))] || '';
-      vars["IndividualCellValueUI"] = await CorrPortalElem.Individual_Cell_Value_Closed_List.textContent() || '';
-      vars["IndividualCellValueUI"] = String(vars["IndividualCellValueUI"]).trim();
-      if (String(vars["ColumnCountUI"]) === String("5")) {
-        vars["CountofCama"] = String((String(vars["IndividualCellValueUI"]).split(",").length - 1));
+
+    while (parseFloat(vars["ColumnCountUI"]) <= 13) {
+      Methods.splitStringByRegConditionWithPosition(vars["EntireRowDataExcel"], ",", vars["IndexCountExcel"], "IndividualCellValueExcel");
+
+      vars["IndividualCellValueUI"] = await CorrPortalElem.Individual_Cell_Value_Closed_List(vars["RowCount"], vars["ColumnCountUI"]).textContent() || '';
+
+      Methods.trimWhitespace(vars["IndividualCellValueUI"], "IndividualCellValueUI");
+
+      if (String(vars["ColumnCountUI"]) === "5") {
+        Methods.countCharacter(vars["IndividualCellValueUI"], ",", "CountofCama");
+
         vars["count"] = "1";
-        while (parseFloat(String(vars["count"])) < parseFloat(String(vars["CountofCama"]))) {
-          vars["IndexCountExcel"] = (parseFloat(String(vars["IndexCountExcel"])) + parseFloat(String("1"))).toFixed(0);
-          vars["CellValueInExcel2"] = String(vars["EntireRowDataExcel"]).split(",")[parseInt(String(vars["IndexCountExcel"]))] || '';
-          vars["IndividualCellValueExcel"] = String(vars["IndividualCellValueExcel"]) + "," + String(vars["CellValueInExcel2"]);
-          vars["count"] = (parseFloat(String(vars["count"])) + parseFloat(String("1"))).toFixed(0);
+
+        while (parseFloat(vars["count"]) <= parseFloat(vars["CountofCama"])) {
+          Methods.MathematicalOperation(vars["IndexCountExcel"], "+", "1", "IndexCountExcel");
+          Methods.splitStringByRegConditionWithPosition(vars["EntireRowDataExcel"], ",", vars["IndexCountExcel"], "CellValueInExcel2");
+          Methods.concatenateWithSpecialChar(vars["IndividualCellValueExcel"],vars["CellValueInExcel2"], ",", "IndividualCellValueExcel");
+          Methods.MathematicalOperation(vars["count"], "+", "1", "count");
         }
-      } else if (String(vars["ColumnCountUI"]) === String("13")) {
-        vars["CountofCama"] = String((String(vars["IndividualCellValueUI"]).split(",").length - 1));
+
+      } else if (String(vars["ColumnCountUI"]) === "13") {
+        Methods.countCharacter(vars["IndividualCellValueUI"], ",", "CountofCama");
+
         vars["count"] = "1";
-        while (parseFloat(String(vars["count"])) < parseFloat(String(vars["CountofCama"]))) {
-          vars["IndexCountExcel"] = (parseFloat(String(vars["IndexCountExcel"])) + parseFloat(String("1"))).toFixed(0);
-          vars["CellValueInExcel2"] = String(vars["EntireRowDataExcel"]).split(",")[parseInt(String(vars["IndexCountExcel"]))] || '';
-          vars["IndividualCellValueExcel"] = String(vars["IndividualCellValueExcel"]) + "," + String(vars["CellValueInExcel2"]);
+
+        while (parseFloat(vars["count"]) <= parseFloat(vars["CountofCama"])) {
+          Methods.MathematicalOperation(vars["IndexCountExcel"], "+", "1", "IndexCountExcel");
+          Methods.splitStringByRegConditionWithPosition(vars["EntireRowDataExcel"], ",", vars["IndexCountExcel"], "CellValueInExcel2");
+          Methods.concatenateWithSpecialChar(vars["IndividualCellValueExcel"],vars["CellValueInExcel2"], ",", "IndividualCellValueExcel");
+          Methods.MathematicalOperation(vars["count"], "+", "1", "count");
         }
       }
+
+      Methods.trimWhitespace(vars["IndividualCellValueExcel"], "IndividualCellValueExcel");
+      expect(Methods.verifyString(vars["IndividualCellValueExcel"], "contains", vars["IndividualCellValueUI"]));
+
+      Methods.MathematicalOperation(vars["ColumnCountUI"], "+", "1", "ColumnCountUI");
+      Methods.MathematicalOperation(vars["IndexCountExcel"], "+", "1", "IndexCountExcel");
     }
+
+    Methods.MathematicalOperation(vars["RowCount"], "+", "1", "RowCount");
   }
+
+  log.info("stepGroup Verification of Data from Excel to UIClosed List is completed");
 }
 
 /**
@@ -5335,8 +5377,8 @@ export async function stepGroup_Uploading_Bid_RequestFrom_selecting_batch_time(p
     const fmt = "hh:mm ";
     // Map Java date format to Intl parts
     const parts = new Intl.DateTimeFormat('en-US', { ...opts, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }).formatToParts(d);
-    const p = Object.fromEntries(parts.map(({type, value}) => [type, value]));
-    return fmt.replace('yyyy', p.year || '').replace('yy', (p.year||'').slice(-2)).replace('MM', p.month || '').replace('dd', p.day || '').replace('HH', String(d.getHours()).padStart(2,'0')).replace('hh', p.hour || '').replace('mm', p.minute || '').replace('ss', p.second || '').replace('a', p.dayPeriod || '').replace(/M(?!M)/g, String(parseInt(p.month||'0'))).replace(/d(?!d)/g, String(parseInt(p.day||'0'))).replace(/h(?!h)/g, String(parseInt(p.hour||'0')));
+    const p = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
+    return fmt.replace('yyyy', p.year || '').replace('yy', (p.year || '').slice(-2)).replace('MM', p.month || '').replace('dd', p.day || '').replace('HH', String(d.getHours()).padStart(2, '0')).replace('hh', p.hour || '').replace('mm', p.minute || '').replace('ss', p.second || '').replace('a', p.dayPeriod || '').replace(/M(?!M)/g, String(parseInt(p.month || '0'))).replace(/d(?!d)/g, String(parseInt(p.day || '0'))).replace(/h(?!h)/g, String(parseInt(p.hour || '0')));
   })();
   vars["TimeDifference"] = Math.abs(new Date('2000-01-01 ' + String(vars["QueuedTime"])).getTime() - new Date('2000-01-01 ' + String(vars["CurrentEstTime"])).getTime()) / 60000 + '';
   if (String(vars["TimeDifference"]) > String("4")) {
@@ -5496,8 +5538,8 @@ export async function stepGroup_Verifying_the_Last_Modified_Data_In_the_Right_co
     const fmt = "h:mm a";
     // Map Java date format to Intl parts
     const parts = new Intl.DateTimeFormat('en-US', { ...opts, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }).formatToParts(d);
-    const p = Object.fromEntries(parts.map(({type, value}) => [type, value]));
-    return fmt.replace('yyyy', p.year || '').replace('yy', (p.year||'').slice(-2)).replace('MM', p.month || '').replace('dd', p.day || '').replace('HH', String(d.getHours()).padStart(2,'0')).replace('hh', p.hour || '').replace('mm', p.minute || '').replace('ss', p.second || '').replace('a', p.dayPeriod || '').replace(/M(?!M)/g, String(parseInt(p.month||'0'))).replace(/d(?!d)/g, String(parseInt(p.day||'0'))).replace(/h(?!h)/g, String(parseInt(p.hour||'0')));
+    const p = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
+    return fmt.replace('yyyy', p.year || '').replace('yy', (p.year || '').slice(-2)).replace('MM', p.month || '').replace('dd', p.day || '').replace('HH', String(d.getHours()).padStart(2, '0')).replace('hh', p.hour || '').replace('mm', p.minute || '').replace('ss', p.second || '').replace('a', p.dayPeriod || '').replace(/M(?!M)/g, String(parseInt(p.month || '0'))).replace(/d(?!d)/g, String(parseInt(p.day || '0'))).replace(/h(?!h)/g, String(parseInt(p.hour || '0')));
   })();
   vars["CurrentLocalDate"] = (() => {
     const d = new Date();
@@ -5505,8 +5547,8 @@ export async function stepGroup_Verifying_the_Last_Modified_Data_In_the_Right_co
     const fmt = "M/d/yyyy";
     // Map Java date format to Intl parts
     const parts = new Intl.DateTimeFormat('en-US', { ...opts, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }).formatToParts(d);
-    const p = Object.fromEntries(parts.map(({type, value}) => [type, value]));
-    return fmt.replace('yyyy', p.year || '').replace('yy', (p.year||'').slice(-2)).replace('MM', p.month || '').replace('dd', p.day || '').replace('HH', String(d.getHours()).padStart(2,'0')).replace('hh', p.hour || '').replace('mm', p.minute || '').replace('ss', p.second || '').replace('a', p.dayPeriod || '').replace(/M(?!M)/g, String(parseInt(p.month||'0'))).replace(/d(?!d)/g, String(parseInt(p.day||'0'))).replace(/h(?!h)/g, String(parseInt(p.hour||'0')));
+    const p = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
+    return fmt.replace('yyyy', p.year || '').replace('yy', (p.year || '').slice(-2)).replace('MM', p.month || '').replace('dd', p.day || '').replace('HH', String(d.getHours()).padStart(2, '0')).replace('hh', p.hour || '').replace('mm', p.minute || '').replace('ss', p.second || '').replace('a', p.dayPeriod || '').replace(/M(?!M)/g, String(parseInt(p.month || '0'))).replace(/d(?!d)/g, String(parseInt(p.day || '0'))).replace(/h(?!h)/g, String(parseInt(p.hour || '0')));
   })();
   await expect(CorrPortalElem.Last_Modified_Data_Right_Corner_Screen).toContainText(vars["CurrentLocalDate"]);
   vars["LocalTimePlus1Min"] = (() => {
@@ -5603,8 +5645,8 @@ export async function stepGroup_Writing_the_data_from_pop_up_to_tdp(page: import
     vars["ChaseValuePopupBeforeSubmit"] = await CorrPortalElem.Chase_value_2026.textContent() || '';
     if (String(vars["ChaseValuePopupBeforeSubmit"]) === String("Key_blank")) {
       vars["ChaseValuePopupBeforeSubmit"] = "Null";
-    // [DISABLED] Loop over data set in Loan Num Popup Details(Price Offered) from index count to index count
-    // for (let dataIdx = parseInt(vars["count"]); dataIdx <= parseInt(vars["count"]); dataIdx++)
+      // [DISABLED] Loop over data set in Loan Num Popup Details(Price Offered) from index count to index count
+      // for (let dataIdx = parseInt(vars["count"]); dataIdx <= parseInt(vars["count"]); dataIdx++)
       // [DISABLED] Write value ChaseFieldNameBeforeSubmit to Loan Num Popup Details(Price Offered) column ChaseFieldName
       // // Write to test data profile: "ChaseFieldName" = vars["ChaseFieldNameBeforeSubmit"]
       // // TODO: Test data profile writes need custom implementation
@@ -5733,8 +5775,8 @@ export async function stepGroup_Creating_Early_Config_Record(page: import('@play
     const fmt = "hh:mm a";
     // Map Java date format to Intl parts
     const parts = new Intl.DateTimeFormat('en-US', { ...opts, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }).formatToParts(d);
-    const p = Object.fromEntries(parts.map(({type, value}) => [type, value]));
-    return fmt.replace('yyyy', p.year || '').replace('yy', (p.year||'').slice(-2)).replace('MM', p.month || '').replace('dd', p.day || '').replace('HH', String(d.getHours()).padStart(2,'0')).replace('hh', p.hour || '').replace('mm', p.minute || '').replace('ss', p.second || '').replace('a', p.dayPeriod || '').replace(/M(?!M)/g, String(parseInt(p.month||'0'))).replace(/d(?!d)/g, String(parseInt(p.day||'0'))).replace(/h(?!h)/g, String(parseInt(p.hour||'0')));
+    const p = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
+    return fmt.replace('yyyy', p.year || '').replace('yy', (p.year || '').slice(-2)).replace('MM', p.month || '').replace('dd', p.day || '').replace('HH', String(d.getHours()).padStart(2, '0')).replace('hh', p.hour || '').replace('mm', p.minute || '').replace('ss', p.second || '').replace('a', p.dayPeriod || '').replace(/M(?!M)/g, String(parseInt(p.month || '0'))).replace(/d(?!d)/g, String(parseInt(p.day || '0'))).replace(/h(?!h)/g, String(parseInt(p.hour || '0')));
   })();
   vars["CurrentEst2hrPrior"] = (() => {
     const d = new Date('2000-01-01 ' + String(vars["CurrentEstTime"]));
@@ -5789,8 +5831,8 @@ export async function stepGroup_Splitting_the_amount_through_cama_from_the_excel
       vars["CellValueInExcel2"] = String(vars["RowDataExcel"]).split(",")[parseInt(String(vars["indexExcel"]))] || '';
       vars["CellValueInExcel"] = String(vars["CellValueInExcel"]) + "," + String(vars["CellValueInExcel2"]);
       vars["count"] = (parseFloat(String(vars["count"])) + parseFloat(String("1"))).toFixed(0);
-    // [DISABLED] Concate CellValueInExcel and CellValueInExcel2 with SpecialCharacter , and store into a variable CellValueInExcel
-    // vars["CellValueInExcel"] = String(vars["CellValueInExcel"]) + "," + String(vars["CellValueInExcel2"]);
+      // [DISABLED] Concate CellValueInExcel and CellValueInExcel2 with SpecialCharacter , and store into a variable CellValueInExcel
+      // vars["CellValueInExcel"] = String(vars["CellValueInExcel"]) + "," + String(vars["CellValueInExcel2"]);
     }
   }
 }
@@ -5976,8 +6018,8 @@ export async function stepGroup_Selecting_Second_Enabled_Batch_Time_If_the_Condi
     const fmt = "hh:mm a";
     // Map Java date format to Intl parts
     const parts = new Intl.DateTimeFormat('en-US', { ...opts, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }).formatToParts(d);
-    const p = Object.fromEntries(parts.map(({type, value}) => [type, value]));
-    return fmt.replace('yyyy', p.year || '').replace('yy', (p.year||'').slice(-2)).replace('MM', p.month || '').replace('dd', p.day || '').replace('HH', String(d.getHours()).padStart(2,'0')).replace('hh', p.hour || '').replace('mm', p.minute || '').replace('ss', p.second || '').replace('a', p.dayPeriod || '').replace(/M(?!M)/g, String(parseInt(p.month||'0'))).replace(/d(?!d)/g, String(parseInt(p.day||'0'))).replace(/h(?!h)/g, String(parseInt(p.hour||'0')));
+    const p = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
+    return fmt.replace('yyyy', p.year || '').replace('yy', (p.year || '').slice(-2)).replace('MM', p.month || '').replace('dd', p.day || '').replace('HH', String(d.getHours()).padStart(2, '0')).replace('hh', p.hour || '').replace('mm', p.minute || '').replace('ss', p.second || '').replace('a', p.dayPeriod || '').replace(/M(?!M)/g, String(parseInt(p.month || '0'))).replace(/d(?!d)/g, String(parseInt(p.day || '0'))).replace(/h(?!h)/g, String(parseInt(p.hour || '0')));
   })();
   vars["TimeDiff"] = Math.abs(new Date('2000-01-01 ' + String(vars["CurrentEstTime"])).getTime() - new Date('2000-01-01 ' + String(vars["EnabledTime"])).getTime()) / 60000 + '';
   if (String(vars["TimeDiff"]) >= String("4")) {
@@ -6026,18 +6068,18 @@ export async function stepGroup_Creating_a_new_bid_for_price_offered_status_with
     const fmt = "hh:mm ";
     // Map Java date format to Intl parts
     const parts = new Intl.DateTimeFormat('en-US', { ...opts, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }).formatToParts(d);
-    const p = Object.fromEntries(parts.map(({type, value}) => [type, value]));
-    return fmt.replace('yyyy', p.year || '').replace('yy', (p.year||'').slice(-2)).replace('MM', p.month || '').replace('dd', p.day || '').replace('HH', String(d.getHours()).padStart(2,'0')).replace('hh', p.hour || '').replace('mm', p.minute || '').replace('ss', p.second || '').replace('a', p.dayPeriod || '').replace(/M(?!M)/g, String(parseInt(p.month||'0'))).replace(/d(?!d)/g, String(parseInt(p.day||'0'))).replace(/h(?!h)/g, String(parseInt(p.hour||'0')));
+    const p = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
+    return fmt.replace('yyyy', p.year || '').replace('yy', (p.year || '').slice(-2)).replace('MM', p.month || '').replace('dd', p.day || '').replace('HH', String(d.getHours()).padStart(2, '0')).replace('hh', p.hour || '').replace('mm', p.minute || '').replace('ss', p.second || '').replace('a', p.dayPeriod || '').replace(/M(?!M)/g, String(parseInt(p.month || '0'))).replace(/d(?!d)/g, String(parseInt(p.day || '0'))).replace(/h(?!h)/g, String(parseInt(p.hour || '0')));
   })();
   vars["TimeDifference"] = Math.abs(new Date('2000-01-01 ' + String(vars["QueuedTime"])).getTime() - new Date('2000-01-01 ' + String(vars["CurrentEstTime"])).getTime()) / 60000 + '';
   // [DISABLED] Verify if TimeDifference > 4
   // if (String(vars["TimeDifference"]) > String("4"))
-    // [DISABLED] Store 4 in WaitTime
-    // vars["WaitTime"] = "4";
+  // [DISABLED] Store 4 in WaitTime
+  // vars["WaitTime"] = "4";
   // [DISABLED] Step group
   // // TODO: No template - Unknown step
-    // [DISABLED] Store TimeDifference in WaitTime
-    // vars["WaitTime"] = vars["TimeDifference"];
+  // [DISABLED] Store TimeDifference in WaitTime
+  // vars["WaitTime"] = vars["TimeDifference"];
   // [DISABLED] Perform multiplication on WaitTime and 60 and store the result inside a WaitTimeSeconds considering 0 decimal places
   // vars["WaitTimeSeconds"] = (parseFloat(String(vars["WaitTime"])) * parseFloat(String("60"))).toFixed(0);
   // [DISABLED] Perform subtraction on WaitTimeSeconds and 60 and store the result inside a WaitTimeSeconds considering 0 decimal places
@@ -6136,8 +6178,8 @@ export async function stepGroup_Verifying_the_Audit_Time_and_Date(page: import('
     const fmt = "hh:mm a";
     // Map Java date format to Intl parts
     const parts = new Intl.DateTimeFormat('en-US', { ...opts, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }).formatToParts(d);
-    const p = Object.fromEntries(parts.map(({type, value}) => [type, value]));
-    return fmt.replace('yyyy', p.year || '').replace('yy', (p.year||'').slice(-2)).replace('MM', p.month || '').replace('dd', p.day || '').replace('HH', String(d.getHours()).padStart(2,'0')).replace('hh', p.hour || '').replace('mm', p.minute || '').replace('ss', p.second || '').replace('a', p.dayPeriod || '').replace(/M(?!M)/g, String(parseInt(p.month||'0'))).replace(/d(?!d)/g, String(parseInt(p.day||'0'))).replace(/h(?!h)/g, String(parseInt(p.hour||'0')));
+    const p = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
+    return fmt.replace('yyyy', p.year || '').replace('yy', (p.year || '').slice(-2)).replace('MM', p.month || '').replace('dd', p.day || '').replace('HH', String(d.getHours()).padStart(2, '0')).replace('hh', p.hour || '').replace('mm', p.minute || '').replace('ss', p.second || '').replace('a', p.dayPeriod || '').replace(/M(?!M)/g, String(parseInt(p.month || '0'))).replace(/d(?!d)/g, String(parseInt(p.day || '0'))).replace(/h(?!h)/g, String(parseInt(p.hour || '0')));
   })();
   vars["CurrentLocalDate"] = (() => {
     const d = new Date();
@@ -6145,8 +6187,8 @@ export async function stepGroup_Verifying_the_Audit_Time_and_Date(page: import('
     const fmt = "MM/d/yyyy";
     // Map Java date format to Intl parts
     const parts = new Intl.DateTimeFormat('en-US', { ...opts, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }).formatToParts(d);
-    const p = Object.fromEntries(parts.map(({type, value}) => [type, value]));
-    return fmt.replace('yyyy', p.year || '').replace('yy', (p.year||'').slice(-2)).replace('MM', p.month || '').replace('dd', p.day || '').replace('HH', String(d.getHours()).padStart(2,'0')).replace('hh', p.hour || '').replace('mm', p.minute || '').replace('ss', p.second || '').replace('a', p.dayPeriod || '').replace(/M(?!M)/g, String(parseInt(p.month||'0'))).replace(/d(?!d)/g, String(parseInt(p.day||'0'))).replace(/h(?!h)/g, String(parseInt(p.hour||'0')));
+    const p = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
+    return fmt.replace('yyyy', p.year || '').replace('yy', (p.year || '').slice(-2)).replace('MM', p.month || '').replace('dd', p.day || '').replace('HH', String(d.getHours()).padStart(2, '0')).replace('hh', p.hour || '').replace('mm', p.minute || '').replace('ss', p.second || '').replace('a', p.dayPeriod || '').replace(/M(?!M)/g, String(parseInt(p.month || '0'))).replace(/d(?!d)/g, String(parseInt(p.day || '0'))).replace(/h(?!h)/g, String(parseInt(p.hour || '0')));
   })();
   await expect(CorrPortalElem.Created_Date_Time_Column_Data).toContainText(vars["CurrentLocalDate"]);
   vars["LocalTimePlus1Min"] = (() => {
@@ -6228,8 +6270,8 @@ export async function stepGroup_Waiting_in_the_2_while_loops_for_the_price_offer
     const fmt = "hh:mm a";
     // Map Java date format to Intl parts
     const parts = new Intl.DateTimeFormat('en-US', { ...opts, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }).formatToParts(d);
-    const p = Object.fromEntries(parts.map(({type, value}) => [type, value]));
-    return fmt.replace('yyyy', p.year || '').replace('yy', (p.year||'').slice(-2)).replace('MM', p.month || '').replace('dd', p.day || '').replace('HH', String(d.getHours()).padStart(2,'0')).replace('hh', p.hour || '').replace('mm', p.minute || '').replace('ss', p.second || '').replace('a', p.dayPeriod || '').replace(/M(?!M)/g, String(parseInt(p.month||'0'))).replace(/d(?!d)/g, String(parseInt(p.day||'0'))).replace(/h(?!h)/g, String(parseInt(p.hour||'0')));
+    const p = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
+    return fmt.replace('yyyy', p.year || '').replace('yy', (p.year || '').slice(-2)).replace('MM', p.month || '').replace('dd', p.day || '').replace('HH', String(d.getHours()).padStart(2, '0')).replace('hh', p.hour || '').replace('mm', p.minute || '').replace('ss', p.second || '').replace('a', p.dayPeriod || '').replace(/M(?!M)/g, String(parseInt(p.month || '0'))).replace(/d(?!d)/g, String(parseInt(p.day || '0'))).replace(/h(?!h)/g, String(parseInt(p.hour || '0')));
   })();
   vars["StatusOnScreen"] = await CorrPortalElem.BidStatus_From_List.textContent() || '';
   if (String(vars["StatusOnScreen"]).includes(String("Price Offered"))) {
@@ -6247,8 +6289,8 @@ export async function stepGroup_Waiting_in_the_2_while_loops_for_the_price_offer
     const fmt = "hh:mm a";
     // Map Java date format to Intl parts
     const parts = new Intl.DateTimeFormat('en-US', { ...opts, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }).formatToParts(d);
-    const p = Object.fromEntries(parts.map(({type, value}) => [type, value]));
-    return fmt.replace('yyyy', p.year || '').replace('yy', (p.year||'').slice(-2)).replace('MM', p.month || '').replace('dd', p.day || '').replace('HH', String(d.getHours()).padStart(2,'0')).replace('hh', p.hour || '').replace('mm', p.minute || '').replace('ss', p.second || '').replace('a', p.dayPeriod || '').replace(/M(?!M)/g, String(parseInt(p.month||'0'))).replace(/d(?!d)/g, String(parseInt(p.day||'0'))).replace(/h(?!h)/g, String(parseInt(p.hour||'0')));
+    const p = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
+    return fmt.replace('yyyy', p.year || '').replace('yy', (p.year || '').slice(-2)).replace('MM', p.month || '').replace('dd', p.day || '').replace('HH', String(d.getHours()).padStart(2, '0')).replace('hh', p.hour || '').replace('mm', p.minute || '').replace('ss', p.second || '').replace('a', p.dayPeriod || '').replace(/M(?!M)/g, String(parseInt(p.month || '0'))).replace(/d(?!d)/g, String(parseInt(p.day || '0'))).replace(/h(?!h)/g, String(parseInt(p.hour || '0')));
   })();
   vars["StatusOnScreen"] = await CorrPortalElem.BidStatus_From_List.textContent() || '';
   await expect(CorrPortalElem.BidStatus_From_List).toContainText("Price Offered");
@@ -6270,8 +6312,8 @@ export async function stepGroup_Creating_an_Early_Config_Record(page: import('@p
     const fmt = "yyyy/M/d";
     // Map Java date format to Intl parts
     const parts = new Intl.DateTimeFormat('en-US', { ...opts, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }).formatToParts(d);
-    const p = Object.fromEntries(parts.map(({type, value}) => [type, value]));
-    return fmt.replace('yyyy', p.year || '').replace('yy', (p.year||'').slice(-2)).replace('MM', p.month || '').replace('dd', p.day || '').replace('HH', String(d.getHours()).padStart(2,'0')).replace('hh', p.hour || '').replace('mm', p.minute || '').replace('ss', p.second || '').replace('a', p.dayPeriod || '').replace(/M(?!M)/g, String(parseInt(p.month||'0'))).replace(/d(?!d)/g, String(parseInt(p.day||'0'))).replace(/h(?!h)/g, String(parseInt(p.hour||'0')));
+    const p = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
+    return fmt.replace('yyyy', p.year || '').replace('yy', (p.year || '').slice(-2)).replace('MM', p.month || '').replace('dd', p.day || '').replace('HH', String(d.getHours()).padStart(2, '0')).replace('hh', p.hour || '').replace('mm', p.minute || '').replace('ss', p.second || '').replace('a', p.dayPeriod || '').replace(/M(?!M)/g, String(parseInt(p.month || '0'))).replace(/d(?!d)/g, String(parseInt(p.day || '0'))).replace(/h(?!h)/g, String(parseInt(p.hour || '0')));
   })();
   vars["CurrentDateCalender"] = (() => {
     const d = new Date();
@@ -6279,8 +6321,8 @@ export async function stepGroup_Creating_an_Early_Config_Record(page: import('@p
     const fmt = "d-M-yyyy";
     // Map Java date format to Intl parts
     const parts = new Intl.DateTimeFormat('en-US', { ...opts, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }).formatToParts(d);
-    const p = Object.fromEntries(parts.map(({type, value}) => [type, value]));
-    return fmt.replace('yyyy', p.year || '').replace('yy', (p.year||'').slice(-2)).replace('MM', p.month || '').replace('dd', p.day || '').replace('HH', String(d.getHours()).padStart(2,'0')).replace('hh', p.hour || '').replace('mm', p.minute || '').replace('ss', p.second || '').replace('a', p.dayPeriod || '').replace(/M(?!M)/g, String(parseInt(p.month||'0'))).replace(/d(?!d)/g, String(parseInt(p.day||'0'))).replace(/h(?!h)/g, String(parseInt(p.hour||'0')));
+    const p = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
+    return fmt.replace('yyyy', p.year || '').replace('yy', (p.year || '').slice(-2)).replace('MM', p.month || '').replace('dd', p.day || '').replace('HH', String(d.getHours()).padStart(2, '0')).replace('hh', p.hour || '').replace('mm', p.minute || '').replace('ss', p.second || '').replace('a', p.dayPeriod || '').replace(/M(?!M)/g, String(parseInt(p.month || '0'))).replace(/d(?!d)/g, String(parseInt(p.day || '0'))).replace(/h(?!h)/g, String(parseInt(p.hour || '0')));
   })();
   vars["CurrentDateInput"] = (() => {
     const d = new Date();
@@ -6288,19 +6330,19 @@ export async function stepGroup_Creating_an_Early_Config_Record(page: import('@p
     const fmt = "yyyy-MM-dd";
     // Map Java date format to Intl parts
     const parts = new Intl.DateTimeFormat('en-US', { ...opts, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }).formatToParts(d);
-    const p = Object.fromEntries(parts.map(({type, value}) => [type, value]));
-    return fmt.replace('yyyy', p.year || '').replace('yy', (p.year||'').slice(-2)).replace('MM', p.month || '').replace('dd', p.day || '').replace('HH', String(d.getHours()).padStart(2,'0')).replace('hh', p.hour || '').replace('mm', p.minute || '').replace('ss', p.second || '').replace('a', p.dayPeriod || '').replace(/M(?!M)/g, String(parseInt(p.month||'0'))).replace(/d(?!d)/g, String(parseInt(p.day||'0'))).replace(/h(?!h)/g, String(parseInt(p.hour||'0')));
+    const p = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
+    return fmt.replace('yyyy', p.year || '').replace('yy', (p.year || '').slice(-2)).replace('MM', p.month || '').replace('dd', p.day || '').replace('HH', String(d.getHours()).padStart(2, '0')).replace('hh', p.hour || '').replace('mm', p.minute || '').replace('ss', p.second || '').replace('a', p.dayPeriod || '').replace(/M(?!M)/g, String(parseInt(p.month || '0'))).replace(/d(?!d)/g, String(parseInt(p.day || '0'))).replace(/h(?!h)/g, String(parseInt(p.hour || '0')));
   })();
   vars["TomorrowDateList"] = (() => {
     const d = new Date(String(vars["CurrentDateList"]));
     d.setDate(d.getDate() + parseInt(String("1")));
-    const _p = { yyyy: String(d.getFullYear()), yy: String(d.getFullYear()).slice(-2), MM: String(d.getMonth()+1).padStart(2,'0'), M: String(d.getMonth()+1), dd: String(d.getDate()).padStart(2,'0'), d: String(d.getDate()), HH: String(d.getHours()).padStart(2,'0'), hh: String(d.getHours()%12||12).toString().padStart(2,'0'), h: String(d.getHours()%12||12), mm: String(d.getMinutes()).padStart(2,'0'), ss: String(d.getSeconds()).padStart(2,'0'), a: d.getHours() >= 12 ? 'PM' : 'AM' };
-    return "yyyy/M/d".replace('yyyy',_p.yyyy).replace('yy',_p.yy).replace('MM',_p.MM).replace('dd',_p.dd).replace('HH',_p.HH).replace('hh',_p.hh).replace('mm',_p.mm).replace('ss',_p.ss).replace(/a/g,_p.a).replace(/M(?!M)/g,_p.M).replace(/d(?!d)/g,_p.d).replace(/h(?!h)/g,_p.h);
+    const _p = { yyyy: String(d.getFullYear()), yy: String(d.getFullYear()).slice(-2), MM: String(d.getMonth() + 1).padStart(2, '0'), M: String(d.getMonth() + 1), dd: String(d.getDate()).padStart(2, '0'), d: String(d.getDate()), HH: String(d.getHours()).padStart(2, '0'), hh: String(d.getHours() % 12 || 12).toString().padStart(2, '0'), h: String(d.getHours() % 12 || 12), mm: String(d.getMinutes()).padStart(2, '0'), ss: String(d.getSeconds()).padStart(2, '0'), a: d.getHours() >= 12 ? 'PM' : 'AM' };
+    return "yyyy/M/d".replace('yyyy', _p.yyyy).replace('yy', _p.yy).replace('MM', _p.MM).replace('dd', _p.dd).replace('HH', _p.HH).replace('hh', _p.hh).replace('mm', _p.mm).replace('ss', _p.ss).replace(/a/g, _p.a).replace(/M(?!M)/g, _p.M).replace(/d(?!d)/g, _p.d).replace(/h(?!h)/g, _p.h);
   })();
   vars["TomorrowsDateCalender"] = (() => {
     const d = new Date(String(vars["TomorrowDateList"]));
-    const _p = { yyyy: String(d.getFullYear()), yy: String(d.getFullYear()).slice(-2), MM: String(d.getMonth()+1).padStart(2,'0'), M: String(d.getMonth()+1), dd: String(d.getDate()).padStart(2,'0'), d: String(d.getDate()), HH: String(d.getHours()).padStart(2,'0'), hh: String(d.getHours()%12||12).toString().padStart(2,'0'), h: String(d.getHours()%12||12), mm: String(d.getMinutes()).padStart(2,'0'), ss: String(d.getSeconds()).padStart(2,'0'), a: d.getHours() >= 12 ? 'PM' : 'AM' };
-    return "d-M-yyyy".replace('yyyy',_p.yyyy).replace('yy',_p.yy).replace('MM',_p.MM).replace('dd',_p.dd).replace('HH',_p.HH).replace('hh',_p.hh).replace('mm',_p.mm).replace('ss',_p.ss).replace(/a/g,_p.a).replace(/M(?!M)/g,_p.M).replace(/d(?!d)/g,_p.d).replace(/h(?!h)/g,_p.h);
+    const _p = { yyyy: String(d.getFullYear()), yy: String(d.getFullYear()).slice(-2), MM: String(d.getMonth() + 1).padStart(2, '0'), M: String(d.getMonth() + 1), dd: String(d.getDate()).padStart(2, '0'), d: String(d.getDate()), HH: String(d.getHours()).padStart(2, '0'), hh: String(d.getHours() % 12 || 12).toString().padStart(2, '0'), h: String(d.getHours() % 12 || 12), mm: String(d.getMinutes()).padStart(2, '0'), ss: String(d.getSeconds()).padStart(2, '0'), a: d.getHours() >= 12 ? 'PM' : 'AM' };
+    return "d-M-yyyy".replace('yyyy', _p.yyyy).replace('yy', _p.yy).replace('MM', _p.MM).replace('dd', _p.dd).replace('HH', _p.HH).replace('hh', _p.hh).replace('mm', _p.mm).replace('ss', _p.ss).replace(/a/g, _p.a).replace(/M(?!M)/g, _p.M).replace(/d(?!d)/g, _p.d).replace(/h(?!h)/g, _p.h);
   })();
   // [DISABLED] Convert the date from the TomorrowDateList in d-M-yyyy to yyyy-MM-dd and store it in a runtime TomorrowDateInput
   // vars["TomorrowDateInput"] = (() => {
@@ -6311,8 +6353,8 @@ export async function stepGroup_Creating_an_Early_Config_Record(page: import('@p
   vars["TomorrowsDateInput"] = (() => {
     const d = new Date(String(vars["CurrentDateInput"]));
     d.setDate(d.getDate() + parseInt(String("1")));
-    const _p = { yyyy: String(d.getFullYear()), yy: String(d.getFullYear()).slice(-2), MM: String(d.getMonth()+1).padStart(2,'0'), M: String(d.getMonth()+1), dd: String(d.getDate()).padStart(2,'0'), d: String(d.getDate()), HH: String(d.getHours()).padStart(2,'0'), hh: String(d.getHours()%12||12).toString().padStart(2,'0'), h: String(d.getHours()%12||12), mm: String(d.getMinutes()).padStart(2,'0'), ss: String(d.getSeconds()).padStart(2,'0'), a: d.getHours() >= 12 ? 'PM' : 'AM' };
-    return "yyyy-MM-dd".replace('yyyy',_p.yyyy).replace('yy',_p.yy).replace('MM',_p.MM).replace('dd',_p.dd).replace('HH',_p.HH).replace('hh',_p.hh).replace('mm',_p.mm).replace('ss',_p.ss).replace(/a/g,_p.a).replace(/M(?!M)/g,_p.M).replace(/d(?!d)/g,_p.d).replace(/h(?!h)/g,_p.h);
+    const _p = { yyyy: String(d.getFullYear()), yy: String(d.getFullYear()).slice(-2), MM: String(d.getMonth() + 1).padStart(2, '0'), M: String(d.getMonth() + 1), dd: String(d.getDate()).padStart(2, '0'), d: String(d.getDate()), HH: String(d.getHours()).padStart(2, '0'), hh: String(d.getHours() % 12 || 12).toString().padStart(2, '0'), h: String(d.getHours() % 12 || 12), mm: String(d.getMinutes()).padStart(2, '0'), ss: String(d.getSeconds()).padStart(2, '0'), a: d.getHours() >= 12 ? 'PM' : 'AM' };
+    return "yyyy-MM-dd".replace('yyyy', _p.yyyy).replace('yy', _p.yy).replace('MM', _p.MM).replace('dd', _p.dd).replace('HH', _p.HH).replace('hh', _p.hh).replace('mm', _p.mm).replace('ss', _p.ss).replace(/a/g, _p.a).replace(/M(?!M)/g, _p.M).replace(/d(?!d)/g, _p.d).replace(/h(?!h)/g, _p.h);
   })();
   await CorrPortalElem.Add_New_Config_Button.click();
   await CorrPortalElem.Toggle_Date_Picker_Button.click();
@@ -6324,8 +6366,8 @@ export async function stepGroup_Creating_an_Early_Config_Record(page: import('@p
     const fmt = "hh:mm a";
     // Map Java date format to Intl parts
     const parts = new Intl.DateTimeFormat('en-US', { ...opts, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }).formatToParts(d);
-    const p = Object.fromEntries(parts.map(({type, value}) => [type, value]));
-    return fmt.replace('yyyy', p.year || '').replace('yy', (p.year||'').slice(-2)).replace('MM', p.month || '').replace('dd', p.day || '').replace('HH', String(d.getHours()).padStart(2,'0')).replace('hh', p.hour || '').replace('mm', p.minute || '').replace('ss', p.second || '').replace('a', p.dayPeriod || '').replace(/M(?!M)/g, String(parseInt(p.month||'0'))).replace(/d(?!d)/g, String(parseInt(p.day||'0'))).replace(/h(?!h)/g, String(parseInt(p.hour||'0')));
+    const p = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
+    return fmt.replace('yyyy', p.year || '').replace('yy', (p.year || '').slice(-2)).replace('MM', p.month || '').replace('dd', p.day || '').replace('HH', String(d.getHours()).padStart(2, '0')).replace('hh', p.hour || '').replace('mm', p.minute || '').replace('ss', p.second || '').replace('a', p.dayPeriod || '').replace(/M(?!M)/g, String(parseInt(p.month || '0'))).replace(/d(?!d)/g, String(parseInt(p.day || '0'))).replace(/h(?!h)/g, String(parseInt(p.hour || '0')));
   })();
   vars["CurrentEst2hrPrior"] = (() => {
     const d = new Date('2000-01-01 ' + String(vars["CurrentEstTime"]));
@@ -6422,8 +6464,8 @@ export async function stepGroup_Verification_of_Data_from_Excel_to_UI_Excluding_
           vars["CellValueInExcel2"] = String(vars["RowDataExcel"]).split(",")[parseInt(String(vars["indexExcel"]))] || '';
           vars["CellValueInExcel"] = String(vars["CellValueInExcel"]) + "," + String(vars["CellValueInExcel2"]);
           vars["count"] = (parseFloat(String(vars["count"])) + parseFloat(String("1"))).toFixed(0);
-        // [DISABLED] Concate CellValueInExcel and CellValueInExcel2 with SpecialCharacter , and store into a variable CellValueInExcel
-        // vars["CellValueInExcel"] = String(vars["CellValueInExcel"]) + "," + String(vars["CellValueInExcel2"]);
+          // [DISABLED] Concate CellValueInExcel and CellValueInExcel2 with SpecialCharacter , and store into a variable CellValueInExcel
+          // vars["CellValueInExcel"] = String(vars["CellValueInExcel"]) + "," + String(vars["CellValueInExcel2"]);
         }
       }
       await stepGroup_Splitting_the_amount_through_cama_from_the_excel_cell_value(page, vars);
