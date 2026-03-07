@@ -6,11 +6,17 @@ import { Page } from '@playwright/test';
 import { expect } from '@playwright/test';
 import path from 'path';
 import * as excelHelper from '../excel-helpers';
+import { Logger } from '../log-helper';
 import { CorrPortalPage } from '../../pages/correspondant/CorrPortalPage';
 // import { PlaywrightHelpers } from '../../PlaywrightHelpers';
 import { AddonHelpers } from '../../../src/helpers/AddonHelpers';
 import { CommitmentListPage } from '../../../src/pages/correspondant/commitment-list';
 import { Logger as log } from '@helpers/log-helper';
+import { testDataManager } from 'testdata/TestDataManager';
+import { uploadFile } from '../../../src/helpers/file-helpers';
+import { CorrespondentPortalPage } from '@pages/correspondant/correspondent-portal';
+import { CorrespondentPortal4Page } from '@pages/correspondant/correspondent-portal-4';
+
 /**
  * Step Group: Login to CORR Portal
  * ID: 773
@@ -18,11 +24,15 @@ import { Logger as log } from '@helpers/log-helper';
  */
 export async function stepGroup_Login_to_CORR_Portal(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
-  await page.goto("https://ext-qa.lpcorrtest.com/cp/#/auth/login");
-  await CorrPortalElem.Username_Field.fill("testsigma_internal");
-  await CorrPortalElem.Password_Field.fill("Welcome@123");
-  await CorrPortalElem.Login_Button.click();
-  await CorrPortalElem.Logo.waitFor({ state: 'visible' });
+  try {
+    await page.goto("https://ext-qa.lpcorrtest.com/cp/#/auth/login");
+    await CorrPortalElem.Username_Field.fill("testsigma_internal");
+    await CorrPortalElem.Password_Field.fill("Welcome@123");
+    await CorrPortalElem.Login_Button.click();
+    await CorrPortalElem.Logo.waitFor({ state: 'visible', timeout: 15000 });
+  } catch (error) {
+    throw error;
+  }
 }
 
 /**
@@ -33,28 +43,89 @@ export async function stepGroup_Login_to_CORR_Portal(page: import('@playwright/t
 export async function stepGroup_Rename_File(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
   const newPage = await page.context().newPage();
-  await page.goto("https://imgtool.net/en/filerename/");
-  await page.waitForLoadState('networkidle');
-  await CorrPortalElem.File_Input.setInputFiles(path.resolve(__dirname, 'test-data', "DeepikaAugBidQA.xlsx"));
-  await page.waitForLoadState('networkidle');
-  await CorrPortalElem.Username_Field.scrollIntoViewIfNeeded();
-  await CorrPortalElem.Username_Field.waitFor({ state: 'visible' });
-  await CorrPortalElem.Start_task_Button.click();
-  // Wait for download - handled by Playwright download events
-  await page.waitForTimeout(2000);
-  vars[""] = vars['_lastDownloadPath'] ? require('path').basename(vars['_lastDownloadPath']) : '';
-  vars["Total Headers From Xls"] = excelHelper.readRow(vars['_lastDownloadPath'] || '', "0", "0");
+  Logger.step('START: Reading/Renaming files from external tool');
+  try {
+    await page.goto("https://imgtool.net/en/filerename/");
+    Logger.debug('Navigated to file tool');
+    await page.waitForLoadState('networkidle');
+    await CorrPortalElem.File_Input.setInputFiles(path.resolve(__dirname, 'test-data', "DeepikaAugBidQA.xlsx"));
+    Logger.step('Test data file uploaded');
+    await page.waitForLoadState('networkidle');
+    await CorrPortalElem.Username_Field.scrollIntoViewIfNeeded();
+    await CorrPortalElem.Username_Field.waitFor({ state: 'visible' });
+    await CorrPortalElem.Start_task_Button.click();
+    Logger.debug('File processing initiated');
+    // Wait for download - handled by Playwright download events
+    await page.waitForTimeout(2000);
+    vars[""] = vars['_lastDownloadPath'] ? require('path').basename(vars['_lastDownloadPath']) : '';
+    vars["Total Headers From Xls"] = excelHelper.readRow(vars['_lastDownloadPath'] || '', "0", "0");
+    Logger.info(`File read - Total headers: ${vars["Total Headers From Xls"]}`);
+    Logger.success('File reading and data extraction completed');
+  } catch (error) {
+    Logger.error(`File processing failed: ${error}`);
+    throw error;
+  }
   // TODO: Manual conversion needed - unknown template 88
   // Action: Switch to the window by index 0
 }
+
+
+
 
 /**
  * Step Group: Creation Of Bid Map_Upto_Header Mapping
  * ID: 792
  * Steps: 31
  */
+// export async function stepGroup_Creation_Of_Bid_Map_Upto_Header_Mapping(page: import('@playwright/test').Page, vars: Record<string, string>) {
+//   const CorrPortalElem = new CorrPortalPage(page);
+//   await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
+//   // [DISABLED] Verify that the element Dashboard is displayed and With Scrollable FALSE
+//   // await expect(CorrPortalElem.Dashboard).toBeVisible();
+//   await stepGroup_Navigation_to_Customer_Permission(page, vars);
+//   await CorrPortalElem.Administration_Menu.click();
+//   await CorrPortalElem.Bid_Maps_Menu.click();
+//   await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
+//   await expect(CorrPortalElem.Mappings).toBeVisible();
+//   await CorrPortalElem.Add_New_Mapping_Button.click();
+//   await expect(CorrPortalElem.Create_New_Map).toBeVisible();
+//   vars["Current Date"] = (() => {
+//     const d = new Date();
+//     const opts: Intl.DateTimeFormatOptions = { timeZone: "Asia/Kolkata" };
+//     const fmt = "MM/dd/yyyy";
+//     // Map Java date format to Intl parts
+//     const parts = new Intl.DateTimeFormat('en-US', { ...opts, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }).formatToParts(d);
+//     const p = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
+//     return fmt.replace('yyyy', p.year || '').replace('yy', (p.year || '').slice(-2)).replace('MM', p.month || '').replace('dd', p.day || '').replace('HH', String(d.getHours()).padStart(2, '0')).replace('hh', p.hour || '').replace('mm', p.minute || '').replace('ss', p.second || '').replace('a', p.dayPeriod || '').replace(/M(?!M)/g, String(parseInt(p.month || '0'))).replace(/d(?!d)/g, String(parseInt(p.day || '0'))).replace(/h(?!h)/g, String(parseInt(p.hour || '0')));
+//   })();
+//   vars["Create New Map"] = new Date().toLocaleDateString('en-US') /* format: MM/dd/yyyy/HH:mm:ss */;
+//   vars["Create New Map"] = "Testsigma_" + vars["Create New Map"];
+//   await CorrPortalElem.Create_New_Map_Field.fill(vars["Create New Map"]);
+//   vars["BidMap"] = await CorrPortalElem.Create_New_Map_Field.inputValue() || '';
+//   await CorrPortalElem.Compare_Button.click();//Create button
+//   await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
+//   await expect(CorrPortalElem.Bid_Maps_Name(vars["Create New Map"])).toContainText(vars["Create New Map"]);
+//   // [DISABLED] Verify that the current page displays text Create New Map
+//   // await expect(page.getByText(vars["Create New Map"])).toBeVisible();
+//   await CorrPortalElem.Select_Companys_Dropdown.click();
+//   await CorrPortalElem.Required_Company_s_Name_Value.click();
+//   await CorrPortalElem.Apply_Selected.click();
+//   await expect(CorrPortalElem.Upload_File).toHaveValue('');
+//   await expect(page.getByText("Drag and drop files here or click to browse. Allowed formats: .xls,.xlsx,.csv,.txt")).toBeVisible();
+//   await CorrPortalElem.Upload_File.setInputFiles(path.resolve(__dirname, 'test-data', "DeepikaAugBidQA.xlsx"));//uploadFile
+//   await CorrPortalElem.Map_Headers_Button.click();
+//   await CorrPortalElem.Save_and_Move_to_Next_Page.waitFor({ state: 'visible' });
+//   await expect(CorrPortalElem.This_action_will_save_the_changes_and_Move_to_Next_Page).toBeVisible();
+//   await CorrPortalElem.Proceed_with_Saving_Button.click();
+//   await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
+//   await expect(page.getByText(vars["Create New Map"])).toBeVisible();
+//   await CorrPortalElem.Header_Mapping.waitFor({ state: 'visible' });
+// }
+
 export async function stepGroup_Creation_Of_Bid_Map_Upto_Header_Mapping(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
+  const CorrespondentPortal4Elem = new CorrespondentPortal4Page(page);
+  const correspondentPortalPage = new CorrespondentPortalPage(page);
   await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
   // [DISABLED] Verify that the element Dashboard is displayed and With Scrollable FALSE
   // await expect(CorrPortalElem.Dashboard).toBeVisible();
@@ -74,29 +145,48 @@ export async function stepGroup_Creation_Of_Bid_Map_Upto_Header_Mapping(page: im
     const p = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
     return fmt.replace('yyyy', p.year || '').replace('yy', (p.year || '').slice(-2)).replace('MM', p.month || '').replace('dd', p.day || '').replace('HH', String(d.getHours()).padStart(2, '0')).replace('hh', p.hour || '').replace('mm', p.minute || '').replace('ss', p.second || '').replace('a', p.dayPeriod || '').replace(/M(?!M)/g, String(parseInt(p.month || '0'))).replace(/d(?!d)/g, String(parseInt(p.day || '0'))).replace(/h(?!h)/g, String(parseInt(p.hour || '0')));
   })();
-  vars["Create New Map"] = new Date().toLocaleDateString('en-US') /* format: MM/dd/yyyy/HH:mm:ss */;
-  vars["Create New Map"] = "Testsigma_" + vars["Create New Map"];
-  await CorrPortalElem.Create_New_Map_Field.fill(vars["Create New Map"]);
+  vars["CreateNewMap"] = (() => {
+    const d = new Date();
+    const opts: Intl.DateTimeFormatOptions = { timeZone: "America/New_York" };
+    const fmt = "MM/dd/yyyy/HH:mm:ss";
+    const parts = new Intl.DateTimeFormat('en-US', { ...opts, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false }).formatToParts(d);
+    const p = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
+    return fmt.replace('yyyy', p.year || '').replace('MM', p.month || '').replace('dd', p.day || '').replace('HH', p.hour || '').replace('mm', p.minute || '').replace('ss', p.second || '');
+  })();
+  vars["CreateNewMap"] = "Testsigma_" + vars["CreateNewMap"];
+  await CorrPortalElem.Create_New_Map_Field.fill(vars["CreateNewMap"]);
   vars["BidMap"] = await CorrPortalElem.Create_New_Map_Field.inputValue() || '';
   await CorrPortalElem.Compare_Button.click();
   await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
-  await expect(CorrPortalElem.Bid_Maps_Name).toContainText(vars["Create New Map"]);
+  await expect(CorrPortalElem.Bid_Maps_Name(vars["CreateNewMap"])).toContainText(vars["CreateNewMap"]);
   // [DISABLED] Verify that the current page displays text Create New Map
   // await expect(page.getByText(vars["Create New Map"])).toBeVisible();
   await CorrPortalElem.Select_Companys_Dropdown.click();
-  await CorrPortalElem.Required_Company_s_Name_Value.click();
+  await CorrespondentPortal4Elem.Search_Text_Field.fill(vars["Companyname"]);
+  //await CorrPortalElem.Search_Text_Field.click();
+  await CorrPortalElem.Required_Company_s_Name_Value(vars["Companyname"]).first().click();
   await CorrPortalElem.Apply_Selected.click();
   await expect(CorrPortalElem.Upload_File).toHaveValue('');
   await expect(page.getByText("Drag and drop files here or click to browse. Allowed formats: .xls,.xlsx,.csv,.txt")).toBeVisible();
-  await CorrPortalElem.Upload_File.setInputFiles(path.resolve(__dirname, 'test-data', "DeepikaAugBidQA.xlsx"));
+  // await CorrPortalElem.Upload_File.setInputFiles(path.resolve(__dirname, '../../../uploads', "DeepikaAugBidQA_(3)_(1)_(1)_(2).xlsx"));
+  await uploadFile(page, correspondentPortalPage.Upload_File, "DeepikaAugBidQA_(3)_(1)_(1)_(2) (1).xlsx");
   await CorrPortalElem.Map_Headers_Button.click();
   await CorrPortalElem.Save_and_Move_to_Next_Page.waitFor({ state: 'visible' });
   await expect(CorrPortalElem.This_action_will_save_the_changes_and_Move_to_Next_Page).toBeVisible();
   await CorrPortalElem.Proceed_with_Saving_Button.click();
   await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
-  await expect(page.getByText(vars["Create New Map"])).toBeVisible();
+  await expect(page.getByText(vars["CreateNewMap"])).toBeVisible();
   await CorrPortalElem.Header_Mapping.waitFor({ state: 'visible' });
 }
+
+
+
+
+
+
+
+
+
 
 /**
  * Step Group: Smart Mapper from On to Off
@@ -105,22 +195,34 @@ export async function stepGroup_Creation_Of_Bid_Map_Upto_Header_Mapping(page: im
  */
 export async function stepGroup_Smart_Mapper_from_On_to_Off(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
-  await CorrPortalElem.Administration_Menu.click();
-  await CorrPortalElem.GeneralSettings_Menu.click();
-  await page.waitForLoadState('networkidle');
-  // [DISABLED] Verify that the element General Settings. is displayed and With Scrollable FALSE
-  // await expect(CorrPortalElem.General_Settings).toBeVisible();
-  await CorrPortalElem.Bid_Map_Creation_in_General_Settings.click();
-  await expect(CorrPortalElem.Bid_Map_Creation).toBeVisible();
-  await expect(CorrPortalElem.Smart_Mapper).toBeVisible();
-  if (true) /* Radio button Off Radio Button is not selected */ {
-    await CorrPortalElem.Off_Radio_Button.check();
-    await CorrPortalElem.Save_Changes_Button.click();
+  Logger.step('START: Disabling Smart Mapper');
+  try {
+    await CorrPortalElem.Administration_Menu.click();
+    Logger.debug('Navigated to Administration');
+    await CorrPortalElem.GeneralSettings_Menu.click();
+    Logger.debug('Opened General Settings');
+    await page.waitForLoadState('networkidle');
+    // [DISABLED] Verify that the element General Settings. is displayed and With Scrollable FALSE
+    // await expect(CorrPortalElem.General_Settings).toBeVisible();
+    await CorrPortalElem.Bid_Map_Creation_in_General_Settings.click();
+    Logger.debug('Bid Map Creation section opened');
+    await expect(CorrPortalElem.Bid_Map_Creation).toBeVisible();
+    await expect(CorrPortalElem.Smart_Mapper).toBeVisible();
+    if (true) /* Radio button Off Radio Button is not selected */ {
+      await CorrPortalElem.Off_Radio_Button.check();
+      Logger.info('Smart Mapper switched to OFF');
+      await CorrPortalElem.Save_Changes_Button.click();
+      Logger.success('Smart Mapper setting saved');
+    }
+    await page.waitForLoadState('networkidle');
+    await CorrPortalElem.Administration_Menu.click();
+    await CorrPortalElem.Bid_Maps_Menu.click();
+    Logger.debug('Navigated back to Bid Maps');
+    Logger.success('Smart Mapper disabled successfully');
+  } catch (error) {
+    Logger.error(`Smart Mapper disable operation failed: ${error}`);
+    throw error;
   }
-  await page.waitForLoadState('networkidle');
-  await CorrPortalElem.Administration_Menu.click();
-  await CorrPortalElem.Bid_Maps_Menu.click();
-  await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
 }
 
 /**
@@ -131,18 +233,29 @@ export async function stepGroup_Smart_Mapper_from_On_to_Off(page: import('@playw
 export async function stepGroup_Reading_files(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
   const newPage = await page.context().newPage();
-  await page.goto("https://imgtool.net/en/filerename/#google_vignette");
-  await CorrPortalElem.File_Input.setInputFiles(path.resolve(__dirname, 'test-data', "DeepikaAugBidQA.xlsx"));
-  await page.waitForLoadState('networkidle');
-  // [DISABLED] Wait until the element Rename Field is enabled
-  // await CorrPortalElem.Username_Field.waitFor({ state: 'visible' });
-  await CorrPortalElem.Start_task_Button.click();
-  // Wait for download - handled by Playwright download events
-  await page.waitForTimeout(2000);
-  vars[""] = vars['_lastDownloadPath'] ? require('path').basename(vars['_lastDownloadPath']) : '';
-  // [DISABLED] Excel: Read the entire Row of the latest Excel file (.xlsx) using the Row 0 and store it in a variable named Total Headers From Xls
-  // vars["Total Headers From Xls"] = excelHelper.readRow(vars['_lastDownloadPath'] || '', "0", "0");
-  vars["Total exl"] = excelHelper.readColumn(vars['_lastDownloadPath'] || '', "4", "0");
+  Logger.step('START: Reading files from external tool');
+  try {
+    await page.goto("https://imgtool.net/en/filerename/#google_vignette");
+    Logger.debug('Navigated to file tool');
+    await CorrPortalElem.File_Input.setInputFiles(path.resolve(__dirname, 'test-data', "DeepikaAugBidQA.xlsx"));
+    Logger.step('Test data file uploaded');
+    await page.waitForLoadState('networkidle');
+    // [DISABLED] Wait until the element Rename Field is enabled
+    // await CorrPortalElem.Username_Field.waitFor({ state: 'visible' });
+    await CorrPortalElem.Start_task_Button.click();
+    Logger.debug('File processing initiated');
+    // Wait for download - handled by Playwright download events
+    await page.waitForTimeout(2000);
+    vars[""] = vars['_lastDownloadPath'] ? require('path').basename(vars['_lastDownloadPath']) : '';
+    // [DISABLED] Excel: Read the entire Row of the latest Excel file (.xlsx) using the Row 0 and store it in a variable named Total Headers From Xls
+    // vars["Total Headers From Xls"] = excelHelper.readRow(vars['_lastDownloadPath'] || '', "0", "0");
+    vars["Total exl"] = excelHelper.readColumn(vars['_lastDownloadPath'] || '', "4", "0");
+    Logger.info(`Excel data column read: ${vars["Total exl"]}`);
+    Logger.success('File reading and data extraction completed');
+  } catch (error) {
+    Logger.error(`File reading operation failed: ${error}`);
+    throw error;
+  }
   // TODO: Manual conversion needed - unknown template 88
   // Action: Switch to the window by index 0
 }
@@ -155,16 +268,29 @@ export async function stepGroup_Reading_files(page: import('@playwright/test').P
 export async function stepGroup_Edition_in_Header_Mapping(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
   const testData: Record<string, string> = {}; // TODO: Load from test data profile
-  await expect(CorrPortalElem.Enumeration_Mapping_Button).toBeVisible();
-  await CorrPortalElem.Edit_icon_in_Header_Mapping.click();
-  await expect(CorrPortalElem.Update_Header).toBeVisible();
-  await CorrPortalElem.Chase_Field_Name.selectOption({ label: testData["ChaseFieldNames"] });
-  await CorrPortalElem.Update_Header_Button.click();
-  await CorrPortalElem.Enumeration_Mapping_Button.click();
-  await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
-  await CorrPortalElem.Save_and_Move_to_Next_Page.waitFor({ state: 'visible' });
-  await CorrPortalElem.Proceed_with_Saving_Button.click();
-  await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
+  Logger.step('START: Edit Header Mapping');
+  try {
+    await expect(CorrPortalElem.Enumeration_Mapping_Button).toBeVisible();
+    Logger.debug('Enumeration Mapping visible');
+    await CorrPortalElem.Edit_icon_in_Header_Mapping.click();
+    Logger.debug('Edit header button clicked');
+    await expect(CorrPortalElem.Update_Header).toBeVisible();
+    await CorrPortalElem.Chase_Field_Name.selectOption({ label: testData["ChaseFieldNames"] });
+    Logger.info(`Header field selected: ${testData["ChaseFieldNames"]}`);
+    await CorrPortalElem.Update_Header_Button.click();
+    Logger.step('Header update initiated');
+    await CorrPortalElem.Enumeration_Mapping_Button.click();
+    Logger.debug('Proceeding to Enumeration Mapping');
+    await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
+    await CorrPortalElem.Save_and_Move_to_Next_Page.waitFor({ state: 'visible' });
+    await CorrPortalElem.Proceed_with_Saving_Button.click();
+    Logger.step('Saving header changes');
+    await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
+    Logger.success('Header mapping edition completed');
+  } catch (error) {
+    Logger.error(`Header mapping edition failed: ${error}`);
+    throw error;
+  }
 }
 
 /**
@@ -192,21 +318,34 @@ export async function stepGroup_Deletion_in_Enumeration_Mapping(page: import('@p
 export async function stepGroup_Import_Rule_in_Mapping(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
   const testData: Record<string, string> = {}; // TODO: Load from test data profile
-  await expect(CorrPortalElem.Save_and_Publish_Button).toBeVisible();
-  await CorrPortalElem.Import_Rule_Button.click();
-  await expect(CorrPortalElem.Select_Rule_s).toBeVisible();
-  await CorrPortalElem.Search_Map_Input.fill(testData["Search Map Input"]);
-  vars["ImportRuleName"] = await CorrPortalElem.Search_Map_Input.textContent() || '';
-  await CorrPortalElem.Search_Map_Input_Dropdown.click();
-  await CorrPortalElem.Import_Rule_Checkbox.check();
-  await CorrPortalElem.Apply_Selected_Button_in_Import_Rule.click();
-  await expect(CorrPortalElem.Add_Conditions).toBeVisible();
-  await CorrPortalElem.Save_and_Publish_Button.click();
-  await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
-  vars["Status"] = await CorrPortalElem.Status.textContent() || '';
-  await expect(CorrPortalElem.Status).toContainText(vars["Status"]);
-  vars["Version"] = await CorrPortalElem.Version.textContent() || '';
-  await expect(page.getByText(vars["Version"])).toBeVisible();
+
+  const profileName = "Bid_Maps";
+  const profile = testDataManager.getProfileByName(profileName);
+  if (profile && profile.data) {
+    const search_map_input = profile.data[0]['Search Map Input'] || '';
+    vars["Search Map Input"] = search_map_input;
+  }
+  try {
+    await expect(CorrPortalElem.Save_and_Publish_Button).toBeVisible();
+    await CorrPortalElem.Import_Rule_Button.click();
+    await expect(CorrPortalElem.Select_Rule_s).toBeVisible();
+    await CorrPortalElem.Search_Map_Input.fill(vars["Search Map Input"]);
+    vars["ImportRuleName"] = await CorrPortalElem.Search_Map_Input.textContent() || '';
+    await CorrPortalElem.Search_Map_Input_Dropdown.click();
+    await CorrPortalElem.Import_Rule_Checkbox.check();
+    await CorrPortalElem.Apply_Selected_Button_in_Import_Rule.click();
+    await expect(CorrPortalElem.Add_Conditions).toBeVisible();
+    await CorrPortalElem.Save_and_Publish_Button.click();
+    await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
+    vars["Status"] = await CorrPortalElem.Status.textContent() || '';
+    await expect(CorrPortalElem.Status).toContainText(vars["Status"]);
+    // vars["Version"] = await CorrPortalElem.Version.textContent() || '';
+    // await expect(page.getByText(vars["Version"])).toBeVisible();
+    vars["Version"] = (await CorrPortalElem.Version.textContent())?.trim() || '';
+    await expect(page.getByText(vars["Version"]).first()).toBeVisible();
+  } catch (error) {
+    throw error;
+  }
   // [DISABLED] Store text from the element Company_Name into a variable CompanyName
   // vars["CompanyName"] = await CorrPortalElem.Company_Name.textContent() || '';
   // [DISABLED] Remove the no of ( 0,1 ) positions of given string CompanyName and store into runtime variable CompanyName
@@ -224,22 +363,26 @@ export async function stepGroup_Import_Rule_in_Mapping(page: import('@playwright
  */
 export async function stepGroup_Smart_Mapper_from_Off_to_On(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
-  await CorrPortalElem.Administration_Menu.click();
-  await CorrPortalElem.GeneralSettings_Menu.click();
-  // [DISABLED] Verify that the element General Settings. is displayed and With Scrollable FALSE
-  // await expect(CorrPortalElem.General_Settings).toBeVisible();
-  await CorrPortalElem.Bid_Map_Creation_in_General_Settings.click();
-  await expect(CorrPortalElem.Bid_Map_Creation).toBeVisible();
-  await expect(CorrPortalElem.Smart_Mapper).toBeVisible();
-  if (true) /* Radio button On Radio Button is not selected */ {
-    await CorrPortalElem.On_Radio_Button.check();
-    await CorrPortalElem.Save_Changes_Button.click();
-  } else {
+  try {
+    await CorrPortalElem.Administration_Menu.click();
+    await CorrPortalElem.GeneralSettings_Menu.click();
+    // [DISABLED] Verify that the element General Settings. is displayed and With Scrollable FALSE
+    // await expect(CorrPortalElem.General_Settings).toBeVisible();
+    await CorrPortalElem.Bid_Map_Creation_in_General_Settings.click();
+    await expect(CorrPortalElem.Bid_Map_Creation).toBeVisible();
+    await expect(CorrPortalElem.Smart_Mapper).toBeVisible();
+    if (!await CorrPortalElem.On_Radio_Button.isChecked()) /* Radio button On Radio Button is not selected */ {
+      await CorrPortalElem.On_Radio_Button.check();
+      await CorrPortalElem.Save_Changes_Button.click();
+    } else {
+    }
+    // await page.waitForLoadState('networkidle');
+    await CorrPortalElem.Administration_Menu.click();
+    await CorrPortalElem.Bid_Maps_Menu.click();
+    await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
+  } catch (error) {
+    throw error;
   }
-  await page.waitForLoadState('networkidle');
-  await CorrPortalElem.Administration_Menu.click();
-  await CorrPortalElem.Bid_Maps_Menu.click();
-  await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
 }
 
 /**
@@ -249,26 +392,34 @@ export async function stepGroup_Smart_Mapper_from_Off_to_On(page: import('@playw
  */
 export async function stepGroup_Creation_Of_New_Map(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
-  await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
-  await CorrPortalElem.Administration_Menu.click();
-  await CorrPortalElem.Bid_Maps_Menu.click();
-  await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
-  await CorrPortalElem.Add_New_Mapping_Button.click();
-  await expect(CorrPortalElem.Create_New_Map).toBeVisible();
-  vars["Create New Map"] = new Date().toLocaleDateString('en-US') /* format: dd/MM/yyyy/HH:mm:ss */;
-  vars["Create New Map"] = "Testsigma_" + vars["Create New Map"];
-  await CorrPortalElem.Create_New_Map_Field.fill(vars["Create New Map"]);
-  vars["BidMap"] = await CorrPortalElem.Create_New_Map_Field.inputValue() || '';
-  await CorrPortalElem.Compare_Button.click();
-  await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
-  await expect(page.getByText(vars["Create New Map"])).toBeVisible();
-  await CorrPortalElem.Select_Companys_Dropdown.click();
-  await expect(CorrPortalElem.Apply_Selected).toBeVisible();
-  vars["CompanyCount"] = String(await CorrPortalElem.Companies_In_Dropdown.count());
-  await CorrPortalElem.Select_All_Checkbox.check();
-  await expect(CorrPortalElem.Apply_selected_Number).toContainText(vars["CompanyCount"]);
-  await CorrPortalElem.Apply_Selected.click();
-  await expect(CorrPortalElem.Standard_Dropdown).toHaveValue('');
+  const Methods = new AddonHelpers(page, vars);
+  try {
+    await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
+    await CorrPortalElem.Administration_Menu.click();
+    await CorrPortalElem.Bid_Maps_Menu.click();
+    await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
+    await CorrPortalElem.Add_New_Mapping_Button.click();
+    await expect(CorrPortalElem.Create_New_Map).toBeVisible();
+    // vars["Create New Map"] = new Date().toLocaleDateString('en-US') /* format: dd/MM/yyyy/HH:mm:ss */;
+    // vars["Create New Map"] = "Testsigma_" + vars["Create New Map"];
+    Methods.getCurrentTimestamp('dd/MM/yyyy/HH:mm:ss', 'CurrentDate');
+    Methods.concatenate('Testsigma_', vars['CurrentDate'], 'Create New Map');
+    await CorrPortalElem.Create_New_Map_Field.fill(vars["Create New Map"]);
+    vars["BidMap"] = await CorrPortalElem.Create_New_Map_Field.inputValue() || '';
+    console.log(`Bid Map created: ${vars["BidMap"]}`);
+    await CorrPortalElem.Compare_Button.click();
+    await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
+    await expect(page.getByText(vars["Create New Map"])).toBeVisible();
+    await CorrPortalElem.Select_Companys_Dropdown.click();
+    await expect(CorrPortalElem.Apply_Selected).toBeVisible();
+    vars["CompanyCount"] = String(await CorrPortalElem.Companies_In_Dropdown.count());
+    await CorrPortalElem.Select_All_Checkbox.check();
+    await expect(CorrPortalElem.Apply_selected_Number).toContainText(vars["CompanyCount"]);
+    await CorrPortalElem.Apply_Selected.click();
+    await expect(CorrPortalElem.Standard_Dropdown).toHaveValue('');
+  } catch (error) {
+    throw error;
+  }
 }
 
 /**
@@ -447,16 +598,21 @@ export async function stepGroup_Verification_for_the_Pricing_Return_Timing(page:
  */
 export async function stepGroup_Navigation_to_Customer_Permission(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
-  await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
-  await CorrPortalElem.Administration_Menu.click();
-  await CorrPortalElem.GeneralSettings_Menu.click();
-  await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
-  await CorrPortalElem.CustomerPermission_Menu.click();
-  await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
-  await expect(page.getByText("Customer Permission")).toBeVisible();
-  vars["CompanyName"] = await CorrPortalElem.First_Company_Name.textContent() || '';
-  vars["Companyname"] = String(vars["CompanyName"]).trim();
-  await expect(CorrPortalElem.First_Company_Name).toContainText(vars["Companyname"]);
+  try {
+    await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
+    await CorrPortalElem.Administration_Menu.click();
+    await CorrPortalElem.GeneralSettings_Menu.click();
+    await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
+    await CorrPortalElem.CustomerPermission_Menu.click();
+    await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
+    await expect(page.getByText("Customer Permission").first()).toBeVisible();
+    vars["CompanyName"] = await CorrPortalElem.First_Company_Name.first().textContent() || '';
+    console.log(`Retrieved company name: ${vars["CompanyName"]}`);
+    vars["Companyname"] = String(vars["CompanyName"]).trim();
+    await expect(CorrPortalElem.First_Company_Name.first()).toContainText(vars["Companyname"]);
+  } catch (error) {
+    throw error;
+  }
 }
 
 /**
@@ -483,46 +639,88 @@ export async function stepGroup_Navigation_to_Customer_Permission_For_Chase_Dire
  * ID: 923
  * Steps: 31
  */
+
+
 export async function stepGroup_Store_Company_Names_from_Company_Permissions(page: import('@playwright/test').Page, vars: Record<string, string>) {
+  const profileName = "Bid_Maps";
+  const profile = testDataManager.getProfileByName(profileName);
+  if (profile && profile.data) {
+    const companyName2 = profile.data[0]['Company name 2'];
+    vars["Company name 2"] = companyName2;
+    console.log(`Loaded test data - Company name 2: ${vars["Company name 2"]}`);
+  }
   const CorrPortalElem = new CorrPortalPage(page);
   const testData: Record<string, string> = {}; // TODO: Load from test data profile
-  vars["FirstCompanyName"] = await CorrPortalElem.Company_Name_ChaseDirect_FirstRow.textContent() || '';
-  vars["FirstCompanyName"] = String(vars["FirstCompanyName"]).substring(1, String(vars["FirstCompanyName"]).length - 1);
-  await CorrPortalElem.Company_Name_Action_Button_FirstRow.click();
-  await CorrPortalElem.Edit_Permissions.waitFor({ state: 'visible' });
-  if (true) /* Radio button Standard_Flow_On_Button is not selected */ {
-    await CorrPortalElem.Standard_Flow_On_Button.click();
+  try {
+    vars["FirstCompanyName"] = await CorrPortalElem.Company_Name_ChaseDirect_FirstRow.textContent() || '';
+    vars["FirstCompanyName"] = String(vars["FirstCompanyName"]).substring(1, String(vars["FirstCompanyName"]).length - 1);
+    console.log(`First company name retrieved: ${vars["FirstCompanyName"]}`);
+    await CorrPortalElem.Company_Name_Action_Button_FirstRow.click();
+    await CorrPortalElem.Edit_Permissions.waitFor({ state: 'visible' });
+    // if (true) /* Radio button Standard_Flow_On_Button is not selected */ {
+    //   await CorrPortalElem.Standard_Flow_On_Button.click();
+    // }
+    // if (true) /* Radio button Chase_Direct_ON_button is not selected */ {
+    //   await CorrPortalElem.Chase_Direct_ON_button.click();
+    // }
+    // if (true) /* Element Update Permissions Button is enabled */ {
+    //   await CorrPortalElem.Update_Permissions_Button.click();
+    // } else {
+    //   await CorrPortalElem.Close_Model_Button.click();
+    // }
+    if (!(await CorrPortalElem.Standard_Flow_On_Button.isChecked())) {
+      await CorrPortalElem.Standard_Flow_On_Button.click();
+    }
+
+    if (!(await CorrPortalElem.Chase_Direct_ON_button.isChecked())) {
+      await CorrPortalElem.Chase_Direct_ON_button.click();
+    }
+
+    if (await CorrPortalElem.Update_Permissions_Button.isEnabled()) {
+      await CorrPortalElem.Update_Permissions_Button.click();
+    } else {
+      await CorrPortalElem.Close_Model_Button.click();
+    }
+    await CorrPortalElem.Search_Filter_Input_in_Customer_Permission.clear();
+    // await page.waitForLoadState('networkidle');
+    await CorrPortalElem.Search_Filter_Input_in_Customer_Permission.click();
+    // await page.pause(); // Debugging pause to inspect the state before entering search criteria
+    await CorrPortalElem.Search_Filter_Input_in_Customer_Permission.fill(vars["Company name 2"]);
+    await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
+    vars["SecondCompanyName"] = await CorrPortalElem.Company_Name_ChaseDirect_FirstRow.textContent() || '';
+    console.log(`Second company name retrieved: ${vars["SecondCompanyName"]}`);
+    vars["SecondCompanyName"] = String(vars["SecondCompanyName"]).substring(1, String(vars["SecondCompanyName"]).length - 1);
+    await CorrPortalElem.Company_Name_ActionButton_SecondRow.click();
+    await CorrPortalElem.Edit_Permissions.waitFor({ state: 'visible' });
+    // if (true) /* Radio button Standard_Flow_On_Button is not selected */ {
+    //   await CorrPortalElem.Standard_Flow_On_Button.click();
+    // }
+    // if (true) /* Radio button ChaseDirect_Off_Button is not selected */ {
+    //   await CorrPortalElem.ChaseDirect_Off_Button.click();
+    // }
+    // if (true) /* Element Update Permissions Button is enabled */ {
+    //   await CorrPortalElem.Update_Permissions_Button.click();
+    // } else {
+    //   await CorrPortalElem.Close_Model_Button.click();
+    // }
+    if (!(await CorrPortalElem.Standard_Flow_On_Button.isChecked())) {
+      await CorrPortalElem.Standard_Flow_On_Button.click();
+    }
+
+    if (!(await CorrPortalElem.Chase_Direct_ON_button.isChecked())) {
+      await CorrPortalElem.Chase_Direct_ON_button.click();
+    }
+
+    if (await CorrPortalElem.Update_Permissions_Button.isEnabled()) {
+      await CorrPortalElem.Update_Permissions_Button.click();
+    } else {
+      await CorrPortalElem.Close_Model_Button.click();
+    }
+    await CorrPortalElem.Search_Filter_Input_in_Customer_Permission.clear();
+    // await page.waitForLoadState('networkidle');
+  } catch (error) {
+    throw error;
   }
-  if (true) /* Radio button Chase_Direct_ON_button is not selected */ {
-    await CorrPortalElem.Chase_Direct_ON_button.click();
-  }
-  if (true) /* Element Update Permissions Button is enabled */ {
-    await CorrPortalElem.Update_Permissions_Button.click();
-  } else {
-    await CorrPortalElem.Close_Model_Button.click();
-  }
-  await CorrPortalElem.Search_Filter_Input_in_Customer_Permission.clear();
-  await page.waitForLoadState('networkidle');
-  await CorrPortalElem.Search_Filter_Input_in_Customer_Permission.click();
-  await CorrPortalElem.Search_Filter_Input_in_Customer_Permission.fill(testData["Company name 2"]);
-  await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
-  vars["SecondCompanyName"] = await CorrPortalElem.Company_Name_ChaseDirect_FirstRow.textContent() || '';
-  vars["SecondCompanyName"] = String(vars["SecondCompanyName"]).substring(1, String(vars["SecondCompanyName"]).length - 1);
-  await CorrPortalElem.Company_Name_ActionButton_SecondRow.click();
-  await CorrPortalElem.Edit_Permissions.waitFor({ state: 'visible' });
-  if (true) /* Radio button Standard_Flow_On_Button is not selected */ {
-    await CorrPortalElem.Standard_Flow_On_Button.click();
-  }
-  if (true) /* Radio button ChaseDirect_Off_Button is not selected */ {
-    await CorrPortalElem.ChaseDirect_Off_Button.click();
-  }
-  if (true) /* Element Update Permissions Button is enabled */ {
-    await CorrPortalElem.Update_Permissions_Button.click();
-  } else {
-    await CorrPortalElem.Close_Model_Button.click();
-  }
-  await CorrPortalElem.Search_Filter_Input_in_Customer_Permission.clear();
-  await page.waitForLoadState('networkidle');
 }
 
 /**
@@ -532,13 +730,17 @@ export async function stepGroup_Store_Company_Names_from_Company_Permissions(pag
  */
 export async function stepGroup_Enter_Company_Name_in_New_Map_Filter(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
-  await CorrPortalElem.Search_Input.clear();
-  await expect(CorrPortalElem.Search_Input).toHaveValue('');
-  await CorrPortalElem.Search_Input.fill(vars["SecondCompanyName"]);
-  await page.waitForLoadState('networkidle');
-  // [DISABLED] Verify that the current page displays text SecondCompanyName
-  // await expect(page.getByText(vars["SecondCompanyName"])).toBeVisible();
-  await CorrPortalElem.Check_box.click();
+  try {
+    await CorrPortalElem.Search_Input.clear();
+    await expect(CorrPortalElem.Search_Input).toHaveValue('');
+    await CorrPortalElem.Search_Input.fill(vars["Company name 2"]); // vars["SecondCompanyName"]-->vars["Company name 2"]
+    // await page.waitForLoadState('networkidle');
+    // [DISABLED] Verify that the current page displays text SecondCompanyName
+    // await expect(page.getByText(vars["SecondCompanyName"])).toBeVisible();
+    await CorrPortalElem.Check_box.click();
+  } catch (error) {
+    throw error;
+  }
 }
 
 /**
@@ -631,20 +833,24 @@ export async function stepGroup_Add_New_Header(page: import('@playwright/test').
  */
 export async function stepGroup_Selecting_the_multiple_Company_name_Creating_a_New_Map(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
+  const Methods = new AddonHelpers(page, vars);
   await CorrPortalElem.Administration_Menu.click();
   await CorrPortalElem.Bid_Maps_Menu.click();
   await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
   await CorrPortalElem.Add_New_Mapping_Button.click();
   await expect(CorrPortalElem.Create_New_Map).toBeVisible();
-  vars["Create New Map"] = new Date().toLocaleDateString('en-US') /* format: dd/MM/yyyy/HH:mm:ss */;
-  vars["Create New Map"] = "Testsigma_" + vars["Create New Map"];
+
+  Methods.getCurrentTimestamp('dd/MM/yyyy/HH:mm:ss', 'CurrentDate');/* format: dd/MM/yyyy/HH:mm:ss */;
+  Methods.concatenate('Testsigma_', vars['CurrentDate'], 'Create New Map');
+
   await CorrPortalElem.Create_New_Map_Field.fill(vars["Create New Map"]);
   vars["BidMap"] = await CorrPortalElem.Create_New_Map_Field.inputValue() || '';
   await CorrPortalElem.Compare_Button.click();
   await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
-  await expect(CorrPortalElem.Bid_Maps_Name).toContainText(vars["Create New Map"]);
+  await expect(CorrPortalElem.Bid_Maps_Name(vars["Create New Map"])).toContainText(vars["Create New Map"]);
   await CorrPortalElem.Select_Companys_Dropdown.click();
-  await CorrPortalElem.Required_Company_Checkbox_Bidmap_Company_dropdown.check();
+  // await CorrPortalElem.Required_Company_Checkbox_Bidmap_Company_dropdown.check();
+  await CorrPortalElem.ThirdCompany_Checkbox.check();
   vars["firstCompanySelected"] = await CorrPortalElem.Third_Company_Name.textContent() || '';
   await CorrPortalElem.FourthCompany_Checkbox.check();
   vars["secondCompanySelected"] = await CorrPortalElem.Fourth_Company_Name.textContent() || '';
@@ -775,9 +981,12 @@ export async function stepGroup_Standard_and_Chase_Direct_ON_for_Company(page: i
  */
 export async function stepGroup_Uploading_the_File(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
+  let correspondentPortalPage: CorrespondentPortalPage;
+  correspondentPortalPage = new CorrespondentPortalPage(page);
   await expect(CorrPortalElem.Upload_File).toHaveValue('');
   await expect(page.getByText("Drag and drop files here or click to browse. Allowed formats: .xls,.xlsx,.csv,.txt")).toBeVisible();
-  await CorrPortalElem.Upload_File.setInputFiles(path.resolve(__dirname, 'test-data', "DeepikaAugBidQA.xlsx"));
+  await uploadFile(page, correspondentPortalPage.Upload_File, "DeepikaAugBidQA_(3)_(1)_(1)_(2) (1).xlsx");
+  await expect(CorrPortalElem.Map_Headers_Button).toBeVisible();
   await CorrPortalElem.Map_Headers_Button.click();
   await CorrPortalElem.Save_and_Move_to_Next_Page.waitFor({ state: 'visible' });
   await expect(CorrPortalElem.This_action_will_save_the_changes_and_Move_to_Next_Page).toBeVisible();
@@ -2820,22 +3029,30 @@ export async function stepGroup_Uploading_Bid_Request_For_Next_Buisiness_day(pag
  * ID: 1247
  * Steps: 13
  */
+
 export async function stepGroup_Navigating_to_Customer_Permission_For_the_Chase_Direct_Compa(page: import('@playwright/test').Page, vars: Record<string, string>) {
+  const profileName = "Bid_Maps";
+  const profile = testDataManager.getProfileByName(profileName);
+  if (profile && profile.data) {
+    const companyName1 = profile.data[0]['Company name 1'];
+    console.log("Company Name 1 from tdp:", companyName1);
+    vars["Company name 1"] = companyName1;
+  }
   const CorrPortalElem = new CorrPortalPage(page);
-  const testData: Record<string, string> = {}; // TODO: Load from test data profile
+  // const testData: Record<string, string> = {}; // TODO: Load from test data profile
   await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
   await CorrPortalElem.Administration_Menu.click();
   await CorrPortalElem.GeneralSettings_Menu.click();
   await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
   await CorrPortalElem.CustomerPermission_Menu.click();
   await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
-  await expect(page.getByText("Customer Permission")).toBeVisible();
+  await expect(page.getByText("Customer Permission").first()).toBeVisible();
   await CorrPortalElem.Search_Filter_Input_in_Customer_Permission.click();
-  await CorrPortalElem.Search_Filter_Input_in_Customer_Permission.fill(testData["Company name 1"]);
+  await CorrPortalElem.Search_Filter_Input_in_Customer_Permission.fill(vars["Company name 1"]);
   await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
-  vars["CompanyName"] = await CorrPortalElem.Company_Name_ChaseDirect.textContent() || '';
+  vars["CompanyName"] = await CorrPortalElem.Company_Name_ChaseDirect.first().textContent() || '';
   vars["Companyname"] = String(vars["CompanyName"]).trim();
-  await expect(CorrPortalElem.Company_Name_ChaseDirect).toContainText(vars["Companyname"]);
+  await expect(CorrPortalElem.Company_Name_ChaseDirect.first()).toContainText(vars["Companyname"]);
 }
 
 /**
@@ -2945,6 +3162,12 @@ export async function stepGroup_Modifying_The_Batch_Intervals_For_Next_bussiness
  * Steps: 13
  */
 export async function stepGroup_Navigate_to_Customer_Permission_to_Fetch_First_Company_Name(page: import('@playwright/test').Page, vars: Record<string, string>) {
+  const profileName = "Bid_Maps";
+  const profile = testDataManager.getProfileByName(profileName);
+  if (profile && profile.data) {
+    const companyName1 = profile.data[0]['Company name 1'];
+    vars["Company name 1"] = companyName1;
+  }
   const CorrPortalElem = new CorrPortalPage(page);
   const testData: Record<string, string> = {}; // TODO: Load from test data profile
   await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
@@ -2953,13 +3176,14 @@ export async function stepGroup_Navigate_to_Customer_Permission_to_Fetch_First_C
   await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
   await CorrPortalElem.CustomerPermission_Menu.click();
   await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
-  await expect(page.getByText("Customer Permission")).toBeVisible();
+  // await expect(CorrPortalElem.Customer_Permission_text).toBeVisible();
   await CorrPortalElem.Search_Filter_Input_in_Customer_Permission.click();
-  await CorrPortalElem.Search_Filter_Input_in_Customer_Permission.fill(testData["Company name 1"]);
+  await CorrPortalElem.Search_Filter_Input_in_Customer_Permission.pressSequentially(vars["Company name 1"]);
   await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
-  vars["CompanyName"] = await CorrPortalElem.First_Company_Name.textContent() || '';
+  await expect(CorrPortalElem.First_Company_Name.first()).toBeVisible({ timeout: 3000 });
+  vars["CompanyName"] = await CorrPortalElem.First_Company_Name.first().textContent() || '';
   vars["Companyname"] = String(vars["CompanyName"]).trim();
-  await expect(CorrPortalElem.First_Company_Name).toContainText(vars["Companyname"]);
+  await expect(CorrPortalElem.First_Company_Name.first()).toContainText(vars["Companyname"]);
 }
 
 /**
@@ -3135,19 +3359,34 @@ export async function stepGroup_EditActions_In_CustomerPermission(page: import('
   const CorrPortalElem = new CorrPortalPage(page);
   await CorrPortalElem.Company_Name_Action_Button_FirstRow.click();
   await CorrPortalElem.Edit_Permissions.waitFor({ state: 'visible' });
-  if (true) /* Radio button Standard_Flow_On_Button is not selected */ {
+  // if (await CorrPortalElem.Standard_Flow_On_Button.notIsChecked()) /* Radio button Standard_Flow_On_Button is not selected */ {
+  //   await CorrPortalElem.Standard_Flow_On_Button.click();
+  // }
+  // if (await CorrPortalElem.Chase_Direct_ON_button.notIsChecked()) /* Radio button Chase_Direct_ON_button is not selected */ {
+  //   await CorrPortalElem.Chase_Direct_ON_button.click();
+  // }
+  // if (await CorrPortalElem.Update_Permissions_Button.isEnabled) /* Element Update Permissions Button is enabled */ {
+  //   await CorrPortalElem.Update_Permissions_Button.click();
+  // } else {
+  //   await CorrPortalElem.Close_Model_Button.click();
+  // }
+  if (!(await CorrPortalElem.Standard_Flow_On_Button.isChecked())) {
     await CorrPortalElem.Standard_Flow_On_Button.click();
   }
-  if (true) /* Radio button Chase_Direct_ON_button is not selected */ {
+
+  if (!(await CorrPortalElem.Chase_Direct_ON_button.isChecked())) {
     await CorrPortalElem.Chase_Direct_ON_button.click();
   }
-  if (true) /* Element Update Permissions Button is enabled */ {
+
+  if (await CorrPortalElem.Update_Permissions_Button.isEnabled()) {
     await CorrPortalElem.Update_Permissions_Button.click();
   } else {
     await CorrPortalElem.Close_Model_Button.click();
   }
+
   await CorrPortalElem.Search_Filter_Input_in_Customer_Permission.clear();
-  await page.waitForLoadState('networkidle');
+  // await page.waitForLoadState('networkidle');
+  await page.waitForTimeout(4000);
 }
 
 /**
@@ -5170,7 +5409,7 @@ export async function stepGroup_Verification_of_Data_from_Excel_to_UIClosed_List
         while (parseFloat(vars["count"]) <= parseFloat(vars["CountofCama"])) {
           Methods.MathematicalOperation(vars["IndexCountExcel"], "+", "1", "IndexCountExcel");
           Methods.splitStringByRegConditionWithPosition(vars["EntireRowDataExcel"], ",", vars["IndexCountExcel"], "CellValueInExcel2");
-          Methods.concatenateWithSpecialChar(vars["IndividualCellValueExcel"],vars["CellValueInExcel2"], ",", "IndividualCellValueExcel");
+          Methods.concatenateWithSpecialChar(vars["IndividualCellValueExcel"], vars["CellValueInExcel2"], ",", "IndividualCellValueExcel");
           Methods.MathematicalOperation(vars["count"], "+", "1", "count");
         }
 
@@ -5182,7 +5421,7 @@ export async function stepGroup_Verification_of_Data_from_Excel_to_UIClosed_List
         while (parseFloat(vars["count"]) <= parseFloat(vars["CountofCama"])) {
           Methods.MathematicalOperation(vars["IndexCountExcel"], "+", "1", "IndexCountExcel");
           Methods.splitStringByRegConditionWithPosition(vars["EntireRowDataExcel"], ",", vars["IndexCountExcel"], "CellValueInExcel2");
-          Methods.concatenateWithSpecialChar(vars["IndividualCellValueExcel"],vars["CellValueInExcel2"], ",", "IndividualCellValueExcel");
+          Methods.concatenateWithSpecialChar(vars["IndividualCellValueExcel"], vars["CellValueInExcel2"], ",", "IndividualCellValueExcel");
           Methods.MathematicalOperation(vars["count"], "+", "1", "count");
         }
       }
@@ -5327,22 +5566,30 @@ export async function stepGroup_Waiting_until_the_Bid_Status_Changes_to_Price_Of
 export async function stepGroup_Headers_Verification_Price_Offered(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
   vars["Count"] = "1";
-  vars["count"] = "1";
+  vars["count"] = "0";
   vars["ExcelHeader"] = "0";
-  vars["CountOfHeaders"] = String(await CorrPortalElem.Headers_UI.count());
-  vars["HeaderValuesExcel"] = excelHelper.readRow(vars['_lastDownloadPath'] || '', vars["ExcelHeader"], "0");
+  vars["CountOfHeaders"] = String(await CorrPortalElem.Headers_UI.count()); // 1 to 8. CCode to Status, count =8
+  const sheetData = excelHelper.readSheet(vars['_lastDownloadPath'] || '', "0");
+  const headerValuesExcelObj = sheetData.headers || [];
+  vars["HeaderValuesExcel"] = JSON.stringify(headerValuesExcelObj); // keep string copy for vars storage
   while (parseFloat(String(vars["Count"])) <= parseFloat(String(vars["CountOfHeaders"]))) {
-    vars["IndividualHeaders"] = await CorrPortalElem.Individual_Headers.textContent() || '';
+    vars["IndividualHeaders"] = await CorrPortalElem.Individual_Headers(vars["Count"]).textContent() || '';
     vars["IndividualHeadersUI"] = String(vars["IndividualHeaders"]).trim();
-    vars["IndividualExcelHeaders"] = String(vars["HeaderValuesExcel"]).split(",")[parseInt(String(vars["count"]))] || '';
-    vars["IndividualExcelHeaders"] = String(vars["IndividualExcelHeaders"]).trim();
-    if (String(vars["IndividualHeadersUI"]) === String("BidReq.ID")) {
-      vars["IndividualHeadersUI"] = "BidRequestID";
+    const _excelHeaderValues = Array.isArray(headerValuesExcelObj) ? headerValuesExcelObj : Object.values(headerValuesExcelObj || {});
+    vars["IndividualExcelHeaders"] = String(_excelHeaderValues[parseInt(String(vars["count"]))] ?? '').trim();
+    console.log("UI Header: " + vars["IndividualHeadersUI"] + " Excel Header: " + vars["IndividualExcelHeaders"]);
+    if (String(vars["IndividualHeadersUI"]) === String("Ccode")) {
+      vars["IndividualHeadersUI"] = "Ccode";
     }
-    if (String(vars["IndividualHeadersUI"]) === String("ExecutionType")) {
-      vars["IndividualHeadersUI"] = "Exe.Type";
+    if (String(vars["IndividualHeadersUI"]) === String("Bid Req. ID")) {
+      vars["IndividualHeadersUI"] = "Bid Request ID";
     }
+    if (String(vars["IndividualHeadersUI"]) === String("Execution Type")) {
+      vars["IndividualHeadersUI"] = "Exe. Type";
+    }
+
     expect(String(vars["IndividualHeadersUI"]).toLowerCase()).toContain(String(vars["IndividualExcelHeaders"]).toLowerCase());
+    console.log("Matched UI Header: " + vars["IndividualHeadersUI"] + " Excel Header: " + vars["IndividualExcelHeaders"]);
     vars["Count"] = (parseFloat(String("1")) + parseFloat(String(vars["Count"]))).toFixed(0);
     vars["count"] = (parseFloat(String("1")) + parseFloat(String(vars["count"]))).toFixed(0);
   }

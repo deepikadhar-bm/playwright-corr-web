@@ -38,6 +38,6 @@ test.describe('REG_Bid Maps', () => {
     await correspondentPortalPage.Create_Button.click();
     await expect(correspondentPortalPage.BidMap_already_exists_Error_Message).toBeVisible();
     await correspondentPortalPage.close_pop_up_bid_request_details.click();
-    await page.waitForLoadState('networkidle');
+    // await page.waitForLoadState('networkidle');
   });
 });

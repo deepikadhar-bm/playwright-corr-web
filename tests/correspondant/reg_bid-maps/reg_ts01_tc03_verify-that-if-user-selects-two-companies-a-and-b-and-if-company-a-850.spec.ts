@@ -14,6 +14,8 @@ import { SelectAllCheckboxPage } from '../../../src/pages/correspondant/select-a
 import { SpinnerPage } from '../../../src/pages/correspondant/spinner';
 import { YouHaveUnsavedChangesIfYouLeaveYourChangesPage } from '../../../src/pages/correspondant/you-have-unsaved-changes-if-you-leave-your-changes';
 import { CorrespondentPortal7Page } from '../../../src/pages/correspondant/correspondent-portal-7';
+import { AddonHelpers } from '@helpers/AddonHelpers';
+import { testDataManager } from 'testdata/TestDataManager';
 
 test.describe('REG_Bid Maps', () => {
   let vars: Record<string, string> = {};
@@ -29,6 +31,7 @@ test.describe('REG_Bid Maps', () => {
   let selectAllCheckboxPage: SelectAllCheckboxPage;
   let spinnerPage: SpinnerPage;
   let youHaveUnsavedChangesIfYouLeaveYourChangesPage: YouHaveUnsavedChangesIfYouLeaveYourChangesPage;
+  let Methods: AddonHelpers;
 
   test.beforeEach(async ({ page }) => {
     vars = {};
@@ -44,9 +47,22 @@ test.describe('REG_Bid Maps', () => {
     selectAllCheckboxPage = new SelectAllCheckboxPage(page);
     spinnerPage = new SpinnerPage(page);
     youHaveUnsavedChangesIfYouLeaveYourChangesPage = new YouHaveUnsavedChangesIfYouLeaveYourChangesPage(page);
+    Methods = new AddonHelpers(page, vars);
   });
 
+
+
+  const profileName = "Bid_Maps";
+  const profile = testDataManager.getProfileByName(profileName);
   test('REG_TS01_TC03_Verify that if user selects two companies \\\"A and B\\\"  and if Company A has both standard and chase execution type, and company B has only standard execution type -> Now if user select b', async ({ page }) => {
+    if (profile && profile.data) {
+      const uploadText = profile.data[0]['Upload File Text Verification'];
+      const executionType = profile.data[0]['Execution Type'];
+      const secondCompanyName = profile.data[0]['Second Company Name'];
+      vars["SecondCompanyName"] = secondCompanyName;
+      vars["Upload File Text Verification"] = uploadText;
+      vars["Execution Type"] = executionType;
+    }
     await stepGroups.stepGroup_Login_to_CORR_Portal(page, vars);
     await spinnerPage.Spinner.waitFor({ state: 'hidden' });
     await stepGroups.stepGroup_Navigation_to_Customer_Permission(page, vars);
@@ -56,8 +72,10 @@ test.describe('REG_Bid Maps', () => {
     await spinnerPage.Spinner.waitFor({ state: 'hidden' });
     await correspondentPortalPage.Add_New_Mapping_Button.click();
     await expect(headingCreateNewMapPage.Create_New_Map).toBeVisible();
-    vars["Create New Map"] = new Date().toLocaleDateString('en-US') /* format: dd/MM/yyyy:HH:mm:ss */;
-    vars["Create New Map"] = "Testsigma_" + vars["Create New Map"];
+    // vars["Create New Map"] = new Date().toLocaleDateString('en-US') /* format: dd/MM/yyyy:HH:mm:ss */;
+    // vars["Create New Map"] = "Testsigma_" + vars["Create New Map"];
+    Methods.getCurrentTimestamp('dd/MM/yyyy/HH:mm:ss', 'CurrentDate');
+    Methods.concatenate('Testsigma_', vars['CurrentDate'], 'Create New Map');
     await correspondentPortalPage.Create_New_Map_Field.fill(vars["Create New Map"]);
     vars["BidMap"] = await correspondentPortalPage.Create_New_Map_Field.inputValue() || '';
     await correspondentPortalPage.Create_Button.click();
@@ -65,8 +83,11 @@ test.describe('REG_Bid Maps', () => {
     await expect(p2142530YrFreddieMacFixedDropdownPage.Bid_Maps_Name).toContainText(vars["Create New Map"]);
     await correspondentPortalPage.Select_Companys_Dropdown.click();
     await bidMapPage.Required_Company_Checkbox_Bidmap_Company_dropdown.check();
+    
     vars["SelectedCompanyName"] = await correspondentPortalPage.Selected_Company_Name.textContent() || '';
+    console.log("Selected company name:", vars["SelectedCompanyName"]);
     vars["NotSelectedCompanyName"] = await correspondentPortalPage.Not_Selected_Company_Name.textContent() || '';
+    console.log("Not selected company name:", vars["NotSelectedCompanyName"]);
     // [DISABLED] Split the NotSelectedCompanyName with the - and store the value from the 1 in the NotSelectedCompany
     // vars["NotSelectedCompany"] = String(vars["NotSelectedCompanyName"]).split("-")["1"] || '';
     // [DISABLED] Split the NotSelectedCompanyName with the - and store the value from the 2 in the NotSelectedCcode
@@ -83,15 +104,22 @@ test.describe('REG_Bid Maps', () => {
     await correspondentPortalPage.Show_Selected_Button.click();
     await expect(correspondentPortalPage.Dropdown_Company_for_Selected).toContainText(vars["SelectedCompanyName"]);
     await expect(page.getByText(vars["NotSelectedCompanyName"])).not.toBeVisible();
+
     await expect(correspondentPortalPage.Show_All_Button).toBeVisible();
     await correspondentPortalPage.Show_All_Button.click();
     await expect(correspondentPortalPage.Dropdown_Company_for_Selected).toContainText(vars["SelectedCompanyName"]);
-    await expect(bidMapsCompanyDropdownPage.Required_CompanyBidmap_company_dropdown).toBeVisible();
+    await expect(bidMapsCompanyDropdownPage.getRequired_CompanyBidmap_company_dropdown(vars["NotSelectedCompanyName"])).toBeVisible();
     // [DISABLED] Verify that the Dropdown_Company_for_Selected list has option with text NotSelectedCompanyName selected and With Scrollable FALSE
     // await expect(correspondentPortalPage.Dropdown_Company_for_Selected).toHaveValue(vars["NotSelectedCompanyName"]);
     // [DISABLED] Verify that the current page displays text NotSelectedCompanyName
     // await expect(page.getByText(vars["NotSelectedCompanyName"])).toBeVisible();
     await stepGroups.stepGroup_Enter_Company_Name_in_New_Map_Filter(page, vars);
+    // await expect(correspondentPortalPage.Search_Text_Field).toHaveValue(vars["NotSelectedCompanyName"]);
+    // await expect(page.getByText(vars["NotSelectedCompanyName"])).toBeVisible();
+    // await correspondentPortalPage.Check_box.check();
+    await page.waitForTimeout(4000);
+    await expect(correspondentPortalPage.Apply_Selected).toBeVisible();
+     await page.waitForTimeout(3000);
     await expect(correspondentPortalPage.Apply_Selected_for_Bid_Maps).toContainText("2");
     await correspondentPortalPage.Apply_Selected.click();
     await expect(correspondentPortalPage.Dropdown_selection_2).toHaveValue("STANDARD");
@@ -100,11 +128,14 @@ test.describe('REG_Bid Maps', () => {
     await expect(youHaveUnsavedChangesIfYouLeaveYourChangesPage.You_have_unsaved_changes_If_you_leave_your_changes).toBeVisible();
     await proceedWithoutSavingButtonPage.Proceed_without_Saving_Button.click();
     await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-    await correspondentPortalPage.Bid_Maps_name.click();
+    await correspondentPortalPage.Bid_Maps_name(vars["BidMap"]).click();
     await spinnerPage.Spinner.waitFor({ state: 'hidden' });
     await correspondentPortalPage.Select_Companys_Dropdown.click();
+    await page.waitForTimeout(2000);
     vars["CompanyCount"] = String(await correspondentPortalPage.Companies_In_Dropdown.count());
     await selectAllCheckboxPage.Select_All_Checkbox.check();
+    await expect(correspondentPortalPage.Apply_Selected_for_Bid_Maps).toContainText(vars["CompanyCount"]);
+    await correspondentPortalPage.Apply_Selected.click();
     await expect(correspondentPortal7Page.Apply_Selected_for_the_Bid_Maps).toContainText(vars["CompanyCount"]);
     await selectAllCheckboxPage.Select_All_Checkbox.uncheck();
     await expect(selectAllCheckboxPage.Select_All_Checkbox).toBeVisible();

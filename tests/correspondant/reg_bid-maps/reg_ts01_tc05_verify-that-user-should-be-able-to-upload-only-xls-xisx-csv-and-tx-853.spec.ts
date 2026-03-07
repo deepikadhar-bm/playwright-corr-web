@@ -10,6 +10,9 @@ import { HeadingCreateNewMapPage } from '../../../src/pages/correspondant/headin
 import { P2142530YrFreddieMacFixedDropdownPage } from '../../../src/pages/correspondant/p-2142530-yr-freddie-mac-fixed-dropdown';
 import { SelectAllCheckboxPage } from '../../../src/pages/correspondant/select-all-checkbox';
 import { SpinnerPage } from '../../../src/pages/correspondant/spinner';
+import { AddonHelpers } from '../../../src/helpers/AddonHelpers';
+import { testDataManager } from 'testdata/TestDataManager';
+import { uploadFile } from '../../../src/helpers/file-helpers';
 
 test.describe('REG_Bid Maps', () => {
   let vars: Record<string, string> = {};
@@ -21,6 +24,7 @@ test.describe('REG_Bid Maps', () => {
   let p2142530YrFreddieMacFixedDropdownPage: P2142530YrFreddieMacFixedDropdownPage;
   let selectAllCheckboxPage: SelectAllCheckboxPage;
   let spinnerPage: SpinnerPage;
+  let Methods: AddonHelpers;
 
   test.beforeEach(async ({ page }) => {
     vars = {};
@@ -32,6 +36,7 @@ test.describe('REG_Bid Maps', () => {
     p2142530YrFreddieMacFixedDropdownPage = new P2142530YrFreddieMacFixedDropdownPage(page);
     selectAllCheckboxPage = new SelectAllCheckboxPage(page);
     spinnerPage = new SpinnerPage(page);
+    Methods = new AddonHelpers(page, vars);
   });
 
   test('REG_TS01_TC05_Verify that user should be able to upload only \\\"xls, xIsx, csv and txt files and we should not allow the user to upload any other file if tried uploading then it should display the erro', async ({ page }) => {
@@ -42,8 +47,10 @@ test.describe('REG_Bid Maps', () => {
     await spinnerPage.Spinner.waitFor({ state: 'hidden' });
     await correspondentPortalPage.Add_New_Mapping_Button.click();
     await expect(headingCreateNewMapPage.Create_New_Map).toBeVisible();
-    vars["Create New Map"] = new Date().toLocaleDateString('en-US') /* format: dd/MM/yyyy/HH:mm:ss */;
-    vars["Create New Map"] = "Testsigma_" + vars["Create New Map"];
+    // vars["Create New Map"] = new Date().toLocaleDateString('en-US') /* format: dd/MM/yyyy/HH:mm:ss */;
+    // vars["Create New Map"] = "Testsigma_" + vars["Create New Map"];
+    Methods.getCurrentTimestamp('dd/MM/yyyy/HH:mm:ss', 'CurrentDate');
+    Methods.concatenate('Testsigma_', vars['CurrentDate'], 'Create New Map');
     await correspondentPortalPage.Create_New_Map_Field.fill(vars["Create New Map"]);
     vars["BidMap"] = await correspondentPortalPage.Create_New_Map_Field.inputValue() || '';
     await correspondentPortalPage.Create_Button.click();
@@ -56,37 +63,50 @@ test.describe('REG_Bid Maps', () => {
     await expect(correspondentPortalPage.Apply_Selected_for_Bid_Maps).toContainText(vars["CompanyCount"]);
     await correspondentPortalPage.Apply_Selected.click();
     await expect(correspondentPortalPage.Dropdown_selection_2).toHaveValue('');
-    await correspondentPortalPage.Upload_File.setInputFiles(path.resolve(__dirname, 'test-data', "Bid Maps File.xlsx"));
+
+    // await correspondentPortalPage.Upload_File.setInputFiles(path.resolve(__dirname, 'uploads', "Bid_Maps_File.xlsx"));
+    // await correspondentPortalPage.Upload_File.setInputFiles(path.join(process.cwd(), 'uploads', 'Bid_Maps_File.xlsx'));
+    await uploadFile(page, correspondentPortalPage.Upload_File, "Bid_Maps_File.xlsx");
     await expect(deepikaaugbidqa1csvButtonDivPage.Delete_Button_in_Bid_Maps).toBeVisible();
     await deepikaaugbidqa1csvButtonDivPage.Delete_Button_in_Bid_Maps.click();
     await expect(correspondentPortalPage.close_pop_up_bid_request_details).toBeVisible();
     await expect(correspondentPortalPage.Are_you_sure_you_want_to_delete_fixed_from_enumeration).toBeVisible();
     await expect(correspondentPortalPage.Yes_Proceed_Button).toBeVisible();
     await correspondentPortalPage.Yes_Proceed_Button.click();
-    await page.waitForLoadState('networkidle');
-    await headerMappingPage.File_Input.setInputFiles(path.resolve(__dirname, 'test-data', "Bid Maps File CSV.csv"));
+    // await page.waitForLoadState('networkidle');
+
+    // await headerMappingPage.File_Input.setInputFiles(path.resolve(__dirname, 'uploads', "Bid_Maps_File_CSV.csv"));
+    // await correspondentPortalPage.Upload_File.setInputFiles(path.join(process.cwd(), 'uploads', 'Bid_Maps_File_CSV.csv'));
+    await uploadFile(page, correspondentPortalPage.Upload_File, "Bid_Maps_File_CSV.csv");
     await expect(deepikaaugbidqa1csvButtonDivPage.Delete_Button_in_Bid_Maps).toBeVisible();
     await deepikaaugbidqa1csvButtonDivPage.Delete_Button_in_Bid_Maps.click();
     await expect(correspondentPortalPage.Are_you_sure_you_want_to_delete_fixed_from_enumeration).toBeVisible();
     await correspondentPortalPage.close_pop_up_bid_request_details.click();
-    await page.waitForLoadState('networkidle');
+    // await page.waitForLoadState('networkidle');
     await deepikaaugbidqa1csvButtonDivPage.Delete_Button_in_Bid_Maps.click();
     await expect(correspondentPortalPage.Are_you_sure_you_want_to_delete_fixed_from_enumeration).toBeVisible();
     await correspondentPortalPage.Yes_Proceed_Button.click();
-    await page.waitForLoadState('networkidle');
-    await correspondentPortalPage.Upload_File.setInputFiles(path.resolve(__dirname, 'test-data', "Bid Maps File XLS.xls"));
+    // await page.waitForLoadState('networkidle');
+    // await correspondentPortalPage.Upload_File.setInputFiles(path.resolve(__dirname, 'uploads', "Bid_Maps_File_XLS.xls"));
+    // await correspondentPortalPage.Upload_File.setInputFiles(path.join(process.cwd(), 'uploads', 'Bid_Maps_File_XLS.xls'));
+    await uploadFile(page, correspondentPortalPage.Upload_File, "Bid_Maps_File_XLS.xls");
     await expect(deepikaaugbidqa1csvButtonDivPage.Delete_Button_in_Bid_Maps).toBeVisible();
     await deepikaaugbidqa1csvButtonDivPage.Delete_Button_in_Bid_Maps.click();
     await expect(correspondentPortalPage.Are_you_sure_you_want_to_delete_fixed_from_enumeration).toBeVisible();
     await correspondentPortalPage.Yes_Proceed_Button.click();
-    await page.waitForLoadState('networkidle');
-    await correspondentPortalPage.Upload_File.setInputFiles(path.resolve(__dirname, 'test-data', "Bid Maps File Txt.txt"));
+    // await page.waitForLoadState('networkidle');
+    // await correspondentPortalPage.Upload_File.setInputFiles(path.resolve(__dirname, 'uploads', "Bid_Maps_File_Txt.txt"));
+    // await correspondentPortalPage.Upload_File.setInputFiles(path.join(process.cwd(), 'uploads', 'Bid_Maps_File_Txt.txt'));
+    await uploadFile(page, correspondentPortalPage.Upload_File, "Bid_Maps_File_Txt.txt");
+
     await expect(deepikaaugbidqa1csvButtonDivPage.Delete_Button_in_Bid_Maps).toBeVisible();
     await deepikaaugbidqa1csvButtonDivPage.Delete_Button_in_Bid_Maps.click();
     await expect(correspondentPortalPage.Are_you_sure_you_want_to_delete_fixed_from_enumeration).toBeVisible();
     await correspondentPortalPage.Yes_Proceed_Button.click();
-    await page.waitForLoadState('networkidle');
-    await correspondentPortalPage.Upload_File.setInputFiles(path.resolve(__dirname, 'test-data', "Bid Maps File Pdf.pdf"));
+    // await page.waitForLoadState('networkidle');
+    // Set the PDF directly to ensure the input receives the file and the app shows the error
+    await correspondentPortalPage.Upload_File.setInputFiles(path.join(process.cwd(), 'uploads', 'Bid_Maps_File_Pdf.pdf'));
+    // await uploadFile(page, correspondentPortalPage.Upload_File, "Bid_Maps_File_Pdf.pdf");
     await expect(fileFormatNotAllowedDeepikaaugbidqa1pdfPage.Error_Message_in_Creation_Of_Bid_Maps).toBeVisible();
   });
 });

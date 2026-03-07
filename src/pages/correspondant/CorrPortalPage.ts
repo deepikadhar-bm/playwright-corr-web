@@ -245,8 +245,8 @@ export class CorrPortalPage {
     return this.page.locator("//span[text()[normalize-space() = \"Bid Maps\"]]");
   }
 
-  get Bid_Maps_Name(): Locator {
-    return this.page.locator("//span[contains(.,' $|Create New Map|')]");
+  Bid_Maps_Name(Create_New_Map: string): Locator {
+    return this.page.locator(`//span[contains(.,' ${Create_New_Map}')]`);
   }
 
   get Bid_Request_Config_Menu(): Locator {
@@ -582,7 +582,7 @@ export class CorrPortalPage {
   }
 
   get Company_Name_ActionButton_SecondRow(): Locator {
-    return this.page.locator("(//div[@id=\"common-table-results\"]//following-sibling::td[@data-title=\"Actions\"])[2]//button[@aria-label=\"Edit Permission\"]");
+    return this.page.locator("(//div[@id=\"common-table-results\"]//following-sibling::td[@data-title=\"Actions\"])[1]//button[@aria-label=\"Edit Permission\"]");
   }
 
   get Company_Name_Action_Button_FirstRow(): Locator {
@@ -683,6 +683,12 @@ export class CorrPortalPage {
 
   get CustomerPermission_Menu(): Locator {
     return this.page.locator("//a[@href=\"#/admin/general-settings/customer-restrictions\"]");
+  }
+
+  get Customer_Permission_text(): Locator {
+    // return this.page.locator("//h3[text()[normalize-space() = \"Customer Permission\"]]");
+    // return this.page.locator("//h3[contains(normalize-space(.), 'Customer Permission')]");
+    return this.page.locator("//h3[contains(text(), 'Customer Permission')]");
   }
 
   get Dashboard(): Locator {
@@ -985,6 +991,10 @@ export class CorrPortalPage {
     return this.page.locator("//div[@id=\"page-footer\"]//span[@class=\"d-block\"]");
   }
 
+  get ThirdCompany_Checkbox(): Locator {
+    return this.page.locator("(//input[@type=\"checkbox\"])[4]");
+  }
+  
   get FourthCompany_Checkbox(): Locator {
     return this.page.locator("(//input[@type=\"checkbox\"])[5]");
   }
@@ -1161,8 +1171,8 @@ export class CorrPortalPage {
     return this.page.locator("((//div[contains(@aria-label,\"Sort by\")])[position() != 2 and position() != 10])[$|count|]");
   }
 
-  get Individual_Headers(): Locator {
-    return this.page.locator("((//div[contains(@aria-label,\"Sort by\")])[position() <= 8])[$|Count|]");
+  Individual_Headers(Count: string): Locator {
+    return this.page.locator(`((//div[contains(@aria-label,\"Sort by\")])[position() <= 8])[${Count}]`);
   }
 
   Individual_Headers_Commitment_List(Count:string): Locator {
@@ -1497,8 +1507,8 @@ export class CorrPortalPage {
     return this.page.locator("//input[@type=\"checkbox\" and contains(@aria-label,\"@|Company Name|\")]");
   }
 
-  get Required_Company_s_Name_Value(): Locator {
-    return this.page.locator("//span[@class='pl-2'][contains(.,'$|Companyname|')]");
+  Required_Company_s_Name_Value(Companyname: string): Locator {
+    return this.page.locator(`//span[@class='pl-2'][contains(.,'${Companyname}')]`);
   }
 
   Required_Date_Filters(DateFormatFilter: string): Locator {

@@ -59,8 +59,8 @@ export class P15ActivePage {
     return this.page.locator("//div[contains(@class,\"cursor-pointer py\")]/../../..//span[text()=\"$|FirstCompanyname|\"]");
   }
 
-  get Select_Company_Names(): Locator {
-    return this.page.locator("//span[@class='pl-2'][contains(.,'@|Company name 1|')]");
+  Select_Company_Names(companyName: string): Locator {
+    return this.page.locator(`//span[@class='pl-2'][contains(.,'${companyName}')]`);
   }
 
   get Select_Chase_Field_Name(): Locator {
