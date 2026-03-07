@@ -11,8 +11,8 @@ export class AddedOn2Page {
     return this.page.locator("//div[contains(@class,\"cursor-pointer py\")]/../../..//span");
   }
 
-  get company_4(): Locator {
-    return this.page.locator("//td[@data-title=\"Company\" and contains(text(),\"$|fourthCompanySelected|\")]");
+  getcompany_4(fourthCompanySelected: string): Locator {
+    return this.page.locator(`//td[@data-title="Company" and contains(text(),"${fourthCompanySelected}")]`);
   }
 
   get Select_Rule_1(): Locator {

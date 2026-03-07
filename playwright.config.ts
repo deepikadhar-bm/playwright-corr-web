@@ -47,7 +47,6 @@ export default defineConfig({
       use: {
         browserName: 'chromium',
 
-        // ⭐ Force UTC in browser context
         timezoneId: 'UTC',
 
         viewport: { width: 1920, height: 1080 },

@@ -37,18 +37,29 @@ test.describe('REG_Bid Maps', () => {
   test('REG_TS20_TC01_Verify in the popup that the list of companies associated with the map is displayed along with the proper date.', async ({ page }) => {
 
     await correspondentPortalPage.Added_Company.click();
-    await page.waitForLoadState('networkidle');
-    vars["Create New Map"] = await mapNamePage.Map_Name_2.textContent() || '';
-    await expect(mapNamePage.Map_Name_2).toContainText(vars["Create New Map"]);
-    vars["CompanyName1"] = await addedOnPage.company_1.textContent() || '';
-    vars["CompanyName2"] = await addedOnPage.company_2.textContent() || '';
-    vars["CompanyName3"] = await addedOnPage.company_3.textContent() || '';
-    vars["CompanyName4"] = await addedOn2Page.company_4.textContent() || '';
-    await page.waitForLoadState('networkidle');
+    // await page.waitForLoadState('networkidle');
+    vars["Create New Map"] = await mapNamePage.getMap_Name_2(vars["Create New Map"]).textContent() || '';
+    console.log(`Map name in popup: ${vars["Create New Map"]}`);
+    await expect(mapNamePage.getMap_Name_2(vars["Create New Map"])).toContainText(vars["Create New Map"]);
+    // vars["CompanyName1"] = await addedOnPage.getcompany_1(vars["firstCompanySelected"]).textContent() || '';
+    // vars["CompanyName2"] = await addedOnPage.getcompany_2(vars["secondCompanySelected"]).first().textContent() || '';
+    // vars["CompanyName3"] = await addedOnPage.getcompany_3(vars["thirdCompanySelected"]).nth(1).textContent() || '';
+    // vars["CompanyName4"] = await addedOn2Page.getcompany_4(vars["fourthCompanySelected"]).textContent() || '';
+   
+    
+    vars["CompanyName1"] = (await addedOnPage.getcompany_1(vars["firstCompanySelected"]).textContent())?.trim() || '';
+    vars["CompanyName2"] = (await addedOnPage.getcompany_2(vars["secondCompanySelected"]).first().textContent())?.trim() || '';
+    vars["CompanyName3"] = (await addedOnPage.getcompany_3(vars["thirdCompanySelected"]).nth(1).textContent())?.trim() || '';
+    vars["CompanyName4"] = (await addedOn2Page.getcompany_4(vars["fourthCompanySelected"]).textContent())?.trim() || '';
+
+    
+
+    
     expect(String(vars["firstCompanySelected"])).toBe(vars["CompanyName1"]);
     expect(String(vars["secondCompanySelected"])).toBe(vars["CompanyName2"]);
     expect(String(vars["thirdCompanySelected"])).toBe(vars["CompanyName3"]);
     expect(String(vars["fourthCompanySelected"])).toBe(vars["CompanyName4"]);
+
     vars["AddedOn"] = await statusInactivePage.Added_On.textContent() || '';
     vars["AddedOn"] = await chaseFieldNamePage.Added_On.textContent() || '';
     vars["AddedOn"] = await chaseFieldNamePage.Added_On_2.textContent() || '';

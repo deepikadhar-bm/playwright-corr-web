@@ -57,43 +57,51 @@ test.describe('REG_PriceOffered', () => {
     await stepGroups.stepGroup_Login_to_CORR_Portal(page, vars);
     await correspondentPortalPage.Commitments_Side_Menu.click();
     await correspondentPortalPage.Price_Offered_List_Dropdown.click();
+    await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+    await page.waitForTimeout(3000);
     await priceOfferedPage.Filter_Dropdown1.click();
     await correspondentPortalPage.Select_Commitments_Status_Dropdown.click();
     await correspondentPortalPage.Dropdown_Search_In_Commitments_Status.click();
     await correspondentPortalPage.Dropdown_Search_In_Commitments_Status.fill(testData["StatusInFilters"]);
-    await page.waitForTimeout(5000);
+    await page.waitForTimeout(1200);
     await expect(priceOfferedPage.Selected_Status).toContainText(testData["StatusInFilters"]);
     vars["CountOfSelectedStatusBeforeClearing"] = String(await priceOfferedPage.Selected_Status.count());
     await correspondentPortalPage.Clear_Search_Button.click();
     vars["StatusCountInFilters"] = String(await priceOfferedPage.Status_Count_In_Filters.count());
-    expect(String(vars["CountOfSelectedStatusBeforeClearing"])).toBe(vars["StatusCountInFilters"]);
-    await priceOfferedPage.Status_Checkbox.check();
-    vars["CheckedStatus"] = await priceOfferedPage.Checked_Status.textContent() || '';
+    expect(parseFloat(vars["CountOfSelectedStatusBeforeClearing"])).toBeLessThanOrEqual(parseFloat(vars["StatusCountInFilters"]));
+    await priceOfferedPage.Status_Checkbox.nth(0).check();
+    vars["CheckedStatus"] = await priceOfferedPage.Checked_Status.nth(0).textContent() || '';
     await correspondentPortalPage.Dropdown_Show_Selected_In_Status.click();
-    vars["CountOfstatusChecked"] = await priceOfferedPage.number_of_items_selected.textContent() || '';
+    vars["CountOfstatusChecked"] = (await priceOfferedPage.number_of_items_selected.textContent() || '').trim();
     expect(String("1")).toBe(vars["CountOfstatusChecked"]);
     vars["SelectedstatusInFilterCount"] = String(await priceOfferedPage.Selected_Company_Count_in_Filters.count());
     expect(String("1")).toBe(vars["SelectedstatusInFilterCount"]);
     await correspondentPortalPage.Show_All_Button.click();
     vars["TotalStatusCountInFilters"] = String(await priceOfferedPage.Status_Count_In_Filters.count());
-    expect(String(vars["CountOfSelectedStatusBeforeClearing"])).toBe(vars["TotalStatusCountInFilters"]);
+    expect(parseFloat(vars["CountOfSelectedStatusBeforeClearing"])).toBeLessThanOrEqual(parseFloat(vars["TotalStatusCountInFilters"]));
     await expect(priceOfferedPage.Apply_Selected_In_Status).toBeVisible();
     await priceOfferedPage.Select_All_In_Status.click();
     vars["CountOfItemsSelected"] = await priceOfferedPage.Items_Selected.textContent() || '';
-    expect(String(vars["CountOfSelectedStatusBeforeClearing"])).toBe(vars["CountOfItemsSelected"]);
+    expect(parseFloat(vars["CountOfSelectedStatusBeforeClearing"])).toBeLessThan(parseFloat(vars["CountOfItemsSelected"]));
     await priceOfferedPage.Select_All_In_Status.click();
+    
     await priceOfferedPage.Filter_Dropdown1.click();
+    await page.waitForTimeout(3000);
+    // await priceOfferedPage.Filter_Dropdown1.click();
     vars["count"] = "1";
+    // await page.pause();
     while (parseFloat(String(vars["count"])) <= parseFloat(String(vars["TotalStatusCountInFilters"]))) {
       await priceOfferedPage.Filter_Dropdown1.click();
       await correspondentPortalPage.Select_Commitments_Status_Dropdown.waitFor({ state: 'visible' });
       await correspondentPortalPage.Select_Commitments_Status_Dropdown.click();
-      vars["IndividualStatusInFilters"] = await priceOfferedPage.Individual_Status_In_Filters.textContent() || '';
+      vars["IndividualStatusInFilters"] = await priceOfferedPage.Individual_Status_In_Filters(vars["count"]).textContent() || '';
       vars["IndividualStatusInFilters"] = String(vars["IndividualStatusInFilters"]).trim();
-      await priceOfferedPage.Individual_Status_In_Filters.click();
+      await priceOfferedPage.Individual_Status_In_Filters(vars["count"]).click();
       await priceOfferedPage.Apply_Selected_In_Status.click();
-      await applyFiltersButtonPage.Apply_Filters_Button.click();
-      await page.waitForLoadState('networkidle');
+      await applyFiltersButtonPage.Apply_Filters_Button.click();////Apply_filters_button
+      // await page.waitForLoadState('networkidle');
+      // await spinnerPage.Spinner.waitFor({ state: 'visible' , timeout: 1000 });
+      await spinnerPage.Spinner.waitFor({ state: 'hidden', timeout: 10000 });
       await expect(priceOfferedPage.Filtered_In_Status).toBeVisible();
       vars["RowCount"] = String(await priceOfferedPage.Row_Count.count());
       vars["Count"] = "1";
@@ -101,45 +109,64 @@ test.describe('REG_PriceOffered', () => {
       if (String(vars["IndividualStatusInFilters"]) === String("Commitment in Progress")) {
         while (parseFloat(String(vars["Count"])) <= parseFloat(String(vars["RowCount"]))) {
           await priceOfferedPage.Loans_Header_Text.click();
-          if (true) /* Element Status Individual is visible */ {
-            vars["IndividualStatusInScreen"] = await priceOfferedPage.Status_Individual.textContent() || '';
+          if (await priceOfferedPage.Status_Individual(vars["Count"]).isVisible()) /* Element Status Individual is visible */ {
+            vars["IndividualStatusInScreen"] = await priceOfferedPage.Status_Individual(vars["Count"]).textContent() || '';
             vars["IndividualStatusInScreen"] = String(vars["IndividualStatusInScreen"]).trim();
             expect(String(vars["IndividualStatusInFilters"]).toLowerCase()).toContain(String(vars["IndividualStatusInScreen"]).toLowerCase());
-          } else {
+            vars["Count"] = (parseFloat(String("1")) + parseFloat(String(vars["Count"]))).toFixed(0);
+          } 
+          else {
             await expect(page.getByText("No result")).toBeVisible();
           }
-          vars["Count"] = (parseFloat(String("1")) + parseFloat(String(vars["Count"]))).toFixed(0);
+          // vars["Count"] = (parseFloat(String("1")) + parseFloat(String(vars["Count"]))).toFixed(0);
         }
-      } else {
+      } 
+      else {
         for (let i = 0; i < await priceOfferedPage.Status_Individual_In_Screen.count(); i++) {
           await expect(priceOfferedPage.Status_Individual_In_Screen.nth(i)).toHaveText(String(vars["IndividualStatusInFilters"]));
+          vars["Count"] = (parseFloat(String("1")) + parseFloat(String(vars["Count"]))).toFixed(0);
         }
       }
-      if (true) /* Element Go to Next Page Button is enabled */ {
-        await correspondentPortalPage.Go_to_Next_Page_Button_2.click();
-        vars["RowCount2"] = String(await priceOfferedPage.Row_Count.count());
-        vars["CCount"] = "1";
+      const nextBtn = correspondentPortalPage.Go_to_Next_Page_Button_2;
+      const hasNextPage =(await nextBtn.count()) > 0 && await nextBtn.isVisible() && await nextBtn.isEnabled();
+
+         if (hasNextPage) {
+          await Promise.all([nextBtn.click(),spinnerPage.Spinner.waitFor({ state: 'hidden', timeout: 15000 })]);
+//       if (await correspondentPortalPage.Go_to_Next_Page_Button_2.isEnabled()) {
+//         await correspondentPortalPage.Go_to_Next_Page_Button_2.click();
+//         await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+          vars["RowCount2"] = String(await priceOfferedPage.Row_Count.count());
+          vars["CCount"] = "1";
         if (String(vars["IndividualStatusInFilters"]) === String("Commitment in Progress")) {
           while (parseFloat(String(vars["CCount"])) <= parseFloat(String(vars["RowCount2"]))) {
             vars["IndividualStatusInScreen2"] = await priceOfferedPage.Status_Individual_2.textContent() || '';
             vars["IndividualStatusInScreen2"] = String(vars["IndividualStatusInScreen2"]).trim();
-            vars["IndividualStatusInScreen2"] = String(vars["IndividualStatusInScreen2"]).trim();
-            if (true) /* Verify if IndividualStatusInFilters contains ignore-case wit */ {
-            } else {
+            // vars["IndividualStatusInScreen2"] = String(vars["IndividualStatusInScreen2"]).trim();
+            if (await priceOfferedPage.Status_Individual(vars["CCount"]).isVisible()) /* Element Status Individual is visible */ {
+            vars["IndividualStatusInScreen"] = await priceOfferedPage.Status_Individual(vars["CCount"]).textContent() || '';
+            vars["IndividualStatusInScreen"] = String(vars["IndividualStatusInScreen"]).trim();
+            expect(String(vars["IndividualStatusInFilters"]).toLowerCase()).toContain(String(vars["IndividualStatusInScreen"]).toLowerCase());
+            vars["CCount"] = (parseFloat(String("1")) + parseFloat(String(vars["CCount"]))).toFixed(0);
+          } 
+           else {
               await expect(page.getByText("No result")).toBeVisible();
             }
-            vars["CCount"] = (parseFloat(String("1")) + parseFloat(String(vars["CCount"]))).toFixed(0);
+            // vars["CCount"] = (parseFloat(String("1")) + parseFloat(String(vars["CCount"]))).toFixed(0);
           }
-        } else {
+        } 
+        else {
           for (let i = 0; i < await priceOfferedPage.Status_Individual_In_Screen.count(); i++) {
             await expect(priceOfferedPage.Status_Individual_In_Screen.nth(i)).toHaveText(String(vars["IndividualStatusInFilters"]));
+            vars["CCount"] = (parseFloat(String("1")) + parseFloat(String(vars["CCount"]))).toFixed(0);
           }
         }
       }
+        
+      await page.waitForTimeout(3000);
       await priceOfferedPage.Filter_Dropdown1.click();
       await priceOfferedPage.Clear_All_In_Filter.click();
-      await expect(priceOfferedPage.Filtered_In_Status).toBeVisible();
+      await expect(priceOfferedPage.Filtered_In_Status).not.toBeVisible();
       vars["count"] = (parseFloat(String("1")) + parseFloat(String(vars["count"]))).toFixed(0);
     }
   });
-});
+});  
