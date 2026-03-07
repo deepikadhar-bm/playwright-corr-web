@@ -7,8 +7,12 @@ import { expect } from '@playwright/test';
 import path from 'path';
 import * as excelHelper from '../excel-helpers';
 import { CorrPortalPage } from '../../pages/correspondant/CorrPortalPage';
+import { testDataManager } from 'testdata/TestDataManager';
+//import { testDataManager } from '../../testdata/TestDataManager';
 // import { PlaywrightHelpers } from '../../PlaywrightHelpers';
 import { AddonHelpers } from '../../../src/helpers/AddonHelpers';
+import { CorrespondentPortal4Page } from '@pages/correspondant/correspondent-portal-4';
+import { SpinnerPage } from '@pages/correspondant';
 /**
  * Step Group: Login to CORR Portal
  * ID: 773
@@ -53,6 +57,7 @@ export async function stepGroup_Rename_File(page: import('@playwright/test').Pag
  */
 export async function stepGroup_Creation_Of_Bid_Map_Upto_Header_Mapping(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
+  const CorrespondentPortal4Elem = new CorrespondentPortal4Page(page);
   await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
   // [DISABLED] Verify that the element Dashboard is displayed and With Scrollable FALSE
   // await expect(CorrPortalElem.Dashboard).toBeVisible();
@@ -72,27 +77,36 @@ export async function stepGroup_Creation_Of_Bid_Map_Upto_Header_Mapping(page: im
     const p = Object.fromEntries(parts.map(({type, value}) => [type, value]));
     return fmt.replace('yyyy', p.year || '').replace('yy', (p.year||'').slice(-2)).replace('MM', p.month || '').replace('dd', p.day || '').replace('HH', String(d.getHours()).padStart(2,'0')).replace('hh', p.hour || '').replace('mm', p.minute || '').replace('ss', p.second || '').replace('a', p.dayPeriod || '').replace(/M(?!M)/g, String(parseInt(p.month||'0'))).replace(/d(?!d)/g, String(parseInt(p.day||'0'))).replace(/h(?!h)/g, String(parseInt(p.hour||'0')));
   })();
-  vars["Create New Map"] = new Date().toLocaleDateString('en-US') /* format: MM/dd/yyyy/HH:mm:ss */;
-  vars["Create New Map"] = "Testsigma_" + vars["Create New Map"];
-  await CorrPortalElem.Create_New_Map_Field.fill(vars["Create New Map"]);
+  vars["CreateNewMap"] = (() => {
+    const d = new Date();
+    const opts: Intl.DateTimeFormatOptions = { timeZone: "America/New_York" };
+    const fmt = "MM/dd/yyyy/HH:mm:ss";
+    const parts = new Intl.DateTimeFormat('en-US', { ...opts, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false }).formatToParts(d);
+    const p = Object.fromEntries(parts.map(({type, value}) => [type, value]));
+    return fmt.replace('yyyy', p.year || '').replace('MM', p.month || '').replace('dd', p.day || '').replace('HH', p.hour || '').replace('mm', p.minute || '').replace('ss', p.second || '');
+  })();
+  vars["CreateNewMap"] = "Testsigma_" + vars["CreateNewMap"];
+  await CorrPortalElem.Create_New_Map_Field.fill(vars["CreateNewMap"]);
   vars["BidMap"] = await CorrPortalElem.Create_New_Map_Field.inputValue() || '';
   await CorrPortalElem.Compare_Button.click();
   await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
-  await expect(CorrPortalElem.Bid_Maps_Name).toContainText(vars["Create New Map"]);
+  await expect(CorrPortalElem.Bid_Maps_Name(vars["CreateNewMap"])).toContainText(vars["CreateNewMap"]);
   // [DISABLED] Verify that the current page displays text Create New Map
   // await expect(page.getByText(vars["Create New Map"])).toBeVisible();
   await CorrPortalElem.Select_Companys_Dropdown.click();
-  await CorrPortalElem.Required_Company_s_Name_Value.click();
+  await CorrespondentPortal4Elem.Search_Text_Field.fill(vars["Companyname"]);
+//await CorrPortalElem.Search_Text_Field.click();
+  await CorrPortalElem.Required_Company_s_Name_Value(vars["Companyname"]).first().click();
   await CorrPortalElem.Apply_Selected.click();
   await expect(CorrPortalElem.Upload_File).toHaveValue('');
   await expect(page.getByText("Drag and drop files here or click to browse. Allowed formats: .xls,.xlsx,.csv,.txt")).toBeVisible();
-  await CorrPortalElem.Upload_File.setInputFiles(path.resolve(__dirname, 'test-data', "DeepikaAugBidQA.xlsx"));
+  await CorrPortalElem.Upload_File.setInputFiles(path.resolve(__dirname, '../../../uploads', "DeepikaAugBidQA_(3)_(1)_(1)_(2).xlsx"));
   await CorrPortalElem.Map_Headers_Button.click();
   await CorrPortalElem.Save_and_Move_to_Next_Page.waitFor({ state: 'visible' });
   await expect(CorrPortalElem.This_action_will_save_the_changes_and_Move_to_Next_Page).toBeVisible();
   await CorrPortalElem.Proceed_with_Saving_Button.click();
   await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
-  await expect(page.getByText(vars["Create New Map"])).toBeVisible();
+  await expect(page.getByText(vars["CreateNewMap"])).toBeVisible();
   await CorrPortalElem.Header_Mapping.waitFor({ state: 'visible' });
 }
 
@@ -229,12 +243,12 @@ export async function stepGroup_Smart_Mapper_from_Off_to_On(page: import('@playw
   await CorrPortalElem.Bid_Map_Creation_in_General_Settings.click();
   await expect(CorrPortalElem.Bid_Map_Creation).toBeVisible();
   await expect(CorrPortalElem.Smart_Mapper).toBeVisible();
-  if (true) /* Radio button On Radio Button is not selected */ {
+  //const isRadioSelected = await CorrPortalElem.On_Radio_Button.evaluate((el: HTMLInputElement) => el.checked);
+  if (await CorrPortalElem.On_Radio_Button.isChecked()) {
     await CorrPortalElem.On_Radio_Button.check();
     await CorrPortalElem.Save_Changes_Button.click();
-  } else {
   }
-  await page.waitForLoadState('networkidle');
+  await page.waitForLoadState('load');
   await CorrPortalElem.Administration_Menu.click();
   await CorrPortalElem.Bid_Maps_Menu.click();
   await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
@@ -377,10 +391,10 @@ export async function stepGroup_Navigation_and_Verification_of_Customer_Permissi
  */
 export async function stepGroup_Navigating_to_Bulk_Batch_Timing(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
-  await page.waitForLoadState('networkidle');
+  await page.waitForLoadState('load');
   await CorrPortalElem.Administration_Menu.click();
-  await CorrPortalElem.General_Settings.click();
-  await page.waitForLoadState('networkidle');
+  await CorrPortalElem.General_Settings.first().click();
+  await page.waitForLoadState('load');
   await CorrPortalElem.Bulk_Batch_Timing.click();
   await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
 }
@@ -451,10 +465,10 @@ export async function stepGroup_Navigation_to_Customer_Permission(page: import('
   await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
   await CorrPortalElem.CustomerPermission_Menu.click();
   await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
-  await expect(page.getByText("Customer Permission")).toBeVisible();
-  vars["CompanyName"] = await CorrPortalElem.First_Company_Name.textContent() || '';
+  await expect(page.getByText("Customer Permission").first()).toBeVisible();
+  vars["CompanyName"] = await CorrPortalElem.First_Company_Name.first().textContent() || '';
   vars["Companyname"] = String(vars["CompanyName"]).trim();
-  await expect(CorrPortalElem.First_Company_Name).toContainText(vars["Companyname"]);
+  await expect(CorrPortalElem.First_Company_Name.first()).toContainText(vars["Companyname"]);
 }
 
 /**
@@ -2370,7 +2384,7 @@ export async function stepGroup_Modifying_The_Batch_Intervals(page: import('@pla
   await expect(page.getByText("Edit Batch Timing")).toBeVisible();
   vars["Time_Hour"] = (() => {
     const d = new Date();
-    const opts: Intl.DateTimeFormatOptions = { timeZone: "UTC-05:00" };
+    const opts: Intl.DateTimeFormatOptions = { timeZone: "America/New_York" };
     const fmt = "hh";
     // Map Java date format to Intl parts
     const parts = new Intl.DateTimeFormat('en-US', { ...opts, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }).formatToParts(d);
@@ -2380,7 +2394,7 @@ export async function stepGroup_Modifying_The_Batch_Intervals(page: import('@pla
   await CorrPortalElem.StartTime_In_Hour.fill(vars["Time_Hour"]);
   vars["Time_Min"] = (() => {
     const d = new Date();
-    const opts: Intl.DateTimeFormatOptions = { timeZone: "UTC-05:00" };
+    const opts: Intl.DateTimeFormatOptions = { timeZone: "America/New_York" };
     const fmt = "hh:mm";
     // Map Java date format to Intl parts
     const parts = new Intl.DateTimeFormat('en-US', { ...opts, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }).formatToParts(d);
@@ -2426,7 +2440,7 @@ export async function stepGroup_Modifying_Batch_Intervals_For_next_bussiness_day
   await expect(page.getByText("Edit Batch Timing")).toBeVisible();
   vars["Time_Hour"] = (() => {
     const d = new Date();
-    const opts: Intl.DateTimeFormatOptions = { timeZone: "UTC-05:00" };
+    const opts: Intl.DateTimeFormatOptions = { timeZone: "America/New_York" };
     const fmt = "hh";
     // Map Java date format to Intl parts
     const parts = new Intl.DateTimeFormat('en-US', { ...opts, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }).formatToParts(d);
@@ -2436,7 +2450,7 @@ export async function stepGroup_Modifying_Batch_Intervals_For_next_bussiness_day
   await CorrPortalElem.StartTime_In_Hour.fill(vars["Time_Hour"]);
   vars["Time_Min"] = (() => {
     const d = new Date();
-    const opts: Intl.DateTimeFormatOptions = { timeZone: "UTC-05:00" };
+    const opts: Intl.DateTimeFormatOptions = { timeZone: "America/New_York" };
     const fmt = "hh:mm";
     // Map Java date format to Intl parts
     const parts = new Intl.DateTimeFormat('en-US', { ...opts, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }).formatToParts(d);
@@ -2570,10 +2584,25 @@ export async function stepGroup_Past_time_disable_verification_in_bidrequest_dro
  * Steps: 24
  */
 export async function stepGroup_Uploading_Bid_Request(page: import('@playwright/test').Page, vars: Record<string, string>) {
+const profileName = 'Bid Requests';       // TDP sheet name
+const profile = testDataManager.getProfileByName(profileName);
+
+if (profile && profile.data) {
+  const value = profile.data[0]['Company Name'];  // row 0, column name
+  vars["CompanyName"] = value;    
+  const bidMappingID = profile.data[0]['BidMappingID'];
+  vars["BidMappingID"] = bidMappingID;                  // store in vars
+} // TODO: Get the profile name dynamically if needed
   const CorrPortalElem = new CorrPortalPage(page);
   const testData: Record<string, string> = {}; // TODO: Load from test data profile
+  //await CorrPortalElem.Upload_New_Bid_Request_Button.isEnabled();
+  await page.waitForTimeout(5000);
+  await CorrPortalElem.Upload_New_Bid_Request_Button.click();
+  await page.waitForTimeout(5000);
+  // wait for the spinner element on the page to disappear
+  await CorrPortalElem.Spinner.first().waitFor({ state: 'hidden' });
   await CorrPortalElem.Select_Company_In_BidRequest.click();
-  await CorrPortalElem.Bid_Mapping_Id_Search_Input_box.fill(testData["Company Name"]);
+  await CorrPortalElem.Bid_Mapping_Id_Search_Input_box.fill(vars["CompanyName"]);
   // [DISABLED] Verify that the element SelectCompany_Value has value Company Name for title and With Scrollable FALSE
   // await expect(CorrPortalElem.SelectCompany_Value).toHaveAttribute('title', testData["Company Name"]);
   await CorrPortalElem.SelectCompany_Value.click();
@@ -2585,10 +2614,10 @@ export async function stepGroup_Uploading_Bid_Request(page: import('@playwright/
   await CorrPortalElem.StandardExceutionType_Dropdown.waitFor({ state: 'visible' });
   await expect(CorrPortalElem.StandardExceutionType_Dropdown).toHaveValue("3");
   await CorrPortalElem.Bid_Mapping_ID_Dropdown.click();
-  await CorrPortalElem.Search_box_Bid_mapping_id.fill(testData["BidMappingID"]);
+  await CorrPortalElem.Search_box_Bid_mapping_id.fill(vars["BidMappingID"]);
   await CorrPortalElem.Bid_Mapping_ID_Dropdown_1.waitFor({ state: 'visible' });
   await CorrPortalElem.Bid_Mapping_ID_Dropdown_1.click();
-  await expect(CorrPortalElem.Bid_Mapping_ID_Dropdown).toContainText(testData["BidMappingID"]);
+  //await expect(CorrPortalElem.Bid_Mapping_ID_Dropdown).toContainText([vars["BidMappingID"]]);
   await expect(CorrPortalElem.Bid_Request_Date).toBeEnabled();
   await CorrPortalElem.Pricing_Return_Time.click();
   // [DISABLED] Scroll down to the element Enabled_PricingReturnTime into view
@@ -2616,7 +2645,7 @@ export async function stepGroup_Adding_a_batch_In_bulk_batch_screen(page: import
   const CorrPortalElem = new CorrPortalPage(page);
   vars["CurrentTime"] = (() => {
     const d = new Date();
-    const opts: Intl.DateTimeFormatOptions = { timeZone: "UTC-05:00" };
+    const opts: Intl.DateTimeFormatOptions = { timeZone: "America/New_York" };
     const fmt = "hh:mm a";
     // Map Java date format to Intl parts
     const parts = new Intl.DateTimeFormat('en-US', { ...opts, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }).formatToParts(d);
@@ -2676,7 +2705,7 @@ export async function stepGroup_Modifying_The_Batch_Intervals_For_one_Hour_Prior
   await expect(page.getByText("Edit Batch Timing")).toBeVisible();
   vars["CurrentTime"] = (() => {
     const d = new Date();
-    const opts: Intl.DateTimeFormatOptions = { timeZone: "UTC-05:00" };
+    const opts: Intl.DateTimeFormatOptions = { timeZone: "America/New_York" };
     const fmt = "hh:mm a";
     // Map Java date format to Intl parts
     const parts = new Intl.DateTimeFormat('en-US', { ...opts, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }).formatToParts(d);
@@ -2844,7 +2873,7 @@ export async function stepGroup_Navigating_to_Customer_Permission_For_the_Chase_
 export async function stepGroup_Getting_Next_Bussiness_day_by_handling_weekend(page: import('@playwright/test').Page, vars: Record<string, string>) {
   vars["CurrentDateList"] = (() => {
     const d = new Date();
-    const opts: Intl.DateTimeFormatOptions = { timeZone: "UTC-05:00" };
+    const opts: Intl.DateTimeFormatOptions = { timeZone: "America/New_York" };
     const fmt = "MM/dd/yyyy";
     // Map Java date format to Intl parts
     const parts = new Intl.DateTimeFormat('en-US', { ...opts, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }).formatToParts(d);
@@ -2889,7 +2918,7 @@ export async function stepGroup_Modifying_The_Batch_Intervals_For_Next_bussiness
   await expect(page.getByText("Edit Batch Timing")).toBeVisible();
   vars["CurrentTime"] = (() => {
     const d = new Date();
-    const opts: Intl.DateTimeFormatOptions = { timeZone: "UTC-05:00" };
+    const opts: Intl.DateTimeFormatOptions = { timeZone: "America/New_York" };
     const fmt = "hh:mm a";
     // Map Java date format to Intl parts
     const parts = new Intl.DateTimeFormat('en-US', { ...opts, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }).formatToParts(d);
@@ -3025,12 +3054,22 @@ export async function stepGroup_Upload_Bid_Request_For_Next_Business_Day_With_Ch
  * Steps: 17
  */
 export async function stepGroup_Uploading_Bid_Request_By_Selecting_both_standard_and_chase_t(page: import('@playwright/test').Page, vars: Record<string, string>) {
+  const profileName = 'Bid Requests';       // TDP sheet name
+const profile = testDataManager.getProfileByName(profileName);
+
+if (profile && profile.data) {
+  const value = profile.data[0]['Company Name'];  // row 0, column name
+  vars["CompanyName"] = value;    
+  const bidMappingID = profile.data[0]['BidMappingID'];
+  vars["BidMappingID"] = bidMappingID;                  // store in vars
+}
+  
   const CorrPortalElem = new CorrPortalPage(page);
   const testData: Record<string, string> = {}; // TODO: Load from test data profile
   await CorrPortalElem.Select_Company_In_BidRequest.click();
-  await CorrPortalElem.Bid_Mapping_Id_Search_Input_box.fill(testData["Company Name"]);
+  await CorrPortalElem.Bid_Mapping_Id_Search_Input_box.fill(vars["CompanyName"]);
   await CorrPortalElem.SelectCompany_Value.waitFor({ state: 'visible' });
-  await expect(CorrPortalElem.SelectCompany_Value).toContainText(testData["Company Name"]);
+  await expect(CorrPortalElem.SelectCompany_Value).toContainText(vars["CompanyName"]);
   await CorrPortalElem.SelectCompany_Value.click();
   await expect(CorrPortalElem.Standard_Execution_Checkbox).toBeVisible();
   await CorrPortalElem.StandardExecution_Dropdown.selectOption({ label: "3" });
@@ -3039,10 +3078,11 @@ export async function stepGroup_Uploading_Bid_Request_By_Selecting_both_standard
   await expect(CorrPortalElem.Chase_Direct_Checkbox).toBeVisible();
   await CorrPortalElem.Chase_Direct_Dropdown_Upload_Bidrequest.selectOption({ index: parseInt("1") });
   await CorrPortalElem.Bid_Mapping_ID_Dropdown.click();
-  await CorrPortalElem.Search_box_Bid_mapping_id.fill(testData["BidMappingID"]);
-  await CorrPortalElem.Entered_Bid_Mapping_Id_New.waitFor({ state: 'visible' });
-  await CorrPortalElem.Entered_Bid_Mapping_Id_New.click();
-  await expect(CorrPortalElem.Bid_Mapping_ID_Dropdown).toContainText(testData["BidMappingID"]);
+  await CorrPortalElem.Search_box_Bid_mapping_id.fill(vars["BidMappingID"]);
+  await page.waitForTimeout(3000);
+  //await CorrPortalElem.Entered_Bid_Mapping_Id_New.waitFor({ state: 'visible' });
+  await CorrPortalElem.Entered_Bid_Mapping_Id_New(vars["BidMappingID"]).first().click();
+  await expect(CorrPortalElem.Bid_Mapping_ID_Dropdown_1).toContainText(vars["BidMappingID"]);
   await CorrPortalElem.Pricing_Return_Time.click();
 }
 
@@ -3667,22 +3707,40 @@ export async function stepGroup_Uploading_Bid_RequestNew(page: import('@playwrig
  * Steps: 14
  */
 export async function stepGroup_Modifying_The_batch_Intervals_with_current_est_time(page: import('@playwright/test').Page, vars: Record<string, string>) {
+  const Methods = new AddonHelpers(page);
   const CorrPortalElem = new CorrPortalPage(page);
-  const testData: Record<string, string> = {}; // TODO: Load from test data profile
+  
+  // Load test data from TestDataManager
+  const profile = testDataManager.getProfileByName("Administration_Bulk Batch Timing");
+  const testData = profile?.data?.[0] || {};
   await CorrPortalElem.Modify_Batch_Intervals_Button.click();
   await expect(page.getByText("Edit Batch Timing")).toBeVisible();
-  vars["CurrentTime"] = (() => {
-    const d = new Date();
-    const opts: Intl.DateTimeFormatOptions = { timeZone: "UTC-05:00" };
-    const fmt = "hh:mm a";
-    // Map Java date format to Intl parts
-    const parts = new Intl.DateTimeFormat('en-US', { ...opts, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }).formatToParts(d);
-    const p = Object.fromEntries(parts.map(({type, value}) => [type, value]));
-    return fmt.replace('yyyy', p.year || '').replace('yy', (p.year||'').slice(-2)).replace('MM', p.month || '').replace('dd', p.day || '').replace('HH', String(d.getHours()).padStart(2,'0')).replace('hh', p.hour || '').replace('mm', p.minute || '').replace('ss', p.second || '').replace('a', p.dayPeriod || '').replace(/M(?!M)/g, String(parseInt(p.month||'0'))).replace(/d(?!d)/g, String(parseInt(p.day||'0'))).replace(/h(?!h)/g, String(parseInt(p.hour||'0')));
-  })();
+  // vars["CurrentTime"] = (() => {
+  //   const d = new Date();
+  //   const opts: Intl.DateTimeFormatOptions = { timeZone: "America/New_York" };
+  //   const fmt = "hh:mm a";
+  //   // Map Java date format to Intl parts
+  //   const parts = new Intl.DateTimeFormat('en-US', { ...opts, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }).formatToParts(d);
+  //   const p = Object.fromEntries(parts.map(({type, value}) => [type, value]));
+  //   return fmt.replace('yyyy', p.year || '').replace('yy', (p.year||'').slice(-2)).replace('MM', p.month || '').replace('dd', p.day || '').replace('HH', String(d.getHours()).padStart(2,'0')).replace('hh', p.hour || '').replace('mm', p.minute || '').replace('ss', p.second || '').replace('a', p.dayPeriod || '').replace(/M(?!M)/g, String(parseInt(p.month||'0'))).replace(/d(?!d)/g, String(parseInt(p.day||'0'))).replace(/h(?!h)/g, String(parseInt(p.hour||'0')));
+  // })();
+  //Methods.getCurrentTimestamp('hh:mm a', 'CurrentTime',  'America/New_York');
+  // console.log("CurrentTime value: before",  vars['CurrentTime']);
+const now = new Date();
+vars["CurrentTime"] = now.toLocaleString('en-US', {
+  timeZone: 'America/New_York',
+  hour: '2-digit',
+  minute: '2-digit',
+  hour12: true
+});
+
+console.log("CurrentTime:", vars["CurrentTime"]); // 04:45 AM
   await stepGroup_Separating_Hours_and_minutes_In_time_Current_EST_time(page, vars);
   await CorrPortalElem.StartTime_In_Hour.fill(vars["Time_Hour"]);
-  await CorrPortalElem.StartTime_In_Minutes.fill(vars["Time_Min"]);
+  console.log("Time_Min value:", vars["Time_Min"]);
+  await CorrPortalElem.StartTime_In_Minutes.click({ clickCount: 3 });
+await CorrPortalElem.StartTime_In_Minutes.type(vars["Time_Min"]);
+  //await CorrPortalElem.StartTime_In_Minutes.fill(vars["Time_Min"]);
   await stepGroup_selecting_time_unit_bulk_batch(page, vars);
   await CorrPortalElem.Time_Interval.fill(testData["Time Interval"]);
   await CorrPortalElem.No_Of_Batches.fill(testData["NO of Batches"]);
@@ -3699,9 +3757,13 @@ export async function stepGroup_Modifying_The_batch_Intervals_with_current_est_t
  * Steps: 4
  */
 export async function stepGroup_Separating_Hours_and_minutes_In_time_Current_EST_time(page: import('@playwright/test').Page, vars: Record<string, string>) {
-  vars["MinWithStandard"] = String(vars["CurrentTime"]).split(":")["2"] || '';
+  console.log("CurrentTime value: inside", vars["CurrentTime"]);
+  vars["MinWithStandard"] = String(vars["CurrentTime"]).split(":")["1"] || '';
+  console.log("MinWithStandard value:", vars["MinWithStandard"]);
   vars["Time_Hour"] = String(vars["CurrentTime"]).substring(0, String(vars["CurrentTime"]).length - 6);
+  console.log("Time_Hour value:", vars["Time_Hour"]);
   vars["Time_Min"] = String(vars["MinWithStandard"]).substring(0, String(vars["MinWithStandard"]).length - 3);
+  console.log("Time_Min value:", vars["Time_Min"]);
   vars["Time_Unit"] = String(vars["MinWithStandard"]).substring(3);
 }
 
@@ -4099,16 +4161,17 @@ export async function stepGroup_Commits_an_Fresh_Loan_Num_Chase_Direct(page: imp
 export async function stepGroup_Uploading_New_Bid_Request_Bid_Request_Screen(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
   await stepGroup_Uploading_Bid_Request(page, vars);
-  if (true) /* Element Enabled Time New is visible */ {
-    await CorrPortalElem.Enabled_Time_New.scrollIntoViewIfNeeded();
-    await CorrPortalElem.Enabled_Time_New.click();
-  } else {
+  if (await CorrPortalElem.Enabled_Time_New.first().isVisible()) {
+  await CorrPortalElem.Enabled_Time_New.first().scrollIntoViewIfNeeded();
+  await CorrPortalElem.Enabled_Time_New.first().click();
+} else {
     await stepGroup_Navigating_to_Bulk_Batch_Timing(page, vars);
-    await stepGroup_Modifying_The_Batch_Intervals_For_one_Hour_Prior(page, vars);
+    //await stepGroup_Modifying_The_Batch_Intervals_For_one_Hour_Prior(page, vars);
+    await stepGroup_Modifying_batches_with_5_min_prior(page, vars);
     await stepGroup_Navigating_to_Upload_New_Bid_Request(page, vars);
     await stepGroup_Uploading_Bid_Request(page, vars);
-    await CorrPortalElem.Enabled_Time.scrollIntoViewIfNeeded();
-    await CorrPortalElem.Enabled_Time.click();
+    await CorrPortalElem.Enabled_Time.first().scrollIntoViewIfNeeded();
+    await CorrPortalElem.Enabled_Time.first().click();
   }
   await CorrPortalElem.Upload_File.setInputFiles(path.resolve(__dirname, 'test-data', "Bid_file_success_error.xlsx"));
   await expect(CorrPortalElem.UploadBid_Button).toBeVisible();
@@ -5268,7 +5331,7 @@ export async function stepGroup_Uploading_Bid_RequestFrom_selecting_batch_time(p
   vars["QueuedTime"] = vars["ExtractedDateTime"];
   vars["CurrentEstTime"] = (() => {
     const d = new Date();
-    const opts: Intl.DateTimeFormatOptions = { timeZone: "UTC-05:00" };
+    const opts: Intl.DateTimeFormatOptions = { timeZone: "America/New_York" };
     const fmt = "hh:mm ";
     // Map Java date format to Intl parts
     const parts = new Intl.DateTimeFormat('en-US', { ...opts, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }).formatToParts(d);
@@ -5666,7 +5729,7 @@ export async function stepGroup_Creating_Early_Config_Record(page: import('@play
   await expect(CorrPortalElem.datepicker_Input).toHaveValue(vars["TomorrowsDateInput"]);
   vars["CurrentEstTime"] = (() => {
     const d = new Date();
-    const opts: Intl.DateTimeFormatOptions = { timeZone: "UTC-05:00" };
+    const opts: Intl.DateTimeFormatOptions = { timeZone: "America/New_York" };
     const fmt = "hh:mm a";
     // Map Java date format to Intl parts
     const parts = new Intl.DateTimeFormat('en-US', { ...opts, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }).formatToParts(d);
@@ -5858,27 +5921,38 @@ export async function stepGroup_Adjust_Time_by_adding_and_subtracting_one_min_fr
  */
 export async function stepGroup_Modifying_batches_with_5_min_prior(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
-  const testData: Record<string, string> = {}; // TODO: Load from test data profile
+  //const testData: Record<string, string> = {}; // TODO: Load from test data profile
   await CorrPortalElem.Modify_Batch_Intervals_Button.click();
   await expect(page.getByText("Edit Batch Timing")).toBeVisible();
-  vars["CurrentTime"] = (() => {
-    const d = new Date();
-    const opts: Intl.DateTimeFormatOptions = { timeZone: "UTC-05:00" };
-    const fmt = "hh:mm a";
-    // Map Java date format to Intl parts
-    const parts = new Intl.DateTimeFormat('en-US', { ...opts, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }).formatToParts(d);
-    const p = Object.fromEntries(parts.map(({type, value}) => [type, value]));
-    return fmt.replace('yyyy', p.year || '').replace('yy', (p.year||'').slice(-2)).replace('MM', p.month || '').replace('dd', p.day || '').replace('HH', String(d.getHours()).padStart(2,'0')).replace('hh', p.hour || '').replace('mm', p.minute || '').replace('ss', p.second || '').replace('a', p.dayPeriod || '').replace(/M(?!M)/g, String(parseInt(p.month||'0'))).replace(/d(?!d)/g, String(parseInt(p.day||'0'))).replace(/h(?!h)/g, String(parseInt(p.hour||'0')));
-  })();
-  vars["CurrentTime"] = (() => {
-    const d = new Date('2000-01-01 ' + String(vars["CurrentTime"]));
-    d.setMinutes(d.getMinutes() + parseInt(String("5")));
-    return d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true }); // Format: hh:mm a
-  })();
+  const now = new Date();
+vars["CurrentTime"] = now.toLocaleString('en-US', {
+  timeZone: 'America/New_York',
+  hour: '2-digit',
+  minute: '2-digit',
+  hour12: true
+});
+  // vars["CurrentTime"] = (() => {
+  //   const d = new Date();
+  //   const opts: Intl.DateTimeFormatOptions = { timeZone: "America/New_York" };
+  //   const fmt = "hh:mm a";
+  //   // Map Java date format to Intl parts
+  //   const parts = new Intl.DateTimeFormat('en-US', { ...opts, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }).formatToParts(d);
+  //   const p = Object.fromEntries(parts.map(({type, value}) => [type, value]));
+  //   return fmt.replace('yyyy', p.year || '').replace('yy', (p.year||'').slice(-2)).replace('MM', p.month || '').replace('dd', p.day || '').replace('HH', String(d.getHours()).padStart(2,'0')).replace('hh', p.hour || '').replace('mm', p.minute || '').replace('ss', p.second || '').replace('a', p.dayPeriod || '').replace(/M(?!M)/g, String(parseInt(p.month||'0'))).replace(/d(?!d)/g, String(parseInt(p.day||'0'))).replace(/h(?!h)/g, String(parseInt(p.hour||'0')));
+  // })();
+  // vars["CurrentTime"] = (() => {
+  //   const d = new Date('2000-01-01 ' + String(vars["CurrentTime"]));
+  //   d.setMinutes(d.getMinutes() + parseInt(String("5")));
+  //   return d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true }); // Format: hh:mm a
+  // })();
   await stepGroup_Separating_Hours_and_minutes_In_time_Current_EST_time(page, vars);
   await CorrPortalElem.StartTime_In_Hour.fill(vars["Time_Hour"]);
   await CorrPortalElem.StartTime_In_Minutes.fill(vars["Time_Min"]);
   await stepGroup_selecting_time_unit_bulk_batch(page, vars);
+  //const profileName = "Bid Requests";
+  //const profile = testDataManager.getProfileByName(profileName);
+  const profile = testDataManager.getProfileByName("Administration_Bulk Batch Timing");
+  const testData = profile?.data?.[0] || {};
   await CorrPortalElem.Time_Interval.fill(testData["Time Interval"]);
   await CorrPortalElem.No_Of_Batches.fill(testData["NO of Batches"]);
   await expect(CorrPortalElem.On_Radio_button_in_Bid_Request).toBeEnabled();
@@ -5898,7 +5972,7 @@ export async function stepGroup_Selecting_Second_Enabled_Batch_Time_If_the_Condi
   vars["EnabledTime"] = await CorrPortalElem.Enabled_Time.textContent() || '';
   vars["CurrentEstTime"] = (() => {
     const d = new Date();
-    const opts: Intl.DateTimeFormatOptions = { timeZone: "UTC-05:00" };
+    const opts: Intl.DateTimeFormatOptions = { timeZone: "America/New_York" };
     const fmt = "hh:mm a";
     // Map Java date format to Intl parts
     const parts = new Intl.DateTimeFormat('en-US', { ...opts, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }).formatToParts(d);
@@ -5948,7 +6022,7 @@ export async function stepGroup_Creating_a_new_bid_for_price_offered_status_with
   vars["QueuedTime"] = vars["ExtractedDateTime"];
   vars["CurrentEstTime"] = (() => {
     const d = new Date();
-    const opts: Intl.DateTimeFormatOptions = { timeZone: "UTC-05:00" };
+    const opts: Intl.DateTimeFormatOptions = { timeZone: "America/New_York" };
     const fmt = "hh:mm ";
     // Map Java date format to Intl parts
     const parts = new Intl.DateTimeFormat('en-US', { ...opts, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }).formatToParts(d);
@@ -6150,7 +6224,7 @@ export async function stepGroup_Waiting_in_the_2_while_loops_for_the_price_offer
   }
   vars["CurrentEstTime"] = (() => {
     const d = new Date();
-    const opts: Intl.DateTimeFormatOptions = { timeZone: "UTC-05:00" };
+    const opts: Intl.DateTimeFormatOptions = { timeZone: "America/New_York" };
     const fmt = "hh:mm a";
     // Map Java date format to Intl parts
     const parts = new Intl.DateTimeFormat('en-US', { ...opts, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }).formatToParts(d);
@@ -6169,7 +6243,7 @@ export async function stepGroup_Waiting_in_the_2_while_loops_for_the_price_offer
   }
   vars["CurrentEstTime"] = (() => {
     const d = new Date();
-    const opts: Intl.DateTimeFormatOptions = { timeZone: "UTC-05:00" };
+    const opts: Intl.DateTimeFormatOptions = { timeZone: "America/New_York" };
     const fmt = "hh:mm a";
     // Map Java date format to Intl parts
     const parts = new Intl.DateTimeFormat('en-US', { ...opts, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }).formatToParts(d);
@@ -6192,7 +6266,7 @@ export async function stepGroup_Creating_an_Early_Config_Record(page: import('@p
   await CorrPortalElem.Early_Close_Config.click();
   vars["CurrentDateList"] = (() => {
     const d = new Date();
-    const opts: Intl.DateTimeFormatOptions = { timeZone: "UTC-05:00" };
+    const opts: Intl.DateTimeFormatOptions = { timeZone: "America/New_York" };
     const fmt = "yyyy/M/d";
     // Map Java date format to Intl parts
     const parts = new Intl.DateTimeFormat('en-US', { ...opts, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }).formatToParts(d);
@@ -6201,7 +6275,7 @@ export async function stepGroup_Creating_an_Early_Config_Record(page: import('@p
   })();
   vars["CurrentDateCalender"] = (() => {
     const d = new Date();
-    const opts: Intl.DateTimeFormatOptions = { timeZone: "UTC-05:00" };
+    const opts: Intl.DateTimeFormatOptions = { timeZone: "America/New_York" };
     const fmt = "d-M-yyyy";
     // Map Java date format to Intl parts
     const parts = new Intl.DateTimeFormat('en-US', { ...opts, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }).formatToParts(d);
@@ -6210,7 +6284,7 @@ export async function stepGroup_Creating_an_Early_Config_Record(page: import('@p
   })();
   vars["CurrentDateInput"] = (() => {
     const d = new Date();
-    const opts: Intl.DateTimeFormatOptions = { timeZone: "UTC-05:00" };
+    const opts: Intl.DateTimeFormatOptions = { timeZone: "America/New_York" };
     const fmt = "yyyy-MM-dd";
     // Map Java date format to Intl parts
     const parts = new Intl.DateTimeFormat('en-US', { ...opts, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }).formatToParts(d);
@@ -6246,7 +6320,7 @@ export async function stepGroup_Creating_an_Early_Config_Record(page: import('@p
   await expect(CorrPortalElem.datepicker_Input).toHaveValue(vars["TomorrowsDateInput"]);
   vars["CurrentEstTime"] = (() => {
     const d = new Date();
-    const opts: Intl.DateTimeFormatOptions = { timeZone: "UTC-05:00" };
+    const opts: Intl.DateTimeFormatOptions = { timeZone: "America/New_York" };
     const fmt = "hh:mm a";
     // Map Java date format to Intl parts
     const parts = new Intl.DateTimeFormat('en-US', { ...opts, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }).formatToParts(d);

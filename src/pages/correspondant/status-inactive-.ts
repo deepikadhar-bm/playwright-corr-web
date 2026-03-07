@@ -175,8 +175,8 @@ export class StatusInactivePage {
     return this.page.locator("(//div[@class='d-flex align-items-end'][contains(.,'Company Name')]/../../../..//td[@data-title=\"Company Name\"])");
   }
 
-  get Headers_Mapping_Field(): Locator {
-    return this.page.locator("//div[@class='flex-grow-1'][contains(.,'@|\nEnum Type|')]");
+  Headers_Mapping_Field(enumType: string): Locator {
+    return this.page.locator(`//div[@class='flex-grow-1'][contains(.,'${enumType}')]`);
   }
 
   get input_tag_23(): Locator {

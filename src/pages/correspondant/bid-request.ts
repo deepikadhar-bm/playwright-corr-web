@@ -487,8 +487,8 @@ export class BidRequestPage {
     return this.page.locator("//td[@data-title=\"Status\"]");
   }
 
-  get StatusCheck(): Locator {
-    return this.page.locator("//label[.//span[normalize-space(.)=\"$|StatusToBeSet|\"]]//input[@type=\"checkbox\"]");
+   StatusCheck(StatusToBeSet: string): Locator {
+    return this.page.locator(`//label[.//span[normalize-space(.)="${StatusToBeSet}"]]//input[@type="checkbox"]`);
   }
 
   get Success_Corr_Loan_Num(): Locator {

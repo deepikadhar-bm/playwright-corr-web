@@ -1852,8 +1852,8 @@ export class PriceOfferedPage {
     return this.page.locator("//div[contains(@id,\"price-offered-back\")]//i");
   }
 
-  get Price_Offered_Bid_Req_Id(): Locator {
-    return this.page.locator("//a[contains(text(),\"$|PriceOfferedBidReqId|\")]");
+   Price_Offered_Bid_Req_Id(PriceOfferedBidReqId: string): Locator {
+    return this.page.locator(`//a[contains(text(), ${"PriceOfferedBidReqId"})]`);
   }
 
   get Price_Offered_Company_Name_Column_Data(): Locator {
