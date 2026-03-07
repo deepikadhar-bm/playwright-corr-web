@@ -18,9 +18,9 @@ import { Logger as log } from '@helpers/log-helper';
  */
 export async function stepGroup_Login_to_CORR_Portal(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
-  await page.goto("https://ext-qa.lpcorrtest.com/cp/#/auth/login");
-  await CorrPortalElem.Username_Field.fill("testsigma_internal");
-  await CorrPortalElem.Password_Field.fill("Welcome@123");
+  await page.goto("/");
+  await CorrPortalElem.Username_Field.fill(vars["Username"]);
+  await CorrPortalElem.Password_Field.fill(vars["Password"]);
   await CorrPortalElem.Login_Button.click();
   await CorrPortalElem.Logo.waitFor({ state: 'visible' });
 }
