@@ -7,7 +7,7 @@ import { CorrespondentPortalPage } from '../../../src/pages/correspondant/corres
 import { HeadingDashboardPage } from '../../../src/pages/correspondant/heading-dashboard';
 import { StatusInactivePage } from '../../../src/pages/correspondant/status-inactive-';
 import { CorrespondentPortal7Page } from '../../../src/pages/correspondant/correspondent-portal-7';
-
+import { testDataManager } from 'testdata/TestDataManager';
 test.describe('REG_Bid Maps', () => {
   let vars: Record<string, string> = {};
   let correspondentPortal7Page: CorrespondentPortal7Page;
@@ -24,6 +24,8 @@ test.describe('REG_Bid Maps', () => {
     headingDashboardPage = new HeadingDashboardPage(page);
     statusInactivePage = new StatusInactivePage(page);
   });
+
+
 
   test('REG_TS05_TC01_Verify that the user can search for the required bid sample field name and view the relevant headers (used, unused, or unidentified) based on the dropdown selection.', async ({ page }) => {
     const testData: Record<string, string> = {
@@ -130,13 +132,22 @@ test.describe('REG_Bid Maps', () => {
     await expect(correspondentPortalPage.Rules_and_Actions_Step_4_of_4).toBeVisible();
     await correspondentPortalPage.First_Checkbox_Bid_Request.check();
     await statusInactivePage.Checkbox_for_Header_Mapping_Dropdowns.check();
-    await correspondentPortalPage.Header_Mapping_Dropdown.selectOption({ label: testData["Unidentified Headers"] });
-    await expect(correspondentPortalPage.First_Checkbox_Header_Mapping).toHaveValue("Select");
-    await expect(correspondentPortalPage.Select_Dropdown_in_Headers_Mapping).toHaveValue("Select");
-    await correspondentPortalPage.Header_Mapping_Dropdown.selectOption({ label: testData["Unused Headers"] });
-    await expect(correspondentPortalPage.Header_Mapping_for_the_Dropdowns).toHaveValue("Select");
-    await expect(headingDashboardPage.Harp_Indicator_Field).toHaveValue("Select");
-    await correspondentPortalPage.Header_Mapping_Dropdown.selectOption({ label: testData["Used Headers"] });
+
+    //const profileName = "Bid_Maps";
+    //const profile = testDataManager.getProfileByName("Unidentified Headers");
+    //const data = testDataManager.testdata[0];
+   
+    await correspondentPortalPage.Header_Mapping_Dropdown_New.click();
+    await correspondentPortalPage.Header_Mapping_Dropdown_New.selectOption({ value: testData["Unidentified Headers"] });
+    //await correspondentPortalPage.Header_Mapping_Dropdown_New.selectOption({ label: testData["Unidentified Headers"] });
+    //await expect(correspondentPortalPage.First_Checkbox_Header_Mapping).toHaveText("Select");
+    await expect(correspondentPortalPage.First_Checkbox_Header_Mapping).toHaveAttribute('title', '');
+    await expect(correspondentPortalPage.Select_Dropdown_in_Headers_Mapping).toHaveAttribute("title", "");
+    //await expect(correspondentPortalPage.Select_Dropdown_in_Headers_Mapping).toHaveValue("Select");
+    await correspondentPortalPage.Header_Mapping_Dropdown_New.selectOption({ value: testData["Unused Headers"] });
+    await expect(correspondentPortalPage.Header_Mapping_for_the_Dropdowns).toHaveAttribute("title", "");
+    await expect(headingDashboardPage.Harp_Indicator_Field).toHaveAttribute("title", "");
+    await correspondentPortalPage.Header_Mapping_Dropdown_New.selectOption({ value: testData["Used Headers"] });
     await expect(correspondentPortalPage.First_Checkbox_Bid_Request).toBeVisible();
     await expect(correspondentPortal7Page.Header_Mapping_checkbox).toBeVisible();
     // [DISABLED] Verify that the element Headers Mappings is displayed and With Scrollable FALSE

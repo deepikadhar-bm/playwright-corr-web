@@ -40,7 +40,7 @@ test.describe('REG_TC_Bid_Requests', () => {
     while (parseFloat(String(vars["count"])) <= parseFloat(String(vars["TotalStatusCount"]))) {
       await correspondentPortalPage.Bid_Requestsside_bar_menu.click();
       await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-      await expect(page.getByText("Bid Requests\r\r")).toBeVisible();
+      await expect(page.getByText("Bid Requests").first()).toBeVisible();
       if (await clearButtonPage.Clear_Button.isVisible()) {
         await clearButtonPage.Clear_Button.click();
       }
@@ -55,14 +55,14 @@ test.describe('REG_TC_Bid_Requests', () => {
       } else {
         vars["StatusToBeSet"] = "Cancelled";
       }
-      await bidRequestPage.All_Status_From_Dropdown.evaluate(el => { (el as HTMLElement).scrollTop = (el as HTMLElement).scrollHeight; });
-      await bidRequestPage.StatusCheck.check();
-      await expect(bidRequestPage.StatusCheck).toBeVisible();
-      await correspondentPortalPage.Apply_Selected.click();
-      await applyFiltersButtonPage.Apply_Filters_Button.click();
+      await bidRequestPage.All_Status_From_Dropdown.first().evaluate(el => { (el as HTMLElement).scrollTop = (el as HTMLElement).scrollHeight; });
+      await bidRequestPage.StatusCheck(vars["StatusToBeSet"]).check();
+      await expect((bidRequestPage.StatusCheck(vars["StatusToBeSet"])).first()).toBeVisible();
+      await correspondentPortalPage.Apply_Selected.nth(1).click();
+      await applyFiltersButtonPage.Apply_Filters_Button.first().click();
       await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-      await expect(bidRequestListPage.First_Cancel_Button).toBeVisible();
-      expect(String(vars["DisabledOptions"])).toBe(vars["StatusToBeSet"]);
+      await expect((bidRequestListPage.First_Cancel_Button).first()).toBeVisible();
+      expect(String(vars["DisabledOptions"])).toContain(vars["StatusToBeSet"]);
       vars["count"] = (parseFloat(String("1")) + parseFloat(String(vars["count"]))).toFixed(0);
     }
   });

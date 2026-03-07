@@ -415,8 +415,8 @@ export class BidRequestDetailsPage {
     return this.page.locator("//td[@data-title=\"Status\"]//*[text()=\" Price Offered \"]");
   }
 
-  get Price_Offered_Status_of_searched_bid(): Locator {
-    return this.page.locator("//button[contains(text(),\"$|RequestIDDetails|\")]/../..//td[@data-title=\"Status\"]//span[contains(text(),\"Price Offered\")]");
+   Price_Offered_Status_of_searched_bid(RequestIDDetails: string): Locator {
+    return this.page.locator(`//button[contains(text(),"${RequestIDDetails}")]/../..//td[@data-title="Status"]//span[contains(text(),"Price Offered")]`);
   }
 
   get Pricing_Dropdown(): Locator {

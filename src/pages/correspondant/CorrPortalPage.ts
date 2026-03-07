@@ -245,8 +245,8 @@ export class CorrPortalPage {
     return this.page.locator("//span[text()[normalize-space() = \"Bid Maps\"]]");
   }
 
-  get Bid_Maps_Name(): Locator {
-    return this.page.locator("//span[contains(.,' $|Create New Map|')]");
+  Bid_Maps_Name(CreateNewMap: string): Locator {
+    return this.page.locator(`//span[contains(.,' ${CreateNewMap}')]`);
   }
 
   get Bid_Request_Config_Menu(): Locator {
@@ -861,8 +861,8 @@ export class CorrPortalPage {
     return this.page.locator("//input[@aria-label=\"Enter minimum display value in percentage\"]");
   }
 
-  get Entered_Bid_Mapping_Id_New(): Locator {
-    return this.page.locator("//span[contains(text(),\"@|BidMappingIDNew|\")]");
+  Entered_Bid_Mapping_Id_New(BidMappingIDNew: string): Locator {
+    return this.page.locator(`//span[contains(text(),\"${BidMappingIDNew}\")]`);
   }
 
   get Enumeration_Mapping_Button(): Locator {
@@ -1497,8 +1497,8 @@ export class CorrPortalPage {
     return this.page.locator("//input[@type=\"checkbox\" and contains(@aria-label,\"@|Company Name|\")]");
   }
 
-  get Required_Company_s_Name_Value(): Locator {
-    return this.page.locator("//span[@class='pl-2'][contains(.,'$|Companyname|')]");
+  Required_Company_s_Name_Value(Companyname: string): Locator {
+    return this.page.locator(`//span[@class='pl-2'][contains(.,'${Companyname}')]`);
   }
 
   Required_Date_Filters(DateFormatFilter: string): Locator {
@@ -1550,7 +1550,7 @@ export class CorrPortalPage {
   }
 
   get Save_Changes_Button(): Locator {
-    return this.page.locator("//button[text()=\"Save Changes\"]");
+    return this.page.locator("//button[text()=\"Save changes\"]");
   }
 
   get Save_Config_Button(): Locator {
