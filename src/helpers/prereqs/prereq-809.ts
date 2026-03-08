@@ -59,7 +59,7 @@ export async function runPrereq_809(page: Page, vars: Record<string, string>): P
   await correspondentPortalPage.Yes_Proceed_Button.click();
   await spinnerPage.Spinner.waitFor({ state: 'hidden' });
   await rulesAndActionsButtonPage.Rules_and_Actions_Button.click();
-  if (true) /* Element Rules and Actions Button is visible */ {
+  if (await rulesAndActionsButtonPage.Rules_and_Actions_Button.isVisible()) /* Element Rules and Actions Button is visible */ {
     await spinnerPage.Spinner.waitFor({ state: 'hidden' });
     await expect(correspondentPortalPage.You_have_unidentified_fields_do_you_want_to_proceed_Further).toBeVisible();
     await correspondentPortalPage.Yes_Proceed_Button.click();

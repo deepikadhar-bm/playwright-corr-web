@@ -43,6 +43,7 @@ test.describe('REG_Bid Maps', () => {
         log.stepFail(page, "Step 1 failed: Failed to login to CORR Portal");
         throw error;
       }
+
       log.step("Step 2: Navigate to Administration menu and select Bid Maps");
       try {
         await correspondentPortalPage.Administration_Menu.click();
@@ -54,15 +55,17 @@ test.describe('REG_Bid Maps', () => {
         log.stepFail(page, "Step 2 failed: Failed to navigate to Bid Maps menu");
         throw error;
       }
+
       log.step("Step 3: Extract existing Bid Map name for duplicate test");
       try {
         vars["ExistingBidMapName"] = await correspondentPortalPage.ExistingCompany_Name.textContent() || '';
-        helpers.extractSubstring(vars["ExistingBidMapName"], 1, String(vars["ExistingBidMapName"]).length - 1, "ExistingBidMapName");
+        helpers.removeCharactersFromPosition(vars["ExistingBidMapName"], "1", "1", "ExistingBidMapName");
         log.stepPass("Step 3 passed: Existing Bid Map name extracted successfully: " + vars["ExistingBidMapName"]);
       } catch (error) {
         log.stepFail(page, "Step 3 failed: Failed to extract existing Bid Map name");
         throw error;
       }
+      
       log.step("Step 4: Attempt to create duplicate Bid Map and verify error message");
       try {
         await correspondentPortalPage.Add_New_Mapping_Button.click();

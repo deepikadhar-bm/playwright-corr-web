@@ -16,7 +16,7 @@ test.describe('REG_PriceOffered', () => {
   let correspondentPortalPage: CorrespondentPortalPage;
   let priceOfferedPage: PriceOfferedPage;
   let spinnerPage: SpinnerPage;
-  let Methods: AddonHelpers;
+  let helpers: AddonHelpers;
 
   test.beforeEach(async ({ page }) => {
     vars = {};
@@ -24,7 +24,7 @@ test.describe('REG_PriceOffered', () => {
     correspondentPortalPage = new CorrespondentPortalPage(page);
     priceOfferedPage = new PriceOfferedPage(page);
     spinnerPage = new SpinnerPage(page);
-    Methods = new AddonHelpers(page, vars);
+    helpers = new AddonHelpers(page, vars);
   });
 
   test(`${TC_ID} - ${TC_TITLE}`, async ({ page }) => {
@@ -72,7 +72,7 @@ test.describe('REG_PriceOffered', () => {
         vars["count"] = "1";
         vars["Count"] = "1";
         vars["PageCount"] = await correspondentPortalPage.Pagination_Count.textContent() || '';
-        Methods.extractSubstringAfterReference(vars["PageCount"], "of ", 2, "PageCount");
+        helpers.extractSubstringAfterReference(vars["PageCount"], "of ", 2, "PageCount");
         log.stepPass(`Step 4 passed: Search by Bid Request ID performed successfully`);
 
       } catch (error) {
@@ -84,7 +84,7 @@ test.describe('REG_PriceOffered', () => {
       try {
         while (parseFloat(String(vars["count"])) <= parseFloat(String("2"))) {
           vars["BidReqIdPriceOffered"] = String(await correspondentPortalPage.First_Bid_Req_Id.count());
-          await Methods.verifyMultipleElementsHavePartialText(correspondentPortalPage.First_Bid_Req_Id, vars["ThreeDigitBidId"]);
+          await helpers.verifyMultipleElementsHavePartialText(correspondentPortalPage.First_Bid_Req_Id, vars["ThreeDigitBidId"]);
           if (await correspondentPortalPage.Go_to_Next_Page_Button.isEnabled()) /* Element Go to Next Page Button is enabled */ {
             await correspondentPortalPage.Go_to_Next_Page_Button.click();
             vars["Count"] = (parseFloat(String(vars["Count"])) - (parseFloat(vars["BidReqIdPriceOffered"]) - 1)).toFixed(0);
@@ -111,7 +111,7 @@ test.describe('REG_PriceOffered', () => {
         await spinnerPage.Spinner.waitFor({ state: 'visible', timeout: 15000 });
         await spinnerPage.Spinner.waitFor({ state: 'hidden', timeout: 10000 });
         vars["FirstBidReqId"] = await correspondentPortalPage.First_Bid_Request_ID.first().textContent() || '';
-        Methods.trimtestdata(vars["FirstBidReqId"], "FirstBidReqId");
+        helpers.trimtestdata(vars["FirstBidReqId"], "FirstBidReqId");
         log.stepPass(`Step 7 passed: Filter reset and first Bid Request ID persisted successfully`);
       } catch (error) {
         log.stepFail(page, `Step 7 failed: Failed to wait for filter reset and persist first Bid Request ID for next test steps`);
@@ -126,7 +126,7 @@ test.describe('REG_PriceOffered', () => {
         await spinnerPage.Spinner.waitFor({ state: 'hidden', timeout: 10000 });
         vars["CountBidReqIdPriceOffered"] = String(await correspondentPortalPage.First_Bid_Req_Id.count());
         vars["Count1"] = "1";
-        await Methods.verifyMultipleElementsHaveSameText(correspondentPortalPage.First_Bid_Req_Id, vars["FirstBidReqId"]);
+        await helpers.verifyMultipleElementsHaveSameText(correspondentPortalPage.First_Bid_Req_Id, vars["FirstBidReqId"]);
         log.stepPass(`Step 8 passed: Search by persisted Bid Request ID performed and results verified successfully`);
       } catch (error) {
         log.stepFail(page, `Step 8 failed: Failed to click on Search by Bid Request ID field`);

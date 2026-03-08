@@ -21,7 +21,7 @@ export default defineConfig({
   },
 
   use: {
-    // headless: false,
+    headless: false,
     timezoneId: 'UTC',
 
     launchOptions: {
