@@ -1,5 +1,5 @@
 // [POM-APPLIED]
-import { test, expect } from '@playwright/test';
+import { test, expect, Page } from '@playwright/test';
 import path from 'path';
 import * as stepGroups from '../../../src/helpers/step-groups';
 import { CorrespondentPortalPage } from '../../../src/pages/correspondant/correspondent-portal';
@@ -15,6 +15,10 @@ import { ThisActionWillSaveTheChangesAndMoveToNextPagePage } from '../../../src/
 import { testDataManager } from 'testdata/TestDataManager';
 import { AddonHelpers } from '../../../src/helpers/AddonHelpers';
 import { uploadFile } from '../../../src/helpers/file-helpers';
+import { Logger as log } from '../../../src/helpers/log-helper';
+
+const TC_ID = "REG_TS01_TC01";
+const TC_TITLE = "Verify that the user can select the required clients/execution type and upload a file with the necessary headers for map creation."
 
 test.describe('REG_Bid Maps', () => {
   let vars: Record<string, string> = {};
@@ -28,7 +32,7 @@ test.describe('REG_Bid Maps', () => {
   let spinnerPage: SpinnerPage;
   let statusInactivePage: StatusInactivePage;
   let thisActionWillSaveTheChangesAndMoveToNextPagePage: ThisActionWillSaveTheChangesAndMoveToNextPagePage;
-  let Methods: AddonHelpers;
+  let helpers: AddonHelpers;
 
   test.beforeEach(async ({ page }) => {
     vars = {};
@@ -42,7 +46,7 @@ test.describe('REG_Bid Maps', () => {
     spinnerPage = new SpinnerPage(page);
     statusInactivePage = new StatusInactivePage(page);
     thisActionWillSaveTheChangesAndMoveToNextPagePage = new ThisActionWillSaveTheChangesAndMoveToNextPagePage(page);
-    Methods = new AddonHelpers(page, vars);
+    helpers = new AddonHelpers(page, vars);
   });
 
 
@@ -50,7 +54,10 @@ test.describe('REG_Bid Maps', () => {
 
   const profileName = "Bid_Maps";
   const profile = testDataManager.getProfileByName(profileName);
-  test('REG_TS01_TC01_Verify that the user can select the required clients/execution type and upload a file with the necessary headers for map creation.', async ({ page }) => {
+  test(`${TC_ID} - ${TC_TITLE}`, async ({ page }) => {
+    log.tcStart(TC_ID, TC_TITLE);
+
+    try {
 //     const testData: Record<string, string> = {
 //   "Upload File Text Verification": "Drag and drop files here or click to browse. Allowed formats: .xls,.xlsx,.csv,.txt",
 //   "UniqueColHeader/Enum": "TsSearchUniqueColHeaderEnum",
@@ -150,43 +157,91 @@ test.describe('REG_Bid Maps', () => {
 // "UniqueRuleNameSearch": "TsSearchUniqueRuleName"
   // }; // Profile: "Bid_Maps", row: 0
 
-    if (profile && profile.data){
-      const uploadText = profile.data[0]['Upload File Text Verification'];
-      vars["Upload File Text Verification"] = uploadText;
+      if (profile && profile.data){
+        const uploadText = profile.data[0]['Upload File Text Verification'];
+        vars["Upload File Text Verification"] = uploadText;
+      }
+
+      log.step("Step 1: Login to CORR Portal and verify dashboard");
+      try {
+        await stepGroups.stepGroup_Login_to_CORR_Portal(page, vars);
+        await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+        await expect(correspondentPortalPage.Heading_Dashboard).toBeVisible();
+        log.stepPass("Step 1 passed: Logged in to CORR Portal successfully and dashboard is visible");
+      } catch (error) {
+        log.stepFail(page, "Step 1 failed: Failed to login to CORR Portal");
+        throw error;
+      }
+      log.step("Step 2: Navigate to Customer Permission and Bid Maps menu");
+      try {
+        await stepGroups.stepGroup_Navigation_to_Customer_Permission(page, vars);
+        await correspondentPortalPage.Administration_Menu.click();
+        await correspondentPortalPage.Bid_Maps_Menu.click();
+        await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+        await expect(headingMappingsPage.Mappings).toBeVisible();
+        log.stepPass("Step 2 passed: Navigated to Bid Maps menu successfully");
+      } catch (error) {
+        log.stepFail(page, "Step 2 failed: Failed to navigate to Bid Maps menu");
+        throw error;
+      }
+      log.step("Step 3: Create new Bid Map with timestamp");
+      try {
+        await correspondentPortalPage.Add_New_Mapping_Button.click();
+        await expect(headingCreateNewMapPage.Create_New_Map).toBeVisible();
+        helpers.getCurrentTimestamp('dd/MM/yyyy/HH:mm:ss', 'CurrentDate');
+        helpers.concatenate('Testsigma_', vars['CurrentDate'], 'Create New Map');
+        await correspondentPortalPage.Create_New_Map_Field.pressSequentially(vars["Create New Map"]);
+        await correspondentPortalPage.Create_Button.click();
+        await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+        await page.waitForTimeout(5000);
+        const headerText = await p2142530YrFreddieMacFixedDropdownPage.Bid_Maps_Name.textContent(); 
+        await expect(p2142530YrFreddieMacFixedDropdownPage.Bid_Maps_Name).toContainText(vars["Create New Map"]);
+        log.stepPass("Step 3 passed: New Bid Map created successfully with name: " + vars["Create New Map"]);
+      } catch (error) {
+        log.stepFail(page, "Step 3 failed: Failed to create new Bid Map");
+        throw error;
+      }
+      log.step("Step 4: Select company from dropdown");
+      try {
+        await correspondentPortalPage.Select_Companys_Dropdown.click();
+        await statusInactivePage.Second_Selected_Company_Checkbox(vars["Companyname"]).first().click();
+        await correspondentPortalPage.Apply_Selected.click();
+        log.stepPass("Step 4 passed: Company selected successfully");
+      } catch (error) {
+        log.stepFail(page, "Step 4 failed: Failed to select company");
+        throw error;
+      }
+      log.step("Step 5: Verify upload file field and upload Bid Maps file");
+      try {
+        await expect(correspondentPortalPage.Upload_File).toHaveValue('');                           
+        await expect(page.getByText(vars["Upload File Text Verification"])).toBeVisible();
+        await uploadFile(page, correspondentPortalPage.Upload_File, "Bid_Maps_File.xlsx");
+        log.stepPass("Step 5 passed: File uploaded successfully");
+      } catch (error) {
+        log.stepFail(page, "Step 5 failed: Failed to upload file");
+        throw error;
+      }
+      log.step("Step 6: Map headers and proceed to next page");
+      try {
+        await mapHeadersButtonPage.Map_Headers_Button.click();
+        await correspondentPortalPage.Heading_Save_and_Move_to_Next_Page1.waitFor({ state: 'visible' });
+        await expect(thisActionWillSaveTheChangesAndMoveToNextPagePage.This_action_will_save_the_changes_and_Move_to_Next_Page).toBeVisible();
+        await proceedWithSavingButtonPage.Proceed_with_Saving_Button.click();
+        await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+        await expect(page.getByText(vars["Create New Map"])).toBeVisible();
+        await headerMappingPage.Header_Mapping.waitFor({ state: 'visible' });
+        log.stepPass("Step 6 passed: Headers mapped and navigated to next page successfully");
+      } catch (error) {
+        log.stepFail(page, "Step 6 failed: Failed to map headers and proceed to next page");
+        throw error;
+      }
+
+      log.tcEnd('PASS');
+
+    } catch (error) {
+      log.captureOnFailure(page, TC_ID, error);
+      log.tcEnd('FAIL');
+      throw error;
     }
-    await stepGroups.stepGroup_Login_to_CORR_Portal(page, vars);
-    await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-    await expect(correspondentPortalPage.Heading_Dashboard).toBeVisible();
-    await stepGroups.stepGroup_Navigation_to_Customer_Permission(page, vars);
-    await correspondentPortalPage.Administration_Menu.click();
-    await correspondentPortalPage.Bid_Maps_Menu.click();
-    await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-    await expect(headingMappingsPage.Mappings).toBeVisible();
-    await correspondentPortalPage.Add_New_Mapping_Button.click();
-    await expect(headingCreateNewMapPage.Create_New_Map).toBeVisible();
-    // vars["Create New Map"] = new Date().toLocaleDateString('en-US') /* format: dd/MM/yyyy/HH:mm:ss */;
-    // vars["Create New Map"] = "Testsigma_" + vars["Create New Map"];
-    Methods.getCurrentTimestamp('dd/MM/yyyy/HH:mm:ss', 'CurrentDate');
-    Methods.concatenate('Testsigma_', vars['CurrentDate'], 'Create New Map');
-    await correspondentPortalPage.Create_New_Map_Field.pressSequentially(vars["Create New Map"]);
-    await correspondentPortalPage.Create_Button.click();
-    await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-    await page.waitForTimeout(5000);
-    const headerText = await p2142530YrFreddieMacFixedDropdownPage.Bid_Maps_Name.textContent(); 
-    await expect(p2142530YrFreddieMacFixedDropdownPage.Bid_Maps_Name).toContainText(vars["Create New Map"]);
-    await correspondentPortalPage.Select_Companys_Dropdown.click();
-    await statusInactivePage.Second_Selected_Company_Checkbox(vars["Companyname"]).first().click();
-    await correspondentPortalPage.Apply_Selected.click();
-    await expect(correspondentPortalPage.Upload_File).toHaveValue('');                           
-    await expect(page.getByText(vars["Upload File Text Verification"])).toBeVisible();
-    // await correspondentPortalPage.Upload_File.setInputFiles(path.resolve(__dirname, 'test-data', "Bid Maps File.xlsx"));
-    await uploadFile(page, correspondentPortalPage.Upload_File, "Bid_Maps_File.xlsx");
-    await mapHeadersButtonPage.Map_Headers_Button.click();
-    await correspondentPortalPage.Heading_Save_and_Move_to_Next_Page1.waitFor({ state: 'visible' });
-    await expect(thisActionWillSaveTheChangesAndMoveToNextPagePage.This_action_will_save_the_changes_and_Move_to_Next_Page).toBeVisible();
-    await proceedWithSavingButtonPage.Proceed_with_Saving_Button.click();
-    await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-    await expect(page.getByText(vars["Create New Map"])).toBeVisible();
-    await headerMappingPage.Header_Mapping.waitFor({ state: 'visible' });
   });
 });

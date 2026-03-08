@@ -6,16 +6,21 @@ import { Page } from '@playwright/test';
 import { expect } from '@playwright/test';
 import path from 'path';
 import * as excelHelper from '../excel-helpers';
-import { Logger } from '../log-helper';
+import { ENV } from '../../config/environments';
+
 import { CorrPortalPage } from '../../pages/correspondant/CorrPortalPage';
 // import { PlaywrightHelpers } from '../../PlaywrightHelpers';
 import { AddonHelpers } from '../../../src/helpers/AddonHelpers';
 import { CommitmentListPage } from '../../../src/pages/correspondant/commitment-list';
-import { Logger as log } from '@helpers/log-helper';
+// Disabled external 'log' import for this file; provide no-op
+const log = { info: (..._args: any[]) => {} };
 import { testDataManager } from 'testdata/TestDataManager';
 import { uploadFile } from '../../../src/helpers/file-helpers';
 import { CorrespondentPortalPage } from '@pages/correspondant/correspondent-portal';
 import { CorrespondentPortal4Page } from '@pages/correspondant/correspondent-portal-4';
+
+
+const credentials = ENV.getCredentials('internal');
 
 /**
  * Step Group: Login to CORR Portal
@@ -23,10 +28,11 @@ import { CorrespondentPortal4Page } from '@pages/correspondant/correspondent-por
  * Steps: 5
  */
 export async function stepGroup_Login_to_CORR_Portal(page: import('@playwright/test').Page, vars: Record<string, string>) {
+  console.log("URL: " + ENV.CORR_QA_URL);
   const CorrPortalElem = new CorrPortalPage(page);
-  await page.goto("/");
-  await CorrPortalElem.Username_Field.fill(vars["Username"]);
-  await CorrPortalElem.Password_Field.fill(vars["Password"]);
+  await page.goto("/cp/");
+  await CorrPortalElem.Username_Field.fill(credentials.username);
+  await CorrPortalElem.Password_Field.fill(credentials.password);
   await CorrPortalElem.Login_Button.click();
   await CorrPortalElem.Logo.waitFor({ state: 'visible' });
 }
@@ -39,26 +45,23 @@ export async function stepGroup_Login_to_CORR_Portal(page: import('@playwright/t
 export async function stepGroup_Rename_File(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
   const newPage = await page.context().newPage();
-  Logger.step('START: Reading/Renaming files from external tool');
   try {
     await page.goto("https://imgtool.net/en/filerename/");
-    Logger.debug('Navigated to file tool');
+    
     await page.waitForLoadState('networkidle');
     await CorrPortalElem.File_Input.setInputFiles(path.resolve(__dirname, 'test-data', "DeepikaAugBidQA.xlsx"));
-    Logger.step('Test data file uploaded');
+    
     await page.waitForLoadState('networkidle');
     await CorrPortalElem.Username_Field.scrollIntoViewIfNeeded();
     await CorrPortalElem.Username_Field.waitFor({ state: 'visible' });
     await CorrPortalElem.Start_task_Button.click();
-    Logger.debug('File processing initiated');
+    
     // Wait for download - handled by Playwright download events
     await page.waitForTimeout(2000);
     vars[""] = vars['_lastDownloadPath'] ? require('path').basename(vars['_lastDownloadPath']) : '';
     vars["Total Headers From Xls"] = excelHelper.readRow(vars['_lastDownloadPath'] || '', "0", "0");
-    Logger.info(`File read - Total headers: ${vars["Total Headers From Xls"]}`);
-    Logger.success('File reading and data extraction completed');
+    
   } catch (error) {
-    Logger.error(`File processing failed: ${error}`);
     throw error;
   }
   // TODO: Manual conversion needed - unknown template 88
@@ -191,32 +194,30 @@ export async function stepGroup_Creation_Of_Bid_Map_Upto_Header_Mapping(page: im
  */
 export async function stepGroup_Smart_Mapper_from_On_to_Off(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
-  Logger.step('START: Disabling Smart Mapper');
   try {
     await CorrPortalElem.Administration_Menu.click();
-    Logger.debug('Navigated to Administration');
+    
     await CorrPortalElem.GeneralSettings_Menu.click();
-    Logger.debug('Opened General Settings');
+    
     await page.waitForLoadState('networkidle');
     // [DISABLED] Verify that the element General Settings. is displayed and With Scrollable FALSE
     // await expect(CorrPortalElem.General_Settings).toBeVisible();
     await CorrPortalElem.Bid_Map_Creation_in_General_Settings.click();
-    Logger.debug('Bid Map Creation section opened');
+    
     await expect(CorrPortalElem.Bid_Map_Creation).toBeVisible();
     await expect(CorrPortalElem.Smart_Mapper).toBeVisible();
     if (true) /* Radio button Off Radio Button is not selected */ {
       await CorrPortalElem.Off_Radio_Button.check();
-      Logger.info('Smart Mapper switched to OFF');
+      
       await CorrPortalElem.Save_Changes_Button.click();
-      Logger.success('Smart Mapper setting saved');
+      
     }
     await page.waitForLoadState('networkidle');
     await CorrPortalElem.Administration_Menu.click();
     await CorrPortalElem.Bid_Maps_Menu.click();
-    Logger.debug('Navigated back to Bid Maps');
-    Logger.success('Smart Mapper disabled successfully');
+    
+    
   } catch (error) {
-    Logger.error(`Smart Mapper disable operation failed: ${error}`);
     throw error;
   }
 }
@@ -229,27 +230,22 @@ export async function stepGroup_Smart_Mapper_from_On_to_Off(page: import('@playw
 export async function stepGroup_Reading_files(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
   const newPage = await page.context().newPage();
-  Logger.step('START: Reading files from external tool');
   try {
     await page.goto("https://imgtool.net/en/filerename/#google_vignette");
-    Logger.debug('Navigated to file tool');
     await CorrPortalElem.File_Input.setInputFiles(path.resolve(__dirname, 'test-data', "DeepikaAugBidQA.xlsx"));
-    Logger.step('Test data file uploaded');
     await page.waitForLoadState('networkidle');
     // [DISABLED] Wait until the element Rename Field is enabled
     // await CorrPortalElem.Username_Field.waitFor({ state: 'visible' });
     await CorrPortalElem.Start_task_Button.click();
-    Logger.debug('File processing initiated');
+    
     // Wait for download - handled by Playwright download events
     await page.waitForTimeout(2000);
     vars[""] = vars['_lastDownloadPath'] ? require('path').basename(vars['_lastDownloadPath']) : '';
     // [DISABLED] Excel: Read the entire Row of the latest Excel file (.xlsx) using the Row 0 and store it in a variable named Total Headers From Xls
     // vars["Total Headers From Xls"] = excelHelper.readRow(vars['_lastDownloadPath'] || '', "0", "0");
     vars["Total exl"] = excelHelper.readColumn(vars['_lastDownloadPath'] || '', "4", "0");
-    Logger.info(`Excel data column read: ${vars["Total exl"]}`);
-    Logger.success('File reading and data extraction completed');
+    
   } catch (error) {
-    Logger.error(`File reading operation failed: ${error}`);
     throw error;
   }
   // TODO: Manual conversion needed - unknown template 88
@@ -264,27 +260,24 @@ export async function stepGroup_Reading_files(page: import('@playwright/test').P
 export async function stepGroup_Edition_in_Header_Mapping(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
   const testData: Record<string, string> = {}; // TODO: Load from test data profile
-  Logger.step('START: Edit Header Mapping');
   try {
     await expect(CorrPortalElem.Enumeration_Mapping_Button).toBeVisible();
-    Logger.debug('Enumeration Mapping visible');
+    
     await CorrPortalElem.Edit_icon_in_Header_Mapping.click();
-    Logger.debug('Edit header button clicked');
+    
     await expect(CorrPortalElem.Update_Header).toBeVisible();
     await CorrPortalElem.Chase_Field_Name.selectOption({ label: testData["ChaseFieldNames"] });
-    Logger.info(`Header field selected: ${testData["ChaseFieldNames"]}`);
     await CorrPortalElem.Update_Header_Button.click();
-    Logger.step('Header update initiated');
+    
     await CorrPortalElem.Enumeration_Mapping_Button.click();
-    Logger.debug('Proceeding to Enumeration Mapping');
+    
     await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
     await CorrPortalElem.Save_and_Move_to_Next_Page.waitFor({ state: 'visible' });
     await CorrPortalElem.Proceed_with_Saving_Button.click();
-    Logger.step('Saving header changes');
+    
     await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
-    Logger.success('Header mapping edition completed');
+    
   } catch (error) {
-    Logger.error(`Header mapping edition failed: ${error}`);
     throw error;
   }
 }
@@ -5010,7 +5003,7 @@ export async function stepGroup_Verifying_Header_Names_From_UI_to_ExcelCommitmen
       expect(vars["IndividualHeaderNameLockedLoansExcel"]).toBe("LoanAmt");
     } else {
       expect(vars["IndividualHeaderNameLockedLoansUI"]).toContain(vars["IndividualHeaderNameLockedLoansExcel"]);
-      log.info(vars["IndividualHeaderNameLockedLoansUI"] + " contains " + vars["IndividualHeaderNameLockedLoansExcel"]);
+      
     }
 
     Methods.MathematicalOperation(vars["count"], "+", "1", "count");
@@ -5051,7 +5044,7 @@ export async function stepGroup_Verifying_Locked_Loans_Data_UI_to_Excel_Commitme
       // [DISABLED] Verify if IndividualCellDataAllLoansUI == IndividualRowDataExcelAllLoans
       // expect(String(vars["IndividualCellDataAllLoansUI"])).toBe(vars["IndividualRowDataExcelAllLoans"]);
       expect(String(vars["IndividualCellDataLockedLoansUI"])).toContain(vars["IndividualRowDataLockedLoansExcel"]);
-      log.info(vars["IndividualCellDataLockedLoansUI"] + " contains " + vars["IndividualRowDataLockedLoansExcel"]);
+      
       // vars["Count"] = (parseFloat(String("1")) + parseFloat(String(vars["Count"]))).toFixed(0);
       Methods.MathematicalOperation(vars["Count"], "+", "1", "Count");
     }
@@ -5369,7 +5362,7 @@ export async function stepGroup_Headers_Verification_in_Closed_List(page: import
     expect(Methods.verifyString(vars["IndividualHeaderNameExcel"], "equals", vars["IndividualHeaderNameUI"]));
     Methods.MathematicalOperation(vars["Count"], "+", "1", "Count");
   }
-  log.info("step group Headers Verification in Closed List is completed");
+  
 }
 
 /**
@@ -5432,7 +5425,7 @@ export async function stepGroup_Verification_of_Data_from_Excel_to_UIClosed_List
     Methods.MathematicalOperation(vars["RowCount"], "+", "1", "RowCount");
   }
 
-  log.info("stepGroup Verification of Data from Excel to UIClosed List is completed");
+  
 }
 
 /**
