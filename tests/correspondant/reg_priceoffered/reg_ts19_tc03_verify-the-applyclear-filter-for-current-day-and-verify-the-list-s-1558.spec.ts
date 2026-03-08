@@ -18,7 +18,7 @@ test.describe('REG_PriceOffered', () => {
   let correspondentPortalPage: CorrespondentPortalPage;
   let priceOfferedPage: PriceOfferedPage;
   let spinnerPage: SpinnerPage;
-  let Methods: AddonHelpers;
+  let helpers: AddonHelpers;
 
   test.beforeEach(async ({ page }) => {
     vars = {};
@@ -26,10 +26,10 @@ test.describe('REG_PriceOffered', () => {
     correspondentPortalPage = new CorrespondentPortalPage(page);
     priceOfferedPage = new PriceOfferedPage(page);
     spinnerPage = new SpinnerPage(page);
-    Methods = new AddonHelpers(page, vars);
+    helpers = new AddonHelpers(page, vars);
   });
 
-  test.only(`${TC_ID} - ${TC_TITLE}`, async ({ page }) => {
+  test(`${TC_ID} - ${TC_TITLE}`, async ({ page }) => {
     log.tcStart(TC_ID, TC_TITLE);
     try {
 
@@ -69,11 +69,12 @@ test.describe('REG_PriceOffered', () => {
         await priceOfferedPage.Filter_Dropdown1.click();
         await correspondentPortalPage.Select_Date_Range_Dropdown.click();
         await correspondentPortalPage.Current_Date_On_Filters.click();
-        Methods.getCurrentTimestamp('d-M-yyyy', 'CurrentDate', 'UTC');
+        helpers.getCurrentTimestamp('d-M-yyyy', 'CurrentDate', 'UTC');
 
         await correspondentPortalPage.Select_Current_DateAdd_Config(vars["CurrentDate"]).click();
         await correspondentPortalPage.Apply_Button.click();
         await applyFiltersButtonPage.Apply_Filters_Button.click();
+        await spinnerPage.Spinner.waitFor({ state: 'visible' });
         await spinnerPage.Spinner.waitFor({ state: 'hidden' });
         log.stepPass(`Step 4 passed: Applied current date filter from filter dropdown successfully`);
 
@@ -85,18 +86,18 @@ test.describe('REG_PriceOffered', () => {
       log.step("Step 5: Verify that after applying current date filter, the list should display the records from current day only");
       try {
         await priceOfferedPage.Date_Filter_ChipPrice_Offered_Page.waitFor({ state: 'visible' });
-        Methods.getCurrentTimestamp('yyyy/MM/dd', 'TodayDate');
+        helpers.getCurrentTimestamp('yyyy/MM/dd', 'TodayDate');
         await expect(priceOfferedPage.Date_Filter_ChipPrice_Offered_Page).toContainText(vars["TodayDate"]);
-        if (await correspondentPortalPage.Go_to_Next_Page_Button.isEnabled()) /* Element Go to Next Page Button is enabled */ {
+        if (await correspondentPortalPage.Go_to_Next_Page_Button.isVisible()) /* Element Go to Next Page Button is enabled */ {
           vars["CountofPages"] = "2";
         } else {
           vars["CountofPages"] = "1";
         }
         vars["count"] = "1";
         while (parseFloat(String(vars["count"])) <= parseFloat(String(vars["CountofPages"]))) {
-          Methods.getCurrentTimestamp('MM/dd/yyyy', 'CurrentDate');
-          await Methods.verifyMultipleElementsHaveSameText(priceOfferedPage.Date_VErification, vars["CurrentDate"]);
-          if (await correspondentPortalPage.Go_to_Next_Page_Button.isEnabled()) /* Element Go to Next Page Button is enabled */ {
+          helpers.getCurrentTimestamp('MM/dd/yyyy', 'CurrentDate');
+          await helpers.verifyMultipleElementsHaveSameText(priceOfferedPage.Date_VErification, vars["CurrentDate"]);
+          if (await correspondentPortalPage.Go_to_Next_Page_Button.isVisible()) /* Element Go to Next Page Button is enabled */ {
             await correspondentPortalPage.Go_to_Next_Page_Button.click();
             await spinnerPage.Spinner.waitFor({ state: 'hidden' });
           }
@@ -117,7 +118,7 @@ test.describe('REG_PriceOffered', () => {
       }
       await priceOfferedPage.Select_All_CheckboxPrice_Offred_Page.check();
       vars["ExportSelectedCountAfterApplyingFilters"] = await priceOfferedPage.Export_Selected_Count.textContent() || '';
-      Methods.removeMultipleSpecialChars(["Export Selected", "(", ")", " "], vars["ExportSelectedCountAfterApplyingFilters"], "ExportSelectedCountAfterApplyingFilters");
+     helpers.removeMultipleSpecialChars(["Export Selected", "(", ")", " "], vars["ExportSelectedCountAfterApplyingFilters"], "ExportSelectedCountAfterApplyingFilters");
 
       await priceOfferedPage.Remove_Date_FilterCross_Symbol.click();
 
@@ -126,33 +127,34 @@ test.describe('REG_PriceOffered', () => {
       await expect(priceOfferedPage.Date_Filter_ChipPrice_Offered_Page).toBeHidden();
       await priceOfferedPage.Select_All_CheckboxPrice_Offred_Page.check();
       vars["ExportSelectedCountAfterRemovingFilters"] = await priceOfferedPage.Export_Selected_Count.textContent() || '';
-      Methods.removeMultipleSpecialChars([' ', ',', '-', ':', '(', ')', '[', ']'], vars["ExportSelectedCountAfterRemovingFilters"], "ExportSelectedCountAfterRemovingFilters");
+      helpers.removeMultipleSpecialChars([' ', ',', '-', ':', '(', ')', '[', ']'], vars["ExportSelectedCountAfterRemovingFilters"], "ExportSelectedCountAfterRemovingFilters");
 
       expect(parseInt(String(vars["ExportSelectedCountAfterRemovingFilters"]))).toBeGreaterThan(parseInt(vars["ExportSelectedCountAfterApplyingFilters"]));
       await priceOfferedPage.Filter_Dropdown1.click();
       await correspondentPortalPage.Select_Date_Range_Dropdown.click();
       await correspondentPortalPage.Current_Date_On_Filters.click();
-      Methods.getCurrentTimestamp('d-M-yyyy', 'CurrentDate', 'UTC');
+      helpers.getCurrentTimestamp('d-M-yyyy', 'CurrentDate', 'UTC');
       await correspondentPortalPage.Select_Current_DateAdd_Config(vars["CurrentDate"]).click();
       await correspondentPortalPage.Apply_Button.click();
       await applyFiltersButtonPage.Apply_Filters_Button.click();
+      await spinnerPage.Spinner.waitFor({ state: 'visible' });
       await spinnerPage.Spinner.waitFor({ state: 'hidden' });
       await priceOfferedPage.Date_Filter_ChipPrice_Offered_Page.waitFor({ state: 'visible' });
 
-      Methods.getCurrentTimestamp('yyyy/MM/dd', 'currentDate');
-      Methods.concatenateWithSpace('Date:', vars["currentDate"], 'CurrentDateWithTextDate');
+      helpers.getCurrentTimestamp('yyyy/MM/dd', 'currentDate');
+      helpers.concatenateWithSpace('Date:', vars["currentDate"], 'CurrentDateWithTextDate');
       await expect(priceOfferedPage.Date_Filter_ChipPrice_Offered_Page).toContainText(vars["CurrentDateWithTextDate"]);
 
-      if (await correspondentPortalPage.Go_to_Next_Page_Button.isEnabled()) /* Element Go to Next Page Button is enabled */ {
+      if (await correspondentPortalPage.Go_to_Next_Page_Button.isVisible()) /* Element Go to Next Page Button is enabled */ {
         vars["CountofPages"] = "2";
       } else {
         vars["CountofPages"] = "1";
       }
       vars["count"] = "1";
       while (parseFloat(String(vars["count"])) <= parseFloat(String(vars["CountofPages"]))) {
-        Methods.getCurrentTimestamp('MM/dd/yyyy', 'dateFormattedSecond');
-        await Methods.verifyMultipleElementsHaveSameText(priceOfferedPage.Date_VErification, vars["dateFormattedSecond"]);
-        if (await correspondentPortalPage.Go_to_Next_Page_Button.isEnabled()) /* Element Go to Next Page Button is enabled */ {
+        helpers.getCurrentTimestamp('MM/dd/yyyy', 'dateFormattedSecond');
+        await helpers.verifyMultipleElementsHaveSameText(priceOfferedPage.Date_VErification, vars["dateFormattedSecond"]);
+        if (await correspondentPortalPage.Go_to_Next_Page_Button.isVisible()) /* Element Go to Next Page Button is enabled */ {
           await correspondentPortalPage.Go_to_Next_Page_Button.click();
           await spinnerPage.Spinner.waitFor({ state: 'hidden' });
         }
@@ -161,7 +163,7 @@ test.describe('REG_PriceOffered', () => {
       await priceOfferedPage.Select_All_CheckboxPrice_Offred_Page.check();
       vars["ExportSelectedCountAfterApplyingFilters"] = await priceOfferedPage.Export_Selected_Count.textContent() || '';
       vars["ExportSelectedCountAfterApplyingFilters"] = String(vars["ExportSelectedCountAfterApplyingFilters"]).replace(/[^\d]/g, '');
-      Methods.removeMultipleSpecialChars([' ', ',', '-', ':', '(', ')', '[', ']'], vars["ExportSelectedCountAfterApplyingFilters"], "ExportSelectedCountAfterApplyingFilters");
+      helpers.removeMultipleSpecialChars([' ', ',', '-', ':', '(', ')', '[', ']'], vars["ExportSelectedCountAfterApplyingFilters"], "ExportSelectedCountAfterApplyingFilters");
 
       await priceOfferedPage.Clear_all_ButtonPrice_Offered.click();
 

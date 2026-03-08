@@ -1392,7 +1392,7 @@ export class CorrPortalPage {
   }
 
   get On_Radio_Button(): Locator {
-    return this.page.locator("//input[@id='bulk-bid-select-on']");
+    return this.page.locator("label[for='bulk-bid-select-on']");
   }
 
   get On_Radio_ChaseDirect_Edit_Permissions_Popup(): Locator {

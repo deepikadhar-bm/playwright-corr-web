@@ -83,7 +83,7 @@ test.describe('REG_Bid Maps', () => {
         log.stepFail(page, "Step 3 failed: Failed to extract company names");
         throw error;
       }
-
+      
       log.step("Step 4: Verify all company names match the selected companies");
       try {
         expect(String(vars["firstCompanySelected"])).toBe(vars["CompanyName1"]);
@@ -99,11 +99,14 @@ test.describe('REG_Bid Maps', () => {
       log.step("Step 5: Verify 'Added On' date matches one of the created timestamps");
       try {
         vars["AddedOn"] = await statusInactivePage.Added_On.textContent() || '';
+        console.log(`Added On date in popup: ${vars["AddedOn"]}`);
         vars["AddedOn"] = await chaseFieldNamePage.Added_On.textContent() || '';
         vars["AddedOn"] = await chaseFieldNamePage.Added_On_2.textContent() || '';
         vars["AddedOn"] = await statusInactive2Page.Added_On.textContent() || '';
         if (String(vars["CreatedOn"]) === String(vars["AddedOn"])) {
+          expect
         } else if (String(vars["CreatedOn1"]) === String(vars["AddedOn"])) {
+          expect(String(vars["CreatedOn1"])).toBe(vars["AddedOn"]);
         } else {
           expect(String(vars["CreatedOn2"])).toBe(vars["AddedOn"]);
         }

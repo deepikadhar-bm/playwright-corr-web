@@ -56,6 +56,8 @@ test.describe('REG_Bid Maps', () => {
         log.stepFail(page, "Step 1 failed: Failed to login to CORR Portal");
         throw error;
       }
+
+
       log.step("Step 2: Navigate to Administration menu and select Bid Maps");
       try {
         await correspondentPortalPage.Administration_Menu.click();
@@ -66,6 +68,7 @@ test.describe('REG_Bid Maps', () => {
         log.stepFail(page, "Step 2 failed: Failed to navigate to Bid Maps menu");
         throw error;
       }
+
       log.step("Step 3: Create new Bid Map with timestamp");
       try {
         await correspondentPortalPage.Add_New_Mapping_Button.click();
@@ -82,6 +85,7 @@ test.describe('REG_Bid Maps', () => {
         log.stepFail(page, "Step 3 failed: Failed to create new Bid Map");
         throw error;
       }
+
       log.step("Step 4: Select all companies from dropdown");
       try {
         await correspondentPortalPage.Select_Companys_Dropdown.click();
@@ -127,6 +131,7 @@ test.describe('REG_Bid Maps', () => {
         log.stepFail(page, "Step 6 failed: Failed to upload or delete CSV file");
         throw error;
       }
+
       log.step("Step 7: Upload and delete XLS file");
       try {
         await uploadFile(page, correspondentPortalPage.Upload_File, "Bid_Maps_File_XLS.xls");
@@ -139,6 +144,7 @@ test.describe('REG_Bid Maps', () => {
         log.stepFail(page, "Step 7 failed: Failed to upload or delete XLS file");
         throw error;
       }
+
       log.step("Step 8: Upload and delete TXT file");
       try {
         await uploadFile(page, correspondentPortalPage.Upload_File, "Bid_Maps_File_Txt.txt");
@@ -151,6 +157,7 @@ test.describe('REG_Bid Maps', () => {
         log.stepFail(page, "Step 8 failed: Failed to upload or delete TXT file");
         throw error;
       }
+      
       log.step("Step 9: Upload PDF file and verify error message");
       try {
         await correspondentPortalPage.Upload_File.setInputFiles(path.join(process.cwd(), 'uploads', 'Bid_Maps_File_Pdf.pdf'));

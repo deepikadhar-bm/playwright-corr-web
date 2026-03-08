@@ -139,7 +139,7 @@ export async function uploadFile(
 
     // Check if file exists
     if (!fs.existsSync(filePath)) {
-      Logger.error(`Upload failed - File not found: ${filePath}`);
+      Logger.stepFail(page, `Upload failed - File not found: ${filePath}`);
       return false; // Don't throw, just return false
     }
 
@@ -148,29 +148,29 @@ export async function uploadFile(
 
     // Explicitly reject .pdf unless caller passes { force: true }
     if (ext === '.pdf' && !(options && options.force)) {
-      Logger.warn(`Upload failed - PDF files are not supported: ${fileName}`);
+      Logger.stepFail(page, `Upload failed - PDF files are not supported: ${fileName}`);
       return false;
     }
 
     // Reject any other unsupported file types
     if (!allowed.includes(ext)) {
-      Logger.warn(`Upload failed - Unsupported file type: ${ext}`);
+      Logger.stepFail(page, `Upload failed - Unsupported file type: ${ext}`);
       return false;
     }
 
     // Ensure locator exists
     if (await locator.count() === 0) {
-      Logger.error(`Upload failed - Locator not found`);
+      Logger.stepFail(page, `Upload failed - Locator not found`);
       return false;
     }
 
     // Perform the file upload
     await locator.setInputFiles(filePath);
-    Logger.success(`File uploaded successfully: ${fileName}`);
+    Logger.stepPass(`File uploaded successfully: ${fileName}`);
     return true;
 
   } catch (error) {
-    Logger.error(`Upload exception: ${error}`);
+    Logger.stepFail(page, `Upload exception: ${error}`);
     return false; // Test continues even if upload fails
   }
 }

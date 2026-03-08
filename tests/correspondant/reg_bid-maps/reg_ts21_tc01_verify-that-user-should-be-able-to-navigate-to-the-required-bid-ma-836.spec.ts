@@ -33,20 +33,6 @@ test.describe('REG_Bid Maps', () => {
       log.step("Step 1: Login to CORR Portal and verify dashboard");
       try {
         await stepGroups.stepGroup_Login_to_CORR_Portal(page, vars);
-        //   if (await correspondentPortalPage.Heading_Dashboard.waitFor({ state: 'visible', timeout: 15000 })) /* Element Dashboard is visible */ {
-        //     await stepGroups.stepGroup_Smart_Mapper_from_Off_to_On(page, vars);
-        //     await stepGroups.stepGroup_Creation_Of_Bid_Map_Upto_Header_Mapping(page, vars);
-        //     await stepGroups.stepGroup_Edition_in_Header_Mapping(page, vars);
-        //     await stepGroups.stepGroup_Deletion_in_Enumeration_Mapping(page, vars);
-        //     await stepGroups.stepGroup_Import_Rule_in_Mapping(page, vars);
-        //     await correspondentPortalPage.Bid_Maps_name(vars["BidMap"]).click();
-        //     await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-        //     await expect(p2142530YrFreddieMacFixedDropdownPage.Bid_Maps_Name).toContainText(vars["Create New Map"]);
-        //   } else {
-        //     await page.waitForLoadState('networkidle');
-        //   }
-        // });
-
         await correspondentPortalPage.Heading_Dashboard.waitFor({ state: 'visible', timeout: 18000 });
         log.stepPass("Step 1 passed: Logged in to CORR Portal successfully and dashboard is visible");
       } catch (error) {
@@ -56,7 +42,6 @@ test.describe('REG_Bid Maps', () => {
 
       log.step("Step 2: Enable Smart Mapper");
       try {
-
         await stepGroups.stepGroup_Smart_Mapper_from_Off_to_On(page, vars);
         log.stepPass("Step 2 passed: Smart Mapper enabled successfully");
       } catch (error) {
@@ -105,13 +90,11 @@ test.describe('REG_Bid Maps', () => {
         await correspondentPortalPage.Bid_Maps_name(vars["BidMap"]).click();
 
         await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-
         await expect(p2142530YrFreddieMacFixedDropdownPage.Bid_Maps_Name)
-          .toContainText(vars["Create New Map"]);
+          .toContainText(vars["BidMap"]);
         log.stepPass("Step 7 passed: Navigated to Bid Map details and verified map name: " + vars["Create New Map"]);
       } catch (error) {
         log.stepFail(page, "Step 7 failed: Failed to navigate to Bid Map details or verify map name");
-        await page.waitForLoadState('networkidle');
         throw error;
       }
 

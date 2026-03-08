@@ -19,7 +19,7 @@ test.describe('Unassigned', () => {
   let priceOfferedPage: PriceOfferedPage;
   let statusInactivePage: StatusInactivePage;
   let spinnerPage: SpinnerPage;
-  let Methods: AddonHelpers;
+  let helpers: AddonHelpers;
 
   test.beforeEach(async ({ page }) => {
     vars = {};
@@ -29,7 +29,7 @@ test.describe('Unassigned', () => {
     priceOfferedPage = new PriceOfferedPage(page);
     statusInactivePage = new StatusInactivePage(page);
     spinnerPage = new SpinnerPage(page);
-    Methods = new AddonHelpers(page, vars);
+    helpers = new AddonHelpers(page, vars);
   });
 const TC_ID = 'REG_TS19_TC05';
 const TC_TITLE = 'Apply/Clear filter for a particular company and verify that the screen should display only those company bids';
@@ -92,8 +92,8 @@ test(`${TC_ID} - ${TC_TITLE}`, async ({ page }) => {
       log.step('Step 3: Search company in filters');
       try {
         await priceOfferedPage.Search_In_Select_Company.first().click();
-        await Methods.clearAndEnterText(priceOfferedPage.Search_In_Select_Company.first(), undefined, testData["CompanyNameInFilters"]);
-        await Methods.verifyElementTextContainsCaseInsensitive(priceOfferedPage.Selected_Company.first(), undefined, testData["CompanyNameInFilters"]);
+        await helpers.clearAndEnterText(priceOfferedPage.Search_In_Select_Company.first(), undefined, testData["CompanyNameInFilters"]);
+        await helpers.verifyElementTextContainsCaseInsensitive(priceOfferedPage.Selected_Company.first(), undefined, testData["CompanyNameInFilters"]);
         vars["CountOfCompanyBeforeClearing"] = String(await priceOfferedPage.Company_Count_In_Filters.count());
         await correspondentPortalPage.Clear_Search_Button.click();
         vars["TotalCompanyCountInFilter"] = String(await priceOfferedPage.Company_Count_In_Filters.count());
@@ -110,7 +110,7 @@ test(`${TC_ID} - ${TC_TITLE}`, async ({ page }) => {
         vars["CheckedCompany"] = await priceOfferedPage.text_Checked_Company.first().textContent() || '';
         await priceOfferedPage.Show_Selected.first().click();
         vars["numberOfItemsSelected"] = (await priceOfferedPage.number_of_items_selected.textContent() || '').trim();
-        await Methods.verifyElementTextContainsCaseInsensitive(priceOfferedPage.Selected_Company.nth(0), undefined, String(vars["CheckedCompany"]));
+        await helpers.verifyElementTextContainsCaseInsensitive(priceOfferedPage.Selected_Company.nth(0), undefined, String(vars["CheckedCompany"]));
         vars["SelectedCompanyCountInFilters"] = String(await priceOfferedPage.Selected_Company_Count_in_Filters.count());
         expect(String("1")).toBe(vars["SelectedCompanyCountInFilters"]);
         expect(String("1")).toBe(vars["numberOfItemsSelected"]);
@@ -140,6 +140,7 @@ test(`${TC_ID} - ${TC_TITLE}`, async ({ page }) => {
       try {
         await priceOfferedPage.Check_Company.first().check();
         vars["CheckedName"] = await priceOfferedPage.Checked_Company.first().textContent() || '';
+        helpers.splitBySpecialChar(vars["CheckedCompany"], "(", "0", "CompanyNameOnly");
         await correspondentPortalPage.Apply_Selected.first().click();
         await applyFiltersButtonPage.Apply_Filters_Button.first().click();
         await spinnerPage.Spinner.waitFor({ state: 'visible' });
@@ -150,7 +151,7 @@ test(`${TC_ID} - ${TC_TITLE}`, async ({ page }) => {
         while (parseFloat(String(vars["Ccount"])) <= parseFloat(String("2"))) {
           vars["SelectedCompanyCount"] = String(await priceOfferedPage.Company_NamePrice_Offered.count());
           while (parseFloat(String(vars["count"])) <= parseFloat(String(vars["SelectedCompanyCount"]))) {
-            await Methods.verifyElementTextContainsCaseInsensitive(priceOfferedPage.IndividualCompany(vars["count"]), undefined, String(vars["CheckedCompany"]));
+            await helpers.verifyElementTextContainsCaseInsensitive(priceOfferedPage.IndividualCompany(vars["count"]), undefined, String(vars["CompanyNameOnly"]).trim());
             vars["count"] = (parseFloat(String("1")) + parseFloat(String(vars["count"]))).toFixed(0);
           }
           if (await correspondentPortalPage.Go_to_Next_Page_Button_2.isEnabled()) /* Element Go to Next Page Button is enabled */ {
