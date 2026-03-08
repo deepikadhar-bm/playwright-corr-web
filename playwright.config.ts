@@ -2,8 +2,6 @@ import { defineConfig, devices } from '@playwright/test';
 import { ENV } from './src/config/environments';
 import path from 'path';
 
-
-
 export default defineConfig({
   testDir: './tests',
   fullyParallel: false,
