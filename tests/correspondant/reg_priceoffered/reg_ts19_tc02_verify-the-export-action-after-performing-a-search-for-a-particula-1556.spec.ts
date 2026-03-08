@@ -2,7 +2,6 @@ import { test, expect } from '@playwright/test';
 import path from 'path';
 // import fs from 'fs';
 import * as stepGroups from '../../../src/helpers/step-groups';
-import { Logger as log } from '../../../src/helpers/log-helper';
 import { BidRequestsPage } from '../../../src/pages/correspondant/bid-requests';
 import { CorrespondentPortalPage } from '../../../src/pages/correspondant/correspondent-portal';
 import { PriceOfferedPage } from '../../../src/pages/correspondant/price-offered';
@@ -17,8 +16,6 @@ test.describe('REG_PriceOffered', () => {
   let priceOfferedPage: PriceOfferedPage;
   let spinnerPage: SpinnerPage;
   let Methods: AddonHelpers;
-  const TC_ID = 'REG_TS19_TC02';
-  const TC_TITLE = 'Verify the Export action after performing a search for a particular bid.';
 
   test.beforeEach(async ({ page }) => {
     vars = {};
@@ -155,12 +152,7 @@ test.describe('REG_PriceOffered', () => {
   // });
 
 
-  test(`${TC_ID} - ${TC_TITLE}`, async ({ page }) => {
-    log.tcStart(TC_ID, TC_TITLE);
-    try {
-      // Step 1: Login + navigate + search for first bid
-      log.step('Step 1 - Login to portal, open Price Offered list and capture first Bid Request ID from UI');
-      try {
+  test('REG_TS19_TC02_Verify the Export action after performing a search for a particular bid.', async ({ page }) => {
     // Set up download handler
     // page.on('download', async (download) => {
     //   const filePath = path.join('test-results', 'downloads', download.suggestedFilename());
@@ -169,56 +161,38 @@ test.describe('REG_PriceOffered', () => {
     // });
     
 
-      await stepGroups.stepGroup_Login_to_CORR_Portal(page, vars);
-      await correspondentPortalPage.Commitments_Side_Menu.click();
-      await correspondentPortalPage.Price_Offered_List_Dropdown.click();
-      vars["FirstBidReqId"] = await correspondentPortalPage.First_Bid_Request_ID.first().textContent() || '';
-      Methods.trimWhitespace(vars["FirstBidReqId"], "FirstBidReqId");
-      await Methods.clearAndEnterText(bidRequestsPage.Search_by_Bid_Request_ID_Field, undefined, vars["FirstBidReqId"]);
-      await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-      vars["RowCount"] = String(await priceOfferedPage.Total_Rows_Count_UIDetails.count()); // total rows in UI
-      vars["RowCountUI"] = "1";
-      vars["RowCountExcel"] = "0"; // leaves the first row for headers
-      await page.waitForTimeout(3000); // wait for the UI to stabilize before clicking export
-      await priceOfferedPage.Select_All_Loan_Num.click();
+    await stepGroups.stepGroup_Login_to_CORR_Portal(page, vars);
+    await correspondentPortalPage.Commitments_Side_Menu.click();
+    await correspondentPortalPage.Price_Offered_List_Dropdown.click();
+    vars["FirstBidReqId"] = await correspondentPortalPage.First_Bid_Request_ID.first().textContent() || '';
+    // vars["FirstBidReqId"] = String(vars["FirstBidReqId"]).trim();
+    Methods.trimWhitespace(vars["FirstBidReqId"], "FirstBidReqId");
+    // await bidRequestsPage.Search_by_Bid_Request_ID_Field.fill(vars["FirstBidReqId"]);
+    await bidRequestsPage.Search_by_Bid_Request_ID_Field.pressSequentially(vars["FirstBidReqId"])
+    await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+    vars["RowCount"] = String(await priceOfferedPage.Total_Rows_Count_UIDetails.count());//total rows in UI
+    vars["RowCountUI"] = "1";
+    vars["RowCountExcel"] = "0";//leaves the first row for headers
+    await page.waitForTimeout(3000);//wait for the UI to stabilize before clicking export
+    await priceOfferedPage.Select_All_Loan_Num.click();
 
-      log.stepPass(`Step 1 - Navigation and search completed | FirstBidReqId=${String(vars["FirstBidReqId"])}, UIrows=${String(vars["RowCount"])}`);
-      } catch (error) {
-        await log.stepFail(page, `Step 1 failed: Login/search failed | bid=${String(vars["FirstBidReqId"] || '')} rows=${String(vars["RowCount"] || '')}`);
-        throw error;
-      }
+    await correspondentPortalPage.Export_Selected_1_Button.waitFor({ state: 'visible' });
+    const downloadPromise = page.waitForEvent('download');
+    await correspondentPortalPage.Export_Selected_1_Button.click();
+    // await correspondentPortalPage.Export_Selected_1_Button.click();
+    const download = await downloadPromise;
+    const filePath = path.join('test-results','downloads',download.suggestedFilename());
+    await download.saveAs(filePath);
+    vars['_lastDownloadPath'] = filePath;
+    console.log("Downloaded file saved at:", filePath);
+    // Wait for download - handled by Playwright download events
+    // await page.waitForTimeout(2000);
+    // [DISABLED] Headers Verification
+    // await stepGroups.stepGroup_Headers_Verification(page, vars);
+    const excelRow = excelHelper.readRow(vars['_lastDownloadPath'] || '', 0, "0");
+    await stepGroups.stepGroup_Headers_Verification_Price_Offered(page, vars);
 
-      // Step 2: Export selected and save download
-      log.step('Step 2 - Click Export Selected and wait for download event');
-      try {
-      await correspondentPortalPage.Export_Selected_1_Button.waitFor({ state: 'visible' });
-      const downloadPromise = page.waitForEvent('download');
-      await correspondentPortalPage.Export_Selected_1_Button.click();
-      const download = await downloadPromise;
-      const filePath = path.join('test-results','downloads',download.suggestedFilename());
-      await download.saveAs(filePath);
-      vars['_lastDownloadPath'] = filePath;
-      log.step(`Downloaded file saved at: ${filePath}`);
-      log.stepPass(`Step 2 - Export and download saved | path=${filePath}`);
-      } catch (error) {
-        await log.stepFail(page, `Step 2 failed: Export/download failed | file=${String(vars['_lastDownloadPath'] || '')}`);
-        throw error;
-      }
-
-      // Step 3: Headers verification
-      log.step(`Step 3 - Verify headers in exported Excel (${String(vars['_lastDownloadPath'] || '')})`);
-      try {
-      await stepGroups.stepGroup_Headers_Verification_Price_Offered(page, vars);
-      log.stepPass(`Step 3 - Headers verified for ${String(vars['_lastDownloadPath'] || '')}`);
-      } catch (error) {
-        await log.stepFail(page, `Step 3 failed: Headers verification failed | file=${String(vars['_lastDownloadPath'] || '')}`);
-        throw error;
-      }
-
-      // Step 4: Compare exported Excel rows against UI rows
-      log.step(`Step 4 - Compare exported Excel rows against UI rows | expected UI rows=${String(vars["RowCount"])}`);
-      try {
-      while (parseFloat(String(vars["RowCountUI"])) <= parseFloat(String(vars["RowCount"]))) {
+    while (parseFloat(String(vars["RowCountUI"])) <= parseFloat(String(vars["RowCount"]))) {
       vars["ColumnCountUI"] = "2";//first column is for selection checkbox, so starting from 2
       vars["indexExcel"] = "0";//to read from the first column in excel which is Ccode
       //  vars["RowDataExcel"] = excelHelper.readRow(vars['_lastDownloadPath'] || '', vars["RowCountExcel"], "0");
@@ -290,21 +264,14 @@ test.describe('REG_PriceOffered', () => {
         Methods.trimWhitespace(vars["CellValueInExcel"], "CellValueInExcel");
 
 
-        // Remove timezone suffix like 'ET' if present
-        if (String(vars["CellValueInExcel"]).includes("ET")) {
-          if (String(vars["CellValueInExcel"]).includes(" ET")) {
-            Methods.replaceAllOccurrences(" ET", "", vars["CellValueInExcel"], "CellValueInExcel");
-          } else {
-            Methods.replaceAllOccurrences("ET", "", vars["CellValueInExcel"], "CellValueInExcel");
-          }
-        }
+        //STEP 1 — keep ONLY date part if datetime exists
+        const dateMatch = vars["CellValueInExcel"].match(/\d{2}\/\d{2}\/\d{4}/);
 
-        // Extract only the date part (MM/DD/YYYY) if present, otherwise keep original
-        vars["CellValueInExcel"] = String(vars["CellValueInExcel"]).match(/\d{2}\/\d{2}\/\d{4}/)?.[0] ?? String(vars["CellValueInExcel"]);
+        if (dateMatch) { vars["CellValueInExcel"] = dateMatch[0]; }
 
 
-        //STEP 2 — remove currency formatting using AddonHelpers
-        Methods.removeMultipleSpecialChars(["$", ","], vars["CellValueInExcel"], "CellValueInExcel");
+        //STEP 2 — remove currency formatting
+        vars["CellValueInExcel"] = vars["CellValueInExcel"].replace(/[\$,]/g, '');
 
 
         //STEP 3 — remove remaining unwanted chars
@@ -318,8 +285,7 @@ test.describe('REG_PriceOffered', () => {
 
         Methods.trimWhitespace(vars["CellValuesUI"], "CellValuesUI");
 
-        // Remove currency formatting using AddonHelpers
-        Methods.removeMultipleSpecialChars(["$", ","], vars["CellValuesUI"], "CellValuesUI");
+        vars["CellValuesUI"] = vars["CellValuesUI"].replace(/[\$,]/g, '');
 
         Methods.removeMultipleSpecialChars(["_", "-", " "], vars["CellValuesUI"], "CellValuesUI");
 
@@ -328,28 +294,13 @@ test.describe('REG_PriceOffered', () => {
 
 
 
-        // Use AddonHelpers for clearer assertion when possible
-        Methods.trimtestdata(vars["CellValueInExcel"], "CellValueInExcel");
-        Methods.trimtestdata(vars["CellValuesUI"], "CellValuesUI");
-        Methods.verifyString(String(vars["CellValueInExcel"]).toLowerCase(), 'equals', String(vars["CellValuesUI"]).toLowerCase());
+        expect(String(vars["CellValueInExcel"])).toBe(vars["CellValuesUI"]);
         // }
         vars["ColumnCountUI"] = (parseFloat(String("1")) + parseFloat(String(vars["ColumnCountUI"]))).toFixed(0);
         vars["indexExcel"] = (parseFloat(String("1")) + parseFloat(String(vars["indexExcel"]))).toFixed(0);
       }
-      }
       vars["RowCountExcel"] = (parseFloat(String("1")) + parseFloat(String(vars["RowCountExcel"]))).toFixed(0);
       vars["RowCountUI"] = (parseFloat(String("1")) + parseFloat(String(vars["RowCountUI"]))).toFixed(0);
-      log.stepPass(`Step 4 - Excel vs UI comparison completed | processed ${String(vars["RowCount"])} UI rows`);
-      } catch (error) {
-        await log.stepFail(page, `Step 4 failed: Excel vs UI comparison failed | row=${String(vars["RowCountUI"] || '')} col=${String(vars["ColumnCountUI"] || '')} file=${String(vars['_lastDownloadPath'] || '')}`);
-        throw error;
-      }
-
-      log.tcEnd('PASS');
-    } catch (error) {
-      log.captureOnFailure(page, TC_ID, error);
-      log.tcEnd('FAIL');
-      throw error;
     }
   });
 });
