@@ -2,8 +2,6 @@
 import { test, expect } from '@playwright/test';
 import path from 'path';
 import * as stepGroups from '../../../src/helpers/step-groups';
-import { Logger as log } from '../../../src/helpers/log-helper';
-import { AddonHelpers } from '../../../src/helpers/AddonHelpers';
 import { ApplyFiltersButtonPage } from '../../../src/pages/correspondant/apply-filters-button';
 import { CorrespondentPortalPage } from '../../../src/pages/correspondant/correspondent-portal';
 import { CustomerPermissionPage } from '../../../src/pages/correspondant/customer-permission';
@@ -19,7 +17,6 @@ test.describe('Unassigned', () => {
   let priceOfferedPage: PriceOfferedPage;
   let statusInactivePage: StatusInactivePage;
   let spinnerPage: SpinnerPage;
-  let Methods: AddonHelpers;
 
   test.beforeEach(async ({ page }) => {
     vars = {};
@@ -29,12 +26,9 @@ test.describe('Unassigned', () => {
     priceOfferedPage = new PriceOfferedPage(page);
     statusInactivePage = new StatusInactivePage(page);
     spinnerPage = new SpinnerPage(page);
-    Methods = new AddonHelpers(page, vars);
   });
-const TC_ID = 'REG_TS19_TC05';
-const TC_TITLE = 'Apply/Clear filter for a particular company and verify that the screen should display only those company bids';
 
-test(`${TC_ID} - ${TC_TITLE}`, async ({ page }) => {
+test('REG_TS19_TC05_ Apply/Clear filter for a particular company and verify that the screen should display only those company bids', async ({ page }) => {
     const testData: Record<string, string> = {
   "CompanyNameInFilters": "Fre",
   "RequestIdfor22-2.1": "87BQ7DB5C69B",
@@ -66,146 +60,92 @@ test(`${TC_ID} - ${TC_TITLE}`, async ({ page }) => {
   "RequestIDCreated4rthScenario": "87145580866E"
 }; // Profile: "Price Offered", row: 0
 
-    log.tcStart(TC_ID, TC_TITLE);
-    try {
-      log.step('Step 1: Login to CORR Portal');
-      try {
-        await stepGroups.stepGroup_Login_to_CORR_Portal(page, vars);
-        log.stepPass('Step 1 passed: Logged in to CORR Portal successfully');
-      } catch (error) {
-        log.stepFail(page, 'Step 1 failed: Failed to login to CORR Portal');
-        throw error;
+    await stepGroups.stepGroup_Login_to_CORR_Portal(page, vars);
+    await correspondentPortalPage.Commitments_Side_Menu.click();
+    await correspondentPortalPage.Price_Offered_List_Dropdown.click();
+    await priceOfferedPage.Filter_Dropdown1.click();
+    await correspondentPortalPage.Select_CompanyCCode_Dropdown1.click();
+    await priceOfferedPage.Search_In_Select_Company.first().click();
+    await priceOfferedPage.Search_In_Select_Company.first().fill(testData["CompanyNameInFilters"]);
+    await expect(priceOfferedPage.Selected_Company.first()).toContainText(testData["CompanyNameInFilters"]);
+    vars["CountOfCompanyBeforeClearing"] = String(await priceOfferedPage.Company_Count_In_Filters.count());
+    await correspondentPortalPage.Clear_Search_Button.click();
+    vars["TotalCompanyCountInFilter"] = String(await priceOfferedPage.Company_Count_In_Filters.count());
+    expect(parseFloat(vars["CountOfCompanyBeforeClearing"])).toBeLessThanOrEqual(parseFloat(vars["TotalCompanyCountInFilter"]));
+    console.log("Count of company before clearing: " + vars["CountOfCompanyBeforeClearing"]);
+    console.log("Total count of company in filter after clearing: " + vars["TotalCompanyCountInFilter"]);
+    await priceOfferedPage.Check_Company.first().check();
+    vars["CheckedCompany"] = await priceOfferedPage.text_Checked_Company.first().textContent() || '';
+    await priceOfferedPage.Show_Selected.first().click();
+    vars["numberOfItemsSelected"] = (await priceOfferedPage.number_of_items_selected.textContent() || '').trim();
+    // for (let i = 0; i < await priceOfferedPage.Selected_Company.count(); i++) {
+      await expect(priceOfferedPage.Selected_Company.nth(0)).toHaveText(String(vars["CheckedCompany"]));
+    // }
+    vars["SelectedCompanyCountInFilters"] = String(await priceOfferedPage.Selected_Company_Count_in_Filters.count());
+    expect(String("1")).toBe(vars["SelectedCompanyCountInFilters"]);
+    expect(String("1")).toBe(vars["numberOfItemsSelected"]);
+    await correspondentPortalPage.Show_All_Button.click();
+    vars["CountAfterSelectingAll"] = String(await priceOfferedPage.Company_Count_In_Filters.count());
+    expect(parseFloat(vars["CountOfCompanyBeforeClearing"])).toBeLessThanOrEqual(parseFloat(vars["CountAfterSelectingAll"]));
+    await expect(correspondentPortalPage.Apply_Selected.first()).toBeVisible();
+    await priceOfferedPage.Select_All_In_Filters.first().click();
+    vars["CountOfItemsSelected"] = (await priceOfferedPage.Items_Selected.textContent() || '').trim();
+    expect(parseFloat(vars["CountOfCompanyBeforeClearing"])).toBeLessThanOrEqual(parseFloat(vars["CountOfItemsSelected"]));
+    await priceOfferedPage.Select_All_In_Filters.first().click();
+    await priceOfferedPage.Check_Company.first().check();
+    vars["CheckedName"] = await priceOfferedPage.Checked_Company.first().textContent() || '';
+    await correspondentPortalPage.Apply_Selected.first().click();
+    await applyFiltersButtonPage.Apply_Filters_Button.first().click();
+    await spinnerPage.Spinner.waitFor({ state: 'visible' });
+    await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+    await expect(priceOfferedPage.Filtered_Company_NameChip).toBeVisible();
+    vars["Ccount"] = "1";
+    vars["count"] = "1";  
+    while (parseFloat(String(vars["Ccount"])) <= parseFloat(String("2"))) {
+      vars["SelectedCompanyCount"] = String(await priceOfferedPage.Company_NamePrice_Offered.count());
+      while (parseFloat(String(vars["count"])) <= parseFloat(String(vars["SelectedCompanyCount"]))) {
+        vars["IndividualCompany"] = await priceOfferedPage.IndividualCompany(vars["count"]).textContent() || '';
+        expect(String(vars["CheckedCompany"]).trim()).toContain(String(vars["IndividualCompany"]).trim());
+        // expect(String(vars["CheckedCompany"])).toBe(vars["IndividualCompany"]);
+        vars["count"] = (parseFloat(String("1")) + parseFloat(String(vars["count"]))).toFixed(0);
       }
-
-      log.step('Step 2: Open Price Offered and company filters');
-      try {
-        await correspondentPortalPage.Commitments_Side_Menu.click();
-        await correspondentPortalPage.Price_Offered_List_Dropdown.click();
-        await priceOfferedPage.Filter_Dropdown1.click();
-        await correspondentPortalPage.Select_CompanyCCode_Dropdown1.click();
-        log.stepPass('Step 2 passed: Price Offered and company filters opened');
-      } catch (error) {
-        log.stepFail(page, 'Step 2 failed: Failed to open Price Offered or company filters');
-        throw error;
+      if (await correspondentPortalPage.Go_to_Next_Page_Button_2.isEnabled()) /* Element Go to Next Page Button is enabled */ {
+        await correspondentPortalPage.Go_to_Next_Page_Button_2.click();
+        vars["count"] = (parseFloat(String(vars["count"])) - parseFloat(String("19"))).toFixed(0);
       }
-
-      log.step('Step 3: Search company in filters');
-      try {
-        await priceOfferedPage.Search_In_Select_Company.first().click();
-        await Methods.clearAndEnterText(priceOfferedPage.Search_In_Select_Company.first(), undefined, testData["CompanyNameInFilters"]);
-        await Methods.verifyElementTextContainsCaseInsensitive(priceOfferedPage.Selected_Company.first(), undefined, testData["CompanyNameInFilters"]);
-        vars["CountOfCompanyBeforeClearing"] = String(await priceOfferedPage.Company_Count_In_Filters.count());
-        await correspondentPortalPage.Clear_Search_Button.click();
-        vars["TotalCompanyCountInFilter"] = String(await priceOfferedPage.Company_Count_In_Filters.count());
-        expect(parseFloat(vars["CountOfCompanyBeforeClearing"]) ).toBeLessThanOrEqual(parseFloat(vars["TotalCompanyCountInFilter"]));
-        log.stepPass('Step 3 passed: Company search applied and counts verified');
-      } catch (error) {
-        log.stepFail(page, 'Step 3 failed: Company search or count verification failed');
-        throw error;
-      }
-
-      log.step('Step 4: Select company and verify selection');
-      try {
-        await priceOfferedPage.Check_Company.first().check();
-        vars["CheckedCompany"] = await priceOfferedPage.text_Checked_Company.first().textContent() || '';
-        await priceOfferedPage.Show_Selected.first().click();
-        vars["numberOfItemsSelected"] = (await priceOfferedPage.number_of_items_selected.textContent() || '').trim();
-        await Methods.verifyElementTextContainsCaseInsensitive(priceOfferedPage.Selected_Company.nth(0), undefined, String(vars["CheckedCompany"]));
-        vars["SelectedCompanyCountInFilters"] = String(await priceOfferedPage.Selected_Company_Count_in_Filters.count());
-        expect(String("1")).toBe(vars["SelectedCompanyCountInFilters"]);
-        expect(String("1")).toBe(vars["numberOfItemsSelected"]);
-        log.stepPass('Step 4 passed: Company selected and selection verified');
-      } catch (error) {
-        log.stepFail(page, 'Step 4 failed: Selecting company or verification failed');
-        throw error;
-      }
-
-      log.step('Step 5: Show all and select all companies');
-      try {
-        await correspondentPortalPage.Show_All_Button.click();
-        vars["CountAfterSelectingAll"] = String(await priceOfferedPage.Company_Count_In_Filters.count());
-        expect(parseFloat(vars["CountOfCompanyBeforeClearing"])).toBeLessThanOrEqual(parseFloat(vars["CountAfterSelectingAll"]));
-        await expect(correspondentPortalPage.Apply_Selected.first()).toBeVisible();
-        await priceOfferedPage.Select_All_In_Filters.first().click();
-        vars["CountOfItemsSelected"] = (await priceOfferedPage.Items_Selected.textContent() || '').trim();
-        expect(parseFloat(vars["CountOfCompanyBeforeClearing"])).toBeLessThanOrEqual(parseFloat(vars["CountOfItemsSelected"]));
-        await priceOfferedPage.Select_All_In_Filters.first().click();
-        log.stepPass('Step 5 passed: Show all and select-all validated');
-      } catch (error) {
-        log.stepFail(page, 'Step 5 failed: Show all or select-all failed');
-        throw error;
-      }
-
-      log.step('Step 6: Apply company filter and verify list');
-      try {
-        await priceOfferedPage.Check_Company.first().check();
-        vars["CheckedName"] = await priceOfferedPage.Checked_Company.first().textContent() || '';
-        await correspondentPortalPage.Apply_Selected.first().click();
-        await applyFiltersButtonPage.Apply_Filters_Button.first().click();
-        await spinnerPage.Spinner.waitFor({ state: 'visible' });
-        await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-        await expect(priceOfferedPage.Filtered_Company_NameChip).toBeVisible();
-        vars["Ccount"] = "1";
-        vars["count"] = "1";
-        while (parseFloat(String(vars["Ccount"])) <= parseFloat(String("2"))) {
-          vars["SelectedCompanyCount"] = String(await priceOfferedPage.Company_NamePrice_Offered.count());
-          while (parseFloat(String(vars["count"])) <= parseFloat(String(vars["SelectedCompanyCount"]))) {
-            await Methods.verifyElementTextContainsCaseInsensitive(priceOfferedPage.IndividualCompany(vars["count"]), undefined, String(vars["CheckedCompany"]));
-            vars["count"] = (parseFloat(String("1")) + parseFloat(String(vars["count"]))).toFixed(0);
-          }
-          if (await correspondentPortalPage.Go_to_Next_Page_Button_2.isEnabled()) /* Element Go to Next Page Button is enabled */ {
-            await correspondentPortalPage.Go_to_Next_Page_Button_2.click();
-            vars["count"] = (parseFloat(String(vars["count"])) - parseFloat(String("19"))).toFixed(0);
-          }
-          vars["Ccount"] = (parseFloat(String("1")) + parseFloat(String(vars["Ccount"]))).toFixed(0);
-        }
-        log.stepPass('Step 6 passed: Company filter applied and list verified');
-      } catch (error) {
-        log.stepFail(page, 'Step 6 failed: Applying company filter or list verification failed');
-        throw error;
-      }
-
-      log.step('Step 7: Clear filters and validate counts in Customer Permission');
-      try {
-        await priceOfferedPage.Clear_all_ButtonPrice_Offered.click();
-        await expect(priceOfferedPage.Filtered_Company_NameChip).toBeHidden();
-        await correspondentPortalPage.Administration_Menu.click();
-        await page.waitForTimeout(3000);
-        await correspondentPortalPage.GeneralSettings_Menu.click();
-        await spinnerPage.Spinner.waitFor({ state: 'visible' });
-        await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-        await customerPermissionPage.CustomerPermission_Menu.click();
-        await page.waitForTimeout(3000);
-        await priceOfferedPage.Page_Selection.click();
-        await priceOfferedPage.Number_50.click();
-        await page.waitForTimeout(3000);
-        vars["Count"] = "1";
-        vars["TotalCompanyCountCustomerPermission"] = "0";
-        vars["PageCount"] = await correspondentPortalPage.Pagination_Count.textContent() || '';
-        vars["PageCount"] = String(vars["PageCount"]).substring(10);
-        while (parseFloat(String(vars["Count"])) <= parseFloat(String(vars["PageCount"]))) {
-          vars["CompanyNameCount"] = String(await statusInactivePage.Company_Names.count());
-          vars["TotalCompanyCountCustomerPermission"] = (parseFloat(String(vars["TotalCompanyCountCustomerPermission"])) + parseFloat(String(vars["CompanyNameCount"]))).toFixed(0);
-          if (await correspondentPortalPage.Go_to_Next_Page_Button_2.isEnabled()) /* Element Go to Next Page Button is enabled */ {
-            await correspondentPortalPage.Go_to_Next_Page_Button_2.click();
-            await page.waitForTimeout(3000);
-          }
-          vars["Count"] = (parseFloat(String("1")) + parseFloat(String(vars["Count"]))).toFixed(0);
-        }
-        expect(String(vars["TotalCompanyCountCustomerPermission"]) ).toBe(vars["TotalCompanyCountInFilter"]);
-        expect(String(vars["TotalCompanyCountCustomerPermission"]) ).toBe(vars["CountOfItemsSelected"]);
-        log.stepPass('Step 7 passed: Cleared filters and validated counts in Customer Permission');
-      } catch (error) {
-        log.stepFail(page, 'Step 7 failed: Clearing filters or validating Customer Permission counts failed');
-        throw error;
-      }
-
-      log.tcEnd('PASS');
-    } catch (error) {
-      log.captureOnFailure(page, TC_ID, error);
-      log.tcEnd('FAIL');
-      throw error;
+      vars["Ccount"] = (parseFloat(String("1")) + parseFloat(String(vars["Ccount"]))).toFixed(0);
     }
+    // await page.pause();
+    await priceOfferedPage.Clear_all_ButtonPrice_Offered.click();
+    await expect(priceOfferedPage.Filtered_Company_NameChip).toBeHidden();
+    // await page.pause();
+    await correspondentPortalPage.Administration_Menu.click();
+    await page.waitForTimeout(3000);
+    await correspondentPortalPage.GeneralSettings_Menu.click();
+    await spinnerPage.Spinner.waitFor({ state: 'visible' });
+    await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+    await customerPermissionPage.CustomerPermission_Menu.click();
+    await page.waitForTimeout(3000);
+    // await page.waitForLoadState('networkidle');
+    await priceOfferedPage.Page_Selection.click();
+    await priceOfferedPage.Number_50.click();
+    await page.waitForTimeout(3000);
+    vars["Count"] = "1";
+    vars["TotalCompanyCountCustomerPermission"] = "0";
+    vars["PageCount"] = await correspondentPortalPage.Pagination_Count.textContent() || '';
+
+    vars["PageCount"] = String(vars["PageCount"]).substring(10);
+    while (parseFloat(String(vars["Count"])) <= parseFloat(String(vars["PageCount"]))) {
+      vars["CompanyNameCount"] = String(await statusInactivePage.Company_Names.count());
+      vars["TotalCompanyCountCustomerPermission"] = (parseFloat(String(vars["TotalCompanyCountCustomerPermission"])) + parseFloat(String(vars["CompanyNameCount"]))).toFixed(0);
+      if (await correspondentPortalPage.Go_to_Next_Page_Button_2.isEnabled()) /* Element Go to Next Page Button is enabled */ {
+        await correspondentPortalPage.Go_to_Next_Page_Button_2.click();
+        await page.waitForTimeout(3000);
+      }
+      vars["Count"] = (parseFloat(String("1")) + parseFloat(String(vars["Count"]))).toFixed(0);
+    }
+    expect(String(vars["TotalCompanyCountCustomerPermission"])).toBe(vars["TotalCompanyCountInFilter"]);
+    expect(String(vars["TotalCompanyCountCustomerPermission"])).toBe(vars["CountOfItemsSelected"]);
   });
 });
 
