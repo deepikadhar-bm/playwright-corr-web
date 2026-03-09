@@ -47,7 +47,7 @@ export default defineConfig({
         timezoneId: 'UTC',
 
         viewport: { width: 1920, height: 1080 },
-        baseURL: ENV.CORR_QA_URL,
+        // baseURL: ENV.CORR_QA_URL,
         launchOptions: {
           args: ['--start-maximized', '--no-sandbox', '--disable-setuid-sandbox', '--force-device-scale-factor=0.9'],
           slowMo: 2000, // ⬅️ Added slowMo to project config as well
