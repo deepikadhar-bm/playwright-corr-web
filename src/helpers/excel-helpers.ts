@@ -956,3 +956,53 @@ export function getRowDataWithCommaSeperator(
   // Map row values to string and join with commas
   return rows[rowIndex].map(cell => String(cell).trim()).join(", ");
 }
+export function getAllRowCount(filePath: string, sheetIndex: number = 0): number {
+  const wb = loadWorkbook(filePath);
+ 
+  // Validate sheet index
+  if (sheetIndex < 0 || sheetIndex >= wb.SheetNames.length) {
+    throw new Error(
+      `Invalid sheet index ${sheetIndex}. Total sheets available: ${wb.SheetNames.length}`
+    );
+  }
+ 
+  const sheetName = wb.SheetNames[sheetIndex];
+  const sheet = wb.Sheets[sheetName];
+ 
+  const rows: unknown[][] = XLSX.utils.sheet_to_json(sheet, {
+    header: 1,
+    defval: null,
+    blankrows: false,
+  });
+ 
+  // Count only rows having at least one non-empty cell
+  const validRows = rows.filter((r) =>r.some((c) => c !== null && c !== ''));
+  return validRows.length;
+}
+export function readEntireRow(
+  filePath: string,
+  sheetIndex: string | number,
+  rowIndex: string | number,
+  varName: string
+): string {
+  const wb = XLSX.readFile(path.resolve(filePath), { cellDates: true });
+ 
+  // Accept both runtime vars (string) and hardcoded (number)
+  const sheetIdx = typeof sheetIndex === 'string' ? parseInt(sheetIndex, 10) : sheetIndex;
+  const rowIdx = typeof rowIndex === 'string' ? parseInt(rowIndex, 10) : rowIndex;
+ 
+  if (isNaN(sheetIdx)) throw new Error(`Sheet index "${sheetIndex}" is not a valid number`);
+  if (isNaN(rowIdx)) throw new Error(`Row index "${rowIndex}" is not a valid number`);
+ 
+  const sheetName = wb.SheetNames[sheetIdx];
+  if (!sheetName) throw new Error(`Sheet index ${sheetIdx} not found. Available sheets: ${wb.SheetNames.length}`);
+ 
+  const sheet = wb.Sheets[sheetName];
+  const rows: string[][] = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: '' });
+ 
+  if (rowIdx < 0 || rowIdx >= rows.length)
+    throw new Error(`Row index ${rowIdx} out of range. Sheet "${sheetName}" has ${rows.length} row(s) [0 to ${rows.length - 1}]`);
+ 
+  const result = rows[rowIdx].map(cell => String(cell ?? '').trim()).join(',');
+  return result;
+}
