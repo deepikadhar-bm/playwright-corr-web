@@ -715,7 +715,7 @@ export class AddonHelpers {
     catch (e) { fail(METHOD, `Remove multiple chars from "${sourceString}"`, e); }
   }
   // ==========================================================================
-  // 36. Verify NOT contains
+  // 36. Verify testdata 1 with testdata2
   // ==========================================================================
   verifyString(
     testData: string,
