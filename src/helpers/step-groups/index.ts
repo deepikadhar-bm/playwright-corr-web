@@ -13,6 +13,7 @@ import { testDataManager } from 'testdata/TestDataManager';
 import { AddonHelpers } from '../../../src/helpers/AddonHelpers';
 import { CorrespondentPortal4Page } from '@pages/correspondant/correspondent-portal-4';
 import { SpinnerPage } from '@pages/correspondant';
+import { ENV } from '@config/environments';
 /**
  * Step Group: Login to CORR Portal
  * ID: 773
@@ -20,7 +21,8 @@ import { SpinnerPage } from '@pages/correspondant';
  */
 export async function stepGroup_Login_to_CORR_Portal(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
-  await page.goto("/");
+  //await page.goto("/");
+  await page.goto(ENV.CORR_QA_URL);
   await CorrPortalElem.Username_Field.fill(vars["Username"]);
   await CorrPortalElem.Password_Field.fill(vars["Password"]);
   await CorrPortalElem.Login_Button.click();
@@ -243,8 +245,8 @@ export async function stepGroup_Smart_Mapper_from_Off_to_On(page: import('@playw
   await CorrPortalElem.Bid_Map_Creation_in_General_Settings.click();
   await expect(CorrPortalElem.Bid_Map_Creation).toBeVisible();
   await expect(CorrPortalElem.Smart_Mapper).toBeVisible();
-  //const isRadioSelected = await CorrPortalElem.On_Radio_Button.evaluate((el: HTMLInputElement) => el.checked);
-  if (await CorrPortalElem.On_Radio_Button.isChecked()) {
+  const isRadioSelected = await CorrPortalElem.On_Radio_Button.evaluate((el: HTMLInputElement) => el.checked);
+  if (!isRadioSelected) /* Radio button On Radio Button is not selected */ {
     await CorrPortalElem.On_Radio_Button.check();
     await CorrPortalElem.Save_Changes_Button.click();
   }
