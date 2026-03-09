@@ -31,8 +31,8 @@ test.describe('REG_PriceOffered', () => {
     await correspondentPortalPage.Search_By_Bid_Request_ID_Input.click();
     await correspondentPortalPage.Search_By_Bid_Request_ID_Input.fill(vars["PriceOfferedBidReqId"]);
     await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-    await priceOfferedPage.Price_Offered_Bid_Req_Id.click();
-    await page.waitForLoadState('networkidle');
+    await priceOfferedPage.Price_Offered_Bid_Req_Id(vars["PriceOfferedBidReqId"]).first().click();
+    await page.waitForLoadState('load');
     await priceOfferedPage.Check_UncommittedLoanNum1.check();
     vars["UncommittedLoanNum1"] = await priceOfferedPage.Uncommitted_LoanNum1.textContent() || '';
     await priceOfferedPage.Check_Uncommitted_LoanNum2.check();
@@ -120,7 +120,7 @@ test.describe('REG_PriceOffered', () => {
     vars["LastCommittedBidLoanLoanAmount"] = String(vars["LastCommittedBidLoanLoanAmount"]).substring(3);
     vars["LastCommittedBidLoanLoanAmount"] = String(vars["LastCommittedBidLoanLoanAmount"]).replace(/\$\,/g, '');
     await priceOfferedPage.LockedCommitted_Loans_2.click();
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('load');
     await expect(priceOfferedPage.Paste_Loans_ButtonPrice_Offered_Page).toBeVisible();
     await expect(priceOfferedPage.Commit_Selected_1_Dropdown).toBeVisible();
   });

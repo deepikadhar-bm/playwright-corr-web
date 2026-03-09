@@ -1,11 +1,11 @@
 import * as XLSX from 'xlsx';
 import * as fs from 'fs';
 import * as path from 'path';
- 
+
 // ─────────────────────────────────────────────────────────────────────────────
 //  Types
 // ─────────────────────────────────────────────────────────────────────────────
- 
+
 /**
  * All possible cell value types supported by this helper:
  *
@@ -18,14 +18,14 @@ import * as path from 'path';
  *  undefined    → treated as null (empty cell)
  */
 export type CellValue = string | number | boolean | Date | null | undefined;
- 
+
 /**
  * Describes what Excel cell type a value should be stored as.
  * 'a' is the new alphanumeric type (stored as string but explicitly declared).
  * 'd' is the new date+timestamp type.
  */
 export type ExcelCellType = 's' | 'n' | 'b' | 'd' | 'a' | 'z';
- 
+
 /** Enriched cell read result — includes the raw value AND its resolved type. */
 export interface CellResult {
   value: CellValue;
@@ -33,7 +33,7 @@ export interface CellResult {
   /** ISO string when type is 'd', formatted string like 'TXN-001' when 'a', raw otherwise */
   formatted: string;
 }
- 
+
 export interface ReadCellOptions {
   filePath: string;
   sheetName?: string;
@@ -43,7 +43,7 @@ export interface ReadCellOptions {
   /** Return a CellResult with type info instead of just the raw value */
   withType?: boolean;
 }
- 
+
 export interface UpdateCellOptions {
   filePath: string;
   sheetName?: string;
@@ -67,14 +67,14 @@ export interface UpdateCellOptions {
    */
   dateFormat?: string;
 }
- 
+
 export interface ExcelSheetData {
   sheetName: string;
   headers: string[];
   rows: Record<string, CellValue>[];
   rowCount: number;
 }
- 
+
 /** Summary of a single sheet returned by getSheetCount / getSheetNames. */
 export interface SheetInfo {
   index: number;       // 0-based
@@ -82,7 +82,7 @@ export interface SheetInfo {
   rowCount: number;
   headers: string[];
 }
- 
+
 /** Stateful session returned by switchToSheetByIndex / switchToSheetByName. */
 export interface ExcelSession {
   /** The workbook file path this session is bound to. */
@@ -95,9 +95,9 @@ export interface ExcelSession {
   totalSheets: number;
   /** All sheet names in order. */
   allSheetNames: string[];
- 
+
   // ── Convenience reads scoped to the active sheet ──────────────────────────
- 
+
   /** Read a single cell in the active sheet. */
   readCell(options: Omit<ReadCellOptions, 'filePath' | 'sheetName'>): CellValue | CellResult;
   /** Read an entire column in the active sheet. */
@@ -108,26 +108,26 @@ export interface ExcelSession {
   readSheet(): ExcelSheetData;
   /** Get the data row count of the active sheet. */
   getRowCount(): number;
- 
+
   // ── Convenience writes scoped to the active sheet ─────────────────────────
- 
+
   /** Update a single cell in the active sheet. */
   updateCell(options: Omit<UpdateCellOptions, 'filePath' | 'sheetName'>): void;
   /** Batch update multiple cells in the active sheet. */
   updateCells(updates: Omit<UpdateCellOptions, 'filePath' | 'sheetName'>[]): void;
- 
+
   // ── Navigation ────────────────────────────────────────────────────────────
- 
+
   /** Switch to another sheet by 0-based index and return an updated session. */
   switchToSheetByIndex(index: number): ExcelSession;
   /** Switch to another sheet by name and return an updated session. */
   switchToSheetByName(name: string): ExcelSession;
 }
- 
+
 // ─────────────────────────────────────────────────────────────────────────────
 //  Private helpers
 // ─────────────────────────────────────────────────────────────────────────────
- 
+
 function loadWorkbook(filePath: string): XLSX.WorkBook {
   const resolved = path.resolve(filePath);
   if (!fs.existsSync(resolved)) {
@@ -135,7 +135,7 @@ function loadWorkbook(filePath: string): XLSX.WorkBook {
   }
   return XLSX.readFile(resolved);
 }
- 
+
 // function resolveSheet(wb: XLSX.WorkBook, sheetName?: string): XLSX.WorkSheet {
 //   const name = sheetName ?? wb.SheetNames[0];
 //   const sheet = wb.Sheets[name];
@@ -146,7 +146,7 @@ function loadWorkbook(filePath: string): XLSX.WorkBook {
 //   }
 //   return sheet;
 // }
- 
+
 //replacing with new resolvesheet function
 function resolveSheet(wb: XLSX.WorkBook, sheetName?: string): XLSX.WorkSheet {
   const name = sheetName && sheetName !== "0" ? sheetName : wb.SheetNames[0];
@@ -158,11 +158,11 @@ function resolveSheet(wb: XLSX.WorkBook, sheetName?: string): XLSX.WorkSheet {
   }
   return sheet;
 }
- 
+
 function resolveSheetName(wb: XLSX.WorkBook, sheetName?: string): string {
   return sheetName ?? wb.SheetNames[0];
 }
- 
+
 function findColumnIndex(headers: string[], columnHeader: string): number {
   const idx = headers.findIndex(
     (h) => h?.toString().trim().toLowerCase() === columnHeader.trim().toLowerCase()
@@ -174,7 +174,7 @@ function findColumnIndex(headers: string[], columnHeader: string): number {
   }
   return idx;
 }
- 
+
 /**
  * Detects whether a string is alphanumeric (contains both letters and digits,
  * or contains non-numeric special characters mixed with digits — e.g. IDs, codes, versions).
@@ -186,7 +186,7 @@ function isAlphanumeric(value: string): boolean {
   const hasSpecial = /[-_./\\#@]/.test(value);
   return hasLetter || (hasDigit && hasSpecial);
 }
- 
+
 /**
  * Resolves a raw cell value from xlsx to a typed CellResult.
  * Handles: string, number, boolean, Date, alphanumeric, date+timestamp.
@@ -195,9 +195,9 @@ function resolveCellResult(cell: XLSX.CellObject | undefined): CellResult {
   if (!cell || cell.v === undefined || cell.v === null) {
     return { value: null, type: 'z', formatted: '' };
   }
- 
+
   const xlType = cell.t;
- 
+
   // ── Date / timestamp ──────────────────────────────────────────────────────
   if (xlType === 'd' || cell.w?.match(/^\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4}/) ||
       (xlType === 'n' && cell.z && /[yYmMdDhHsS]/.test(String(cell.z)))) {
@@ -206,28 +206,28 @@ function resolveCellResult(cell: XLSX.CellObject | undefined): CellResult {
       : XLSX.SSF.is_date(cell.z ?? '')
         ? new Date(XLSX.utils.sheet_to_json<{ v: number }>([{ v: cell.v as number }] as any)[0]?.v)
         : new Date((cell.v as number - 25569) * 86400 * 1000); // Excel serial → JS Date
- 
+
     const iso = cell.v instanceof Date
       ? cell.v.toISOString()
       : new Date((cell.v as number - 25569) * 86400 * 1000).toISOString();
- 
+
     return {
       value: cell.v instanceof Date ? cell.v : new Date((cell.v as number - 25569) * 86400 * 1000),
       type: 'd',
       formatted: cell.w ?? iso,
     };
   }
- 
+
   // ── Boolean ───────────────────────────────────────────────────────────────
   if (xlType === 'b') {
     return { value: cell.v as boolean, type: 'b', formatted: String(cell.v) };
   }
- 
+
   // ── Number ────────────────────────────────────────────────────────────────
   if (xlType === 'n') {
     return { value: cell.v as number, type: 'n', formatted: cell.w ?? String(cell.v) };
   }
- 
+
   // ── String → check if alphanumeric ───────────────────────────────────────
   if (xlType === 's') {
     const str = String(cell.v);
@@ -236,11 +236,11 @@ function resolveCellResult(cell: XLSX.CellObject | undefined): CellResult {
     }
     return { value: str, type: 's', formatted: str };
   }
- 
+
   // ── Fallback ──────────────────────────────────────────────────────────────
   return { value: String(cell.v), type: 's', formatted: String(cell.v) };
 }
- 
+
 /**
  * Converts any CellValue to a raw value + xlsx cell type string.
  * Handles alphanumeric (forced string), Date, ISO date strings, numbers, booleans.
@@ -253,35 +253,35 @@ function resolveWriteType(
   if (cellType === 'a') {
     return { v: value == null ? '' : String(value), t: 's' };
   }
- 
+
   // Explicit override: date+timestamp
   if (cellType === 'd') {
     const d = value instanceof Date ? value : new Date(value as string);
     if (isNaN(d.getTime())) throw new Error(`Invalid date value: "${value}"`);
     return { v: d, t: 'd', z: 'yyyy-mm-dd hh:mm:ss' };
   }
- 
+
   // Explicit: string
   if (cellType === 's') return { v: value == null ? '' : String(value), t: 's' };
- 
+
   // Explicit: number
   if (cellType === 'n') return { v: Number(value), t: 'n' };
- 
+
   // Explicit: boolean
   if (cellType === 'b') return { v: Boolean(value), t: 'b' };
- 
+
   // ── Auto-detect ───────────────────────────────────────────────────────────
- 
+
   if (value == null) return { v: null, t: 'z' };
- 
+
   if (value instanceof Date) {
     return { v: value, t: 'd', z: 'yyyy-mm-dd hh:mm:ss' };
   }
- 
+
   if (typeof value === 'boolean') return { v: value, t: 'b' };
- 
+
   if (typeof value === 'number') return { v: value, t: 'n' };
- 
+
   if (typeof value === 'string') {
     // ISO date string: '2024-06-15' or '2024-06-15T10:30:00' or '2024-06-15T10:30:00.000Z'
     const isoDateRe = /^\d{4}-\d{2}-\d{2}(T\d{2}:\d{2}(:\d{2}(\.\d+)?)?(Z|[+-]\d{2}:\d{2})?)?$/;
@@ -291,23 +291,23 @@ function resolveWriteType(
         return { v: d, t: 'd', z: value.includes('T') ? 'yyyy-mm-dd hh:mm:ss' : 'yyyy-mm-dd' };
       }
     }
- 
+
     // Alphanumeric: mixed letters+digits (e.g. IDs, codes, versions)
     if (isAlphanumeric(value)) {
       return { v: value, t: 's' }; // stored as string, never coerced to number
     }
- 
+
     // Pure numeric string → store as number
     const num = Number(value);
     if (!isNaN(num) && value.trim() !== '') return { v: num, t: 'n' };
- 
+
     // Plain string
     return { v: value, t: 's' };
   }
- 
+
   return { v: String(value), t: 's' };
 }
- 
+
 /**
  * Writes a resolved cell value into the sheet object at the given address.
  */
@@ -320,17 +320,17 @@ function setCellValue(
 ): void {
   const { v, t, z } = resolveWriteType(value, cellType);
   if (!sheet[addr]) sheet[addr] = {};
- 
+
   sheet[addr].v = v;
   sheet[addr].t = t as XLSX.ExcelDataType;
- 
+
   // Apply date format: caller override > auto-detected > default
   if (t === 'd') {
     sheet[addr].z = dateFormat ?? z ?? 'yyyy-mm-dd hh:mm:ss';
   } else {
     delete sheet[addr].z;
   }
- 
+
   // Extend sheet range
   const ref = XLSX.utils.decode_range(sheet['!ref'] ?? 'A1:A1');
   const cell = XLSX.utils.decode_cell(addr);
@@ -338,11 +338,11 @@ function setCellValue(
   if (cell.c > ref.e.c) ref.e.c = cell.c;
   sheet['!ref'] = XLSX.utils.encode_range(ref);
 }
- 
+
 // ─────────────────────────────────────────────────────────────────────────────
 //  Exported functions
 // ─────────────────────────────────────────────────────────────────────────────
- 
+
 /**
  * Returns all sheet names from the workbook.
  *
@@ -354,9 +354,9 @@ export function getSheetNames(filePath: string): string[] {
   const wb = loadWorkbook(filePath);
   return wb.SheetNames;
 }
- 
+
 // ─────────────────────────────────────────────────────────────────────────────
- 
+
 /**
  * Returns the number of data rows (excluding the header row).
  *
@@ -371,59 +371,9 @@ export function getRowCount(filePath: string, sheetName?: string): number {
   const dataRows = rows.slice(1).filter((r) => r.some((c) => c !== null && c !== ''));
   return dataRows.length;
 }
-export function getAllRowCount(filePath: string, sheetIndex: number = 0): number {
-  const wb = loadWorkbook(filePath);
 
-  // Validate sheet index
-  if (sheetIndex < 0 || sheetIndex >= wb.SheetNames.length) {
-    throw new Error(
-      `Invalid sheet index ${sheetIndex}. Total sheets available: ${wb.SheetNames.length}`
-    );
-  }
-  
-  const sheetName = wb.SheetNames[sheetIndex];
-  const sheet = wb.Sheets[sheetName];
-
-  const rows: unknown[][] = XLSX.utils.sheet_to_json(sheet, {
-    header: 1,
-    defval: null,
-    blankrows: false,
-  });
-
-  // Count only rows having at least one non-empty cell
-  const validRows = rows.filter((r) =>r.some((c) => c !== null && c !== ''));
-  return validRows.length;
-}
-export function readEntireRow(
-  filePath: string,
-  sheetIndex: string | number,
-  rowIndex: string | number,
-  varName: string
-): string {
-  const wb = XLSX.readFile(path.resolve(filePath), { cellDates: true });
-  
-  // Accept both runtime vars (string) and hardcoded (number)
-  const sheetIdx = typeof sheetIndex === 'string' ? parseInt(sheetIndex, 10) : sheetIndex;
-  const rowIdx = typeof rowIndex === 'string' ? parseInt(rowIndex, 10) : rowIndex;
-
-  if (isNaN(sheetIdx)) throw new Error(`Sheet index "${sheetIndex}" is not a valid number`);
-  if (isNaN(rowIdx)) throw new Error(`Row index "${rowIndex}" is not a valid number`);
-
-  const sheetName = wb.SheetNames[sheetIdx];
-  if (!sheetName) throw new Error(`Sheet index ${sheetIdx} not found. Available sheets: ${wb.SheetNames.length}`);
-
-  const sheet = wb.Sheets[sheetName];
-  const rows: string[][] = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: '' });
-
-  if (rowIdx < 0 || rowIdx >= rows.length)
-    throw new Error(`Row index ${rowIdx} out of range. Sheet "${sheetName}" has ${rows.length} row(s) [0 to ${rows.length - 1}]`);
-
-  const result = rows[rowIdx].map(cell => String(cell ?? '').trim()).join(',');
-  return result;
-}
- 
 // ─────────────────────────────────────────────────────────────────────────────
- 
+
 /**
  * Reads a single cell value.
  * Provide either (columnHeader + rowIndex) OR cellAddress.
@@ -451,9 +401,9 @@ export function readCell(options: ReadCellOptions): CellValue | CellResult {
   const { filePath, sheetName, columnHeader, rowIndex, cellAddress, withType = false } = options;
   const wb = XLSX.readFile(path.resolve(filePath), { cellDates: true, cellNF: true });
   const sheet = resolveSheet(wb, sheetName);
- 
+
   let cell: XLSX.CellObject | undefined;
- 
+
   if (cellAddress) {
     cell = sheet[cellAddress.toUpperCase()];
   } else if (columnHeader !== undefined && rowIndex !== undefined) {
@@ -466,16 +416,16 @@ export function readCell(options: ReadCellOptions): CellValue | CellResult {
   } else {
     throw new Error('Provide either (columnHeader + rowIndex) or cellAddress.');
   }
- 
+
   if (withType) return resolveCellResult(cell);
   if (!cell) return null;
- 
+
   // Return native value — Date for date cells, raw value otherwise
   return cell.v instanceof Date ? cell.v : (cell.v ?? null);
 }
- 
+
 // ─────────────────────────────────────────────────────────────────────────────
- 
+
 /**
  * Returns all values from a column identified by its header name.
  *
@@ -494,9 +444,9 @@ export function readColumn(filePath: string, columnHeader: string, sheetName?: s
   const colIdx = findColumnIndex(headers, columnHeader);
   return rows.slice(1).map((row) => row[colIdx] ?? null);
 }
- 
+
 // ─────────────────────────────────────────────────────────────────────────────
- 
+
 /**
  * Returns a single row as a { header: value } object.
  * rowIndex is 0-based and counts data rows after the header.
@@ -520,14 +470,14 @@ export function readColumn(filePath: string, columnHeader: string, sheetName?: s
 //   }
 //   return Object.fromEntries(headers.map((h, i) => [h, dataRow[i] ?? null]));
 // }
- 
+
 export function readRow(
   filePath: string,
   rowIndex: number,
   sheetName?: string
 ): Record<string, CellValue> {
   let resolvedPath = path.resolve(filePath);
- 
+
   // If the path is a directory, find the most recently modified Excel file inside it
   const stat = fs.statSync(resolvedPath);
   if (stat.isDirectory()) {
@@ -538,15 +488,15 @@ export function readRow(
         mtime: fs.statSync(path.join(resolvedPath, f)).mtime.getTime()
       }))
       .sort((a, b) => b.mtime - a.mtime); // Most recent first
- 
+
     if (excelFiles.length === 0) {
       throw new Error(`No Excel/CSV files found in directory: ${resolvedPath}`);
     }
- 
+
     resolvedPath = excelFiles[0].fullPath;
     console.log(`[readRow] Resolved directory to file: ${resolvedPath}`);
   }
- 
+
   const wb = XLSX.readFile(resolvedPath, { cellDates: true });
   const sheet = resolveSheet(wb, sheetName);
   const rows: CellValue[][] = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: null });
@@ -557,9 +507,9 @@ export function readRow(
   }
   return Object.fromEntries(headers.map((h, i) => [h, dataRow[i] ?? null]));
 }
- 
+
 // ─────────────────────────────────────────────────────────────────────────────
- 
+
 /**
  * Returns all data from a sheet, including headers, all rows, and row count.
  * Dates are returned as JS Date objects. Alphanumeric values are preserved as strings.
@@ -581,9 +531,9 @@ export function readSheet(filePath: string, sheetName?: string): ExcelSheetData 
     rowCount: jsonRows.length,
   };
 }
- 
+
 // ─────────────────────────────────────────────────────────────────────────────
- 
+
 /**
  * Updates a single cell and saves the file.
  * Provide either (columnHeader + rowIndex) OR cellAddress.
@@ -626,7 +576,7 @@ export function updateCell(options: UpdateCellOptions): void {
   const wb = XLSX.readFile(resolved, { cellDates: true, cellNF: true });
   const name = resolveSheetName(wb, sheetName);
   const sheet = wb.Sheets[name];
- 
+
   if (cellAddress) {
     setCellValue(sheet, cellAddress.toUpperCase(), value, cellType, dateFormat);
   } else if (columnHeader !== undefined && rowIndex !== undefined) {
@@ -638,13 +588,13 @@ export function updateCell(options: UpdateCellOptions): void {
   } else {
     throw new Error('Provide either (columnHeader + rowIndex) or cellAddress.');
   }
- 
+
   XLSX.writeFile(wb, resolved);
   console.log(`Cell updated: ${resolved}`);
 }
- 
+
 // ─────────────────────────────────────────────────────────────────────────────
- 
+
 /**
  * Updates multiple cells in a single file save.
  * Each update supports value, cellType, and dateFormat independently.
@@ -668,7 +618,7 @@ export function updateCells(
   const sheet = wb.Sheets[name];
   const rows: CellValue[][] = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: null });
   const headers = (rows[0] ?? []) as string[];
- 
+
   for (const upd of updates) {
     if (upd.cellAddress) {
       setCellValue(sheet, upd.cellAddress.toUpperCase(), upd.value, upd.cellType, upd.dateFormat);
@@ -680,13 +630,13 @@ export function updateCells(
       throw new Error('Each update must have either (columnHeader + rowIndex) or cellAddress.');
     }
   }
- 
+
   XLSX.writeFile(wb, resolved);
   console.log(` ${updates.length} cells updated: ${resolved}`);
 }
- 
+
 // ─────────────────────────────────────────────────────────────────────────────
- 
+
 /**
  * Returns all rows where a column's value matches the given value (case-insensitive string match).
  *
@@ -707,9 +657,9 @@ export function findRowsByValue(
       matchValue?.toString().trim().toLowerCase()
   );
 }
- 
+
 // ─────────────────────────────────────────────────────────────────────────────
- 
+
 /**
  * Resolves a (columnHeader, rowIndex) pair to an Excel cell address like "C4".
  *
@@ -730,9 +680,9 @@ export function getCellAddress(
   const colIdx = findColumnIndex(headers, columnHeader);
   return `${XLSX.utils.encode_col(colIdx)}${rowIndex + 2}`;
 }
- 
+
 // ─────────────────────────────────────────────────────────────────────────────
- 
+
 /**
  * Returns the total number of sheets in the workbook.
  *
@@ -744,9 +694,9 @@ export function getSheetCount(filePath: string): number {
   const wb = loadWorkbook(filePath);
   return wb.SheetNames.length;
 }
- 
+
 // ─────────────────────────────────────────────────────────────────────────────
- 
+
 /**
  * Returns detailed info for every sheet: index, name, header list, and row count.
  * Useful for logging, assertions, or building dynamic test loops.
@@ -769,9 +719,9 @@ export function getAllSheetsInfo(filePath: string): SheetInfo[] {
     return { index, name, rowCount: dataRows.length, headers };
   });
 }
- 
+
 // ─────────────────────────────────────────────────────────────────────────────
- 
+
 /**
  * Internal factory — builds a bound ExcelSession for a given sheet name.
  */
@@ -779,53 +729,53 @@ function buildSession(filePath: string, activeSheetName: string): ExcelSession {
   const wb = XLSX.readFile(path.resolve(filePath), { cellDates: true });
   const allSheetNames = wb.SheetNames;
   const sheetIndex = allSheetNames.indexOf(activeSheetName);
- 
+
   if (sheetIndex === -1) {
     throw new Error(
       `Sheet "${activeSheetName}" not found. Available: ${allSheetNames.join(', ')}`
     );
   }
- 
+
   const session: ExcelSession = {
     filePath,
     sheetIndex,
     sheetName: activeSheetName,
     totalSheets: allSheetNames.length,
     allSheetNames,
- 
+
     readCell: (opts) =>
       readCell({ ...opts, filePath, sheetName: activeSheetName }),
- 
+
     readColumn: (columnHeader) =>
       readColumn(filePath, columnHeader, activeSheetName),
- 
+
     readRow: (rowIndex) =>
       readRow(filePath, rowIndex, activeSheetName),
- 
+
     readSheet: () =>
       readSheet(filePath, activeSheetName),
- 
+
     getRowCount: () =>
       getRowCount(filePath, activeSheetName),
- 
+
     updateCell: (opts) =>
       updateCell({ ...opts, filePath, sheetName: activeSheetName }),
- 
+
     updateCells: (updates) =>
       updateCells(filePath, updates, activeSheetName),
- 
+
     switchToSheetByIndex: (index) =>
       switchToSheetByIndex(filePath, index),
- 
+
     switchToSheetByName: (name) =>
       switchToSheetByName(filePath, name),
   };
- 
+
   return session;
 }
- 
+
 // ─────────────────────────────────────────────────────────────────────────────
- 
+
 /**
  * Switches to a sheet by its 0-based index and returns a bound ExcelSession.
  * All methods on the session (readCell, readRow, updateCell, etc.) automatically
@@ -850,20 +800,20 @@ function buildSession(filePath: string, activeSheetName: string): ExcelSession {
 export function switchToSheetByIndex(filePath: string, index: number): ExcelSession {
   const wb = XLSX.readFile(path.resolve(filePath), { cellDates: true });
   const total = wb.SheetNames.length;
- 
+
   if (index < 0 || index >= total) {
     throw new Error(
       `Sheet index ${index} is out of range. Workbook has ${total} sheet(s) (indices 0–${total - 1}).`
     );
   }
- 
+
   const sheetName = wb.SheetNames[index];
   console.log(` Switched to sheet [${index}]: "${sheetName}" (${total} total sheets)`);
   return buildSession(filePath, sheetName);
 }
- 
+
 // ─────────────────────────────────────────────────────────────────────────────
- 
+
 /**
  * Switches to a sheet by name and returns a bound ExcelSession.
  * Matching is case-insensitive. All session methods target this sheet automatically.
@@ -887,18 +837,18 @@ export function switchToSheetByName(filePath: string, name: string): ExcelSessio
   const matched = wb.SheetNames.find(
     (s) => s.trim().toLowerCase() === name.trim().toLowerCase()
   );
- 
+
   if (!matched) {
     throw new Error(
       `Sheet "${name}" not found. Available sheets: ${wb.SheetNames.join(', ')}`
     );
   }
- 
+
   const index = wb.SheetNames.indexOf(matched);
   console.log(` Switched to sheet [${index}]: "${matched}" (${wb.SheetNames.length} total sheets)`);
   return buildSession(filePath, matched);
 }
- 
+
 /**
  * Returns the value of a cell identified by file path, sheet index, row number,
  * and column number — all positional, no header names needed.
@@ -939,9 +889,9 @@ export function getCellByPosition(
   if (!fs.existsSync(resolved)) {
     throw new Error(`Excel file not found: ${resolved}`);
   }
- 
+
   const wb = XLSX.readFile(resolved, { cellDates: true, cellNF: true });
- 
+
   // ── Validate sheet index ──────────────────────────────────────────────────
   const totalSheets = wb.SheetNames.length;
   if (sheetIndex < 0 || sheetIndex >= totalSheets) {
@@ -950,10 +900,10 @@ export function getCellByPosition(
       `Workbook has ${totalSheets} sheet(s) (indices 0–${totalSheets - 1}).`
     );
   }
- 
+
   const sheetName = wb.SheetNames[sheetIndex];
   const sheet = wb.Sheets[sheetName];
- 
+
   // ── Validate row / col numbers ────────────────────────────────────────────
   if (rowNumber < 1) {
     throw new Error(`rowNumber must be >= 1 (got ${rowNumber}). Row 1 = first Excel row.`);
@@ -961,23 +911,23 @@ export function getCellByPosition(
   if (colNumber < 1) {
     throw new Error(`colNumber must be >= 1 (got ${colNumber}). Column 1 = column A.`);
   }
- 
+
   // ── Build cell address (e.g. colNumber=3, rowNumber=2 → "C2") ─────────────
   const colLetter = XLSX.utils.encode_col(colNumber - 1);   // encode_col is 0-based
   const cellAddr  = `${colLetter}${rowNumber}`;             // rowNumber is already 1-based
- 
+
   const cell = sheet[cellAddr];
- 
+
   console.log(
     `getCellByPosition → sheet[${sheetIndex}]:"${sheetName}" | ` +
     `row ${rowNumber}, col ${colNumber} (${cellAddr}) | ` +
     `value: ${cell?.v ?? '(empty)'}`
   );
- 
+
   if (withType) {
     return resolveCellResult(cell);
   }
- 
+
   if (!cell) return null;
   return cell.v instanceof Date ? cell.v : (cell.v ?? null);
 }
@@ -993,17 +943,16 @@ export function getRowDataWithCommaSeperator(
 ): string {
   const wb = XLSX.readFile(path.resolve(filePath), { cellDates: true });
   const sheet = resolveSheet(wb, sheetName);
- 
+  
   // Convert sheet to 2D array: [[A1, B1], [A2, B2]]
   const rows: any[][] = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: "" });
- 
+
   if (!rows[rowIndex]) {
     throw new Error(
       `Row index ${rowIndex} is out of range. Total rows (including header): ${rows.length}`
     );
   }
- 
+
   // Map row values to string and join with commas
   return rows[rowIndex].map(cell => String(cell).trim()).join(", ");
 }
- 

@@ -7,6 +7,12 @@ import { CorrespondentPortalPage } from '../../../src/pages/correspondant/corres
 import { HeadingDashboardPage } from '../../../src/pages/correspondant/heading-dashboard';
 import { StatusInactivePage } from '../../../src/pages/correspondant/status-inactive-';
 import { CorrespondentPortal7Page } from '../../../src/pages/correspondant/correspondent-portal-7';
+import { testDataManager } from 'testdata/TestDataManager';
+import { ENV } from '@config/environments';
+import { Logger as log } from '../../../src/helpers/log-helper';
+
+const TC_ID = 'REG_TS05_TC01';
+const TC_TITLE = 'Verify that the user can search for the required bid sample field name and view the relevant headers (used, unused, or unidentified) based on the dropdown selection.';
 
 test.describe('REG_Bid Maps', () => {
   let vars: Record<string, string> = {};
@@ -25,121 +31,124 @@ test.describe('REG_Bid Maps', () => {
     statusInactivePage = new StatusInactivePage(page);
   });
 
-  test('REG_TS05_TC01_Verify that the user can search for the required bid sample field name and view the relevant headers (used, unused, or unidentified) based on the dropdown selection.', async ({ page }) => {
-    const testData: Record<string, string> = {
-  "Unidentified Headers": "Show Unidentified Headers",
-  "Unused Headers": "Show Unused Headers",
-  "Used Headers": "Show Used Headers",
-  "UniqueColHeader/Enum": "TsSearchUniqueColHeaderEnum",
-  "Save and Move to Next Page": "Save and Move to Next Page",
-  "CSS Attribute": "2px solid rgb(227, 82, 5)",
-  "2-4 Unit": "2-4 Unit",
-  "Search Map Input": "Deepika Aug1",
-  "Chase_Field_Name1": "Mortgage Type",
-  "Rule Name": "Rule 1",
-  "Operations": "GREATER",
-  "BidFields.": "DTI",
-  "Search Fields": "hii",
-  "Operator 2 Symbol": ">",
-  "Time Interval": "05",
-  "Unidentified Enumerations": "Show Unidentified Enumerations",
-  "Show All Enumerations": "Show All Enumerations",
-  "Unidentfied and Save Message": "You have unidentified fields.  This action will save the changes and Move to Next Page.",
-  "BidField": "FICO Score",
-  "Search_Map": "Deepika Aug",
-  "CustomHeader": "Header 02",
-  "New Rule Name": "New Rule",
-  "Assigned Companies1": "Wik1C BeuLD MoJbr CoEmy LLpoJ",
-  "Unique Chase Value1": "AndoverBirchDrive1",
-  "Company name 2": "Wik1C BeuLD MoJbr CoEmy LLpoJ  - A2964",
-  "Bid Field": "Base Loan Amount",
-  "Chase  Values": "False",
-  "ChaseValue": "Attached",
-  "Unused Enumerations": "Show Unused Enumerations",
-  "Reason For Cancellation": "To Be Cancelled",
-  "Reason For Deletion": "To Be Deleted",
-  "ChaseValues.": "False",
-  "Chase_Field_Name": "Mortgage Limit",
-  "Header Mapping": "Show All Headers",
-  "Chase Field Name": "Amortization Type",
-  "ChaseFieldName": "Appraised Value",
-  "UniqueBidEnumTapeValue": "852345",
-  "BidEnumeratedTapeValue": "800",
-  "Chase Fields Name": "Amortization Type, Appraised Value, Attachment Type, Aus List, Borrower First Name, Borrower Last Name, Buy Down, CLTV, City, DTI, Fico, First Time Home Buyer, First Time Homebuyer Credit Fee Waiver, Impound Types, Income Ami Ratio, Ineligible, Interest Only, LTV, Loan Amount, Loan Number, Loan Purpose, Loan Term, Monthly Income, Mortgage Limit, Mortgage Types, Note Rate, Number Of Unit, Occupancy Type, Product Name, Property Type, Property Valuation Type, Purchase Price, State, Street, Subordinate Loan Amount, TPO, Total Loan Amount, Unpaid Principal Balance, Zip",
-  "Unique Chase Field Name": "Street",
-  "Chase Value": "Fixed rate",
-  "Search_Input": "TS_SEARCHMAP21",
-  "Upload File Text Verification": "Drag and drop files here or click to browse. Allowed formats: .xls,.xlsx,.csv,.txt",
-  "Bid Enumerated Tape Value": "80",
-  "Search Field Company Name": "Wik1C",
-  "Create Map": "Testsigma_04/03/2025/",
-  "Custom Header": "Header01",
-  "Investment (NOO)": "Investment (NOO)",
-  "PropertyValuation": "1004Desktop",
-  "ImportRuleName": "TEst",
-  "Action Save message": "This action will save the changes and Move to Next Page",
-  "SearchFields": "Hii",
-  "Start Time in Minutes": "31",
-  "Execution Type1": "STANDARD",
-  "BidEnumeratedTapeValue - Block 2": "Fixed",
-  "Execution Type": "CHASE_DIRECT",
-  "UniqueColumnHeaderSearch": "TsSearchUniqueColumnHeader",
-  "Start Time in Hour": "8",
-  "UniqueWhenBidFieldSearch": "TsSearchWhenBidField",
-  "WhenBidFieldName - Block 2": "Amortization Type",
-  "EmptyChaseFieldName": "Select",
-  "WhenBidFieldValue-3": "Appraised Value",
-  "Unique Chase Value": "AndoverBirchDrive",
-  "BidFields": "CLTV",
-  "Loan Purpose": "Refinance (R&T)",
-  "Advanced Search": "Fico",
-  "ChaseFieldNames": "Aus List",
-  "NO of Batches": "05",
-  "CompanyName3": "American Pacific  - A4257",
-  "Operator": "LESS_OR_EQUAL",
-  "SelectingChaseFieldName": "7",
-  "UpdatedBidEnumeratedTapeValue": "SAIKAT_18_FEB_002",
-  "Search Input": "Test",
-  "Company name 1": "Freedom",
-  "Operator 3": "CONTAINS",
-  "Expected Company Name": "Freedom",
-  "Operation2": "GREATER",
-  "Operation1": "LESS",
-  "Operator - Block 2": "GREATER",
-  "Bid Tape Value": "Fixed",
-  "Search Field": "free",
-  "Created Map Id": "Testsigma_05/07/2025/20:55:58",
-  "Rule Name(Updated)": "UP Rule 1",
-  "Operator 1 Symbol": "<",
-  "UniqueChaseValueSearch": "TsSearchChaseValue",
-  "Import Rule": "Testsigma_02/23/2026/01:02:39",
-  "Duplicated Rule Name": "Rule 2",
-  "Condition Bid Field": "FICO Score",
-  "BidEnumeraedTapeValue - 3": "425000",
-  "Chasevalues": "Variable rate",
-  "DeleteId": "Testsigma_05/05/2025/16:23:13",
-  "UpdatedWhenBidFieldName": "Correspondent Loan Number",
-  "Unidentified fields Message": "You have unidentified fields do you want to proceed further.",
-  "UniqueBidEnumTapeSearch": "TsSearchBidEnumTape",
-  "Unidentified Fields Error Message": "You have unidentified fields.",
-  "UniqueRuleNameSearch": "TsSearchUniqueRuleName"
-}; // Profile: "Bid_Maps", row: 0
+  test(`${TC_ID} - ${TC_TITLE}`, async ({ page }) => {
 
-    await stepGroups.stepGroup_Login_to_CORR_Portal(page, vars);
-    await stepGroups.stepGroup_Creation_Of_Bid_Map_Upto_Header_Mapping(page, vars);
-    await expect(correspondentPortalPage.Rules_and_Actions_Step_4_of_4).toBeVisible();
-    await correspondentPortalPage.First_Checkbox_Bid_Request.check();
-    await statusInactivePage.Checkbox_for_Header_Mapping_Dropdowns.check();
-    await correspondentPortalPage.Header_Mapping_Dropdown.selectOption({ label: testData["Unidentified Headers"] });
-    await expect(correspondentPortalPage.First_Checkbox_Header_Mapping).toHaveValue("Select");
-    await expect(correspondentPortalPage.Select_Dropdown_in_Headers_Mapping).toHaveValue("Select");
-    await correspondentPortalPage.Header_Mapping_Dropdown.selectOption({ label: testData["Unused Headers"] });
-    await expect(correspondentPortalPage.Header_Mapping_for_the_Dropdowns).toHaveValue("Select");
-    await expect(headingDashboardPage.Harp_Indicator_Field).toHaveValue("Select");
-    await correspondentPortalPage.Header_Mapping_Dropdown.selectOption({ label: testData["Used Headers"] });
-    await expect(correspondentPortalPage.First_Checkbox_Bid_Request).toBeVisible();
-    await expect(correspondentPortal7Page.Header_Mapping_checkbox).toBeVisible();
-    // [DISABLED] Verify that the element Headers Mappings is displayed and With Scrollable FALSE
-    // await expect(correspondentPortalPage.Headers_Mappings).toBeVisible();
+    // ─── TC Start ────────────────────────────────────────────────────────
+    log.tcStart(TC_ID, TC_TITLE);
+
+    try {
+
+      // ── Step 1: Load Credentials ─────────────────────────────────────────
+      const profileName = "Bid_Maps";
+      const profile = testDataManager.getProfileByName(profileName);
+      if (profile && profile.data) {
+        const UnidentifiedHeaders = profile.data[0]['Unidentified Headers'];
+        const UnusedHeaders = profile.data[0]['Unused Headers'];
+        const UsedHeaders = profile.data[0]['Used Headers'];
+        vars["Unidentified Headers"] = UnidentifiedHeaders;
+        vars["Unused Headers"] = UnusedHeaders;
+        vars["Used Headers"] = UsedHeaders;
+        console.log("Unidentified Headers: ", UnidentifiedHeaders);
+        console.log("Unused Headers: ", UnusedHeaders);
+        console.log("Used Headers: ", UsedHeaders);
+      }
+      else {
+        console.warn(`Test data for profile "${profileName}" not found or is empty.`);
+      }
+      log.step('Loading credentials');
+      try {
+        const crederntials = ENV.getCredentials('internal');
+        vars["Username"] = crederntials.username;
+        vars["Password"] = crederntials.password;
+        // console.log("Test Data: ", testData);
+        log.stepPass('Credentials loaded successfully');
+      } catch (e) {
+        await log.stepFail(page, 'Loading credentials failed');
+        throw e;
+      }
+
+      // ── Step 2: Login to Correspondent Portal ────────────────────────────
+      log.step('Login to Correspondent Portal');
+      try {
+        await stepGroups.stepGroup_Login_to_CORR_Portal(page, vars);
+        log.stepPass('Login to Correspondent Portal successful');
+      } catch (e) {
+        await log.stepFail(page, 'Login to Correspondent Portal failed');
+        throw e;
+      }
+
+      // ── Step 3: Create Bid Map up to Header Mapping ──────────────────────
+      log.step('Creating Bid Map up to Header Mapping step');
+      try {
+        await stepGroups.stepGroup_Creation_Of_Bid_Map_Upto_Header_Mapping(page, vars);
+        await expect(correspondentPortalPage.Rules_and_Actions_Step_4_of_4).toBeVisible();
+        log.stepPass('Bid Map created up to Header Mapping — Step 4 of 4 is visible');
+      } catch (e) {
+        await log.stepFail(page, 'Creating Bid Map up to Header Mapping failed');
+        throw e;
+      }
+
+      // ── Step 4: Check Required Checkboxes ───────────────────────────────
+      log.step('Checking First Bid Request checkbox and Header Mapping Dropdowns checkbox');
+      try {
+        await correspondentPortalPage.First_Checkbox_Bid_Request.check();
+        await statusInactivePage.Checkbox_for_Header_Mapping_Dropdowns.check();
+        log.stepPass('Required checkboxes checked successfully');
+      } catch (e) {
+        await log.stepFail(page, 'Checking required checkboxes failed');
+        throw e;
+      }
+
+      // ── Step 5: Select Unidentified Headers and verify ───────────────────
+      log.step('Selecting Unidentified Headers from dropdown and verifying attributes');
+      try {
+
+        await correspondentPortalPage.Header_Mapping_Dropdown_New.click();
+        await correspondentPortalPage.Header_Mapping_Dropdown_New.selectOption({ value: vars["Unidentified Headers"] });
+        //await correspondentPortalPage.Header_Mapping_Dropdown_New.selectOption({ label: testData["Unidentified Headers"] });
+        //await expect(correspondentPortalPage.First_Checkbox_Header_Mapping).toHaveText("Select");
+        await expect(correspondentPortalPage.First_Checkbox_Header_Mapping).toHaveAttribute('title', '');
+        await expect(correspondentPortalPage.Select_Dropdown_in_Headers_Mapping).toHaveAttribute("title", "");
+        //await expect(correspondentPortalPage.Select_Dropdown_in_Headers_Mapping).toHaveValue("Select");
+        log.stepPass('Unidentified Headers selected and attributes verified successfully');
+      } catch (e) {
+        await log.stepFail(page, 'Selecting Unidentified Headers or verifying attributes failed');
+        throw e;
+      }
+
+      // ── Step 6: Select Unused Headers and verify ─────────────────────────
+      log.step('Selecting Unused Headers from dropdown and verifying attributes');
+      try {
+        await correspondentPortalPage.Header_Mapping_Dropdown_New.selectOption({ value: vars["Unused Headers"] });
+        await expect(correspondentPortalPage.Header_Mapping_for_the_Dropdowns).toHaveAttribute("title", "");
+        await expect(headingDashboardPage.Harp_Indicator_Field).toHaveAttribute("title", "");
+        log.stepPass('Unused Headers selected and attributes verified successfully');
+      } catch (e) {
+        await log.stepFail(page, 'Selecting Unused Headers or verifying attributes failed');
+        throw e;
+      }
+
+      // ── Step 7: Select Used Headers and verify ───────────────────────────
+      log.step('Selecting Used Headers from dropdown and verifying visibility');
+      try {
+        await correspondentPortalPage.Header_Mapping_Dropdown_New.selectOption({ value: vars["Used Headers"] });
+        await expect(correspondentPortalPage.First_Checkbox_Bid_Request).toBeVisible();
+        await expect(correspondentPortal7Page.Header_Mapping_checkbox).toBeVisible();
+        log.stepPass('Used Headers selected and visibility verified successfully');
+      } catch (e) {
+        await log.stepFail(page, 'Selecting Used Headers or verifying visibility failed');
+        throw e;
+      }
+
+      // ─── TC End: PASS ────────────────────────────────────────────────────
+      log.tcEnd('PASS');
+
+    } catch (e) {
+      // ─── TC End: FAIL ────────────────────────────────────────────────────
+      await log.captureOnFailure(page, TC_ID, e);
+      log.tcEnd('FAIL');
+      throw e;
+    }
+
   });
 });

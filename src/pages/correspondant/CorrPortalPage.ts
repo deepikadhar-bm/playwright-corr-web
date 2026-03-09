@@ -245,8 +245,8 @@ export class CorrPortalPage {
     return this.page.locator("//span[text()[normalize-space() = \"Bid Maps\"]]");
   }
 
-  Bid_Maps_Name(Create_New_Map: string): Locator {
-    return this.page.locator(`//span[contains(.,' ${Create_New_Map}')]`);
+  Bid_Maps_Name(CreateNewMap: string): Locator {
+    return this.page.locator(`//span[contains(.,' ${CreateNewMap}')]`);
   }
 
   get Bid_Request_Config_Menu(): Locator {
@@ -867,8 +867,8 @@ export class CorrPortalPage {
     return this.page.locator("//input[@aria-label=\"Enter minimum display value in percentage\"]");
   }
 
-  get Entered_Bid_Mapping_Id_New(): Locator {
-    return this.page.locator("//span[contains(text(),\"@|BidMappingIDNew|\")]");
+  Entered_Bid_Mapping_Id_New(BidMappingIDNew: string): Locator {
+    return this.page.locator(`//span[contains(text(),\"${BidMappingIDNew}\")]`);
   }
 
   get Enumeration_Mapping_Button(): Locator {
@@ -1064,7 +1064,7 @@ export class CorrPortalPage {
   }
 
   get Headers_UI(): Locator {
-    return this.page.locator("(//div[contains(@aria-label,\"Sort by\")])[position() <= 8]");
+    return this.page.locator("(//div[contains(@aria-label,\"Sort by\")])[position() <= 12]");
   }
 
   get Headers_UI_Closed_List(): Locator {
@@ -1560,7 +1560,7 @@ export class CorrPortalPage {
   }
 
   get Save_Changes_Button(): Locator {
-    return this.page.locator("//button[text()=\"Save Changes\"]");
+    return this.page.locator("//button[text()=\"Save changes\"]");
   }
 
   get Save_Config_Button(): Locator {
