@@ -148,7 +148,7 @@ test.describe('REG_Bid Maps', () => {
       // Write to test data profile: "All Company Name" = vars["All_Company_Name"]
       vars["count"] = (parseFloat(String("1")) + parseFloat(String(vars["count"]))).toFixed(0);
     }
-    await page.waitForLoadState('networkidle');
+    // await page.waitForLoadState('networkidle');
     await correspondentPortalPage.Administration_Menu.click();
     await correspondentPortalPage.Bid_Maps_Menu.click();
     await spinnerPage.Spinner.waitFor({ state: 'hidden' });

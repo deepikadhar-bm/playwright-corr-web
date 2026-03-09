@@ -19,4 +19,7 @@ export class CorrespondentPortal4Page {
     return this.page.locator("//h3[contains(normalize-space(),\"Mapping Creation Wizard - $|\"Create New Map\"|\")]");
   }
 
+  get Search_Text_Field(): Locator {
+    return this.page.locator("//input[@placeholder=\"Search\"]");
+  }
 }
