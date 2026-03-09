@@ -810,7 +810,6 @@ export class AddonHelpers {
   trimtestdata(value: string, varName: string): void {
     const trimmed = value.trim();
     this.vars[varName] = trimmed;
-    console.log(`[trimFrontBack] "${value}" → "${trimmed}" → vars['${varName}']`);
   }
   // 33. Get month name by month number → store in vars
   // ==========================================================================
@@ -850,7 +849,6 @@ export class AddonHelpers {
     const expected = expectedText.trim().toLowerCase();
 
     if (actual.includes(expected)) {
-      console.log(`[PASS] Element contains text (case-insensitive): "${expectedText}"`);
     } else {
       throw new Error(`[FAIL] Expected element to contain "${expectedText}" (case-insensitive), but got "${actualText.trim()}"`);
     }
@@ -869,7 +867,6 @@ export class AddonHelpers {
       : actual.includes(expected);
 
     if (isMatch) {
-      console.log(`[PASS] "${textData1}" ${matchType} "${textData2}" (case-insensitive)`);
     } else {
       throw new Error(`[FAIL] Expected "${textData1}" to ${matchType} "${textData2}" (case-insensitive)`);
     }

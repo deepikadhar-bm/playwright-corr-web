@@ -50,7 +50,7 @@ export async function runPrereq_809(page: Page, vars: Record<string, string>): P
     d.setMinutes(d.getMinutes() + parseInt(String("2")));
     return d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true }); // Format: HH:mm a
   })();
-  vars["space"] = "key_blank";
+  vars["space"] = " ";
   vars["CreatedOn1"] = vars["CreatedOnDate"] + vars["space"] + vars["CreatedOnTime1"];
   vars["CreatedOn2"] = vars["CreatedOnDate"] + vars["space"] + vars["CreatedOnTime2"];
   await stepGroups.stepGroup_Uploading_the_File(page, vars);
@@ -59,7 +59,7 @@ export async function runPrereq_809(page: Page, vars: Record<string, string>): P
   await correspondentPortalPage.Yes_Proceed_Button.click();
   await spinnerPage.Spinner.waitFor({ state: 'hidden' });
   await rulesAndActionsButtonPage.Rules_and_Actions_Button.click();
-  if (true) /* Element Rules and Actions Button is visible */ {
+  if (await rulesAndActionsButtonPage.Rules_and_Actions_Button.isVisible()) /* Element Rules and Actions Button is visible */ {
     await spinnerPage.Spinner.waitFor({ state: 'hidden' });
     await expect(correspondentPortalPage.You_have_unidentified_fields_do_you_want_to_proceed_Further).toBeVisible();
     await correspondentPortalPage.Yes_Proceed_Button.click();
@@ -70,7 +70,6 @@ export async function runPrereq_809(page: Page, vars: Record<string, string>): P
   await spinnerPage.Spinner.waitFor({ state: 'hidden' });
   await saveAndPublishButtonPage.Save_and_Publish_Button.click();
   await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-  await statusInactive2Page.Bid_Map_Name_in_list_Screen.hover();
   vars["CountOfCompaniesAdded"] = await backButtonPage.Company_Added.textContent() || '';
   await expect(backButtonPage.Company_Added).toContainText(vars["CountOfCompaniesAdded"]);
 }

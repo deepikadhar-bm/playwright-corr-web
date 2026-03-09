@@ -80,7 +80,8 @@ test.describe('Unassigned', () => {
     await expect(priceOfferedPage.Status_Filter_ChipPrice_Offered_Page).toContainText(vars["SelectedCommitmentsStatusText"]);
     if (true) /* Element Data Table No Results(Price Offered) is visible */ {
       await expect(page.getByText("No result")).toBeVisible();
-    } else {
+    } 
+    else {
       vars["CurrentMonth"] = (() => {
         const d = new Date();
         const opts: Intl.DateTimeFormatOptions = { timeZone: "Asia/Kolkata" };
@@ -93,7 +94,8 @@ test.describe('Unassigned', () => {
       if (String(vars["SelectedDateRange"]) === String("Last One Month")) {
         if (String(vars["CurrentMonth"]) === String("01")) {
           vars["LastMonth"] = "12";
-        } else {
+        } 
+        else {
           vars["LastMonth"] = (parseFloat(String(vars["CurrentMonth"])) - parseFloat(String("1"))).toFixed(0);
         }
         if (String("1,2,3,4,5,6,7,8,9").includes(String(vars["LastMonth"]))) {
@@ -106,7 +108,8 @@ test.describe('Unassigned', () => {
           expect(new Date(String('')).getMonth()).toBe(new Date(String('')).getMonth());
           vars["count"] = (parseFloat(String("1")) + parseFloat(String(vars["count"]))).toFixed(0);
         }
-      } else if (String(vars["SelectedDateRange"]) === String("This Calendar Month")) {
+      }
+       else if (String(vars["SelectedDateRange"]) === String("This Calendar Month")) {
         vars["count"] = "1";
         vars["RequestedDateCount"] = String(await priceOfferedPage.Date_VErification.count());
         while (parseFloat(String(vars["count"])) <= parseFloat(String(vars["RequestedDateCount"]))) {
@@ -114,7 +117,9 @@ test.describe('Unassigned', () => {
           expect(new Date(String('')).getMonth()).toBe(new Date(String('')).getMonth());
           vars["count"] = (parseFloat(String("1")) + parseFloat(String(vars["count"]))).toFixed(0);
         }
-      } else if (String(vars["SelectedDateRange"]) === String("This Quarter")) {
+      }
+      
+      else if (String(vars["SelectedDateRange"]) === String("This Quarter")) {
         vars["Quarter1"] = "01,02,03";
         vars["Quarter2"] = "04,05,06";
         vars["Quarter3"] = "07,08,09";
@@ -137,21 +142,24 @@ test.describe('Unassigned', () => {
             expect(String(vars["Quarter1"])).toBe(vars["IndividualQuarterDate"]);
             vars["count"] = (parseFloat(String("1")) + parseFloat(String(vars["count"]))).toFixed(0);
           }
-        } else if (String(vars["Quarter2"]).includes(String(vars["CurrentMonth"]))) {
+        } 
+        else if (String(vars["Quarter2"]).includes(String(vars["CurrentMonth"]))) {
           while (parseFloat(String(vars["count"])) <= parseFloat(String(vars["RequestedDateCount"]))) {
             vars["IndividualQuarterDate"] = await bidRequestPage.Individual_Requested_Date.textContent() || '';
             vars["IndividualQuarterDate"] = String(vars["IndividualQuarterDate"]).substring(0, String(vars["IndividualQuarterDate"]).length - 9);
             expect(String(vars["Quarter2"])).toBe(vars["IndividualQuarterDate"]);
             vars["count"] = (parseFloat(String("1")) + parseFloat(String(vars["count"]))).toFixed(0);
           }
-        } else if (String(vars["Quarter3"]).includes(String(vars["CurrentMonth"]))) {
+        }  
+        else if (String(vars["Quarter3"]).includes(String(vars["CurrentMonth"]))) {
           while (parseFloat(String(vars["count"])) <= parseFloat(String(vars["RequestedDateCount"]))) {
             vars["IndividualQuarterDate"] = await bidRequestPage.Individual_Requested_Date.textContent() || '';
             vars["IndividualQuarterDate"] = String(vars["IndividualQuarterDate"]).substring(0, String(vars["IndividualQuarterDate"]).length - 9);
             expect(String(vars["Quarter3"])).toBe(vars["IndividualQuarterDate"]);
             vars["count"] = (parseFloat(String("1")) + parseFloat(String(vars["count"]))).toFixed(0);
           }
-        } else if (String(vars["Quarter4"]).includes(String(vars["CurrentMonth"]))) {
+        } 
+        else if (String(vars["Quarter4"]).includes(String(vars["CurrentMonth"]))) {
         }
       }
     }

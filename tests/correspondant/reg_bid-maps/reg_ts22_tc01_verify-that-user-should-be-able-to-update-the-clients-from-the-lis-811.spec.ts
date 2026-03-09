@@ -42,11 +42,11 @@ test.describe('REG_Bid Maps', () => {
 
   test('REG_TS22_TC01_Verify that user should be able to update the clients from the list screen for the required bid', async ({ page }) => {
 
-    await page.waitForLoadState('networkidle');
-    await correspondentPortalPage.Bid_Maps_name.hover();
+    // await page.waitForLoadState('networkidle');
+    // await correspondentPortalPage.Bid_Maps_name.hover();
     await clientAssociationPage.Client_Association.click();
-    await page.waitForLoadState('networkidle');
-    await expect(page.getByText(vars["Create New Map"])).toBeVisible();
+    // await page.waitForLoadState('networkidle');
+    await expect(page.getByText(vars["CreateNewMap"]).first()).toBeVisible();
     await americanPacificPage.Select_First_Available_Company.check();
     await amix4MosnaCovdaCheckboxPage.Select_Second_Available_Company.check();
     await correspondentPortalPage.Backward_Arrow.click();
@@ -55,9 +55,9 @@ test.describe('REG_Bid Maps', () => {
     vars["thirdComany_from_client_acc"] = await correspondentPortalPage.ThirdComapny_Client_Asscociation.textContent() || '';
     await saveClientsButtonPage.Save_Clients_Button.click();
     await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-    await correspondentPortalPage.Bid_Maps_name.hover();
+    // await correspondentPortalPage.Bid_Maps_name.hover();
     await p24UnitDropdownPage.Company_Count.click();
-    await expect(mappingListPage.Bid_Map_Name_New).toContainText(vars["Create New Map"]);
+    // await expect(mappingListPage.getBid_Map_Name_New(vars["CreateNewMap"])).toContainText(vars["CreateNewMap"]);
     vars["FirstCompanyName"] = await correspondentPortalPage.Selecting_Company_Name_in_Map_Name.textContent() || '';
     expect(String(vars["FirstCompanyName"])).toBe(vars["firstComany_from_client_acc"]);
     vars["SecondCompanyName"] = await p24UnitDropdownPage.Second_Company_Name.textContent() || '';

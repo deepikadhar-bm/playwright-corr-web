@@ -83,56 +83,94 @@ export function fileExists(folderPath: string, fileName: string): boolean {
 // }
 
 
-import { Page } from '@playwright/test';
+import { Page,Locator } from '@playwright/test';
 import { Logger } from './log-helper';
+
+// export async function uploadFile(
+//   page: Page,
+//   locator: Locator,
+//   fileName: string
+// ): Promise<boolean> {
+
+//   try {
+//     const filePath = path.join(process.cwd(), 'uploads', fileName);
+
+//     if (!fs.existsSync(filePath)) {
+//       Logger.error(`Upload failed - File not found: ${filePath}`);
+//       return false;
+//     }
+
+//     const allowed = ['.xlsx', '.xls', '.json'];
+//     const ext = path.extname(fileName).toLowerCase();
+
+//     if (!allowed.includes(ext)) {
+//       Logger.warn(`Unsupported upload file type: ${ext}`);
+//       return false;
+//     }
+
+//     // Ensure element exists
+//     if (await locator.count() === 0) {
+//       Logger.error(`Upload failed - Locator not found`);
+//       return false;
+//     }
+
+//     await locator.setInputFiles(filePath);
+
+//     Logger.success(`File uploaded successfully: ${fileName}`);
+//     return true;
+
+//   } catch (error) {
+//     Logger.error(`Upload exception: ${error}`);
+//     return false;
+//   }
+// }
+
+
 
 export async function uploadFile(
   page: Page,
-  locator: string,
-  fileName: string
+  locator: Locator,
+  fileName: string,
+  options?: { force?: boolean }
 ): Promise<boolean> {
-
   try {
-
     const filePath = path.join(process.cwd(), 'uploads', fileName);
+    
 
-    // ✅ Check file exists
+    // Check if file exists
     if (!fs.existsSync(filePath)) {
-      Logger.error(`Upload failed - File not found: ${filePath}`);
-      return false;
+      Logger.stepFail(page, `Upload failed - File not found: ${filePath}`);
+      return false; // Don't throw, just return false
     }
 
-    // ✅ Validate file type
-    const allowed = ['.xlsx', '.xls', '.json'];
-
+    const allowed = ['.xlsx', '.xls', '.json', '.txt', '.csv'];
     const ext = path.extname(fileName).toLowerCase();
 
+    // Explicitly reject .pdf unless caller passes { force: true }
+    if (ext === '.pdf' && !(options && options.force)) {
+      Logger.stepFail(page, `Upload failed - PDF files are not supported: ${fileName}`);
+      return false;
+    }
+
+    // Reject any other unsupported file types
     if (!allowed.includes(ext)) {
-      Logger.warn(`Unsupported upload file type: ${ext}`);
+      Logger.stepFail(page, `Upload failed - Unsupported file type: ${ext}`);
       return false;
     }
 
-    const element = page.locator(locator);
-
-    // ✅ Ensure element exists
-    if (await element.count() === 0) {
-      Logger.error(`Upload failed - Locator not found: ${locator}`);
+    // Ensure locator exists
+    if (await locator.count() === 0) {
+      Logger.stepFail(page, `Upload failed - Locator not found`);
       return false;
     }
 
-    await element.setInputFiles(filePath);
-
-    Logger.success(`File uploaded successfully: ${fileName}`);
-
+    // Perform the file upload
+    await locator.setInputFiles(filePath);
+    Logger.stepPass(`File uploaded successfully: ${fileName}`);
     return true;
 
   } catch (error) {
-
-    Logger.error(`Upload exception: ${error}`);
-
-    // IMPORTANT → do not crash test
-    return false;
+    Logger.stepFail(page, `Upload exception: ${error}`);
+    return false; // Test continues even if upload fails
   }
 }
-
-

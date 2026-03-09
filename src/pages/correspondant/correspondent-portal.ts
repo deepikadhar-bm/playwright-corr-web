@@ -5,7 +5,7 @@ import { Page, Locator } from '@playwright/test';
  * Elements: 544
  */
 export class CorrespondentPortalPage {
-  constructor(private page: Page) {}
+  constructor(private page: Page) { }
 
   get Chases_Values_1(): Locator {
     return this.page.locator("(//div[@class=\"mb-2\"]//..//select[@class=\"form-select\"])[$|count|]");
@@ -252,7 +252,9 @@ export class CorrespondentPortalPage {
   }
 
   get Apply_Selected_for_Bid_Maps(): Locator {
-    return this.page.locator("//span[@class=\"counter bg-white text-primary mx-2 text-center fw-semibold small\"]");
+    // return this.page.locator(`//span[@class=\"counter bg-white text-primary mx-2 text-center fw-semibold small\"]`);
+    return this.page.locator(`//button[@aria-label='Apply selected items']//span[@class="counter bg-white text-primary mx-2 text-center fw-semibold small"]`);
+    
   }
 
   get Apply_Selected2(): Locator {
@@ -375,8 +377,8 @@ export class CorrespondentPortalPage {
     return this.page.locator("(//button[contains(@class, 'dropdown-item') and contains(@class, 'd-flex')])[57]");
   }
 
-  get Bid_Maps_name(): Locator {
-    return this.page.locator("//button[contains(text(),\"$|BidMap|\")]");
+  Bid_Maps_name(BidMap: string): Locator {
+    return this.page.locator(`//button[contains(text(),"${BidMap}")]`);
   }
 
   get Bid_Maps_Menu(): Locator {
@@ -432,7 +434,8 @@ export class CorrespondentPortalPage {
   }
 
   get BidMap_already_exists_Error_Message(): Locator {
-    return this.page.locator("//div[contains(.,'already exists')][last()]");
+    // return this.page.locator("//div[contains(.,'already exists')][last()]");
+    return this.page.locator("(//div[contains(.,'already exists')][last()])[6]");
   }
 
   get BidMap_Download(): Locator {
@@ -664,7 +667,7 @@ export class CorrespondentPortalPage {
   }
 
   get Create_New_Map_Field(): Locator {
-    return this.page.locator("mapName");
+    return this.page.locator("#mapName");
   }
 
   get Created_On(): Locator {
@@ -672,7 +675,7 @@ export class CorrespondentPortalPage {
   }
 
   get Cross_button_in_Bid_Map(): Locator {
-    return this.page.locator("//i[@class=\"fas fa-times-circle text-primary\"]");
+    return this.page.locator("//button[@aria-label=\"Close modal\"]//i[contains(@class,\"fas fa-lg\")]");
   }
 
   get Cross_Button_in_Header_Mapping(): Locator {
@@ -680,7 +683,7 @@ export class CorrespondentPortalPage {
   }
 
   get Cross_In_Search_Field(): Locator {
-    return this.page.locator("//i[contains(@class, 'fa-times')]");
+    return this.page.locator("//button[contains(@class,'search-cancel')]//i[contains(@class, 'fa-times')]");
   }
 
   get CrossButton_Edit_Customer_Permissions(): Locator {
@@ -1064,7 +1067,8 @@ export class CorrespondentPortalPage {
   }
 
   get First_Bid_Req_Id(): Locator {
-    return this.page.locator("//a[contains(@aria-label, \"View details for price offered\")]\n");
+    // return this.page.locator("//a[contains(@aria-label, \"View details for price offered\")]\n");
+    return this.page.locator("//a[contains(@aria-label, \"View details for price offered\")]");
   }
 
   get First_Bid_Request_Checkbox(): Locator {
@@ -1072,7 +1076,7 @@ export class CorrespondentPortalPage {
   }
 
   get First_Bid_Request_ID(): Locator {
-    return this.page.locator("//td[@data-title=\"Bid Req. ID\"]");
+    return this.page.locator("//td[@data-title=\"Bid Req. ID\"]"); //points to Individual ids, same as above "get First_Bid_Req_Id()"
   }
 
   get First_Bid_Request_Text(): Locator {
@@ -1464,7 +1468,7 @@ export class CorrespondentPortalPage {
   }
 
   get Pagination_Count(): Locator {
-    return this.page.locator("//div[@aria-label=\"Pagination Controls\"]//span[@aria-atomic=\"true\"]");
+    return this.page.locator("//div[@aria-label=\"Pagination Controls\"]//span[@aria-atomic=\"true\"]"); //Page 1 of 11
   }
 
   get Password_Field(): Locator {
@@ -1664,7 +1668,8 @@ export class CorrespondentPortalPage {
   }
 
   get Search_Map_Input(): Locator {
-    return this.page.locator("typeahead-dropdown");
+    // return this.page.locator("typeahead-dropdown");
+    return this.page.locator("//input[@placeholder=\"Search Map\"]");
   }
 
   get Search_Map_Input_Dropdown(): Locator {
@@ -1767,7 +1772,7 @@ export class CorrespondentPortalPage {
     return this.page.locator("//div//div[@id=\"companySelect\"]//div//button[@id=\"multiSelectDropDown\"]");
   }
 
-  Select_Current_DateAdd_Config(CurrentDate: string): Locator { 
+  Select_Current_DateAdd_Config(CurrentDate: string): Locator {
     return this.page.locator(`//div[@class=\"ngb-dp-month\"]//div[@aria-label='${CurrentDate}']`);
   }
 
@@ -2089,6 +2094,10 @@ export class CorrespondentPortalPage {
 
   get Upload_File(): Locator {
     return this.page.locator("(//input[@type=\"file\"])[1]");
+  }
+
+  get File_Field(): Locator {
+    return this.page.locator("//div[contains(@class,'text-truncate')]");
   }
 
   get UploadBid_Button(): Locator {

@@ -223,8 +223,8 @@ export class StatusInactivePage {
     return this.page.locator("(//button[text()=\" Add Condition \"])[2]/../preceding-sibling::div//*[text()=\" Select \"]/ancestor::div[@class=\"d-flex\"]//button[contains(@class,\"text-danger\")]");
   }
 
-  get Second_Selected_Company_Checkbox(): Locator {
-    return this.page.locator("//span[@class='pl-2'][contains(.,'$|Companyname|')]");
+  Second_Selected_Company_Checkbox(Companyname: string): Locator {
+    return this.page.locator(`//span[@class='pl-2'][contains(.,'${Companyname}')]`);
   }
 
   get Select_Companys_BidMap(): Locator {
