@@ -1,0 +1,17 @@
+{
+    "workbench.editorAssociations": {
+        "*.copilotmd": "vscode.markdown.preview.editor",
+        "*.json": "default",
+        "*.js": "default",
+        "*.xlsx": "default",
+        "*.xls": "default"
+    },
+    "files.autoSave": "afterDelay",
+    "playwright.pickLocatorCopyToClipboard": true,
+    "workbench.editor.enablePreview": false,
+
+    "editor.wordBasedSuggestions": "allDocuments",
+    "editor.suggest.showWords": true,
+    "editor.inlineSuggest.enabled": true,
+    "editor.suggestOnTriggerCharacters": true
+}
