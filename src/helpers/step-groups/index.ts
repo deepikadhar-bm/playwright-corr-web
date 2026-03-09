@@ -7,7 +7,6 @@ import { expect } from '@playwright/test';
 import path from 'path';
 import * as excelHelper from '../excel-helpers';
 import { ENV } from '../../config/environments';
-
 import { CorrPortalPage } from '../../pages/correspondant/CorrPortalPage';
 import { testDataManager } from 'testdata/TestDataManager';
 //import { testDataManager } from '../../testdata/TestDataManager';
@@ -16,7 +15,6 @@ import { AddonHelpers } from '../../../src/helpers/AddonHelpers';
 import { CommitmentListPage } from '../../../src/pages/correspondant/commitment-list';
 // Disabled external 'log' import for this file; provide no-op
 const log = { info: (..._args: any[]) => { } };
-import { testDataManager } from 'testdata/TestDataManager';
 import { uploadFile } from '../../../src/helpers/file-helpers';
 import { CorrespondentPortalPage } from '@pages/correspondant/correspondent-portal';
 import { CorrespondentPortal4Page } from '@pages/correspondant/correspondent-portal-4';
