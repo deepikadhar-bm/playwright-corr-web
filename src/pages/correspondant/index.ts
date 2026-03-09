@@ -130,7 +130,7 @@ export { RulesActionPage } from './rules-action';
 export { AuditPage } from './audit';
 export { BidRequestConfigPage } from './bid-request-config';
 export { HeadingDeleteTestsigma03032025080414Page } from './heading-delete-testsigma03032025080414';
-export { Deepikaaugbidqa1csvButtonDivPage } from './deepikaaugbidqa1csv-button-div';
+export { Deepikaaugbidqa1csvButtonDivPage } from './mapping-creation-wizard';
 export { CorrespondentPortal14Page } from './correspondent-portal-14';
 export { LoginPage } from './login';
 export { DeleteDraftButtonPage } from './delete-draft-button';

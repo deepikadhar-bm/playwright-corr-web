@@ -5,7 +5,7 @@ import { Page, Locator } from '@playwright/test';
  * Elements: 5
  */
 export class MapNamePage {
-  constructor(private page: Page) {}
+  constructor(private page: Page) { }
 
   get Active_Map_Name(): Locator {
     return this.page.locator("//button[normalize-space(text())='$|Create New Map|']//..//..//span[text()='ACTIVE']");
@@ -23,8 +23,8 @@ export class MapNamePage {
     return this.page.locator("(//td[@data-title=\"Map Name\"])[1]");
   }
 
-  get Map_Name_2(): Locator {
-    return this.page.locator("//h5[contains(.,'$|Create New Map|')]");
+  getMap_Name_2(Create_new_map: string): Locator {
+    return this.page.locator(`//h5[contains(.,'${Create_new_map}')]`);
   }
 
 }

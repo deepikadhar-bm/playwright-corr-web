@@ -11,16 +11,16 @@ export class AddedOnPage {
     return this.page.locator("((//*[text()=\"Chase Field Name\"]/..//select)[1]/../..//option)[5]");
   }
 
-  get company_1(): Locator {
-    return this.page.locator("//td[@data-title=\"Company\" and contains(text(),\"$|firstCompanySelected|\")]");
+  getcompany_1(firstCompanySelected: string): Locator {
+    return this.page.locator(`//td[@data-title="Company" and contains(text(),"${firstCompanySelected}")]`);
   }
 
-  get company_2(): Locator {
-    return this.page.locator("//td[@data-title=\"Company\" and contains(text(),\"$|secondCompanySelected|\")]");
+  getcompany_2(secondCompanySelected: string): Locator {
+    return this.page.locator(`//td[@data-title="Company" and contains(text(),"${secondCompanySelected}")]`);
   }
 
-  get company_3(): Locator {
-    return this.page.locator("//td[@data-title=\"Company\" and contains(text(),\"$|thirdCompanySelected|\")]");
+  getcompany_3(thirdCompanySelected: string): Locator {
+    return this.page.locator(`//td[@data-title="Company" and contains(text(),"${thirdCompanySelected}")]`);
   }
 
   get FileRow(): Locator {

@@ -105,9 +105,9 @@ export class PriceOfferedPage {
     return this.page.locator("//div[contains(@aria-label,\"Status: Price Offered\")]/../..//td[contains(@data-title,\"Bid Req. ID\")]");
   }
 
-  get Bid_Ids(): Locator {
-    return this.page.locator("(//a[contains(@aria-label, \"View details for price offered\")])[$|Count1|]");
-  }
+  Bid_Ids(Count_: string): Locator {
+    return this.page.locator(`(//a[contains(@aria-label, \"View details for price offered\")])[${Count_}]`);
+  }//`(//a[contains(@aria-label, \"View details for price offered\")])[${Count}]`---CorrespondentPortalPage
 
   get Bid_Loan_Num_Committed_Loans(): Locator {
     return this.page.locator("//button[contains(text(),\"$|BidLoanNumAllLoans|\")]");
@@ -511,6 +511,7 @@ export class PriceOfferedPage {
 
   get Checked_Status(): Locator {
     return this.page.locator("(//div[@class=\"dropdown-overflow\"])[2]//input[@type=\"checkbox\"]//..//span");
+    
   }
 
   get Clear_all_ButtonPrice_Offered(): Locator {
@@ -1293,8 +1294,8 @@ Column_Data_UI_DetainsScreen(IndividualHeaderUI:string): Locator {
     return this.page.locator("//span[contains(@class, 'small') and contains(@class, 'fa-sort-up')]");
   }
 
-  get Headers(): Locator {
-    return this.page.locator("(//div[@role=\"button\"])[$|indexExcel|]");
+  Headers(indexExcel: string): Locator {
+    return this.page.locator(`(//div[@role="button"])[${indexExcel}]`);
   }
 
   get Headers_UI(): Locator {
@@ -1325,16 +1326,16 @@ Column_Data_UI_DetainsScreen(IndividualHeaderUI:string): Locator {
     return this.page.locator("(//div[@aria-label=\"Locked loan\"]/ancestor::tr//div[contains(@aria-label, \"Hedge ratio\")])[$|count|]");
   }
 
-  get Individual_Bid_Request_Ids(): Locator {
-    return this.page.locator("(//a[contains(@aria-label, \"View details for price offered\")])[$|Count|]\n");
-  }
+  Individual_Bid_Request_Ids(Count: string): Locator {
+    return this.page.locator(`(//a[contains(@aria-label, \"View details for price offered\")])[${Count}]`);
+}
 
   Individual_Cell_Data_UI(Count:string): Locator {
     return this.page.locator(`(//table[@role='table']//tbody//tr[$|count|]//td[@data-title][position() >= 3])[${Count}]`);
   }
 
-  Individual_Cell_UI(ColumnCountUI:string): Locator {
-    return this.page.locator(`(//tbody//tr[$|RowCountUI|]//td)[${ColumnCountUI}]`);
+  Individual_Cell_UI(RowCountUI: string, ColumnCountUI: string): Locator {
+    return this.page.locator(`(//tbody//tr[${RowCountUI}]//td)[${ColumnCountUI}]`);
   }
 
   Individual_Column_Header_Details_Locked_Loans(Count:string): Locator {
@@ -1389,16 +1390,16 @@ Column_Data_UI_DetainsScreen(IndividualHeaderUI:string): Locator {
     return this.page.locator("(//div[@role=\"status\"]//span)[$|Count1|]");
   }
 
-  get Individual_Status_In_Filters(): Locator {
-    return this.page.locator("((//div[@class=\"dropdown-overflow\"])[2]//input[@type=\"checkbox\"]//..//span)[$|count|]");
+  Individual_Status_In_Filters(count: string): Locator {
+    return this.page.locator(`((//div[@class=\"dropdown-overflow\"])[2]//input[@type=\"checkbox\"]//..//span)[${count}]`);
   }
 
   get Individual_UI_Details(): Locator {
     return this.page.locator("(//div[@role=\"text\"])[$|count|]");
   }
 
-  get IndividualCompany(): Locator {
-    return this.page.locator("(//td[@data-title=\"Company\"])[$|count|]");
+  IndividualCompany(count: string): Locator {
+    return this.page.locator(`(//td[@data-title="Company"])[${count}]`);
   }
 
   get Int_Rateprice_offered_screen_table(): Locator {
@@ -2202,6 +2203,7 @@ Column_Data_UI_DetainsScreen(IndividualHeaderUI:string): Locator {
 
   get Status_Checkbox(): Locator {
     return this.page.locator("(//div[@class=\"dropdown-overflow\"])[2]//input[@type=\"checkbox\"]");
+    // return this.page.locator("((//div[@class=\"dropdown-overflow\"])[2]//input[@type=\"checkbox\"])");
   }
 
   get Status_Count_After_Filtering(): Locator {
@@ -2209,7 +2211,7 @@ Column_Data_UI_DetainsScreen(IndividualHeaderUI:string): Locator {
   }
 
   get Status_Count_In_Filters(): Locator {
-    return this.page.locator("(//div[@class=\"dropdown-overflow\"])[2]//input[@type=\"checkbox\"]\n");
+    return this.page.locator("(//div[@class=\"dropdown-overflow\"])[2]//input[@type=\"checkbox\"]");
   }
 
   get Status_Expired(): Locator {
@@ -2228,8 +2230,8 @@ Column_Data_UI_DetainsScreen(IndividualHeaderUI:string): Locator {
     return this.page.locator("//div[@role=\"status\"]//span");
   }
 
-  get Status_Individual(): Locator {
-    return this.page.locator("(//div[@role=\"status\"]//span)[$|Count|]");
+  Status_Individual(Count: string): Locator {
+    return this.page.locator(`(//div[@role="status"]//span)[${Count}]`);
   }
 
   get Status_Individual_2(): Locator {
@@ -2262,6 +2264,10 @@ Column_Data_UI_DetainsScreen(IndividualHeaderUI:string): Locator {
 
   get Text_from_Remaining_Timeprice_offered(): Locator {
     return this.page.locator("//div[@id=\"price-offered-details-header\"]//div/div[text()=\"Remaining Time\"]/../h5");
+  }
+
+  get text_Checked_Company(): Locator {
+    return this.page.locator("(//div[@class=\"dropdown-overflow\"])[1]//input[@type=\"checkbox\"]/following::div/span");
   }
 
   get Today_Date(): Locator {
