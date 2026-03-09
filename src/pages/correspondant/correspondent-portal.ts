@@ -1162,7 +1162,9 @@ export class CorrespondentPortalPage {
   get Header_Counts(): Locator {
     return this.page.locator("//div[@class='parent']//fieldset");
   }
-
+get Header_Mapping_Dropdown_New(): Locator {
+    return this.page.locator("//*[@aria-label=\"Header Status Dropdown\"]//select");
+  }
   get Header_Mapping_Dropdown(): Locator {
     return this.page.locator("//select[contains(normalize-space(),\"Select Show All Headers Show Unidentified Headers (10) Show Unused Headers Show Used Headers\")]");
   }

@@ -2,9 +2,10 @@ import { Page, Locator } from '@playwright/test';
 
 /**
  * Page Object: Correspondent Portal...................................
- * Elements: 3
+ * Elements: 4
  */
 export class CorrespondentPortal4Page {
+  static Search_Text_Field: any;
   constructor(private page: Page) {}
 
   get Last_One_Month_Button(): Locator {
@@ -22,4 +23,5 @@ export class CorrespondentPortal4Page {
   get Search_Text_Field(): Locator {
     return this.page.locator("//input[@placeholder=\"Search\"]");
   }
+
 }

@@ -11,8 +11,12 @@ export class HeadingBidmapPage {
     return this.page.locator("(//div[@class=\"field-pair col-3\" and not(text()=\"Chase Value\") and not(text()=\"Chase Field\")][1])");
   }
 
-  get Bid_Sample_Name(): Locator {
-    return this.page.locator("(//div[@class=\"col-2\" and not(text()=\"Bid Sample Field Name\") and not(text()=\"Chase Field\")][1])[$|BidSampleField|]");
+  get Bid_Sample_Field_Names_New(): Locator {
+    return this.page.locator("(//div[@class=\"field-pair col-3\"])");
+  }
+
+  Bid_Sample_Name(BidSampleField: string): Locator {
+    return this.page.locator(`(//div[@class="col-2" and not(text()="Bid Sample Field Name") and not(text()="Chase Field")][1])[${BidSampleField}]`);
   }
 
   get BidMap(): Locator {

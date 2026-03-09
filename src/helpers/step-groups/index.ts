@@ -9,6 +9,8 @@ import * as excelHelper from '../excel-helpers';
 import { ENV } from '../../config/environments';
 
 import { CorrPortalPage } from '../../pages/correspondant/CorrPortalPage';
+import { testDataManager } from 'testdata/TestDataManager';
+//import { testDataManager } from '../../testdata/TestDataManager';
 // import { PlaywrightHelpers } from '../../PlaywrightHelpers';
 import { AddonHelpers } from '../../../src/helpers/AddonHelpers';
 import { CommitmentListPage } from '../../../src/pages/correspondant/commitment-list';
@@ -30,9 +32,11 @@ const credentials = ENV.getCredentials('internal');
  */
 export async function stepGroup_Login_to_CORR_Portal(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
-  await page.goto("/cp/");
-  await CorrPortalElem.Username_Field.fill(credentials.username);
-  await CorrPortalElem.Password_Field.fill(credentials.password);
+  //await page.goto("/");
+  await page.goto(ENV.CORR_QA_URL);
+ 
+  await CorrPortalElem.Username_Field.fill(vars["Username"] );
+  await CorrPortalElem.Password_Field.fill(vars["Password"] );
   await CorrPortalElem.Login_Button.click();
   await CorrPortalElem.Logo.waitFor({ state: 'visible' });
 }
@@ -123,8 +127,9 @@ export async function stepGroup_Rename_File(page: import('@playwright/test').Pag
 
 export async function stepGroup_Creation_Of_Bid_Map_Upto_Header_Mapping(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
-  const CorrespondentPortal4Elem = new CorrespondentPortal4Page(page);
+
   const correspondentPortalPage = new CorrespondentPortalPage(page);
+  const CorrespondentPortal4Elem = new CorrespondentPortal4Page(page);
   await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
   // [DISABLED] Verify that the element Dashboard is displayed and With Scrollable FALSE
   // await expect(CorrPortalElem.Dashboard).toBeVisible();
@@ -141,15 +146,15 @@ export async function stepGroup_Creation_Of_Bid_Map_Upto_Header_Mapping(page: im
     const fmt = "MM/dd/yyyy";
     // Map Java date format to Intl parts
     const parts = new Intl.DateTimeFormat('en-US', { ...opts, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }).formatToParts(d);
-    const p = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
-    return fmt.replace('yyyy', p.year || '').replace('yy', (p.year || '').slice(-2)).replace('MM', p.month || '').replace('dd', p.day || '').replace('HH', String(d.getHours()).padStart(2, '0')).replace('hh', p.hour || '').replace('mm', p.minute || '').replace('ss', p.second || '').replace('a', p.dayPeriod || '').replace(/M(?!M)/g, String(parseInt(p.month || '0'))).replace(/d(?!d)/g, String(parseInt(p.day || '0'))).replace(/h(?!h)/g, String(parseInt(p.hour || '0')));
+    const p = Object.fromEntries(parts.map(({type, value}) => [type, value]));
+    return fmt.replace('yyyy', p.year || '').replace('yy', (p.year||'').slice(-2)).replace('MM', p.month || '').replace('dd', p.day || '').replace('HH', String(d.getHours()).padStart(2,'0')).replace('hh', p.hour || '').replace('mm', p.minute || '').replace('ss', p.second || '').replace('a', p.dayPeriod || '').replace(/M(?!M)/g, String(parseInt(p.month||'0'))).replace(/d(?!d)/g, String(parseInt(p.day||'0'))).replace(/h(?!h)/g, String(parseInt(p.hour||'0')));
   })();
   vars["CreateNewMap"] = (() => {
     const d = new Date();
     const opts: Intl.DateTimeFormatOptions = { timeZone: "America/New_York" };
     const fmt = "MM/dd/yyyy/HH:mm:ss";
     const parts = new Intl.DateTimeFormat('en-US', { ...opts, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false }).formatToParts(d);
-    const p = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
+    const p = Object.fromEntries(parts.map(({type, value}) => [type, value]));
     return fmt.replace('yyyy', p.year || '').replace('MM', p.month || '').replace('dd', p.day || '').replace('HH', p.hour || '').replace('mm', p.minute || '').replace('ss', p.second || '');
   })();
   vars["CreateNewMap"] = "Testsigma_" + vars["CreateNewMap"];
@@ -167,8 +172,7 @@ export async function stepGroup_Creation_Of_Bid_Map_Upto_Header_Mapping(page: im
   await CorrPortalElem.Apply_Selected.click();
   await expect(CorrPortalElem.Upload_File).toHaveValue('');
   await expect(page.getByText("Drag and drop files here or click to browse. Allowed formats: .xls,.xlsx,.csv,.txt")).toBeVisible();
-  // await CorrPortalElem.Upload_File.setInputFiles(path.resolve(__dirname, '../../../uploads', "DeepikaAugBidQA_(3)_(1)_(1)_(2).xlsx"));
-  await uploadFile(page, correspondentPortalPage.Upload_File, "DeepikaAugBidQA_(3)_(1)_(1)_(2) (1).xlsx");
+  await CorrPortalElem.Upload_File.setInputFiles(path.resolve(__dirname, '../../../uploads', "DeepikaAugBidQA_(3)_(1)_(1)_(2).xlsx"));
   await CorrPortalElem.Map_Headers_Button.click();
   await CorrPortalElem.Save_and_Move_to_Next_Page.waitFor({ state: 'visible' });
   await expect(CorrPortalElem.This_action_will_save_the_changes_and_Move_to_Next_Page).toBeVisible();
@@ -522,10 +526,10 @@ export async function stepGroup_Navigation_and_Verification_of_Customer_Permissi
  */
 export async function stepGroup_Navigating_to_Bulk_Batch_Timing(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
-  await page.waitForLoadState('networkidle');
+  await page.waitForLoadState('load');
   await CorrPortalElem.Administration_Menu.click();
-  await CorrPortalElem.General_Settings.click();
-  await page.waitForLoadState('networkidle');
+  await CorrPortalElem.General_Settings.first().click();
+  await page.waitForLoadState('load');
   await CorrPortalElem.Bulk_Batch_Timing.click();
   await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
 }
@@ -2301,9 +2305,9 @@ export async function stepGroup_Navigating_to_Upload_New_Bid_Request(page: impor
   const CorrPortalElem = new CorrPortalPage(page);
   await CorrPortalElem.BidRequests_Menu.click();
   await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
-  await expect(page.getByText("Bid Requests")).toBeVisible();
+  await expect(page.getByText("Bid Requests").first()).toBeVisible();
   await CorrPortalElem.Upload_New_Bid_Request_Button.click();
-  await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
+  await CorrPortalElem.Spinner.first().waitFor({ state: 'hidden' });
 }
 
 /**
@@ -2573,7 +2577,7 @@ export async function stepGroup_Modifying_The_Batch_Intervals(page: import('@pla
   await expect(page.getByText("Edit Batch Timing")).toBeVisible();
   vars["Time_Hour"] = (() => {
     const d = new Date();
-    const opts: Intl.DateTimeFormatOptions = { timeZone: "UTC-05:00" };
+    const opts: Intl.DateTimeFormatOptions = { timeZone: "America/New_York" };
     const fmt = "hh";
     // Map Java date format to Intl parts
     const parts = new Intl.DateTimeFormat('en-US', { ...opts, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }).formatToParts(d);
@@ -2583,7 +2587,7 @@ export async function stepGroup_Modifying_The_Batch_Intervals(page: import('@pla
   await CorrPortalElem.StartTime_In_Hour.fill(vars["Time_Hour"]);
   vars["Time_Min"] = (() => {
     const d = new Date();
-    const opts: Intl.DateTimeFormatOptions = { timeZone: "UTC-05:00" };
+    const opts: Intl.DateTimeFormatOptions = { timeZone: "America/New_York" };
     const fmt = "hh:mm";
     // Map Java date format to Intl parts
     const parts = new Intl.DateTimeFormat('en-US', { ...opts, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }).formatToParts(d);
@@ -2629,7 +2633,7 @@ export async function stepGroup_Modifying_Batch_Intervals_For_next_bussiness_day
   await expect(page.getByText("Edit Batch Timing")).toBeVisible();
   vars["Time_Hour"] = (() => {
     const d = new Date();
-    const opts: Intl.DateTimeFormatOptions = { timeZone: "UTC-05:00" };
+    const opts: Intl.DateTimeFormatOptions = { timeZone: "America/New_York" };
     const fmt = "hh";
     // Map Java date format to Intl parts
     const parts = new Intl.DateTimeFormat('en-US', { ...opts, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }).formatToParts(d);
@@ -2639,7 +2643,7 @@ export async function stepGroup_Modifying_Batch_Intervals_For_next_bussiness_day
   await CorrPortalElem.StartTime_In_Hour.fill(vars["Time_Hour"]);
   vars["Time_Min"] = (() => {
     const d = new Date();
-    const opts: Intl.DateTimeFormatOptions = { timeZone: "UTC-05:00" };
+    const opts: Intl.DateTimeFormatOptions = { timeZone: "America/New_York" };
     const fmt = "hh:mm";
     // Map Java date format to Intl parts
     const parts = new Intl.DateTimeFormat('en-US', { ...opts, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }).formatToParts(d);
@@ -2773,10 +2777,25 @@ export async function stepGroup_Past_time_disable_verification_in_bidrequest_dro
  * Steps: 24
  */
 export async function stepGroup_Uploading_Bid_Request(page: import('@playwright/test').Page, vars: Record<string, string>) {
+const profileName = 'Bid Requests';       // TDP sheet name
+const profile = testDataManager.getProfileByName(profileName);
+
+if (profile && profile.data) {
+  const value = profile.data[0]['Company Name'];  // row 0, column name
+  vars["CompanyName"] = value;    
+  const bidMappingID = profile.data[0]['BidMappingID'];
+  vars["BidMappingID"] = bidMappingID;                  // store in vars
+} // TODO: Get the profile name dynamically if needed
   const CorrPortalElem = new CorrPortalPage(page);
   const testData: Record<string, string> = {}; // TODO: Load from test data profile
+  //await CorrPortalElem.Upload_New_Bid_Request_Button.isEnabled();
+  await page.waitForTimeout(5000);
+  await CorrPortalElem.Upload_New_Bid_Request_Button.click();
+  await page.waitForTimeout(5000);
+  // wait for the spinner element on the page to disappear
+  await CorrPortalElem.Spinner.first().waitFor({ state: 'hidden' });
   await CorrPortalElem.Select_Company_In_BidRequest.click();
-  await CorrPortalElem.Bid_Mapping_Id_Search_Input_box.fill(testData["Company Name"]);
+  await CorrPortalElem.Bid_Mapping_Id_Search_Input_box.fill(vars["CompanyName"]);
   // [DISABLED] Verify that the element SelectCompany_Value has value Company Name for title and With Scrollable FALSE
   // await expect(CorrPortalElem.SelectCompany_Value).toHaveAttribute('title', testData["Company Name"]);
   await CorrPortalElem.SelectCompany_Value.click();
@@ -2788,10 +2807,10 @@ export async function stepGroup_Uploading_Bid_Request(page: import('@playwright/
   await CorrPortalElem.StandardExceutionType_Dropdown.waitFor({ state: 'visible' });
   await expect(CorrPortalElem.StandardExceutionType_Dropdown).toHaveValue("3");
   await CorrPortalElem.Bid_Mapping_ID_Dropdown.click();
-  await CorrPortalElem.Search_box_Bid_mapping_id.fill(testData["BidMappingID"]);
+  await CorrPortalElem.Search_box_Bid_mapping_id.fill(vars["BidMappingID"]);
   await CorrPortalElem.Bid_Mapping_ID_Dropdown_1.waitFor({ state: 'visible' });
   await CorrPortalElem.Bid_Mapping_ID_Dropdown_1.click();
-  await expect(CorrPortalElem.Bid_Mapping_ID_Dropdown).toContainText(testData["BidMappingID"]);
+  //await expect(CorrPortalElem.Bid_Mapping_ID_Dropdown).toContainText([vars["BidMappingID"]]);
   await expect(CorrPortalElem.Bid_Request_Date).toBeEnabled();
   await CorrPortalElem.Pricing_Return_Time.click();
   // [DISABLED] Scroll down to the element Enabled_PricingReturnTime into view
@@ -2819,7 +2838,7 @@ export async function stepGroup_Adding_a_batch_In_bulk_batch_screen(page: import
   const CorrPortalElem = new CorrPortalPage(page);
   vars["CurrentTime"] = (() => {
     const d = new Date();
-    const opts: Intl.DateTimeFormatOptions = { timeZone: "UTC-05:00" };
+    const opts: Intl.DateTimeFormatOptions = { timeZone: "America/New_York" };
     const fmt = "hh:mm a";
     // Map Java date format to Intl parts
     const parts = new Intl.DateTimeFormat('en-US', { ...opts, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }).formatToParts(d);
@@ -2879,7 +2898,7 @@ export async function stepGroup_Modifying_The_Batch_Intervals_For_one_Hour_Prior
   await expect(page.getByText("Edit Batch Timing")).toBeVisible();
   vars["CurrentTime"] = (() => {
     const d = new Date();
-    const opts: Intl.DateTimeFormatOptions = { timeZone: "UTC-05:00" };
+    const opts: Intl.DateTimeFormatOptions = { timeZone: "America/New_York" };
     const fmt = "hh:mm a";
     // Map Java date format to Intl parts
     const parts = new Intl.DateTimeFormat('en-US', { ...opts, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }).formatToParts(d);
@@ -3055,7 +3074,7 @@ export async function stepGroup_Navigating_to_Customer_Permission_For_the_Chase_
 export async function stepGroup_Getting_Next_Bussiness_day_by_handling_weekend(page: import('@playwright/test').Page, vars: Record<string, string>) {
   vars["CurrentDateList"] = (() => {
     const d = new Date();
-    const opts: Intl.DateTimeFormatOptions = { timeZone: "UTC-05:00" };
+    const opts: Intl.DateTimeFormatOptions = { timeZone: "America/New_York" };
     const fmt = "MM/dd/yyyy";
     // Map Java date format to Intl parts
     const parts = new Intl.DateTimeFormat('en-US', { ...opts, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }).formatToParts(d);
@@ -3100,7 +3119,7 @@ export async function stepGroup_Modifying_The_Batch_Intervals_For_Next_bussiness
   await expect(page.getByText("Edit Batch Timing")).toBeVisible();
   vars["CurrentTime"] = (() => {
     const d = new Date();
-    const opts: Intl.DateTimeFormatOptions = { timeZone: "UTC-05:00" };
+    const opts: Intl.DateTimeFormatOptions = { timeZone: "America/New_York" };
     const fmt = "hh:mm a";
     // Map Java date format to Intl parts
     const parts = new Intl.DateTimeFormat('en-US', { ...opts, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }).formatToParts(d);
@@ -3243,12 +3262,22 @@ export async function stepGroup_Upload_Bid_Request_For_Next_Business_Day_With_Ch
  * Steps: 17
  */
 export async function stepGroup_Uploading_Bid_Request_By_Selecting_both_standard_and_chase_t(page: import('@playwright/test').Page, vars: Record<string, string>) {
+  const profileName = 'Bid Requests';       // TDP sheet name
+const profile = testDataManager.getProfileByName(profileName);
+
+if (profile && profile.data) {
+  const value = profile.data[0]['Company Name'];  // row 0, column name
+  vars["CompanyName"] = value;    
+  const bidMappingID = profile.data[0]['BidMappingID'];
+  vars["BidMappingID"] = bidMappingID;                  // store in vars
+}
+  
   const CorrPortalElem = new CorrPortalPage(page);
   const testData: Record<string, string> = {}; // TODO: Load from test data profile
   await CorrPortalElem.Select_Company_In_BidRequest.click();
-  await CorrPortalElem.Bid_Mapping_Id_Search_Input_box.fill(testData["Company Name"]);
+  await CorrPortalElem.Bid_Mapping_Id_Search_Input_box.fill(vars["CompanyName"]);
   await CorrPortalElem.SelectCompany_Value.waitFor({ state: 'visible' });
-  await expect(CorrPortalElem.SelectCompany_Value).toContainText(testData["Company Name"]);
+  await expect(CorrPortalElem.SelectCompany_Value).toContainText(vars["CompanyName"]);
   await CorrPortalElem.SelectCompany_Value.click();
   await expect(CorrPortalElem.Standard_Execution_Checkbox).toBeVisible();
   await CorrPortalElem.StandardExecution_Dropdown.selectOption({ label: "3" });
@@ -3257,10 +3286,11 @@ export async function stepGroup_Uploading_Bid_Request_By_Selecting_both_standard
   await expect(CorrPortalElem.Chase_Direct_Checkbox).toBeVisible();
   await CorrPortalElem.Chase_Direct_Dropdown_Upload_Bidrequest.selectOption({ index: parseInt("1") });
   await CorrPortalElem.Bid_Mapping_ID_Dropdown.click();
-  await CorrPortalElem.Search_box_Bid_mapping_id.fill(testData["BidMappingID"]);
-  await CorrPortalElem.Entered_Bid_Mapping_Id_New.waitFor({ state: 'visible' });
-  await CorrPortalElem.Entered_Bid_Mapping_Id_New.click();
-  await expect(CorrPortalElem.Bid_Mapping_ID_Dropdown).toContainText(testData["BidMappingID"]);
+  await CorrPortalElem.Search_box_Bid_mapping_id.fill(vars["BidMappingID"]);
+  await page.waitForTimeout(3000);
+  //await CorrPortalElem.Entered_Bid_Mapping_Id_New.waitFor({ state: 'visible' });
+  await CorrPortalElem.Entered_Bid_Mapping_Id_New(vars["BidMappingID"]).first().click();
+  await expect(CorrPortalElem.Bid_Mapping_ID_Dropdown_1).toContainText(vars["BidMappingID"]);
   await CorrPortalElem.Pricing_Return_Time.click();
 }
 
@@ -3900,22 +3930,40 @@ export async function stepGroup_Uploading_Bid_RequestNew(page: import('@playwrig
  * Steps: 14
  */
 export async function stepGroup_Modifying_The_batch_Intervals_with_current_est_time(page: import('@playwright/test').Page, vars: Record<string, string>) {
+  const Methods = new AddonHelpers(page);
   const CorrPortalElem = new CorrPortalPage(page);
-  const testData: Record<string, string> = {}; // TODO: Load from test data profile
+  
+  // Load test data from TestDataManager
+  const profile = testDataManager.getProfileByName("Administration_Bulk Batch Timing");
+  const testData = profile?.data?.[0] || {};
   await CorrPortalElem.Modify_Batch_Intervals_Button.click();
   await expect(page.getByText("Edit Batch Timing")).toBeVisible();
-  vars["CurrentTime"] = (() => {
-    const d = new Date();
-    const opts: Intl.DateTimeFormatOptions = { timeZone: "UTC-05:00" };
-    const fmt = "hh:mm a";
-    // Map Java date format to Intl parts
-    const parts = new Intl.DateTimeFormat('en-US', { ...opts, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }).formatToParts(d);
-    const p = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
-    return fmt.replace('yyyy', p.year || '').replace('yy', (p.year || '').slice(-2)).replace('MM', p.month || '').replace('dd', p.day || '').replace('HH', String(d.getHours()).padStart(2, '0')).replace('hh', p.hour || '').replace('mm', p.minute || '').replace('ss', p.second || '').replace('a', p.dayPeriod || '').replace(/M(?!M)/g, String(parseInt(p.month || '0'))).replace(/d(?!d)/g, String(parseInt(p.day || '0'))).replace(/h(?!h)/g, String(parseInt(p.hour || '0')));
-  })();
+  // vars["CurrentTime"] = (() => {
+  //   const d = new Date();
+  //   const opts: Intl.DateTimeFormatOptions = { timeZone: "America/New_York" };
+  //   const fmt = "hh:mm a";
+  //   // Map Java date format to Intl parts
+  //   const parts = new Intl.DateTimeFormat('en-US', { ...opts, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }).formatToParts(d);
+  //   const p = Object.fromEntries(parts.map(({type, value}) => [type, value]));
+  //   return fmt.replace('yyyy', p.year || '').replace('yy', (p.year||'').slice(-2)).replace('MM', p.month || '').replace('dd', p.day || '').replace('HH', String(d.getHours()).padStart(2,'0')).replace('hh', p.hour || '').replace('mm', p.minute || '').replace('ss', p.second || '').replace('a', p.dayPeriod || '').replace(/M(?!M)/g, String(parseInt(p.month||'0'))).replace(/d(?!d)/g, String(parseInt(p.day||'0'))).replace(/h(?!h)/g, String(parseInt(p.hour||'0')));
+  // })();
+  //Methods.getCurrentTimestamp('hh:mm a', 'CurrentTime',  'America/New_York');
+  // console.log("CurrentTime value: before",  vars['CurrentTime']);
+const now = new Date();
+vars["CurrentTime"] = now.toLocaleString('en-US', {
+  timeZone: 'America/New_York',
+  hour: '2-digit',
+  minute: '2-digit',
+  hour12: true
+});
+
+console.log("CurrentTime:", vars["CurrentTime"]); // 04:45 AM
   await stepGroup_Separating_Hours_and_minutes_In_time_Current_EST_time(page, vars);
   await CorrPortalElem.StartTime_In_Hour.fill(vars["Time_Hour"]);
-  await CorrPortalElem.StartTime_In_Minutes.fill(vars["Time_Min"]);
+  console.log("Time_Min value:", vars["Time_Min"]);
+  await CorrPortalElem.StartTime_In_Minutes.click({ clickCount: 3 });
+await CorrPortalElem.StartTime_In_Minutes.type(vars["Time_Min"]);
+  //await CorrPortalElem.StartTime_In_Minutes.fill(vars["Time_Min"]);
   await stepGroup_selecting_time_unit_bulk_batch(page, vars);
   await CorrPortalElem.Time_Interval.fill(testData["Time Interval"]);
   await CorrPortalElem.No_Of_Batches.fill(testData["NO of Batches"]);
@@ -3932,9 +3980,13 @@ export async function stepGroup_Modifying_The_batch_Intervals_with_current_est_t
  * Steps: 4
  */
 export async function stepGroup_Separating_Hours_and_minutes_In_time_Current_EST_time(page: import('@playwright/test').Page, vars: Record<string, string>) {
-  vars["MinWithStandard"] = String(vars["CurrentTime"]).split(":")["2"] || '';
+  console.log("CurrentTime value: inside", vars["CurrentTime"]);
+  vars["MinWithStandard"] = String(vars["CurrentTime"]).split(":")["1"] || '';
+  console.log("MinWithStandard value:", vars["MinWithStandard"]);
   vars["Time_Hour"] = String(vars["CurrentTime"]).substring(0, String(vars["CurrentTime"]).length - 6);
+  console.log("Time_Hour value:", vars["Time_Hour"]);
   vars["Time_Min"] = String(vars["MinWithStandard"]).substring(0, String(vars["MinWithStandard"]).length - 3);
+  console.log("Time_Min value:", vars["Time_Min"]);
   vars["Time_Unit"] = String(vars["MinWithStandard"]).substring(3);
 }
 
@@ -4332,16 +4384,17 @@ export async function stepGroup_Commits_an_Fresh_Loan_Num_Chase_Direct(page: imp
 export async function stepGroup_Uploading_New_Bid_Request_Bid_Request_Screen(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
   await stepGroup_Uploading_Bid_Request(page, vars);
-  if (true) /* Element Enabled Time New is visible */ {
-    await CorrPortalElem.Enabled_Time_New.scrollIntoViewIfNeeded();
-    await CorrPortalElem.Enabled_Time_New.click();
-  } else {
+  if (await CorrPortalElem.Enabled_Time_New.first().isVisible()) {
+  await CorrPortalElem.Enabled_Time_New.first().scrollIntoViewIfNeeded();
+  await CorrPortalElem.Enabled_Time_New.first().click();
+} else {
     await stepGroup_Navigating_to_Bulk_Batch_Timing(page, vars);
-    await stepGroup_Modifying_The_Batch_Intervals_For_one_Hour_Prior(page, vars);
+    //await stepGroup_Modifying_The_Batch_Intervals_For_one_Hour_Prior(page, vars);
+    await stepGroup_Modifying_batches_with_5_min_prior(page, vars);
     await stepGroup_Navigating_to_Upload_New_Bid_Request(page, vars);
     await stepGroup_Uploading_Bid_Request(page, vars);
-    await CorrPortalElem.Enabled_Time.scrollIntoViewIfNeeded();
-    await CorrPortalElem.Enabled_Time.click();
+    await CorrPortalElem.Enabled_Time.first().scrollIntoViewIfNeeded();
+    await CorrPortalElem.Enabled_Time.first().click();
   }
   await CorrPortalElem.Upload_File.setInputFiles(path.resolve(__dirname, 'test-data', "Bid_file_success_error.xlsx"));
   await expect(CorrPortalElem.UploadBid_Button).toBeVisible();
@@ -4556,31 +4609,65 @@ export async function stepGroup_Commits_an_Fresh_Loan_Num_Standard(page: import(
  * ID: 1576
  * Steps: 17
  */
+// export async function stepGroup_Headers_Verification(page: import('@playwright/test').Page, vars: Record<string, string>) {
+//   const CorrPortalElem = new CorrPortalPage(page);
+//   vars["Count"] = "1";
+//   vars["count"] = "1";
+//   vars["ExcelHeader"] = "0";
+//   vars["CountOfHeaders"] = String(await CorrPortalElem.Headers_UI.count());
+//   vars["HeaderValuesExcel"] = excelHelper.readRow(vars['_lastDownloadPath'] || '', vars["ExcelHeader"], "0");
+//   while (parseFloat(String(vars["Count"])) <= parseFloat(String(vars["CountOfHeaders"]))) {
+//     vars["IndividualHeaders"] = await CorrPortalElem.Individual_Headers.textContent() || '';
+//     vars["IndividualHeadersUI"] = String(vars["IndividualHeaders"]).trim();
+//     vars["IndividualExcelHeaders"] = String(vars["HeaderValuesExcel"]).split(",")[parseInt(String(vars["count"]))] || '';
+//     vars["IndividualExcelHeaders"] = String(vars["IndividualExcelHeaders"]).trim();
+//     if (String(vars["IndividualHeadersUI"]) === String("BidReq.ID")) {
+//       vars["IndividualHeadersUI"] = "BidRequestID";
+//     }
+//     if (String(vars["IndividualHeadersUI"]) === String("ExecutionType")) {
+//       // [DISABLED] Store Exe.Type in IndividualHeadersUI
+//       // vars["IndividualHeadersUI"] = "Exe.Type";
+//     }
+//     expect(String(vars["IndividualHeadersUI"]).toLowerCase()).toContain(String(vars["IndividualExcelHeaders"]).toLowerCase());
+//     vars["Count"] = (parseFloat(String("1")) + parseFloat(String(vars["Count"]))).toFixed(0);
+//     vars["count"] = (parseFloat(String("1")) + parseFloat(String(vars["count"]))).toFixed(0);
+//   }
+// }
 export async function stepGroup_Headers_Verification(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
-  vars["Count"] = "1";
-  vars["count"] = "1";
+
+  // Validate download path before proceeding
+  const downloadPath = vars['_lastDownloadPath'];
+  if (!downloadPath) {
+    throw new Error('[stepGroup_Headers_Verification] vars["_lastDownloadPath"] is not set. Ensure the download was captured before calling this step group.');
+  }
+
   vars["ExcelHeader"] = "0";
   vars["CountOfHeaders"] = String(await CorrPortalElem.Headers_UI.count());
-  vars["HeaderValuesExcel"] = excelHelper.readRow(vars['_lastDownloadPath'] || '', vars["ExcelHeader"], "0");
-  while (parseFloat(String(vars["Count"])) <= parseFloat(String(vars["CountOfHeaders"]))) {
-    vars["IndividualHeaders"] = await CorrPortalElem.Individual_Headers.textContent() || '';
-    vars["IndividualHeadersUI"] = String(vars["IndividualHeaders"]).trim();
-    vars["IndividualExcelHeaders"] = String(vars["HeaderValuesExcel"]).split(",")[parseInt(String(vars["count"]))] || '';
-    vars["IndividualExcelHeaders"] = String(vars["IndividualExcelHeaders"]).trim();
-    if (String(vars["IndividualHeadersUI"]) === String("BidReq.ID")) {
-      vars["IndividualHeadersUI"] = "BidRequestID";
+  console.log(`[Headers Verification] Found ${vars["CountOfHeaders"]} headers in the UI.`);
+
+  // readRow returns Record<string, CellValue> — extract header values as an ordered array
+  const headerRowRecord = excelHelper.readRow(downloadPath, 0);
+  const excelHeaders: string[] = Object.keys(headerRowRecord); // Excel column header names
+
+  const countOfHeaders = parseInt(vars["CountOfHeaders"]);
+
+  for (let i = 0; i < countOfHeaders; i++) {
+    // Use nth(i) to get each individual header element
+    //let uiHeader = (await CorrPortalElem.Individual_Headers.nth(i).textContent() || '').trim();
+    let uiHeader = (await CorrPortalElem.Headers_UI.nth(i).textContent() || '').trim();
+    let excelHeader = (excelHeaders[i] || '').trim();
+
+    // Normalize known UI label differences
+    if (uiHeader === 'BidReq.ID') {
+      uiHeader = 'BidRequestID';
     }
-    if (String(vars["IndividualHeadersUI"]) === String("ExecutionType")) {
-      // [DISABLED] Store Exe.Type in IndividualHeadersUI
-      // vars["IndividualHeadersUI"] = "Exe.Type";
-    }
-    expect(String(vars["IndividualHeadersUI"]).toLowerCase()).toContain(String(vars["IndividualExcelHeaders"]).toLowerCase());
-    vars["Count"] = (parseFloat(String("1")) + parseFloat(String(vars["Count"]))).toFixed(0);
-    vars["count"] = (parseFloat(String("1")) + parseFloat(String(vars["count"]))).toFixed(0);
+
+    console.log(`[Header ${i + 1}] UI: "${uiHeader}" | Excel: "${excelHeader}"`);
+
+    expect(uiHeader.toLowerCase()).toContain(excelHeader.toLowerCase());
   }
 }
-
 /**
  * Step Group: Commit All Loans Chase Direct
  * ID: 1592
@@ -5496,7 +5583,7 @@ export async function stepGroup_Uploading_Bid_RequestFrom_selecting_batch_time(p
   vars["QueuedTime"] = vars["ExtractedDateTime"];
   vars["CurrentEstTime"] = (() => {
     const d = new Date();
-    const opts: Intl.DateTimeFormatOptions = { timeZone: "UTC-05:00" };
+    const opts: Intl.DateTimeFormatOptions = { timeZone: "America/New_York" };
     const fmt = "hh:mm ";
     // Map Java date format to Intl parts
     const parts = new Intl.DateTimeFormat('en-US', { ...opts, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }).formatToParts(d);
@@ -5902,7 +5989,7 @@ export async function stepGroup_Creating_Early_Config_Record(page: import('@play
   await expect(CorrPortalElem.datepicker_Input).toHaveValue(vars["TomorrowsDateInput"]);
   vars["CurrentEstTime"] = (() => {
     const d = new Date();
-    const opts: Intl.DateTimeFormatOptions = { timeZone: "UTC-05:00" };
+    const opts: Intl.DateTimeFormatOptions = { timeZone: "America/New_York" };
     const fmt = "hh:mm a";
     // Map Java date format to Intl parts
     const parts = new Intl.DateTimeFormat('en-US', { ...opts, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }).formatToParts(d);
@@ -5973,41 +6060,97 @@ export async function stepGroup_Splitting_the_amount_through_cama_from_the_excel
  * ID: 2305
  * Steps: 25
  */
+// export async function stepGroup_Verification_of_Data_from_Excel_to_UI_Excluding_Headers_Comm(page: import('@playwright/test').Page, vars: Record<string, string>) {
+//   const CorrPortalElem = new CorrPortalPage(page);
+//   vars["RowCount"] = String(await CorrPortalElem.Total_Rows_Count_UITotal_Loans.count());
+//   vars["RowCountUI"] = "1";
+//   vars["RowCountExcel"] = "1";
+//   while (parseFloat(String(vars["RowCountUI"])) <= parseFloat(String(vars["RowCount"]))) {
+//     vars["ColumnCountUI"] = "2";
+//     vars["indexExcel"] = "1";
+//     vars["RowDataExcel"] = excelHelper.readRow(vars['_lastDownloadPath'] || '', vars["RowCountExcel"], "0");
+//     // const rowDataRecord = excelHelper.readRow(vars['_lastDownloadPath'] || '', vars["RowCountExcel"]);
+//     // vars["RowDataExcel"] = Object.values(rowDataRecord).join(",");
+//     while (parseFloat(String(vars["ColumnCountUI"])) <= parseFloat(String("13"))) {
+//       vars["CellValueInExcel"] = String(vars["RowDataExcel"]).split(",")[parseInt(String(vars["indexExcel"]))] || '';
+//       vars["HeadersUI"] = await CorrPortalElem.Headers.textContent() || '';
+//       vars["HeadersUI"] = String(vars["HeadersUI"]).trim();
+//       vars["CellValuesUI "] = await CorrPortalElem.Individual_Cell_Value_UI.textContent() || '';
+//       vars["CellValuesUI"] = String(vars["CellValuesUI "]).trim();
+//       if (String(vars["indexExcel"]) === String("5")) {
+//         vars["CountofCama"] = String((String(vars["CellValuesUI"]).split(",").length - 1));
+//         vars["count"] = "1";
+//         while (parseFloat(String(vars["count"])) < parseFloat(String(vars["CountofCama"]))) {
+//           // [DISABLED] Split the RowDataExcel with the , and store the value from the indexExcel in the CellValueInExcel
+//           // vars["CellValueInExcel"] = String(vars["RowDataExcel"]).split(",")[parseInt(String(vars["indexExcel"]))] || '';
+//           vars["indexExcel"] = (parseFloat(String(vars["indexExcel"])) + parseFloat(String("1"))).toFixed(0);
+//           vars["CellValueInExcel2"] = String(vars["RowDataExcel"]).split(",")[parseInt(String(vars["indexExcel"]))] || '';
+//           vars["CellValueInExcel"] = String(vars["CellValueInExcel"]) + "," + String(vars["CellValueInExcel2"]);
+//           vars["count"] = (parseFloat(String(vars["count"])) + parseFloat(String("1"))).toFixed(0);
+//         // [DISABLED] Concate CellValueInExcel and CellValueInExcel2 with SpecialCharacter , and store into a variable CellValueInExcel
+//         // vars["CellValueInExcel"] = String(vars["CellValueInExcel"]) + "," + String(vars["CellValueInExcel2"]);
+//         }
+//       }
+//       await stepGroup_Splitting_the_amount_through_cama_from_the_excel_cell_value(page, vars);
+//       vars["CellValueInExcel"] = String(vars["CellValueInExcel"]).trim();
+//     }
+//   }
+// }
+
 export async function stepGroup_Verification_of_Data_from_Excel_to_UI_Excluding_Headers_Comm(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
+
+  const downloadPath = vars['_lastDownloadPath'];
+  if (!downloadPath) {
+    throw new Error('[stepGroup_Verification_of_Data_from_Excel_to_UI_Excluding_Headers_Comm] vars["_lastDownloadPath"] is not set.');
+  }
+
   vars["RowCount"] = String(await CorrPortalElem.Total_Rows_Count_UITotal_Loans.count());
   vars["RowCountUI"] = "1";
   vars["RowCountExcel"] = "1";
+
   while (parseFloat(String(vars["RowCountUI"])) <= parseFloat(String(vars["RowCount"]))) {
     vars["ColumnCountUI"] = "2";
     vars["indexExcel"] = "1";
-    vars["RowDataExcel"] = excelHelper.readRow(vars['_lastDownloadPath'] || '', vars["RowCountExcel"], "0");
+
+    const rowDataRecord = excelHelper.readRow(downloadPath, parseInt(vars["RowCountExcel"]));
+    vars["RowDataExcel"] = Object.values(rowDataRecord).join(",");
+
     while (parseFloat(String(vars["ColumnCountUI"])) <= parseFloat(String("13"))) {
       vars["CellValueInExcel"] = String(vars["RowDataExcel"]).split(",")[parseInt(String(vars["indexExcel"]))] || '';
-      vars["HeadersUI"] = await CorrPortalElem.Headers.textContent() || '';
-      vars["HeadersUI"] = String(vars["HeadersUI"]).trim();
-      vars["CellValuesUI "] = await CorrPortalElem.Individual_Cell_Value_UI.textContent() || '';
-      vars["CellValuesUI"] = String(vars["CellValuesUI "]).trim();
+
+      vars["CellValuesUI "] = await CorrPortalElem.Total_Rows_Count_UITotal_Loans
+        .nth(parseInt(vars["RowCountUI"]) - 1)
+        .locator('td')
+        .nth(parseInt(vars["ColumnCountUI"]) - 1)
+        .textContent() || '';
+      vars["CellValuesUI"] = String(vars["CellValuesUI "]).trim();
+
+      // ✅ Console log matching header verification style
+      console.log(`[Row ${vars["RowCountUI"]}][Col ${vars["ColumnCountUI"]}] UI: "${vars["CellValuesUI"]}" | Excel: "${vars["CellValueInExcel"].trim()}"`);
+
       if (String(vars["indexExcel"]) === String("5")) {
         vars["CountofCama"] = String((String(vars["CellValuesUI"]).split(",").length - 1));
         vars["count"] = "1";
         while (parseFloat(String(vars["count"])) < parseFloat(String(vars["CountofCama"]))) {
-          // [DISABLED] Split the RowDataExcel with the , and store the value from the indexExcel in the CellValueInExcel
-          // vars["CellValueInExcel"] = String(vars["RowDataExcel"]).split(",")[parseInt(String(vars["indexExcel"]))] || '';
           vars["indexExcel"] = (parseFloat(String(vars["indexExcel"])) + parseFloat(String("1"))).toFixed(0);
           vars["CellValueInExcel2"] = String(vars["RowDataExcel"]).split(",")[parseInt(String(vars["indexExcel"]))] || '';
           vars["CellValueInExcel"] = String(vars["CellValueInExcel"]) + "," + String(vars["CellValueInExcel2"]);
           vars["count"] = (parseFloat(String(vars["count"])) + parseFloat(String("1"))).toFixed(0);
-          // [DISABLED] Concate CellValueInExcel and CellValueInExcel2 with SpecialCharacter , and store into a variable CellValueInExcel
-          // vars["CellValueInExcel"] = String(vars["CellValueInExcel"]) + "," + String(vars["CellValueInExcel2"]);
         }
       }
+
       await stepGroup_Splitting_the_amount_through_cama_from_the_excel_cell_value(page, vars);
       vars["CellValueInExcel"] = String(vars["CellValueInExcel"]).trim();
+
+      vars["ColumnCountUI"] = (parseFloat(String(vars["ColumnCountUI"])) + 1).toFixed(0);
+      vars["indexExcel"] = (parseFloat(String(vars["indexExcel"])) + 1).toFixed(0);
     }
+
+    vars["RowCountUI"] = (parseFloat(String(vars["RowCountUI"])) + 1).toFixed(0);
+    vars["RowCountExcel"] = (parseFloat(String(vars["RowCountExcel"])) + 1).toFixed(0);
   }
 }
-
 /**
  * Step Group: Adjust Time by adding and subtracting one min from Last Commited Time
  * ID: 2314
@@ -6038,27 +6181,38 @@ export async function stepGroup_Adjust_Time_by_adding_and_subtracting_one_min_fr
  */
 export async function stepGroup_Modifying_batches_with_5_min_prior(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
-  const testData: Record<string, string> = {}; // TODO: Load from test data profile
+  //const testData: Record<string, string> = {}; // TODO: Load from test data profile
   await CorrPortalElem.Modify_Batch_Intervals_Button.click();
   await expect(page.getByText("Edit Batch Timing")).toBeVisible();
-  vars["CurrentTime"] = (() => {
-    const d = new Date();
-    const opts: Intl.DateTimeFormatOptions = { timeZone: "UTC-05:00" };
-    const fmt = "hh:mm a";
-    // Map Java date format to Intl parts
-    const parts = new Intl.DateTimeFormat('en-US', { ...opts, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }).formatToParts(d);
-    const p = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
-    return fmt.replace('yyyy', p.year || '').replace('yy', (p.year || '').slice(-2)).replace('MM', p.month || '').replace('dd', p.day || '').replace('HH', String(d.getHours()).padStart(2, '0')).replace('hh', p.hour || '').replace('mm', p.minute || '').replace('ss', p.second || '').replace('a', p.dayPeriod || '').replace(/M(?!M)/g, String(parseInt(p.month || '0'))).replace(/d(?!d)/g, String(parseInt(p.day || '0'))).replace(/h(?!h)/g, String(parseInt(p.hour || '0')));
-  })();
-  vars["CurrentTime"] = (() => {
-    const d = new Date('2000-01-01 ' + String(vars["CurrentTime"]));
-    d.setMinutes(d.getMinutes() + parseInt(String("5")));
-    return d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true }); // Format: hh:mm a
-  })();
+  const now = new Date();
+vars["CurrentTime"] = now.toLocaleString('en-US', {
+  timeZone: 'America/New_York',
+  hour: '2-digit',
+  minute: '2-digit',
+  hour12: true
+});
+  // vars["CurrentTime"] = (() => {
+  //   const d = new Date();
+  //   const opts: Intl.DateTimeFormatOptions = { timeZone: "America/New_York" };
+  //   const fmt = "hh:mm a";
+  //   // Map Java date format to Intl parts
+  //   const parts = new Intl.DateTimeFormat('en-US', { ...opts, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }).formatToParts(d);
+  //   const p = Object.fromEntries(parts.map(({type, value}) => [type, value]));
+  //   return fmt.replace('yyyy', p.year || '').replace('yy', (p.year||'').slice(-2)).replace('MM', p.month || '').replace('dd', p.day || '').replace('HH', String(d.getHours()).padStart(2,'0')).replace('hh', p.hour || '').replace('mm', p.minute || '').replace('ss', p.second || '').replace('a', p.dayPeriod || '').replace(/M(?!M)/g, String(parseInt(p.month||'0'))).replace(/d(?!d)/g, String(parseInt(p.day||'0'))).replace(/h(?!h)/g, String(parseInt(p.hour||'0')));
+  // })();
+  // vars["CurrentTime"] = (() => {
+  //   const d = new Date('2000-01-01 ' + String(vars["CurrentTime"]));
+  //   d.setMinutes(d.getMinutes() + parseInt(String("5")));
+  //   return d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true }); // Format: hh:mm a
+  // })();
   await stepGroup_Separating_Hours_and_minutes_In_time_Current_EST_time(page, vars);
   await CorrPortalElem.StartTime_In_Hour.fill(vars["Time_Hour"]);
   await CorrPortalElem.StartTime_In_Minutes.fill(vars["Time_Min"]);
   await stepGroup_selecting_time_unit_bulk_batch(page, vars);
+  //const profileName = "Bid Requests";
+  //const profile = testDataManager.getProfileByName(profileName);
+  const profile = testDataManager.getProfileByName("Administration_Bulk Batch Timing");
+  const testData = profile?.data?.[0] || {};
   await CorrPortalElem.Time_Interval.fill(testData["Time Interval"]);
   await CorrPortalElem.No_Of_Batches.fill(testData["NO of Batches"]);
   await expect(CorrPortalElem.On_Radio_button_in_Bid_Request).toBeEnabled();
@@ -6078,7 +6232,7 @@ export async function stepGroup_Selecting_Second_Enabled_Batch_Time_If_the_Condi
   vars["EnabledTime"] = await CorrPortalElem.Enabled_Time.textContent() || '';
   vars["CurrentEstTime"] = (() => {
     const d = new Date();
-    const opts: Intl.DateTimeFormatOptions = { timeZone: "UTC-05:00" };
+    const opts: Intl.DateTimeFormatOptions = { timeZone: "America/New_York" };
     const fmt = "hh:mm a";
     // Map Java date format to Intl parts
     const parts = new Intl.DateTimeFormat('en-US', { ...opts, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }).formatToParts(d);
@@ -6128,7 +6282,7 @@ export async function stepGroup_Creating_a_new_bid_for_price_offered_status_with
   vars["QueuedTime"] = vars["ExtractedDateTime"];
   vars["CurrentEstTime"] = (() => {
     const d = new Date();
-    const opts: Intl.DateTimeFormatOptions = { timeZone: "UTC-05:00" };
+    const opts: Intl.DateTimeFormatOptions = { timeZone: "America/New_York" };
     const fmt = "hh:mm ";
     // Map Java date format to Intl parts
     const parts = new Intl.DateTimeFormat('en-US', { ...opts, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }).formatToParts(d);
@@ -6330,7 +6484,7 @@ export async function stepGroup_Waiting_in_the_2_while_loops_for_the_price_offer
   }
   vars["CurrentEstTime"] = (() => {
     const d = new Date();
-    const opts: Intl.DateTimeFormatOptions = { timeZone: "UTC-05:00" };
+    const opts: Intl.DateTimeFormatOptions = { timeZone: "America/New_York" };
     const fmt = "hh:mm a";
     // Map Java date format to Intl parts
     const parts = new Intl.DateTimeFormat('en-US', { ...opts, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }).formatToParts(d);
@@ -6349,7 +6503,7 @@ export async function stepGroup_Waiting_in_the_2_while_loops_for_the_price_offer
   }
   vars["CurrentEstTime"] = (() => {
     const d = new Date();
-    const opts: Intl.DateTimeFormatOptions = { timeZone: "UTC-05:00" };
+    const opts: Intl.DateTimeFormatOptions = { timeZone: "America/New_York" };
     const fmt = "hh:mm a";
     // Map Java date format to Intl parts
     const parts = new Intl.DateTimeFormat('en-US', { ...opts, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }).formatToParts(d);
@@ -6372,7 +6526,7 @@ export async function stepGroup_Creating_an_Early_Config_Record(page: import('@p
   await CorrPortalElem.Early_Close_Config.click();
   vars["CurrentDateList"] = (() => {
     const d = new Date();
-    const opts: Intl.DateTimeFormatOptions = { timeZone: "UTC-05:00" };
+    const opts: Intl.DateTimeFormatOptions = { timeZone: "America/New_York" };
     const fmt = "yyyy/M/d";
     // Map Java date format to Intl parts
     const parts = new Intl.DateTimeFormat('en-US', { ...opts, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }).formatToParts(d);
@@ -6381,7 +6535,7 @@ export async function stepGroup_Creating_an_Early_Config_Record(page: import('@p
   })();
   vars["CurrentDateCalender"] = (() => {
     const d = new Date();
-    const opts: Intl.DateTimeFormatOptions = { timeZone: "UTC-05:00" };
+    const opts: Intl.DateTimeFormatOptions = { timeZone: "America/New_York" };
     const fmt = "d-M-yyyy";
     // Map Java date format to Intl parts
     const parts = new Intl.DateTimeFormat('en-US', { ...opts, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }).formatToParts(d);
@@ -6390,7 +6544,7 @@ export async function stepGroup_Creating_an_Early_Config_Record(page: import('@p
   })();
   vars["CurrentDateInput"] = (() => {
     const d = new Date();
-    const opts: Intl.DateTimeFormatOptions = { timeZone: "UTC-05:00" };
+    const opts: Intl.DateTimeFormatOptions = { timeZone: "America/New_York" };
     const fmt = "yyyy-MM-dd";
     // Map Java date format to Intl parts
     const parts = new Intl.DateTimeFormat('en-US', { ...opts, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }).formatToParts(d);
@@ -6426,7 +6580,7 @@ export async function stepGroup_Creating_an_Early_Config_Record(page: import('@p
   await expect(CorrPortalElem.datepicker_Input).toHaveValue(vars["TomorrowsDateInput"]);
   vars["CurrentEstTime"] = (() => {
     const d = new Date();
-    const opts: Intl.DateTimeFormatOptions = { timeZone: "UTC-05:00" };
+    const opts: Intl.DateTimeFormatOptions = { timeZone: "America/New_York" };
     const fmt = "hh:mm a";
     // Map Java date format to Intl parts
     const parts = new Intl.DateTimeFormat('en-US', { ...opts, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }).formatToParts(d);
