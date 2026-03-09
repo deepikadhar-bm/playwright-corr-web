@@ -4050,6 +4050,7 @@
     "testDataName": "Price Offered",
     "data": [
       {
+        "CommittedBidId": "87XBBBD565A1",
         "CompanyNameInFilters": "Fre",
         "RequestIdfor22-2.1": "87BQ7DB5C69B",
         "RequestIDCreated3rdScenario": "87FXBEEDB1CF",

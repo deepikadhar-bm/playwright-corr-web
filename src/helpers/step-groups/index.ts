@@ -5377,39 +5377,30 @@ export async function stepGroup_Verification_of_Data_from_Excel_to_UIClosed_List
   const CorrPortalElem = new CorrPortalPage(page);
   const Methods = new AddonHelpers(page, vars);
   vars["RowCount"] = "1";
-
+  log.info("Rows count UI:" + vars["RowCount"])
   while (parseFloat(String(vars["RowCount"])) <= parseFloat(String(vars["TotalRowsCountUI"]))) {
     vars["ColumnCountUI"] = "1";
     vars["IndexCountExcel"] = "1";
-
     vars["EntireRowDataExcel"] = excelHelper.readEntireRow(vars["ExportsFilePath"], 0, vars["RowCount"], "EntireRowDataExcel");
-
     await CorrPortalElem.Commitment_List_Text.click();
-
     while (parseFloat(vars["ColumnCountUI"]) <= 13) {
       Methods.splitStringByRegConditionWithPosition(vars["EntireRowDataExcel"], ",", vars["IndexCountExcel"], "IndividualCellValueExcel");
-
       vars["IndividualCellValueUI"] = await CorrPortalElem.Individual_Cell_Value_Closed_List(vars["RowCount"], vars["ColumnCountUI"]).textContent() || '';
-
       Methods.trimWhitespace(vars["IndividualCellValueUI"], "IndividualCellValueUI");
-
       if (String(vars["ColumnCountUI"]) === "5") {
+        log.info("Column Count UI is matched with five");
         Methods.countCharacter(vars["IndividualCellValueUI"], ",", "CountofCama");
-
         vars["count"] = "1";
-
         while (parseFloat(vars["count"]) <= parseFloat(vars["CountofCama"])) {
           Methods.MathematicalOperation(vars["IndexCountExcel"], "+", "1", "IndexCountExcel");
           Methods.splitStringByRegConditionWithPosition(vars["EntireRowDataExcel"], ",", vars["IndexCountExcel"], "CellValueInExcel2");
           Methods.concatenateWithSpecialChar(vars["IndividualCellValueExcel"], vars["CellValueInExcel2"], ",", "IndividualCellValueExcel");
           Methods.MathematicalOperation(vars["count"], "+", "1", "count");
         }
-
       } else if (String(vars["ColumnCountUI"]) === "13") {
+        log.info("else if condition is passed in Column Count UI is matched with 13");
         Methods.countCharacter(vars["IndividualCellValueUI"], ",", "CountofCama");
-
         vars["count"] = "1";
-
         while (parseFloat(vars["count"]) <= parseFloat(vars["CountofCama"])) {
           Methods.MathematicalOperation(vars["IndexCountExcel"], "+", "1", "IndexCountExcel");
           Methods.splitStringByRegConditionWithPosition(vars["EntireRowDataExcel"], ",", vars["IndexCountExcel"], "CellValueInExcel2");
@@ -5417,18 +5408,14 @@ export async function stepGroup_Verification_of_Data_from_Excel_to_UIClosed_List
           Methods.MathematicalOperation(vars["count"], "+", "1", "count");
         }
       }
-
       Methods.trimWhitespace(vars["IndividualCellValueExcel"], "IndividualCellValueExcel");
       expect(Methods.verifyString(vars["IndividualCellValueExcel"], "contains", vars["IndividualCellValueUI"]));
-
       Methods.MathematicalOperation(vars["ColumnCountUI"], "+", "1", "ColumnCountUI");
       Methods.MathematicalOperation(vars["IndexCountExcel"], "+", "1", "IndexCountExcel");
     }
-
     Methods.MathematicalOperation(vars["RowCount"], "+", "1", "RowCount");
   }
-
-
+  log.info("stepGroup Verification of Data from Excel to UI Closed List is completed");
 }
 
 /**

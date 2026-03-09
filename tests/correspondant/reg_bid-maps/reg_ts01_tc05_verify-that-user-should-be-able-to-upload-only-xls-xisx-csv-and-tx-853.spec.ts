@@ -3,7 +3,7 @@ import { test, expect, Page } from '@playwright/test';
 import path from 'path';
 import * as stepGroups from '../../../src/helpers/step-groups';
 import { CorrespondentPortalPage } from '../../../src/pages/correspondant/correspondent-portal';
-import { Deepikaaugbidqa1csvButtonDivPage } from '../../../src/pages/correspondant/deepikaaugbidqa1csv-button-div';
+import { MappingCreationWizard } from '../../../src/pages/correspondant/mapping-creation-wizard';
 import { FileFormatNotAllowedDeepikaaugbidqa1pdfPage } from '../../../src/pages/correspondant/file-format-not-allowed-deepikaaugbidqa1pdf';
 import { HeaderMappingPage } from '../../../src/pages/correspondant/header-mapping';
 import { HeadingCreateNewMapPage } from '../../../src/pages/correspondant/heading-create-new-map';
@@ -21,7 +21,7 @@ const TC_TITLE = "Verify that user should be able to upload only xls, xlsx, csv 
 test.describe('REG_Bid Maps', () => {
   let vars: Record<string, string> = {};
   let correspondentPortalPage: CorrespondentPortalPage;
-  let deepikaaugbidqa1csvButtonDivPage: Deepikaaugbidqa1csvButtonDivPage;
+  let mappingCreationWizardPage: MappingCreationWizard;
   let fileFormatNotAllowedDeepikaaugbidqa1pdfPage: FileFormatNotAllowedDeepikaaugbidqa1pdfPage;
   let headerMappingPage: HeaderMappingPage;
   let headingCreateNewMapPage: HeadingCreateNewMapPage;
@@ -33,7 +33,7 @@ test.describe('REG_Bid Maps', () => {
   test.beforeEach(async ({ page }) => {
     vars = {};
     correspondentPortalPage = new CorrespondentPortalPage(page);
-    deepikaaugbidqa1csvButtonDivPage = new Deepikaaugbidqa1csvButtonDivPage(page);
+    mappingCreationWizardPage = new MappingCreationWizard(page);
     fileFormatNotAllowedDeepikaaugbidqa1pdfPage = new FileFormatNotAllowedDeepikaaugbidqa1pdfPage(page);
     headerMappingPage = new HeaderMappingPage(page);
     headingCreateNewMapPage = new HeadingCreateNewMapPage(page);
@@ -104,8 +104,8 @@ test.describe('REG_Bid Maps', () => {
       log.step("Step 5: Upload and delete XLSX file");
       try {
         await uploadFile(page, correspondentPortalPage.Upload_File, "Bid_Maps_File.xlsx");
-        await expect(deepikaaugbidqa1csvButtonDivPage.Delete_Button_in_Bid_Maps).toBeVisible();
-        await deepikaaugbidqa1csvButtonDivPage.Delete_Button_in_Bid_Maps.click();
+        await expect(mappingCreationWizardPage.Delete_Button_in_Bid_Maps).toBeVisible();
+        await mappingCreationWizardPage.Delete_Button_in_Bid_Maps.click();
         await expect(correspondentPortalPage.close_pop_up_bid_request_details).toBeVisible();
         await expect(correspondentPortalPage.Are_you_sure_you_want_to_delete_fixed_from_enumeration).toBeVisible();
         await expect(correspondentPortalPage.Yes_Proceed_Button).toBeVisible();
@@ -119,11 +119,11 @@ test.describe('REG_Bid Maps', () => {
       log.step("Step 6: Upload and delete CSV file with cancel and confirm actions");
       try {
         await uploadFile(page, correspondentPortalPage.Upload_File, "Bid_Maps_File_CSV.csv");
-        await expect(deepikaaugbidqa1csvButtonDivPage.Delete_Button_in_Bid_Maps).toBeVisible();
-        await deepikaaugbidqa1csvButtonDivPage.Delete_Button_in_Bid_Maps.click();
+        await expect(mappingCreationWizardPage.Delete_Button_in_Bid_Maps).toBeVisible();
+        await mappingCreationWizardPage.Delete_Button_in_Bid_Maps.click();
         await expect(correspondentPortalPage.Are_you_sure_you_want_to_delete_fixed_from_enumeration).toBeVisible();
         await correspondentPortalPage.close_pop_up_bid_request_details.click();
-        await deepikaaugbidqa1csvButtonDivPage.Delete_Button_in_Bid_Maps.click();
+        await mappingCreationWizardPage.Delete_Button_in_Bid_Maps.click();
         await expect(correspondentPortalPage.Are_you_sure_you_want_to_delete_fixed_from_enumeration).toBeVisible();
         await correspondentPortalPage.Yes_Proceed_Button.click();
         log.stepPass("Step 6 passed: CSV file uploaded and deleted successfully");
@@ -135,8 +135,8 @@ test.describe('REG_Bid Maps', () => {
       log.step("Step 7: Upload and delete XLS file");
       try {
         await uploadFile(page, correspondentPortalPage.Upload_File, "Bid_Maps_File_XLS.xls");
-        await expect(deepikaaugbidqa1csvButtonDivPage.Delete_Button_in_Bid_Maps).toBeVisible();
-        await deepikaaugbidqa1csvButtonDivPage.Delete_Button_in_Bid_Maps.click();
+        await expect(mappingCreationWizardPage.Delete_Button_in_Bid_Maps).toBeVisible();
+        await mappingCreationWizardPage.Delete_Button_in_Bid_Maps.click();
         await expect(correspondentPortalPage.Are_you_sure_you_want_to_delete_fixed_from_enumeration).toBeVisible();
         await correspondentPortalPage.Yes_Proceed_Button.click();
         log.stepPass("Step 7 passed: XLS file uploaded and deleted successfully");
@@ -148,8 +148,8 @@ test.describe('REG_Bid Maps', () => {
       log.step("Step 8: Upload and delete TXT file");
       try {
         await uploadFile(page, correspondentPortalPage.Upload_File, "Bid_Maps_File_Txt.txt");
-        await expect(deepikaaugbidqa1csvButtonDivPage.Delete_Button_in_Bid_Maps).toBeVisible();
-        await deepikaaugbidqa1csvButtonDivPage.Delete_Button_in_Bid_Maps.click();
+        await expect(mappingCreationWizardPage.Delete_Button_in_Bid_Maps).toBeVisible();
+        await mappingCreationWizardPage.Delete_Button_in_Bid_Maps.click();
         await expect(correspondentPortalPage.Are_you_sure_you_want_to_delete_fixed_from_enumeration).toBeVisible();
         await correspondentPortalPage.Yes_Proceed_Button.click();
         log.stepPass("Step 8 passed: TXT file uploaded and deleted successfully");
