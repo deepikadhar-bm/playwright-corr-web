@@ -1,6 +1,7 @@
 import { defineConfig, devices } from '@playwright/test';
 import { ENV } from './src/config/environments';
 import path from 'path';
+
  
  
  
@@ -23,7 +24,7 @@ export default defineConfig({
   },
  
   use: {
-    // headless: false,
+    headless: false,
     timezoneId: 'UTC',
  
     launchOptions: {

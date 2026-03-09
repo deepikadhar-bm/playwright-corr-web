@@ -11,8 +11,8 @@ export class MappingListPage {
     return this.page.locator("//div[@aria-label=\"Pagination Controls\"]//span[text()=\"Showing Page\"]");
   }
 
-  get Bid_Map_Name_New(): Locator {
-    return this.page.locator("//h5[contains(text(),\"$|Create New Map|\")]");
+  getBid_Map_Name_New(CreateNewMap: string): Locator {
+    return this.page.locator(`//h5[contains(text(),\"${CreateNewMap}\")]`);
   }
 
   get Bid_Maps(): Locator {

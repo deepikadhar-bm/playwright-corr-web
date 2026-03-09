@@ -16,7 +16,7 @@ export class P2142530YrFreddieMacFixedDropdownPage {
   }
 
   get Bid_Maps_Name(): Locator {
-    return this.page.locator("//span[contains(.,' $|Create New Map|')]");
+    return this.page.locator("#page-header span");
   }
 
   get Bid_Tape_Value_In_EnumerationMapping(): Locator {

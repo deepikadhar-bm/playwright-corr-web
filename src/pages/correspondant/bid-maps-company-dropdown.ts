@@ -15,8 +15,8 @@ export class BidMapsCompanyDropdownPage {
     return this.page.locator("(//*[contains(@aria-label,\"Remove\")]//i[contains(@class , 'fas fa-times-circle text-primary')])[2]");
   }
 
-  get Required_CompanyBidmap_company_dropdown(): Locator {
-    return this.page.locator("//label//span[contains(text(),\"$|NotSelectedCompanyName|\")]");
+  getRequired_CompanyBidmap_company_dropdown(NotSelectedCompanyName: string): Locator {
+    return this.page.locator(`//label//span[contains(text(),\"${NotSelectedCompanyName}\")]`);
   }
 
   get Third_Company_Checkbox(): Locator {
