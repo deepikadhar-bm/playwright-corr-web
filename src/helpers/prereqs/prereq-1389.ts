@@ -111,8 +111,6 @@ console.log("Credentials:==> ",  vars["Username"], vars["Password"]);
       // });
 
       await bidRequestPage.Continue_ButtonUpload_Pop_up.click();
-      //page.off('response', responseHandler);
-      //page.reload();
       await spinnerPage.Spinner.waitFor({ state: 'hidden' });
       await page.waitForLoadState('load');
       await page.waitForTimeout(5000);
@@ -152,13 +150,6 @@ console.log("Credentials:==> ",  vars["Username"], vars["Password"]);
         hour12: true
       });
       vars["TimeDifference"] = Math.abs(new Date('2000-01-01 ' + String(vars["QueuedTime"])).getTime() - new Date('2000-01-01 ' + String(vars["CurrentEstTime"])).getTime()) / 60000 + '';
-      if (true) /* Verify if TimeDifference > 4 */ {
-        // [DISABLED] Store 4 in WaitTime
-        // vars["WaitTime"] = "4";
-      } else {
-        // [DISABLED] Store TimeDifference in WaitTime
-        // vars["WaitTime"] = vars["TimeDifference"];
-      }
       log.stepPass('Time difference calculated successfully');
     } catch (e) {
       await log.stepFail(page, 'Time difference calculation failed');
@@ -199,9 +190,6 @@ console.log("Credentials:==> ",  vars["Username"], vars["Password"]);
         await spinnerPage.Spinner.waitFor({ state: 'hidden' });
         vars["index"] = (parseInt(String(vars["index"])) + 1).toString();
         console.log("Current Attempt: " + vars["index"]);
-        // if (parseInt(vars["index"]) === 2) {
-        //   break;
-        // }
       }
       console.log("Price Offered status is visible after " + vars["index"] + " attempts.");
       vars["CurrentEstTime"] = new Date().toLocaleString('en-US', {
@@ -226,5 +214,4 @@ console.log("Credentials:==> ",  vars["Username"], vars["Password"]);
     log.tcEnd('FAIL');
     throw e;
   }
-
 }
