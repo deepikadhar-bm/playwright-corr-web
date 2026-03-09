@@ -549,9 +549,18 @@ export class PriceOfferedPage {
     return this.page.locator(`//td[@data-title=\"${IndividualHeaderScreenDetails}\"]//div`);
   }
 
+  Column_Data_Details_Screen1(IndividualHeaderScreenDetails:string): Locator {
+    return this.page.locator(`//td[@data-title="${IndividualHeaderScreenDetails}" and "${IndividualHeaderScreenDetails}"="Corr. Loan#"]//button[1] | //td[@data-title="${IndividualHeaderScreenDetails}" and "${IndividualHeaderScreenDetails}"!="Corr. Loan#"]//div`);
+  }
+
+
   Column_Data_UI(IndividualHeaderUI:string): Locator {
     return this.page.locator(`//td[@data-title=\"${IndividualHeaderUI}\"]//*[not(@aria-label=\"Expiration Date: \")]`);
   }
+Column_Data_UI_DetainsScreen(IndividualHeaderUI:string): Locator {
+    return this.page.locator(`//td[@data-title="${IndividualHeaderUI}" and "${IndividualHeaderUI}"="Corr. Loan#"]//button[1] | //td[@data-title="${IndividualHeaderUI}" and "${IndividualHeaderUI}"!="Corr. Loan#"]//div`);
+  }
+
 
   Column_Data_UI_Commom_xpath(IndividualHeaderUI:string): Locator {
     return this.page.locator(`//td[@data-title=\"${IndividualHeaderUI}\"]`);
@@ -1320,20 +1329,20 @@ export class PriceOfferedPage {
     return this.page.locator("(//a[contains(@aria-label, \"View details for price offered\")])[$|Count|]\n");
   }
 
-  get Individual_Cell_Data_UI(): Locator {
-    return this.page.locator("(//table[@role='table']//tbody//tr[$|count|]//td[@data-title][position() >= 3])[$|Count|]");
+  Individual_Cell_Data_UI(Count:string): Locator {
+    return this.page.locator(`(//table[@role='table']//tbody//tr[$|count|]//td[@data-title][position() >= 3])[${Count}]`);
   }
 
-  get Individual_Cell_UI(): Locator {
-    return this.page.locator("(//tbody//tr[$|RowCountUI|]//td)[$|ColumnCountUI|]");
+  Individual_Cell_UI(ColumnCountUI:string): Locator {
+    return this.page.locator(`(//tbody//tr[$|RowCountUI|]//td)[${ColumnCountUI}]`);
   }
 
-  get Individual_Column_Header_Details_Locked_Loans(): Locator {
-    return this.page.locator("((//th//div[@role=\"button\"])[position() >=1 and position() <= 10])[$|Count|]");
+  Individual_Column_Header_Details_Locked_Loans(Count:string): Locator {
+    return this.page.locator(`((//th//div[@role=\"button\"])[position() >=1 and position() <= 10])[${Count}]`);
   }
 
-  get Individual_Column_Header_Details_Screen(): Locator {
-    return this.page.locator("((//th//div[@role=\"button\"])[position() >=1 and position() <= 10])[$|count|]");
+  Individual_Column_Header_Details_Screen(count:string): Locator {
+    return this.page.locator(`((//th//div[@role=\"button\"])[position() >=1 and position() <= 10])[${count}]`);
   }
 
   Individual_Column_Header_UI(count:string): Locator {
