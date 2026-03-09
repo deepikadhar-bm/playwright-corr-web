@@ -47,7 +47,7 @@ export default defineConfig({
         timezoneId: 'UTC',
 
         viewport: { width: 1920, height: 1080 },
-        baseURL: ENV.CORR_QA_URL,
+        // baseURL: ENV.CORR_QA_URL,
         launchOptions: {
           args: [
             '--no-sandbox',

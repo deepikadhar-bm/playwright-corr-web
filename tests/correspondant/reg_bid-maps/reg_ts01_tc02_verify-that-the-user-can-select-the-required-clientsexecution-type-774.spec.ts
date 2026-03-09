@@ -65,7 +65,8 @@ test.describe('REG_Bid Maps', () => {
       log.step("Step 1: Login to CORR Portal and verify dashboard");
       try {
         await stepGroups.stepGroup_Login_to_CORR_Portal(page, vars);
-        helpers.waitForSpinner(spinnerPage.Spinner);
+        await spinnerPage.Spinner.waitFor({ state: 'visible' });
+        await spinnerPage.Spinner.waitFor({ state: 'hidden' });
         await expect(correspondentPortalPage.Heading_Dashboard).toBeVisible();
         log.stepPass("Step 1 passed: Logged in to CORR Portal successfully and dashboard is visible");
       } catch (error) {
@@ -87,7 +88,8 @@ test.describe('REG_Bid Maps', () => {
       try {
         await correspondentPortalPage.Administration_Menu.click();
         await correspondentPortalPage.Bid_Maps_Menu.click();
-        helpers.waitForSpinner(spinnerPage.Spinner);
+        await spinnerPage.Spinner.waitFor({ state: 'visible' });
+        await spinnerPage.Spinner.waitFor({ state: 'hidden' });
         await expect(headingMappingsPage.Mappings).toBeVisible();
         log.stepPass("Step 3 passed: Navigated to Bid Maps menu successfully");
       } catch (error) {
@@ -103,7 +105,8 @@ test.describe('REG_Bid Maps', () => {
         helpers.concatenate('Testsigma_', vars['CurrentDate'], 'Create New Map');
         await correspondentPortalPage.Create_New_Map_Field.fill(vars["Create New Map"]);
         await correspondentPortalPage.Create_Button.click();
-        helpers.waitForSpinner(spinnerPage.Spinner);
+        await spinnerPage.Spinner.waitFor({ state: 'visible' });
+        await spinnerPage.Spinner.waitFor({ state: 'hidden' });
         await expect(p2142530YrFreddieMacFixedDropdownPage.Bid_Maps_Name).toContainText(vars["Create New Map"]);
         log.stepPass("Step 4 passed: New Bid Map created successfully with name: " + vars["Create New Map"]);
       } catch (error) {
@@ -140,7 +143,8 @@ test.describe('REG_Bid Maps', () => {
         await correspondentPortalPage.Heading_Save_and_Move_to_Next_Page1.waitFor({ state: 'visible' });
         await expect(thisActionWillSaveTheChangesAndMoveToNextPagePage.This_action_will_save_the_changes_and_Move_to_Next_Page).toBeVisible();
         await proceedWithSavingButtonPage.Proceed_with_Saving_Button.click();
-        helpers.waitForSpinner(spinnerPage.Spinner);
+        await spinnerPage.Spinner.waitFor({ state: 'visible' });
+        await spinnerPage.Spinner.waitFor({ state: 'hidden' });
         await expect(page.getByText(vars["Create New Map"])).toBeVisible();
         await headerMappingPage.Header_Mapping.waitFor({ state: 'visible' });
         log.stepPass("Step 7 passed: Headers mapped and navigated to next page successfully");

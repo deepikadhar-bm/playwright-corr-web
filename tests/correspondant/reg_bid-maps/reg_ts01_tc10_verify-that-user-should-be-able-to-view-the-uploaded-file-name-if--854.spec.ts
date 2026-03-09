@@ -6,7 +6,7 @@ import { BackButtonPage } from '../../../src/pages/correspondant/back-button';
 import { ContinueEditingButtonPage } from '../../../src/pages/correspondant/continue-editing-button';
 import { CorrespondentPortal16Page } from '../../../src/pages/correspondant/correspondent-portal-16';
 import { CorrespondentPortalPage } from '../../../src/pages/correspondant/correspondent-portal';
-import { Deepikaaugbidqa1csvButtonDivPage } from '../../../src/pages/correspondant/deepikaaugbidqa1csv-button-div';
+import { Deepikaaugbidqa1csvButtonDivPage } from '../../../src/pages/correspondant/mapping-creation-wizard';
 import { HeaderMappingPage } from '../../../src/pages/correspondant/header-mapping';
 import { NoButtonPage } from '../../../src/pages/correspondant/no-button';
 import { ProceedWithoutSavingButtonPage } from '../../../src/pages/correspondant/proceed-without-saving-button';
