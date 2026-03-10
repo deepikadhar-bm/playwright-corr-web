@@ -9,6 +9,7 @@ export const APP_CONSTANTS = {
   LoanAmount:"Loan Amount",
   MarkAdj:"Mark Adj",
   HeadersUi:"#Loans / #Errors and Bid Value",
+  ThreeDigitBidReqID:"878",
   DATE_FORMAT:"d-M-yyyy",
   BID_REQ_ID:"Bid Req. ID",
   DATE_FORMATE_:"MM/dd/yyyy",
