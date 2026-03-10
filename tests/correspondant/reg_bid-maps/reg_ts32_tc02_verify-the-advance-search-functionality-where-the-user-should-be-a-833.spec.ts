@@ -145,9 +145,9 @@ test.describe('REG_Bid Maps', () => {
       // ── Step 1: Load Credentials and Test Data ──────────────────────────
       log.step('Loading credentials and test data');
       try {
-        const crederntials = ENV.getCredentials('internal');
-        vars["Username"] = crederntials.username;
-        vars["Password"] = crederntials.password;
+        const credentials = ENV.getCredentials('internal');
+        vars["Username"] = credentials.username;
+        vars["Password"] = credentials.password;
         // console.log("Test Data: ", testData);
         const profileName = "Bid_Maps";
         const profile = testDataManager.getProfileByName(profileName);
