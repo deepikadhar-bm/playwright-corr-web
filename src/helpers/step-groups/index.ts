@@ -30,8 +30,8 @@ const credentials = ENV.getCredentials('internal');
  */
 export async function stepGroup_Login_to_CORR_Portal(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
-  //await page.goto("/");
-  await page.goto(ENV.CORR_QA_URL);
+  await page.goto("/cp/");
+  //await page.goto(ENV.CORR_QA_URL);
   await CorrPortalElem.Username_Field.fill(vars["Username"]);
   await CorrPortalElem.Password_Field.fill(vars["Password"]);
   await CorrPortalElem.Login_Button.click();
