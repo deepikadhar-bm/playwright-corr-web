@@ -115,8 +115,8 @@ export class StatusInactivePage {
     return this.page.locator("(//td[@data-title='Company'][contains(.,'@|Company Name|')])[18]");
   }
 
-  get Delete_Message(): Locator {
-    return this.page.locator("//div[text()[normalize-space() = 'You have selected to delete \"$|DeleteHeaderMapping|\" mapping. Do you want to proceed?']]");
+  getDelete_Message(DeleteHeaderMapping:String): Locator {
+    return this.page.locator(`//div[text()[normalize-space() = 'You have selected to delete "${DeleteHeaderMapping}" mapping. Do you want to proceed?']]`);
   }
 
   get Delete_Button_Header_Mapping(): Locator {
