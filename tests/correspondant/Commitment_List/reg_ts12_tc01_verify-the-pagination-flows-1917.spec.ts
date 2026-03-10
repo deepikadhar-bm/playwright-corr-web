@@ -1,12 +1,14 @@
-// [POM-APPLIED]
 import { test, expect } from '@playwright/test';
-import path from 'path';
 import * as stepGroups from '../../../src/helpers/step-groups';
 import { CommitmentListPage } from '../../../src/pages/correspondant/commitment-list';
 import { CorrespondentPortalPage } from '../../../src/pages/correspondant/correspondent-portal';
 import { PriceOfferedPage } from '../../../src/pages/correspondant/price-offered';
 import { SpinnerPage } from '../../../src/pages/correspondant/spinner';
 import { AddonHelpers } from '../../../src/helpers/AddonHelpers';
+
+
+const TC_ID = "REG_TS12_TC01";
+const TC_TITLE = "Verify the pagination flows";
 
 test.describe('Commitment List - TS_1', () => {
   let Methods: AddonHelpers;

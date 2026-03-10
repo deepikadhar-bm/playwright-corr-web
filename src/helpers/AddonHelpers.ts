@@ -783,8 +783,11 @@ export class AddonHelpers {
       if (!ops[operator]) throw new Error(`Invalid operator: "${operator}"`);
       const result = ops[operator]();
       this.vars[varName] = String(result);
-      pass(METHOD, `${numA} ${operator} ${numB} = ${result} → vars['${varName}']`);
-    } catch (e) { fail(METHOD, `${a} ${operator} ${b}`, e); }
+      console.log(`[${METHOD}] ${numA} ${operator} ${numB} = ${result} → vars['${varName}']`);
+    } catch (e) {
+      console.error(`[${METHOD}] ${a} ${operator} ${b} → vars['${varName}'] | Error: ${(e as Error).message}`);
+      throw e;
+    }
   }
   //verifying the comparison
   verifyComparison(value1: string, operator: '>' | '<' | '>=' | '<=' | '==' | '!=', value2: string): void {
@@ -808,9 +811,10 @@ export class AddonHelpers {
   }
   //Trim the string and store in vars
   trimtestdata(value: string, varName: string): void {
-    const trimmed = value.trim();
-    this.vars[varName] = trimmed;
-  }
+  const trimmed = value.trim();
+  this.vars[varName] = trimmed;
+  console.log(`trimtestdata | Trimmed value stored in '${varName}': '${trimmed}'`);
+}
   // 33. Get month name by month number → store in vars
   // ==========================================================================
   getMonthNameByNumber(monthNumber: string, varName: string): void {
@@ -854,23 +858,31 @@ export class AddonHelpers {
     }
   }
   //verifying testdata with ignore case
-  async verifyTestdataIgnoreCase(
-    textData1: string,
-    matchType: 'equals' | 'contains',
-    textData2: string
-  ): Promise<void> {
-    const actual = textData1.trim().toLowerCase();
-    const expected = textData2.trim().toLowerCase();
+ async verifyTestdataIgnoreCase(
+  textData1: string,
+  matchType: 'equals' | 'contains',
+  textData2: string
+): Promise<void> {
+  const METHOD = 'verifyTestdataIgnoreCase';
+  const actual = textData1.trim().toLowerCase();
+  const expected = textData2.trim().toLowerCase();
 
-    const isMatch = matchType === 'equals'
-      ? actual === expected
-      : actual.includes(expected);
-
-    if (isMatch) {
-    } else {
-      throw new Error(`[FAIL] Expected "${textData1}" to ${matchType} "${textData2}" (case-insensitive)`);
-    }
+  if (!expected) {
+    const error = new Error(`Expected value is empty or blank for comparison with "${textData1}"`);
+    fail(METHOD, `"${textData1}" ${matchType} "${textData2}" (case-insensitive)`, error);
   }
+
+  const isMatch = matchType === 'equals'
+    ? actual === expected
+    : actual.includes(expected);
+
+  if (isMatch) {
+    pass(METHOD, `"${textData1}" ${matchType} "${textData2}" (case-insensitive)`);
+  } else {
+    const error = new Error(`Expected "${textData1}" to ${matchType} "${textData2}" (case-insensitive)`);
+    fail(METHOD, `"${textData1}" ${matchType} "${textData2}" (case-insensitive)`, error);
+  }
+}
   //count the substrings
   countCharacter(text: string, character: string, varName: string): void {
     const METHOD = 'countCharacter';
@@ -894,6 +906,21 @@ export class AddonHelpers {
       this.vars[varName] = result;
       pass(METHOD, `Split range [${start}:${end}] from "${source}" = "${result}" → vars['${varName}']`);
     } catch (e) { fail(METHOD, `Split range [${start}:${end}] from "${source}"`, e); }
+  }
+//subtract the days from give date
+  subtractDaysFromDate(inputDate: string, daysToSubtract: number, inputFormat: string, outputFormat: string, varName: string): void {
+    const METHOD = 'subtractDaysFromDate';
+    try {
+      const parsed = parse(inputDate, inputFormat, new Date());
+      if (isNaN(parsed.getTime())) throw new Error(`"${inputDate}" could not be parsed with format "${inputFormat}"`);
+      parsed.setDate(parsed.getDate() - daysToSubtract);
+      const result = format(parsed, outputFormat);
+      this.vars[varName] = result;
+      console.log(`[${METHOD}] ${inputDate} - ${daysToSubtract} day(s) = ${result} → vars['${varName}']`);
+    } catch (e) {
+      console.error(`[${METHOD}] Failed to subtract ${daysToSubtract} day(s) from "${inputDate}" | Error: ${(e as Error).message}`);
+      throw e;
+    }
   }
   //verification of ascending or descending order of based on date formate
   async verifyDateOrder(
@@ -931,7 +958,6 @@ export class AddonHelpers {
       if (!delimiter) throw new Error(`Delimiter is empty or undefined`);
 
       const parts = sourceString.split(delimiter);
-      // Accept both runtime vars (string) and hardcoded (number), position starts from 1
       const pos = typeof position === 'string' ? parseInt(position, 10) : position;
 
       if (isNaN(pos)) throw new Error(`Position "${position}" is not a valid number`);
@@ -942,7 +968,9 @@ export class AddonHelpers {
 
       const result = parts[index];
       this.vars[varName] = result;
-      pass(METHOD, `Split "${sourceString}" by "${delimiter}" → position[${pos}] = "${result}" → vars['${varName}']`);
-    } catch (e) { fail(METHOD, `Split "${sourceString}" by "${delimiter}" at position ${position}`, e); }
+      console.log(`[${METHOD}] Split "${sourceString}" by "${delimiter}" → position[${pos}] = "${result}" → vars['${varName}']`);
+    } catch (e) {
+      console.error(`[${METHOD}] Split "${sourceString}" by "${delimiter}" at position ${position}: ${e instanceof Error ? e.message : e}`);
+    }
   }
 }

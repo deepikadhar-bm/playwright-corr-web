@@ -14,11 +14,13 @@ import { testDataManager } from 'testdata/TestDataManager';
 import { AddonHelpers } from '../../../src/helpers/AddonHelpers';
 import { CommitmentListPage } from '../../../src/pages/correspondant/commitment-list';
 // Disabled external 'log' import for this file; provide no-op
-const log = { info: (..._args: any[]) => { } };
+// const log = { info: (..._args: any[]) => { } };
+import { Logger as log } from '@helpers/log-helper';
 import { uploadFile } from '../../../src/helpers/file-helpers';
 import { CorrespondentPortalPage } from '@pages/correspondant/correspondent-portal';
 import { CorrespondentPortal4Page } from '@pages/correspondant/correspondent-portal-4';
 import { SpinnerPage } from '@pages/correspondant';
+import { APP_CONSTANTS as appconstants } from '../../../src/constants/app-constants';
 
 
 const credentials = ENV.getCredentials('internal');
@@ -32,9 +34,9 @@ export async function stepGroup_Login_to_CORR_Portal(page: import('@playwright/t
   const CorrPortalElem = new CorrPortalPage(page);
   //await page.goto("/");
   await page.goto(ENV.CORR_QA_URL);
- 
-  await CorrPortalElem.Username_Field.fill(vars["Username"] );
-  await CorrPortalElem.Password_Field.fill(vars["Password"] );
+
+  await CorrPortalElem.Username_Field.fill(vars["Username"]);
+  await CorrPortalElem.Password_Field.fill(vars["Password"]);
   await CorrPortalElem.Login_Button.click();
   await CorrPortalElem.Logo.waitFor({ state: 'visible' });
 }
@@ -144,15 +146,15 @@ export async function stepGroup_Creation_Of_Bid_Map_Upto_Header_Mapping(page: im
     const fmt = "MM/dd/yyyy";
     // Map Java date format to Intl parts
     const parts = new Intl.DateTimeFormat('en-US', { ...opts, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }).formatToParts(d);
-    const p = Object.fromEntries(parts.map(({type, value}) => [type, value]));
-    return fmt.replace('yyyy', p.year || '').replace('yy', (p.year||'').slice(-2)).replace('MM', p.month || '').replace('dd', p.day || '').replace('HH', String(d.getHours()).padStart(2,'0')).replace('hh', p.hour || '').replace('mm', p.minute || '').replace('ss', p.second || '').replace('a', p.dayPeriod || '').replace(/M(?!M)/g, String(parseInt(p.month||'0'))).replace(/d(?!d)/g, String(parseInt(p.day||'0'))).replace(/h(?!h)/g, String(parseInt(p.hour||'0')));
+    const p = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
+    return fmt.replace('yyyy', p.year || '').replace('yy', (p.year || '').slice(-2)).replace('MM', p.month || '').replace('dd', p.day || '').replace('HH', String(d.getHours()).padStart(2, '0')).replace('hh', p.hour || '').replace('mm', p.minute || '').replace('ss', p.second || '').replace('a', p.dayPeriod || '').replace(/M(?!M)/g, String(parseInt(p.month || '0'))).replace(/d(?!d)/g, String(parseInt(p.day || '0'))).replace(/h(?!h)/g, String(parseInt(p.hour || '0')));
   })();
   vars["CreateNewMap"] = (() => {
     const d = new Date();
     const opts: Intl.DateTimeFormatOptions = { timeZone: "America/New_York" };
     const fmt = "MM/dd/yyyy/HH:mm:ss";
     const parts = new Intl.DateTimeFormat('en-US', { ...opts, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false }).formatToParts(d);
-    const p = Object.fromEntries(parts.map(({type, value}) => [type, value]));
+    const p = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
     return fmt.replace('yyyy', p.year || '').replace('MM', p.month || '').replace('dd', p.day || '').replace('HH', p.hour || '').replace('mm', p.minute || '').replace('ss', p.second || '');
   })();
   vars["CreateNewMap"] = "Testsigma_" + vars["CreateNewMap"];
@@ -2775,15 +2777,15 @@ export async function stepGroup_Past_time_disable_verification_in_bidrequest_dro
  * Steps: 24
  */
 export async function stepGroup_Uploading_Bid_Request(page: import('@playwright/test').Page, vars: Record<string, string>) {
-const profileName = 'Bid Requests';       // TDP sheet name
-const profile = testDataManager.getProfileByName(profileName);
+  const profileName = 'Bid Requests';       // TDP sheet name
+  const profile = testDataManager.getProfileByName(profileName);
 
-if (profile && profile.data) {
-  const value = profile.data[0]['Company Name'];  // row 0, column name
-  vars["CompanyName"] = value;    
-  const bidMappingID = profile.data[0]['BidMappingID'];
-  vars["BidMappingID"] = bidMappingID;                  // store in vars
-} // TODO: Get the profile name dynamically if needed
+  if (profile && profile.data) {
+    const value = profile.data[0]['Company Name'];  // row 0, column name
+    vars["CompanyName"] = value;
+    const bidMappingID = profile.data[0]['BidMappingID'];
+    vars["BidMappingID"] = bidMappingID;                  // store in vars
+  } // TODO: Get the profile name dynamically if needed
   const CorrPortalElem = new CorrPortalPage(page);
   const testData: Record<string, string> = {}; // TODO: Load from test data profile
   //await CorrPortalElem.Upload_New_Bid_Request_Button.isEnabled();
@@ -3261,15 +3263,15 @@ export async function stepGroup_Upload_Bid_Request_For_Next_Business_Day_With_Ch
  */
 export async function stepGroup_Uploading_Bid_Request_By_Selecting_both_standard_and_chase_t(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const profileName = 'Bid Requests';       // TDP sheet name
-const profile = testDataManager.getProfileByName(profileName);
+  const profile = testDataManager.getProfileByName(profileName);
 
-if (profile && profile.data) {
-  const value = profile.data[0]['Company Name'];  // row 0, column name
-  vars["CompanyName"] = value;    
-  const bidMappingID = profile.data[0]['BidMappingID'];
-  vars["BidMappingID"] = bidMappingID;                  // store in vars
-}
-  
+  if (profile && profile.data) {
+    const value = profile.data[0]['Company Name'];  // row 0, column name
+    vars["CompanyName"] = value;
+    const bidMappingID = profile.data[0]['BidMappingID'];
+    vars["BidMappingID"] = bidMappingID;                  // store in vars
+  }
+
   const CorrPortalElem = new CorrPortalPage(page);
   const testData: Record<string, string> = {}; // TODO: Load from test data profile
   await CorrPortalElem.Select_Company_In_BidRequest.click();
@@ -3930,7 +3932,7 @@ export async function stepGroup_Uploading_Bid_RequestNew(page: import('@playwrig
 export async function stepGroup_Modifying_The_batch_Intervals_with_current_est_time(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const Methods = new AddonHelpers(page);
   const CorrPortalElem = new CorrPortalPage(page);
-  
+
   // Load test data from TestDataManager
   const profile = testDataManager.getProfileByName("Administration_Bulk Batch Timing");
   const testData = profile?.data?.[0] || {};
@@ -3947,20 +3949,20 @@ export async function stepGroup_Modifying_The_batch_Intervals_with_current_est_t
   // })();
   //Methods.getCurrentTimestamp('hh:mm a', 'CurrentTime',  'America/New_York');
   // console.log("CurrentTime value: before",  vars['CurrentTime']);
-const now = new Date();
-vars["CurrentTime"] = now.toLocaleString('en-US', {
-  timeZone: 'America/New_York',
-  hour: '2-digit',
-  minute: '2-digit',
-  hour12: true
-});
+  const now = new Date();
+  vars["CurrentTime"] = now.toLocaleString('en-US', {
+    timeZone: 'America/New_York',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: true
+  });
 
-console.log("CurrentTime:", vars["CurrentTime"]); // 04:45 AM
+  console.log("CurrentTime:", vars["CurrentTime"]); // 04:45 AM
   await stepGroup_Separating_Hours_and_minutes_In_time_Current_EST_time(page, vars);
   await CorrPortalElem.StartTime_In_Hour.fill(vars["Time_Hour"]);
   console.log("Time_Min value:", vars["Time_Min"]);
   await CorrPortalElem.StartTime_In_Minutes.click({ clickCount: 3 });
-await CorrPortalElem.StartTime_In_Minutes.type(vars["Time_Min"]);
+  await CorrPortalElem.StartTime_In_Minutes.type(vars["Time_Min"]);
   //await CorrPortalElem.StartTime_In_Minutes.fill(vars["Time_Min"]);
   await stepGroup_selecting_time_unit_bulk_batch(page, vars);
   await CorrPortalElem.Time_Interval.fill(testData["Time Interval"]);
@@ -4383,9 +4385,9 @@ export async function stepGroup_Uploading_New_Bid_Request_Bid_Request_Screen(pag
   const CorrPortalElem = new CorrPortalPage(page);
   await stepGroup_Uploading_Bid_Request(page, vars);
   if (await CorrPortalElem.Enabled_Time_New.first().isVisible()) {
-  await CorrPortalElem.Enabled_Time_New.first().scrollIntoViewIfNeeded();
-  await CorrPortalElem.Enabled_Time_New.first().click();
-} else {
+    await CorrPortalElem.Enabled_Time_New.first().scrollIntoViewIfNeeded();
+    await CorrPortalElem.Enabled_Time_New.first().click();
+  } else {
     await stepGroup_Navigating_to_Bulk_Batch_Timing(page, vars);
     //await stepGroup_Modifying_The_Batch_Intervals_For_one_Hour_Prior(page, vars);
     await stepGroup_Modifying_batches_with_5_min_prior(page, vars);
@@ -5525,37 +5527,112 @@ export async function stepGroup_Splitting_the_time_and_waiting_if_the_wait_time_
  */
 export async function stepGroup_Verification_of_Loan_Level_Pricing_Details(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
-  vars["TotalRowsCount"] = String(await CorrPortalElem.Total_Rows_Count_UITotal_Loans.count());
-  vars["RowCount"] = "1";
-  while (parseFloat(String(vars["RowCount"])) <= parseFloat(String(vars["TotalRowsCount"]))) {
-    vars["IndividualCurrentGrossPriceUI"] = await CorrPortalElem.Current_Gross_Price.textContent() || '';
-    vars["IndividualCorrLoanNumUI"] = await CorrPortalElem.Individual_Corr_Loan_Num.textContent() || '';
-    await CorrPortalElem.Individual_Corr_Loan_Num.click();
-    await CorrPortalElem.Search_FieldLon_Details_Popup.waitFor({ state: 'visible' });
-    await CorrPortalElem.Product_Name_Popup_Details.scrollIntoViewIfNeeded();
-    vars["IndividualProductNameUI"] = await CorrPortalElem.Product_Name_Popup_Details.textContent() || '';
-    await CorrPortalElem.LMI_Price_Popup_Details.scrollIntoViewIfNeeded();
-    vars["IndividualLMIPriceUI"] = await CorrPortalElem.LMI_Price_Popup_Details.textContent() || '';
-    if (true) /* Element LMI Type(Popup Details) is visible */ {
-      vars["IndividualLMITypeUI"] = await CorrPortalElem.LMI_Type_Popup_Details.textContent() || '';
-    } else {
-      vars["IndividualLMITypeUI"] = "Null";
-    }
-    await CorrPortalElem.Close_Button_Loan_Details_Popup.click();
-    vars["EntireRowDetailsExcel"] = excelHelper.readRow(vars['_lastDownloadPath'] || '', vars["RowCount"], "2");
-    await CorrPortalElem.Product_Name_Details.click();
-    vars["ColumnCount"] = "1";
-    vars["SplitCount"] = "1";
-    vars["ColumnCountUI"] = "1";
-    vars["HeaderSplit"] = "1";
-    vars["CountofCama"] = String((String(vars["EntireRowDetailsExcel"]).split(",").length - 1));
-    while (parseFloat(String(vars["ColumnCount"])) <= parseFloat(String("13"))) {
-      if (String(vars["ColumnCountUI"]) <= String("5")) {
-      }
-    }
-  }
-}
+  const Methods = new AddonHelpers(page, vars);
+  const commitmentListPage = new CommitmentListPage(page);
 
+  vars['TotalRowsCount'] = String(await CorrPortalElem.Total_Rows_Count_UITotal_Loans.count());
+  vars['RowCount'] = appconstants.ONE;
+  while (parseFloat(String(vars['RowCount'])) <= parseFloat(String(vars['TotalRowsCount']))) {
+    log.step(`Fetching UI data for row ${vars['RowCount']}`);
+    try {
+      vars['IndividualCurrentGrossPriceUI'] = await CorrPortalElem.Current_Gross_Price(vars['RowCount']).textContent() || '';
+      vars['IndividualCorrLoanNumUI'] = await CorrPortalElem.Individual_Corr_Loan_Num(vars['RowCount']).textContent() || '';
+      await CorrPortalElem.Individual_Corr_Loan_Num(vars['RowCount']).click();
+      await CorrPortalElem.Search_FieldLon_Details_Popup.waitFor({ state: 'visible' });
+
+      await CorrPortalElem.Product_Name_Popup_Details.scrollIntoViewIfNeeded();
+      vars['IndividualProductNameUI'] = await CorrPortalElem.Product_Name_Popup_Details.textContent() || '';
+
+      await CorrPortalElem.LMI_Price_Popup_Details.scrollIntoViewIfNeeded();
+      vars['IndividualLMIPriceUI'] = await CorrPortalElem.LMI_Price_Popup_Details.textContent() || '';
+
+      if (await CorrPortalElem.LMI_Type_Popup_Details.isVisible()) {
+        vars['IndividualLMITypeUI'] = await CorrPortalElem.LMI_Type_Popup_Details.textContent() || '';
+      } else {
+        vars['IndividualLMITypeUI'] = 'null';
+      }
+
+      await CorrPortalElem.Close_Button_Loan_Details_Popup.click();
+      log.stepPass(`Successfully fetched UI data for row ${vars['RowCount']}`);
+    } catch (e) {
+      log.stepFail(page, `Failed to fetch UI data for row ${vars['RowCount']}`);
+      throw e;
+    }
+
+    log.step(`Reading Excel data for row ${vars['RowCount']}`);
+    try {
+      vars['EntireRowDetailsExcel'] = excelHelper.readEntireRow(vars['DownloadedCommitmentLetterPath'], '1', vars['RowCount'], 'EntireRowDetailsExcel');
+      await CorrPortalElem.Product_Name_Details.click();
+      log.stepPass(`Successfully read Excel data for row ${vars['RowCount']}: ${vars['EntireRowDetailsExcel']}`);
+    } catch (e) {
+      log.stepFail(page, `Failed to read Excel data for row ${vars['RowCount']}`);
+      throw e;
+    }
+
+    log.step(`Verifying column data for row ${vars['RowCount']}`);
+    try {
+      vars['ColumnCount'] = appconstants.ONE;
+      vars['SplitCount'] = appconstants.ONE;
+      vars['ColumnCountUI'] = appconstants.ONE;
+      vars['HeaderSplit'] = appconstants.ONE;
+
+      while (parseFloat(String(vars['ColumnCount'])) <= parseFloat(String(appconstants.THIRTEEN))) {
+
+        if (parseFloat(String(vars['ColumnCountUI'])) <= parseFloat(String(appconstants.FIVE))) {
+          vars['IndividualColumnDataUI'] = await commitmentListPage.Individual_Column_Data_UI(vars['RowCount'], vars['ColumnCountUI']).textContent() || '';
+        }
+
+        Methods.splitStringByRegConditionWithPosition(vars['EntireRowDataHeaderNamesExcel'], ',', vars['HeaderSplit'], 'HeaderNameExcel');
+        Methods.splitStringByRegConditionWithPosition(vars['EntireRowDetailsExcel'], ',', vars['SplitCount'], 'IndividualColumnDataExcel');
+
+        if (String(vars['HeaderNameExcel']).includes('Loan Amount')) {
+          Methods.countCharacter(vars['IndividualColumnDataUI'], ',', 'CountofCama1');
+          vars['count1'] = '1';
+          while (parseFloat(String(vars['count1'])) <= parseFloat(String(vars['CountofCama1']))) {
+            Methods.MathematicalOperation(vars['SplitCount'], '+', '1', 'SplitCount');
+            Methods.splitStringByRegConditionWithPosition(vars['EntireRowDetailsExcel'], ',', vars['SplitCount'], 'IndividualColumnDataExcel2');
+            Methods.concatenateWithSpecialChar(vars['IndividualColumnDataExcel'], vars['IndividualColumnDataExcel2'], ',', 'IndividualColumnDataExcel');
+            Methods.MathematicalOperation(vars['count1'], '+', '1', 'count1');
+          }
+        }
+
+        if (String(vars['CCodeUI']).includes(String(vars['IndividualColumnDataExcel']))) {
+          Methods.verifyString(vars['CCodeUI'], 'contains', vars['IndividualColumnDataExcel']);
+        } else if (String(vars['CommitmentIdUI']).includes(String(vars['IndividualColumnDataExcel']))) {
+          Methods.verifyString(vars['CommitmentIdUI'], 'contains', vars['IndividualColumnDataExcel']);
+        } else if (String(vars['IndividualCorrLoanNumUI']).includes(String(vars['IndividualColumnDataExcel']))) {
+          Methods.verifyString(vars['IndividualCorrLoanNumUI'], 'contains', vars['IndividualColumnDataExcel']);
+        } else if (String(vars['IndividualProductNameUI']).includes(String(vars['IndividualColumnDataExcel']))) {
+          Methods.verifyString(vars['IndividualProductNameUI'], 'contains', vars['IndividualColumnDataExcel']);
+        } else if (String(vars['IndividualCurrentGrossPriceUI']).includes(String(vars['IndividualColumnDataExcel']))) {
+          Methods.verifyString(vars['IndividualCurrentGrossPriceUI'], 'contains', vars['IndividualColumnDataExcel']);
+        } else if (String(vars['ExpiredDateUI']).includes(String(vars['IndividualColumnDataExcel']))) {
+          Methods.verifyString(vars['ExpiredDateUI'], 'contains', vars['IndividualColumnDataExcel']);
+        } else if (String(vars['IndividualLMIPriceUI']).includes(String(vars['IndividualColumnDataExcel']))) {
+          Methods.verifyString(vars['IndividualLMIPriceUI'], 'contains', vars['IndividualColumnDataExcel']);
+        } else if (String(vars['IndividualLMITypeUI']).includes(String(vars['IndividualColumnDataExcel']))) {
+          Methods.verifyString(vars['IndividualLMITypeUI'], 'contains', vars['IndividualColumnDataExcel']);
+        } else {
+          Methods.verifyString(vars['IndividualColumnDataUI'], 'contains', vars['IndividualColumnDataExcel']);
+          Methods.MathematicalOperation(vars['ColumnCountUI'], '+', '1', 'ColumnCountUI');
+        }
+
+        Methods.MathematicalOperation(vars['ColumnCount'], '+', '1', 'ColumnCount');
+        Methods.MathematicalOperation(vars['SplitCount'], '+', '1', 'SplitCount');
+        Methods.MathematicalOperation(vars['HeaderSplit'], '+', '1', 'HeaderSplit');
+      }
+
+      log.stepPass(`Successfully verified all columns for row ${vars['RowCount']}`);
+    } catch (e) {
+      log.stepFail(page, `Failed to verify column data for row ${vars['RowCount']}`);
+      throw e;
+    }
+
+    Methods.MathematicalOperation(vars['RowCount'], '+', '1', 'RowCount');
+  }
+
+  log.info('Completed stepGroup_Verification_of_Loan_Level_Pricing_Details');
+}
 /**
  * Step Group: Uploading Bid Request(From selecting batch time)
  * ID: 2032
@@ -6183,12 +6260,12 @@ export async function stepGroup_Modifying_batches_with_5_min_prior(page: import(
   await CorrPortalElem.Modify_Batch_Intervals_Button.click();
   await expect(page.getByText("Edit Batch Timing")).toBeVisible();
   const now = new Date();
-vars["CurrentTime"] = now.toLocaleString('en-US', {
-  timeZone: 'America/New_York',
-  hour: '2-digit',
-  minute: '2-digit',
-  hour12: true
-});
+  vars["CurrentTime"] = now.toLocaleString('en-US', {
+    timeZone: 'America/New_York',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: true
+  });
   // vars["CurrentTime"] = (() => {
   //   const d = new Date();
   //   const opts: Intl.DateTimeFormatOptions = { timeZone: "America/New_York" };

@@ -337,8 +337,8 @@ Column_Count_UICommitted_Loans1(count: string): Locator {
     return this.page.locator("(//td[@data-title=\"Comm. Letter\"]//span)[2]");
   }
 
-  get Download_Commitment_Letter1(): Locator {
-    return this.page.locator("//td[@data-title=\"File Name\" and contains(text(),\"$|FileNamePopup|\")]/following-sibling::td[@data-title=\"Actions\"]//button[i[contains(@class,'fa-arrow-to-bottom')]]");
+  Download_Commitment_Letter1(FileNamePopup:string): Locator {
+    return this.page.locator(`//td[@data-title=\"File Name\" and contains(text(),\"${FileNamePopup}\")]/following-sibling::td[@data-title=\"Actions\"]//button[i[contains(@class,'fa-arrow-to-bottom')]]`);
   }
 
   get Download_File_TextPopup(): Locator {
@@ -361,8 +361,8 @@ Column_Count_UICommitted_Loans1(count: string): Locator {
     return this.page.locator("(//div[@class=\"border-bottom p-2\" and contains(text(),\"FICO Score\")]/following-sibling::div)[1]");
   }
 
-  get File_NameCommitment_List(): Locator {
-    return this.page.locator("(//div[@id='modalBody']//td[@data-title='File Name' and contains(text(), '.xlsx')])[$|count|]");
+  File_NameCommitment_List(count:string): Locator {
+    return this.page.locator(`(//div[@id='modalBody']//td[@data-title='File Name' and contains(text(), '.xlsx')])[${count}]`);
   }
 
   get File_NamePopup(): Locator {
@@ -460,8 +460,8 @@ Column_Count_UICommitted_Loans1(count: string): Locator {
     return this.page.locator("(//div[@class=\"border-bottom p-2\" and contains(text(),\"$|ChaseFieldNamePopupTotalCommittedLoans|\")]/following-sibling::div)[1]\n");
   }
 
-  get Individual_Column_Data_UI(): Locator {
-    return this.page.locator("(//tbody//tr[$|RowCount|]//td[position()=3 or position()=4 or position()=5 or position()=6 or position()=10])[$|ColumnCountUI|]");
+  Individual_Column_Data_UI(RowCount:string,ColumnCountUI:string): Locator {
+    return this.page.locator(`(//tbody//tr[${RowCount}]//td[position()=3 or position()=4 or position()=5 or position()=6 or position()=10])[${ColumnCountUI}]`);
   }
 
   Individual_Column_Header_Details_Screen_Commitment_List(count:string): Locator {

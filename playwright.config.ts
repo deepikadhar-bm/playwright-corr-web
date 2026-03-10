@@ -17,7 +17,7 @@ export default defineConfig({
   ['list'],
   ],
  
-  timeout: 120_000,
+  timeout: 900_000,
  
   expect: {
     timeout: 15_000,

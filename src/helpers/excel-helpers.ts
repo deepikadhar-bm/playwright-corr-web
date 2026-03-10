@@ -796,6 +796,7 @@ function buildSession(filePath: string, activeSheetName: string): ExcelSession {
  * // Chain to a different sheet
  * const next  = session.switchToSheetByIndex(2);
  * console.log(next.sheetName);      // 'Results'
+ * 
  */
 export function switchToSheetByIndex(filePath: string, index: number): ExcelSession {
   const wb = XLSX.readFile(path.resolve(filePath), { cellDates: true });
@@ -986,23 +987,79 @@ export function readEntireRow(
   varName: string
 ): string {
   const wb = XLSX.readFile(path.resolve(filePath), { cellDates: true });
- 
-  // Accept both runtime vars (string) and hardcoded (number)
+
   const sheetIdx = typeof sheetIndex === 'string' ? parseInt(sheetIndex, 10) : sheetIndex;
   const rowIdx = typeof rowIndex === 'string' ? parseInt(rowIndex, 10) : rowIndex;
- 
+
   if (isNaN(sheetIdx)) throw new Error(`Sheet index "${sheetIndex}" is not a valid number`);
   if (isNaN(rowIdx)) throw new Error(`Row index "${rowIndex}" is not a valid number`);
- 
+
   const sheetName = wb.SheetNames[sheetIdx];
   if (!sheetName) throw new Error(`Sheet index ${sheetIdx} not found. Available sheets: ${wb.SheetNames.length}`);
- 
+
   const sheet = wb.Sheets[sheetName];
-  const rows: string[][] = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: '' });
- 
+  const rows: any[][] = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: null });
+
   if (rowIdx < 0 || rowIdx >= rows.length)
     throw new Error(`Row index ${rowIdx} out of range. Sheet "${sheetName}" has ${rows.length} row(s) [0 to ${rows.length - 1}]`);
- 
-  const result = rows[rowIdx].map(cell => String(cell ?? '').trim()).join(',');
+
+  const targetRow = rows[rowIdx];
+
+  const result = targetRow
+    .map(cell => {
+      if (cell === null || cell === undefined || String(cell).trim() === '') return 'null';
+      if (String(cell).trim() === 'N/A') return 'N/A';
+      return String(cell).trim();
+    })
+    .join(',');
+
+  console.log(`[readEntireRow] Row ${rowIdx} data: ${result}`);
   return result;
+}
+//read the excel value by using col and row index with sheet index
+export function readCellByColAndRowIndex(
+  filePath: string,
+  sheetIndex: string | number,
+  rowIndex: string | number,
+  colIndex: string | number
+): string {
+  const resolved = path.resolve(filePath);
+  if (!fs.existsSync(resolved)) {
+    throw new Error(`Excel file not found: ${resolved}`);
+  }
+
+  const sheetIdx = typeof sheetIndex === 'string' ? parseInt(sheetIndex, 10) : sheetIndex;
+  const rowIdx = typeof rowIndex === 'string' ? parseInt(rowIndex, 10) : rowIndex;
+  const colIdx = typeof colIndex === 'string' ? parseInt(colIndex, 10) : colIndex;
+
+  if (isNaN(sheetIdx)) throw new Error(`Sheet index "${sheetIndex}" is not a valid number`);
+  if (isNaN(rowIdx)) throw new Error(`Row index "${rowIndex}" is not a valid number`);
+  if (isNaN(colIdx)) throw new Error(`Column index "${colIndex}" is not a valid number`);
+
+  const wb = XLSX.readFile(resolved, { cellDates: true, cellNF: true });
+
+  if (sheetIdx < 0 || sheetIdx >= wb.SheetNames.length) {
+    throw new Error(`Sheet index ${sheetIdx} out of range. Available sheets: ${wb.SheetNames.length}`);
+  }
+
+  const sheetName = wb.SheetNames[sheetIdx];
+  const sheet = wb.Sheets[sheetName];
+
+  const rows: any[][] = XLSX.utils.sheet_to_json(sheet, {
+    header: 1,
+    defval: null,
+    blankrows: true,
+  });
+
+  const targetRow = rows[rowIdx];
+  if (!targetRow) {
+    throw new Error(`Row index ${rowIdx} out of range. Sheet "${sheetName}" has ${rows.length} row(s) [0 to ${rows.length - 1}].`);
+  }
+
+  const cellValue = targetRow[colIdx];
+  if (cellValue === null || cellValue === undefined || String(cellValue).trim() === '') {
+    return 'null';
+  }
+
+  return String(cellValue).trim();
 }
