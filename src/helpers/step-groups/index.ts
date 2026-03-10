@@ -31,11 +31,10 @@ const credentials = ENV.getCredentials('internal');
  */
 export async function stepGroup_Login_to_CORR_Portal(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
-  await page.goto("cp/");
-  // await page.goto(ENV.CORR_QA_URL);
- 
-  await CorrPortalElem.Username_Field.fill(vars["Username"] );
-  await CorrPortalElem.Password_Field.fill(vars["Password"] );
+  await page.goto("/cp/");
+  //await page.goto(ENV.CORR_QA_URL);
+  await CorrPortalElem.Username_Field.fill(vars["Username"]);
+  await CorrPortalElem.Password_Field.fill(vars["Password"]);
   await CorrPortalElem.Login_Button.click();
   await CorrPortalElem.Logo.waitFor({ state: 'visible' });
 }
@@ -141,12 +140,12 @@ export async function stepGroup_Creation_Of_Bid_Map_Upto_Header_Mapping(page: im
   await CorrPortalElem.Add_New_Mapping_Button.click();
   await expect(CorrPortalElem.Create_New_Map).toBeVisible();
   Helpers.getCurrentTimestamp("MM/dd/yyyy/HH:mm:ss", "Current Date", "Asia/Kolkata");
-  Helpers.concatenate("Testsigma_", vars["Current Date"], "Create New Map"); /* format: MM/dd/yyyy/HH:mm:ss */;
-  await CorrPortalElem.Create_New_Map_Field.fill(vars["Create New Map"]);
+  Helpers.concatenate("Testsigma_", vars["Current Date"], "CreateNewMap"); /* format: MM/dd/yyyy/HH:mm:ss */;
+  await CorrPortalElem.Create_New_Map_Field.fill(vars["CreateNewMap"]);
   vars["BidMap"] = await CorrPortalElem.Create_New_Map_Field.inputValue() || '';
   await CorrPortalElem.Compare_Button.click();
   await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
-  await expect(CorrPortalElem.Bid_Maps_Name(vars["Create New Map"])).toContainText(vars["Create New Map"]);
+  await expect(CorrPortalElem.Bid_Maps_Name(vars["CreateNewMap"])).toContainText(vars["CreateNewMap"]);
   // [DISABLED] Verify that the current page displays text Create New Map
   // await expect(page.getByText(vars["Create New Map"])).toBeVisible();
   await CorrPortalElem.Select_Companys_Dropdown.click();
@@ -2762,15 +2761,15 @@ export async function stepGroup_Past_time_disable_verification_in_bidrequest_dro
  * Steps: 24
  */
 export async function stepGroup_Uploading_Bid_Request(page: import('@playwright/test').Page, vars: Record<string, string>) {
-const profileName = 'Bid Requests';       // TDP sheet name
-const profile = testDataManager.getProfileByName(profileName);
+  const profileName = 'Bid Requests';       // TDP sheet name
+  const profile = testDataManager.getProfileByName(profileName);
 
-if (profile && profile.data) {
-  const value = profile.data[0]['Company Name'];  // row 0, column name
-  vars["CompanyName"] = value;    
-  const bidMappingID = profile.data[0]['BidMappingID'];
-  vars["BidMappingID"] = bidMappingID;                  // store in vars
-} // TODO: Get the profile name dynamically if needed
+  if (profile && profile.data) {
+    const value = profile.data[0]['Company Name'];  // row 0, column name
+    vars["CompanyName"] = value;
+    const bidMappingID = profile.data[0]['BidMappingID'];
+    vars["BidMappingID"] = bidMappingID;                  // store in vars
+  } // TODO: Get the profile name dynamically if needed
   const CorrPortalElem = new CorrPortalPage(page);
   const testData: Record<string, string> = {}; // TODO: Load from test data profile
   //await CorrPortalElem.Upload_New_Bid_Request_Button.isEnabled();
@@ -3248,15 +3247,15 @@ export async function stepGroup_Upload_Bid_Request_For_Next_Business_Day_With_Ch
  */
 export async function stepGroup_Uploading_Bid_Request_By_Selecting_both_standard_and_chase_t(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const profileName = 'Bid Requests';       // TDP sheet name
-const profile = testDataManager.getProfileByName(profileName);
+  const profile = testDataManager.getProfileByName(profileName);
 
-if (profile && profile.data) {
-  const value = profile.data[0]['Company Name'];  // row 0, column name
-  vars["CompanyName"] = value;    
-  const bidMappingID = profile.data[0]['BidMappingID'];
-  vars["BidMappingID"] = bidMappingID;                  // store in vars
-}
-  
+  if (profile && profile.data) {
+    const value = profile.data[0]['Company Name'];  // row 0, column name
+    vars["CompanyName"] = value;
+    const bidMappingID = profile.data[0]['BidMappingID'];
+    vars["BidMappingID"] = bidMappingID;                  // store in vars
+  }
+
   const CorrPortalElem = new CorrPortalPage(page);
   const testData: Record<string, string> = {}; // TODO: Load from test data profile
   await CorrPortalElem.Select_Company_In_BidRequest.click();
@@ -3917,7 +3916,7 @@ export async function stepGroup_Uploading_Bid_RequestNew(page: import('@playwrig
 export async function stepGroup_Modifying_The_batch_Intervals_with_current_est_time(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const Methods = new AddonHelpers(page);
   const CorrPortalElem = new CorrPortalPage(page);
-  
+
   // Load test data from TestDataManager
   const profile = testDataManager.getProfileByName("Administration_Bulk Batch Timing");
   const testData = profile?.data?.[0] || {};
@@ -3934,20 +3933,20 @@ export async function stepGroup_Modifying_The_batch_Intervals_with_current_est_t
   // })();
   //Methods.getCurrentTimestamp('hh:mm a', 'CurrentTime',  'America/New_York');
   // console.log("CurrentTime value: before",  vars['CurrentTime']);
-const now = new Date();
-vars["CurrentTime"] = now.toLocaleString('en-US', {
-  timeZone: 'America/New_York',
-  hour: '2-digit',
-  minute: '2-digit',
-  hour12: true
-});
+  const now = new Date();
+  vars["CurrentTime"] = now.toLocaleString('en-US', {
+    timeZone: 'America/New_York',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: true
+  });
 
-console.log("CurrentTime:", vars["CurrentTime"]); // 04:45 AM
+  console.log("CurrentTime:", vars["CurrentTime"]); // 04:45 AM
   await stepGroup_Separating_Hours_and_minutes_In_time_Current_EST_time(page, vars);
   await CorrPortalElem.StartTime_In_Hour.fill(vars["Time_Hour"]);
   console.log("Time_Min value:", vars["Time_Min"]);
   await CorrPortalElem.StartTime_In_Minutes.click({ clickCount: 3 });
-await CorrPortalElem.StartTime_In_Minutes.type(vars["Time_Min"]);
+  await CorrPortalElem.StartTime_In_Minutes.type(vars["Time_Min"]);
   //await CorrPortalElem.StartTime_In_Minutes.fill(vars["Time_Min"]);
   await stepGroup_selecting_time_unit_bulk_batch(page, vars);
   await CorrPortalElem.Time_Interval.fill(testData["Time Interval"]);
@@ -3965,13 +3964,13 @@ await CorrPortalElem.StartTime_In_Minutes.type(vars["Time_Min"]);
  * Steps: 4
  */
 export async function stepGroup_Separating_Hours_and_minutes_In_time_Current_EST_time(page: import('@playwright/test').Page, vars: Record<string, string>) {
-  console.log("CurrentTime value: inside", vars["CurrentTime"]);
+  log.info("CurrentTime value: inside", vars["CurrentTime"]);
   vars["MinWithStandard"] = String(vars["CurrentTime"]).split(":")["1"] || '';
-  console.log("MinWithStandard value:", vars["MinWithStandard"]);
+  log.info("MinWithStandard value:", vars["MinWithStandard"]);
   vars["Time_Hour"] = String(vars["CurrentTime"]).substring(0, String(vars["CurrentTime"]).length - 6);
-  console.log("Time_Hour value:", vars["Time_Hour"]);
+  log.info("Time_Hour value:", vars["Time_Hour"]);
   vars["Time_Min"] = String(vars["MinWithStandard"]).substring(0, String(vars["MinWithStandard"]).length - 3);
-  console.log("Time_Min value:", vars["Time_Min"]);
+  log.info("Time_Min value:", vars["Time_Min"]);
   vars["Time_Unit"] = String(vars["MinWithStandard"]).substring(3);
 }
 
@@ -4376,22 +4375,31 @@ export async function stepGroup_Uploading_New_Bid_Request_Bid_Request_Screen(pag
   const CorrPortalElem = new CorrPortalPage(page);
   await stepGroup_Uploading_Bid_Request(page, vars);
   if (await CorrPortalElem.Enabled_Time_New.first().isVisible()) {
-  await CorrPortalElem.Enabled_Time_New.first().scrollIntoViewIfNeeded();
-  await CorrPortalElem.Enabled_Time_New.first().click();
-} else {
+    await CorrPortalElem.Enabled_Time_New.first().scrollIntoViewIfNeeded();
+    await CorrPortalElem.Pricing_Return_Time.selectOption({ index: parseInt("2") });
+  } else {
     await stepGroup_Navigating_to_Bulk_Batch_Timing(page, vars);
     //await stepGroup_Modifying_The_Batch_Intervals_For_one_Hour_Prior(page, vars);
     await stepGroup_Modifying_batches_with_5_min_prior(page, vars);
-    await stepGroup_Navigating_to_Upload_New_Bid_Request(page, vars);
+    const CorrPortalElem = new CorrPortalPage(page);
+    await CorrPortalElem.BidRequests_Menu.click();
+    await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
+    await expect(page.getByText("Bid Requests").first()).toBeVisible();
+    //await stepGroup_Navigating_to_Upload_New_Bid_Request(page, vars);
     await stepGroup_Uploading_Bid_Request(page, vars);
-    await CorrPortalElem.Enabled_Time.first().scrollIntoViewIfNeeded();
-    await CorrPortalElem.Enabled_Time.first().click();
-  }
-  await CorrPortalElem.Upload_File.setInputFiles(path.resolve(__dirname, 'test-data', "Bid_file_success_error.xlsx"));
+    //await CorrPortalElem.Enabled_Time.first().scrollIntoViewIfNeeded();
+    //await CorrPortalElem.Enabled_Time.first().click();
+    await CorrPortalElem.Pricing_Return_Time.selectOption({ index: parseInt("2") });
+    vars["ExtractedPrincingReturnTime"] = await CorrPortalElem.Pricing_Return_Time.evaluate(el => { const s = el as HTMLSelectElement; return s.options[s.selectedIndex]?.text || ''; });
+    log.info("Extracted Pricing Return Time: " + vars["ExtractedPrincingReturnTime"]);
+
+  await CorrPortalElem.Upload_File.setInputFiles([
+          path.resolve(__dirname, '..', '..', '..', 'uploads', 'Bid_file_success_error_newly_updated (10).xlsx')
+        ]);
   await expect(CorrPortalElem.UploadBid_Button).toBeVisible();
   await CorrPortalElem.UploadBid_Button.click();
 }
-
+}
 /**
  * Step Group: Verification of Loan Pop up Details From Locked Loans Tab (Price Offered Screen)
  * ID: 1501
@@ -6176,12 +6184,12 @@ export async function stepGroup_Modifying_batches_with_5_min_prior(page: import(
   await CorrPortalElem.Modify_Batch_Intervals_Button.click();
   await expect(page.getByText("Edit Batch Timing")).toBeVisible();
   const now = new Date();
-vars["CurrentTime"] = now.toLocaleString('en-US', {
-  timeZone: 'America/New_York',
-  hour: '2-digit',
-  minute: '2-digit',
-  hour12: true
-});
+  vars["CurrentTime"] = now.toLocaleString('en-US', {
+    timeZone: 'America/New_York',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: true
+  });
   // vars["CurrentTime"] = (() => {
   //   const d = new Date();
   //   const opts: Intl.DateTimeFormatOptions = { timeZone: "America/New_York" };
@@ -6200,12 +6208,19 @@ vars["CurrentTime"] = now.toLocaleString('en-US', {
   await CorrPortalElem.StartTime_In_Hour.fill(vars["Time_Hour"]);
   await CorrPortalElem.StartTime_In_Minutes.fill(vars["Time_Min"]);
   await stepGroup_selecting_time_unit_bulk_batch(page, vars);
-  //const profileName = "Bid Requests";
-  //const profile = testDataManager.getProfileByName(profileName);
-  const profile = testDataManager.getProfileByName("Administration_Bulk Batch Timing");
-  const testData = profile?.data?.[0] || {};
-  await CorrPortalElem.Time_Interval.fill(testData["Time Interval"]);
-  await CorrPortalElem.No_Of_Batches.fill(testData["NO of Batches"]);
+  const profileName = 'Administration_Bulk Batch Timing';
+  const profile = testDataManager.getProfileByName(profileName);
+  if (profile && profile.data) {
+    const TimeInterval = profile.data[0]['Time Interval'] || '';
+    vars["Time_Interval"] = TimeInterval;
+    const NoOfBatches = profile.data[0]['NO of Batches'] || '';
+    vars["NO of Batches"] = NoOfBatches;
+    log.info(`[${profileName}] Loaded Time Interval: "${vars["Time_Interval"]}", NO of Batches: "${vars["NO of Batches"]}"`);
+  }
+  //const profile = testDataManager.getProfileByName("Administration_Bulk Batch Timing");
+  //const testData = profile?.data?.[0] || {};
+  await CorrPortalElem.Time_Interval.fill(vars["Time_Interval"]);
+  await CorrPortalElem.No_Of_Batches.fill(vars["NO of Batches"]);
   await expect(CorrPortalElem.On_Radio_button_in_Bid_Request).toBeEnabled();
   await CorrPortalElem.Modify_Batch_Button.click();
   await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });

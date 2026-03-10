@@ -19,8 +19,8 @@ export class BidRequestPage {
     return this.page.locator("(//label[contains(@class,\"dropdown-item d-flex\")])[position() >= 98 and position() <=111]");
   }
 
-  get All_Bid_Requests2Bid_Requests(): Locator {
-    return this.page.locator("(//table[@aria-label=\"Data Table\"]//tr[@role=\"row\"]//td[@data-title=\"Bid Req. ID\"]//button)[$|count|]");
+   All_Bid_Requests2Bid_Requests(count: number): Locator {
+    return this.page.locator(`(//table[@aria-label="Data Table"]//tr[@role="row"]//td[@data-title="Bid Req. ID"]//button)[${count}]`);
   }
 
   get All_Company_Name(): Locator {
@@ -135,8 +135,8 @@ export class BidRequestPage {
     return this.page.locator("(//div[normalize-space(text())='Company']//..//..//..//..//..//div[@class=\"text-nowrap\"])");
   }
 
-  get Company_Names1(): Locator {
-    return this.page.locator("(//div[normalize-space(text())='Company']//..//..//..//..//..//div[@class=\"text-nowrap\"])[$|count|]");
+   Company_Names1(count: string): Locator {
+    return this.page.locator(`(//div[normalize-space(text())='Company']//..//..//..//..//..//div[@class=\"text-nowrap\"])[${count}]`);
   }
 
   get Continue_ButtonUpload_Pop_up(): Locator {
@@ -283,8 +283,8 @@ export class BidRequestPage {
     return this.page.locator("//th[position() >1 and position() < last()][$|count|]");
   }
 
-  get Individual_Company_Checkbox_Dropdown(): Locator {
-    return this.page.locator("(((//div[@class=\"dropdown-overflow\"])[1]//input)[position() >= 1 and position() <= 7])[$|count|]");
+   Individual_Company_Checkbox_Dropdown(count: string): Locator {
+    return this.page.locator(`(((//div[@class="dropdown-overflow"])[1]//input)[position() >= 1 and position() <= 7])[${count}]`);
   }
 
   get Individual_Date_Range(): Locator {
@@ -303,8 +303,8 @@ export class BidRequestPage {
     return this.page.locator("(//div[contains(@aria-label,\"Requested Date:\")])[$|count|]");
   }
 
-  get Individual_Status_NameDropdown(): Locator {
-    return this.page.locator("((//label[text()='Select Bid Request Status']//..//div[@class=\"cursor-pointer py-3 text-wrap\"])[position() > 1 and position() <= last()])[$|Count|]");
+  Individual_Status_NameDropdown(Count: string): Locator {
+    return this.page.locator(`((//label[text()='Select Bid Request Status']//..//div[@class="cursor-pointer py-3 text-wrap"])[position() > 1 and position() <= last()])[${Count}]`);
   }
 
   get Individual_Uploaded_Date(): Locator {
