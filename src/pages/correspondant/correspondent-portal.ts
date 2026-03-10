@@ -1887,7 +1887,7 @@ get Header_Mapping_Dropdown_New(): Locator {
   }
 
   get Send_Email_Button(): Locator {
-    return this.page.locator("//tr[contains(normalize-space(),\"A4187 87W396593360 Freedom A4187 $888.71K 3 / 0 Standard Price Offered 05/22/2025 05/22/2025\")]//td[@data-title=\"Actions\"]//div[@role=\"group\"]//button[@aria-label=\"Send Email\"]//span[contains(@class, 'fa-envelope')]");
+    return this.page.locator("//td[@data-title=\"Actions\"]//div[@role=\"group\"]//button[@aria-label=\"Send Email\"]//span[contains(@class, 'fa-envelope')][1]");
   }
 
   get Send_Email_Button_On_Pop_Up(): Locator {
