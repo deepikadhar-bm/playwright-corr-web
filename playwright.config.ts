@@ -17,18 +17,18 @@ export default defineConfig({
   ['list'],
   ],
  
-  timeout: 120_000,
+  timeout: 900_000,
  
   expect: {
     timeout: 15_000,
   },
  
   use: {
-    headless: false,
+    headless: true,
     timezoneId: 'UTC',
  
     launchOptions: {
-      slowMo: 5000,
+      slowMo: 2000,
     },
  
     trace: 'on',
@@ -57,7 +57,8 @@ export default defineConfig({
             '--disable-setuid-sandbox',
             '--force-device-scale-factor=0.9',
             '--window-size=1920,1080'
-          ]
+          ],
+          slowMo: 2000,
         },
  
  

@@ -7,4 +7,5 @@ export const APP_CONSTANTS = {
   LoanAmount:"Loan Amount",
   MarkAdj:"Mark Adj",
   HeadersUi:"#Loans / #Errors and Bid Value",
+  ThreeDigitBidReqID:"878",
 };

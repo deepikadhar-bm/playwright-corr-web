@@ -47,8 +47,8 @@ export class BidrequestPage {
     return this.page.locator("//div[@class=\"pill rounded-pill relative\"]");
   }
 
-  get Individual_Company_Name_In_Dropdown(): Locator {
-    return this.page.locator("(((//div[@class=\"dropdown-overflow\"])[1]//span)[position() >= 1 and position() <= 7])[$|count|]");
+   Individual_Company_Name_In_Dropdown(count: string): Locator {
+    return this.page.locator(`(((//div[@class="dropdown-overflow"])[1]//span)[position() >= 1 and position() <= 7])[${count}]`);
   }
 
   get Individual_RowUpload_progress_popup(): Locator {
