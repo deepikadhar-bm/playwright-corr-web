@@ -15,8 +15,8 @@ export class BidRequestsPage {
     return this.page.locator("//span[@class='pl-2'][contains(.,'@|Company Name.|')]");
   }
 
-  get Bid_ID_Contains_SearchedID(): Locator {
-    return this.page.locator("//table[@aria-label=\"Data Table\"]//tr[@role=\"row\"]//td[@data-title=\"Bid Req. ID\"]//button[contains(@aria-label, \"$|IDSearchedFor|\")]");
+  Bid_ID_Contains_SearchedID(IDSearchedFor: string): Locator {
+    return this.page.locator(`//table[@aria-label="Data Table"]//tr[@role="row"]//td[@data-title="Bid Req. ID"]//button[contains(@aria-label, "${IDSearchedFor}")]`);
   }
 
   get BidRequests_Menu(): Locator {

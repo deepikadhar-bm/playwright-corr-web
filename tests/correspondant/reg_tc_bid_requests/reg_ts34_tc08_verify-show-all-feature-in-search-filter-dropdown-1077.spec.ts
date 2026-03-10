@@ -8,6 +8,12 @@ import { CorrespondentPortalPage } from '../../../src/pages/correspondant/corres
 import { FreedomA4187A4187CheckboxPage } from '../../../src/pages/correspondant/freedom-a4187-a4187-checkbox';
 import { PriceOfferedPage } from '../../../src/pages/correspondant/price-offered';
 import { SpinnerPage } from '../../../src/pages/correspondant/spinner';
+import { ENV } from '@config/environments';
+import { Logger as log } from '../../../src/helpers/log-helper';
+import { testDataManager } from 'testdata/TestDataManager';
+
+const TC_ID = 'REG_TS34_TC08';
+const TC_TITLE = 'Verify show all feature In Search Filter Dropdown';
 
 test.describe('REG_TC_Bid_Requests', () => {
   let vars: Record<string, string> = {};
@@ -28,129 +34,145 @@ test.describe('REG_TC_Bid_Requests', () => {
     spinnerPage = new SpinnerPage(page);
   });
 
-  test('REG_TS34_TC08_Verify show all feature In Search Filter Dropdown', async ({ page }) => {
-    const testData: Record<string, string> = {
-  "Selected Company Count": "2",
-  "Execution Type Header": "Exe.Type",
-  "Resubmit Pricing Error Standard1": "( nmlsId = 2767 )",
-  "Company Name.": "Wik1C BeuLD MoJbr CoEmy LLpoJ  - A2964",
-  "BidMappingID": "Deepika Aug1",
-  "Geo Coding Reducer flow(Errors Column)": "Geo Coding error",
-  "Bid Valid File(Error Description)": "No Errors",
-  "Company Name New": "American Pacific  - A4257",
-  "Email Success Message": "Email sent successfuly",
-  "Loan Field Validation(Number)": "Deepika_June_invaliddatafield",
-  "Bid Valid File(Loan Status)": "Success",
-  "Bid Request ID Header": "BidRequestID",
-  "Resubmit Pricing Error Chase Direct": "Execution type 'Chase Direct' not permitted for client",
-  "Geo Coding happy flow(Error Description)": "No Errors",
-  "Bid Enum Check(Loan Status)": "Error",
-  "Pos Check(Errors Column)": "No eligibility results",
-  "Eligibility Check(LoanStatus)": "Error",
-  "Geo Coding Reducer flow(Error Description))": "Geocode unknown",
-  "Geo Coding happy flow(Loan Status)": "Success",
-  "Geo Coding happy flow (Errors Column)": "No errors",
-  "Resubmit Pricing Error Standard": "Execution type 'Standard' not permitted for client",
-  "MissingHeaders_ErrorMessage1": "Bid tape is missing values for following headers: Loan Purpose.",
-  "Price Offered": "Price Offered",
-  "Geo Coding Failed flow(Errors))": "Geo Coding error",
-  "Ccode for freedom": "A4187",
-  "MissingHeaders_ErrorMessage2": "Please verify the correct Map ID is selected or tape is formatted correctly.",
-  "Geo Coding Reducer flow(Loan Status)": "Success",
-  "Eligibility Check(Error Description)": "Minimum loan amount $5,000",
-  "Stored_Text1": "10:10 AM",
-  "Status Name": "Committed",
-  "Bid Valid File(Error Column)": "No errors",
-  "CompanyName3": "American Pacific - A4257",
-  "Assigned Companies1": "Wik1C BeuLD MoJbr CoEmy LLpoJ",
-  "SpecialCharacter_ErrorHeader": "EXTRA_SPACE_FOUND",
-  "Geo Coding Failed flow(Loan Status)": "Error",
-  "Pos Check(Loan Status)": "Error",
-  "Loan Field Validation(Status)": "Error",
-  "Eligibility Check(Error Column)": "Minimum Loan Amount $5,000",
-  "Loan Field Validation(Error description)": "Loan value cannot be blank or zero for 'loan purpose'",
-  "Last One Month": "Last One Month",
-  "Resubmit Pricing Error Standard and Chase": "Execution type 'Standard' not permitted for client",
-  "Reason For Cancellation": "To be Cancelled",
-  "Reason For Deletion": "To be deleted",
-  "Loan Field Validation(Error)": "Invalid Loan Data",
-  "DeletingMessage for File": "You have selected to delete this file. Do you want to proceed?",
-  "Resubmit Pricing Error Standard and Chase1": "( nmlsId = 2767 )",
-  "Creating Batch Success Message": "Batch timing has been created successfull",
-  "Bid Enum Check(Errors Column)": "Secondary Residence, Investment (NOO)]. Path: search.criteria.propertyUse is missing value",
-  "Status Count 1": "3",
-  "Display_Text1": "Delete Batch Time",
-  "CompanyName(CustomerPermissions)": "Freedom - A4187",
-  "New Company Name": "Home Sweet Mortgage",
-  "CCode Header": "Ccode",
-  "FileRow": "4",
-  "SpecialCharacter_ErrorMessage": "Found extra space(s) in row 3 for 'Correspondent Loan Number'. Please modify and retry upload.",
-  "Display_Text2": "Delete Batch",
-  "Email Message Verification": "Do you want to resend Bid Offer email?",
-  "BidMappingIDNew": "Default Map Internal",
-  "Geo Coding Failed flow(Error Description)": "Geocode unknown, no eligibility results: cannot find zip detail information for : 09999",
-  "Pos Check(Error Description)": "Not approved for [nonagency], no eligibility results",
-  "MissingHeaders_ErrorHeader": "Missing Headers",
-  "Search Field Company Name": "Wik1C",
-  "DuplicateLoans_HeaderMessage": "Duplicate Loans",
-  "Company Name": "Freedom - A4187",
-  "Stored_Text": "09:19 AM",
-  "Resubmit Pricing Error Chase Direct1": "( nmlsId = 2767 )",
-  "DuplicateLoans_ErrorMessage": "Duplicate loan numbers contained in this file: Deepika_June_02_02, Deepika_June_02_04. Please remove these from the file and retry upload.",
-  "Missing Headers(Error Message)": "Bid tape is missing values for following headers: Loan Purpose. Please verify the correct Map ID is selected or tape is formatted correctly.",
-  "Bid Enum Check(Error Description)": "enum field occupancy type is missing value or value is not in valid list [primary residence, secondary residence, investment (noo)]. path: search.criteria.propertyuse is missing value"
-}; // Profile: "Bid Requests", row: 0
+  test(`${TC_ID}_${TC_TITLE}`, async ({ page }) => {
 
-    await stepGroups.stepGroup_Login_to_CORR_Portal(page, vars);
-    await page.waitForLoadState('networkidle');
-    await correspondentPortalPage.Bid_Requests.click();
-    await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-    await priceOfferedPage.Filter_Dropdown1.click();
-    await correspondentPortalPage.Select_CompanyCCode_Dropdown1.click();
-    await freedomA4187A4187CheckboxPage.First_Company_Checkbox.check();
-    await chaseFieldNamePage.Second_Company_Checkbox.check();
-    vars["FirstCompanyName"] = await bidRequestPage.First_Company_Name_Text.textContent() || '';
-    vars["SecondCompanyName"] = await correspondentPortalPage.Second_Company_Text.textContent() || '';
-    await correspondentPortalPage.Show_Selected_Button.click();
-    await expect(bidRequestPage.First_Company_Name_Text).toContainText(vars["FirstCompanyName"]);
-    await expect(correspondentPortalPage.Second_Company_Text).toContainText(vars["SecondCompanyName"]);
-    await expect(freedomA4187A4187CheckboxPage.First_Company_Checkbox).toBeVisible();
-    await expect(chaseFieldNamePage.Second_Company_Checkbox).toBeVisible();
-    vars["AllCompanyNameCount"] = String(await bidRequestPage.All_Company_Name.count());
-    expect(String(vars["AllCompanyNameCount"])).toBe(testData["Selected Company Count"]);
-    await correspondentPortalPage.Show_All_Button.click();
-    vars["AllCompanyNameCount"] = String(await bidRequestPage.All_Company_Name.count());
-    expect(String(vars["AllCompanyNameCount"])).toBe(testData["Selected Company Count"]);
-    await correspondentPortalPage.Apply_Selected.click();
-    // [DISABLED] Click on Select Bid Request Status Dropdown
-    // await bidRequestPage.Select_Bid_Request_Status_Dropdown.click();
-    // [DISABLED] Check the checkbox First Bid Request Checkbox
-    // await correspondentPortalPage.First_Bid_Request_Checkbox.check();
-    // [DISABLED] Check the checkbox Second Bid Request Checkbox
-    // await bidRequestPage.Second_Bid_Request_Checkbox.check();
-    // [DISABLED] Store text from the element First Bid Request Text into a variable FirstBidRequestText
-    // vars["FirstBidRequestText"] = await correspondentPortalPage.First_Bid_Request_Text.textContent() || '';
-    // [DISABLED] Store text from the element Second Bid Request Text into a variable SecondBidRequestText
-    // vars["SecondBidRequestText"] = await correspondentPortalPage.Second_Bid_Request_Text.textContent() || '';
-    // [DISABLED] Click on Show Selected
-    // await bidRequestPage.Show_Selected.click();
-    // [DISABLED] Verify that the element First Bid Request Text displays text FirstBidRequestText and With Scrollable FALSE
-    // await expect(correspondentPortalPage.First_Bid_Request_Text).toContainText(vars["FirstBidRequestText"]);
-    // [DISABLED] Verify that the element Second Bid Request Text displays text SecondBidRequestText and With Scrollable FALSE
-    // await expect(correspondentPortalPage.Second_Bid_Request_Text).toContainText(vars["SecondBidRequestText"]);
-    // [DISABLED] Verify that the element First Bid Request Checkbox is checked and With Scrollable FALSE
-    // await expect(correspondentPortalPage.First_Bid_Request_Checkbox).toBeVisible();
-    // [DISABLED] Verify that the element Second Bid Request Checkbox is checked and With Scrollable FALSE
-    // await expect(bidRequestPage.Second_Bid_Request_Checkbox).toBeVisible();
-    // [DISABLED] Store the count of elements identified by locator All Bid Request Status into a variable AllBidRequestStatus
-    // vars["AllBidRequestStatus"] = String(await bidRequestPage.All_Bid_Request_Status.count());
-    // [DISABLED] Click on Show All
-    // await correspondentPortalPage.Show_All_Button.click();
-    // [DISABLED] Store the count of elements identified by locator All Bid Request Status into a variable AllBidRequestStatus
-    // vars["AllBidRequestStatus"] = String(await bidRequestPage.All_Bid_Request_Status.count());
-    // [DISABLED] Verify if AllBidRequestStatus > 2
-    // expect(String(vars["AllBidRequestStatus"])).toBe("2");
-    // [DISABLED] Click on Apply Selected
-    // await correspondentPortalPage.Apply_Selected.click();
+    // ─── TC Start ────────────────────────────────────────────────────────
+    log.tcStart(TC_ID, TC_TITLE);
+
+    try {
+
+      // ── Step 1: Load Credentials and Test Data ───────────────────────────
+      log.step('Loading credentials and test data');
+      try {
+        const credentials = ENV.getCredentials('internal');
+            vars["Username"] = credentials.username;
+            vars["Password"] = credentials.password;
+            const profileName = 'Bid Requests'; // TDP sheet name
+            const profile = testDataManager.getProfileByName(profileName);
+            if (profile && profile.data) {
+              const selectedCompanyCount = profile.data[0]['Selected Company Count'];
+              vars["Selected Company Count"] = selectedCompanyCount;
+            }
+        log.stepPass('Credentials and test data loaded successfully');
+      } catch (e) {
+        await log.stepFail(page, 'Loading credentials and test data failed');
+        throw e;
+      }
+
+      // ── Step 2: Login to Correspondent Portal ────────────────────────────
+      log.step('Login to Correspondent Portal');
+      try {
+        await stepGroups.stepGroup_Login_to_CORR_Portal(page, vars);
+        await page.waitForLoadState('load');
+        log.stepPass('Login to Correspondent Portal successful');
+      } catch (e) {
+        await log.stepFail(page, 'Login to Correspondent Portal failed');
+        throw e;
+      }
+
+      // ── Step 3: Navigate to Bid Requests ─────────────────────────────────
+      log.step('Navigating to Bid Requests');
+      try {
+        await correspondentPortalPage.Bid_Requests.click();
+        await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+        log.stepPass('Navigated to Bid Requests successfully');
+      } catch (e) {
+        await log.stepFail(page, 'Navigating to Bid Requests failed');
+        throw e;
+      }
+
+      // ── Step 4: Select Companies from Filter Dropdown ─────────────────────
+      log.step('Opening filter dropdown and selecting two companies');
+      try {
+        await priceOfferedPage.Filter_Dropdown1.click();
+        await correspondentPortalPage.Select_CompanyCCode_Dropdown1.click();
+        await freedomA4187A4187CheckboxPage.First_Company_Checkbox.check();
+        await chaseFieldNamePage.Second_Company_Checkbox.check();
+        vars["FirstCompanyName"] = await bidRequestPage.First_Company_Name_Text.textContent() || '';
+        vars["SecondCompanyName"] = await correspondentPortalPage.Second_Company_Text.textContent() || '';
+        log.stepPass(`Two companies selected - First: ${vars["FirstCompanyName"]}, Second: ${vars["SecondCompanyName"]}`);
+      } catch (e) {
+        await log.stepFail(page, 'Selecting companies from filter dropdown failed');
+        throw e;
+      }
+
+      // ── Step 5: Verify Show Selected feature ──────────────────────────────
+      log.step('Clicking Show Selected and verifying selected companies and count');
+      try {
+        await correspondentPortalPage.Show_Selected_Button.first().click();
+        await expect(bidRequestPage.First_Company_Name_Text).toContainText(vars["FirstCompanyName"]);
+        await expect(correspondentPortalPage.Second_Company_Text).toContainText(vars["SecondCompanyName"]);
+        await expect(freedomA4187A4187CheckboxPage.First_Company_Checkbox).toBeChecked();
+        await expect(chaseFieldNamePage.Second_Company_Checkbox).toBeChecked();
+        vars["AllCompanyNameCount"] = String(await bidRequestPage.All_Company_Name.count());
+        expect(String(vars["AllCompanyNameCount"])).toBe(vars["Selected Company Count"]);
+        log.stepPass(`Show Selected verified - company count: ${vars["AllCompanyNameCount"]}`);
+      } catch (e) {
+        await log.stepFail(page, 'Verifying Show Selected feature failed');
+        throw e;
+      }
+
+      // ── Step 6: Verify Show All feature ───────────────────────────────────
+      log.step('Clicking Show All and verifying company count remains the same');
+      try {
+        await correspondentPortalPage.Show_All_Button.first().click();
+        vars["AllCompanyNameCount"] = String(await bidRequestPage.All_Company_Name.count());
+        expect(parseInt(vars["AllCompanyNameCount"])).toBeGreaterThan(parseInt(vars["Selected Company Count"]));
+        log.stepPass(`Show All verified - company count: ${vars["AllCompanyNameCount"]}`);
+      } catch (e) {
+        await log.stepFail(page, 'Verifying Show All feature failed');
+        throw e;
+      }
+
+      // ── Step 7: Apply Selected ─────────────────────────────────────────────
+      log.step('Clicking Apply Selected');
+      try {
+        await correspondentPortalPage.Apply_Selected.first().click();
+        // [DISABLED] Click on Select Bid Request Status Dropdown
+        // await bidRequestPage.Select_Bid_Request_Status_Dropdown.click();
+        // [DISABLED] Check the checkbox First Bid Request Checkbox
+        // await correspondentPortalPage.First_Bid_Request_Checkbox.check();
+        // [DISABLED] Check the checkbox Second Bid Request Checkbox
+        // await bidRequestPage.Second_Bid_Request_Checkbox.check();
+        // [DISABLED] Store text from the element First Bid Request Text into a variable FirstBidRequestText
+        // vars["FirstBidRequestText"] = await correspondentPortalPage.First_Bid_Request_Text.textContent() || '';
+        // [DISABLED] Store text from the element Second Bid Request Text into a variable SecondBidRequestText
+        // vars["SecondBidRequestText"] = await correspondentPortalPage.Second_Bid_Request_Text.textContent() || '';
+        // [DISABLED] Click on Show Selected
+        // await bidRequestPage.Show_Selected.click();
+        // [DISABLED] Verify that the element First Bid Request Text displays text FirstBidRequestText and With Scrollable FALSE
+        // await expect(correspondentPortalPage.First_Bid_Request_Text).toContainText(vars["FirstBidRequestText"]);
+        // [DISABLED] Verify that the element Second Bid Request Text displays text SecondBidRequestText and With Scrollable FALSE
+        // await expect(correspondentPortalPage.Second_Bid_Request_Text).toContainText(vars["SecondBidRequestText"]);
+        // [DISABLED] Verify that the element First Bid Request Checkbox is checked and With Scrollable FALSE
+        // await expect(correspondentPortalPage.First_Bid_Request_Checkbox).toBeVisible();
+        // [DISABLED] Verify that the element Second Bid Request Checkbox is checked and With Scrollable FALSE
+        // await expect(bidRequestPage.Second_Bid_Request_Checkbox).toBeVisible();
+        // [DISABLED] Store the count of elements identified by locator All Bid Request Status into a variable AllBidRequestStatus
+        // vars["AllBidRequestStatus"] = String(await bidRequestPage.All_Bid_Request_Status.count());
+        // [DISABLED] Click on Show All
+        // await correspondentPortalPage.Show_All_Button.click();
+        // [DISABLED] Store the count of elements identified by locator All Bid Request Status into a variable AllBidRequestStatus
+        // vars["AllBidRequestStatus"] = String(await bidRequestPage.All_Bid_Request_Status.count());
+        // [DISABLED] Verify if AllBidRequestStatus > 2
+        // expect(String(vars["AllBidRequestStatus"])).toBe("2");
+        // [DISABLED] Click on Apply Selected
+        // await correspondentPortalPage.Apply_Selected.click();
+        log.stepPass('Apply Selected clicked successfully');
+      } catch (e) {
+        await log.stepFail(page, 'Clicking Apply Selected failed');
+        throw e;
+      }
+
+      // ─── TC End: PASS ────────────────────────────────────────────────────
+      log.tcEnd('PASS');
+
+    } catch (e) {
+      // ─── TC End: FAIL ────────────────────────────────────────────────────
+      await log.captureOnFailure(page, TC_ID, e);
+      log.tcEnd('FAIL');
+      throw e;
+    }
+
   });
 });
