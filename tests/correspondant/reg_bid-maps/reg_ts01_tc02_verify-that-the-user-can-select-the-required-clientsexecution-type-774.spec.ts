@@ -49,6 +49,7 @@ test.describe('REG_Bid Maps', () => {
     helpers = new AddonHelpers(page, vars);
   });
 
+  
   const profileName = "Bid_Maps";
   const profile = testDataManager.getProfileByName(profileName);
 

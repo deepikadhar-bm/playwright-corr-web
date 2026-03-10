@@ -8,7 +8,7 @@ export class ProceedWithSavingButtonPage {
   constructor(private page: Page) {}
 
   get Proceed_with_Saving_Button(): Locator {
-    return this.page.locator("//button[@aria-label=\"Proceed with Saving\"]");
+    return this.page.locator("//button[@type='button' and @aria-label='Proceed with Saving']");
   }
 
 }
