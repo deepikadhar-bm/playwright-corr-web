@@ -29,6 +29,58 @@ export function getZipFileNames(filePath: string): string {
     return '';
   }
 }
+export function getZipFileNames1(filePath: string): string {
+  try {
+    if (!filePath || !fs.existsSync(filePath)) {
+      Logger.error(`getZipFileNames - File not found: "${filePath}"`);
+      return '';
+    }
+
+    const buf = fs.readFileSync(filePath);
+    const names: string[] = [];
+
+    // Locate End of Central Directory record (signature 0x06054b50)
+    let eocdOffset = -1;
+    for (let i = buf.length - 22; i >= 0; i--) {
+      if (buf.readUInt32LE(i) === 0x06054b50) {
+        eocdOffset = i;
+        break;
+      }
+    }
+
+    if (eocdOffset === -1) {
+      Logger.error(`getZipFileNames - Not a valid ZIP file: "${filePath}"`);
+      return '';
+    }
+
+    const totalEntries  = buf.readUInt16LE(eocdOffset + 10);
+    const centralDirOffset = buf.readUInt32LE(eocdOffset + 16);
+
+    let offset = centralDirOffset;
+    for (let i = 0; i < totalEntries; i++) {
+      if (buf.readUInt32LE(offset) !== 0x02014b50) break; // Central directory signature
+
+      const fileNameLength  = buf.readUInt16LE(offset + 28);
+      const extraFieldLength = buf.readUInt16LE(offset + 30);
+      const commentLength   = buf.readUInt16LE(offset + 32);
+      const entryName       = buf.toString('utf8', offset + 46, offset + 46 + fileNameLength);
+
+      // Skip directory entries (end with /)
+      if (!entryName.endsWith('/')) {
+        const baseName = entryName.includes('/') ? entryName.split('/').pop()! : entryName;
+        if (baseName.trim()) names.push(baseName.trim());
+      }
+
+      offset += 46 + fileNameLength + extraFieldLength + commentLength;
+    }
+
+    Logger.info(`getZipFileNames - Found ${names.length} file(s): ${names.join(', ')}`);
+    return names.join(',');
+  } catch (error) {
+    Logger.error(`getZipFileNames failed for "${filePath}": ${error}`);
+    return '';
+  }
+}
 
 export function unzip(filePath: string): string {
   try {

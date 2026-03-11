@@ -657,8 +657,8 @@ export class CorrPortalPage {
     return this.page.locator("//button[text()=\"$|CommittedCorrLoan|\"]//ancestor::tr//td[@data-title=\"Curr Market Value\"]");
   }
 
-  get Current_Gross_Price(): Locator {
-    return this.page.locator("(//td[@data-title=\"Curr Gross\"])[$|RowCount|]");
+  Current_Gross_Price(RowCount:string): Locator {
+    return this.page.locator(`(//td[@data-title=\"Curr Gross\"])[${RowCount}]`);
   }
 
   get Current_Market_Diff_price_offered(): Locator {
@@ -1156,8 +1156,8 @@ export class CorrPortalPage {
     return this.page.locator("//th[position() >1 and position() < last()][$|count|]");
   }
 
-  get Individual_Corr_Loan_Num(): Locator {
-    return this.page.locator("(//td[@data-title=\"Corr. Loan#\"]//button[1])[$|RowCount|]");
+  Individual_Corr_Loan_Num(RowCount:string): Locator {
+    return this.page.locator(`(//td[@data-title=\"Corr. Loan#\"]//button[1])[${RowCount}]`);
   }
 
   get Individual_Header_Name_UI(): Locator {
