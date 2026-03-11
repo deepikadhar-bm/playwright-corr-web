@@ -31,7 +31,7 @@ export class EnumerationMappingPage {
     return this.page.locator("//div[text()='$|customheadername|']");
   }
 
-  get Bid_Sample_Field_Nameenum_mapping(): Locator {
+  get Bid_Sample_Field_NameEnum_mapping(): Locator {
     return this.page.locator("//div[contains(@class,\"mapping-card rounded-3\")]//div[@class=\"col-2\"][1]");
   }
 
@@ -59,9 +59,10 @@ export class EnumerationMappingPage {
     return this.page.locator("//div[@class=\"field-block mb-2\"]//div");
   }
 
-  get BidTapeFieldCountForBidField(): Locator {
-    return this.page.locator("//div[text()=\"$|ColumnHeader|\" and not(@class=\"my-2\")]/../..//div[contains(@class,\"input-field-name\")]");
-  }
+
+  get_BidTapeFieldCountForBidField(columnHeader: string): Locator {
+    return this.page.locator(`//div[text()="${columnHeader}" and not(@class="my-2")]/../..//div[contains(@class,"input-field-name")]`);
+}
 
   get Chase_Enum_Names(): Locator {
     return this.page.locator("//div[@class=\"my-2\"]");
@@ -107,8 +108,8 @@ export class EnumerationMappingPage {
     return this.page.locator("(//div[@class=\"field-pair col-3\"]//select)[2]\n");
   }
 
-  get ChaseValues_Corresponding_to_Chase_Field(): Locator {
-    return this.page.locator("(//div[@class=\"my-2\" and text()=\"$|IndividualChaseFieldName|\"]/..//following-sibling::div)//div[@class=\"mb-2\"]");
+  get_ChaseValues_Corresponding_to_Chase_Field(IndividualChaseFieldName:string): Locator {
+    return this.page.locator(`(//div[@class="my-2" and text()="${IndividualChaseFieldName}"]/..//following-sibling::div)//div[@class="mb-2"]`);
   }
 
   get Correspondent_Unidentified_Chase_Value(): Locator {
