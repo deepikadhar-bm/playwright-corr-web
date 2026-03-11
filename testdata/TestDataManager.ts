@@ -88,6 +88,42 @@ class TestDataManager {
     console.log(`Successfully updated the first row of profile: ${profileName}`);
     this.saveToFile();
   }
+  /**
+ * Updates the 'data' object of a profile and simulates saving.
+ * @param profileName The name of the profile (e.g., 'CommitmentList')
+ * @param updatedRecord A record containing the updated values for the profile's columns
+ */
+public updateProfileData1(profileName: string, updatedRecord: Record<string, string>, rowIndex: number = 0): void {
+  const profile = this.getProfileByName(profileName);
+
+  if (!profile) {
+    throw new Error(`TestDataManager: Profile '${profileName}' not found.`);
+  }
+
+  if (profile.data === null) {
+    profile.data = [{}];
+  }
+
+  if (profile.data.length === 0) {
+    profile.data.push({});
+  }
+
+  while (profile.data.length <= rowIndex) {
+    profile.data.push({});
+  }
+
+  const targetRow = profile.data[rowIndex];
+
+  profile.columns.forEach((col) => {
+    if (updatedRecord[col] !== undefined) {
+      targetRow[col] = updatedRecord[col];
+      console.log(`Updated column '${col}' to value '${updatedRecord[col]}' in profile '${profileName}' at row[${rowIndex}]`);
+    }
+  });
+
+  console.log(`Successfully updated row[${rowIndex}] of profile: ${profileName}`);
+  this.saveToFile();
+}
 }
 
 export const testDataManager = new TestDataManager();
