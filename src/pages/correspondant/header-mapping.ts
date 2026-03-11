@@ -119,9 +119,12 @@ export class HeaderMappingPage {
     return this.page.locator("//a[text()[normalize-space() = \"Header Mapping\"]]");
   }
 
-  get Header_Value_In_Mapping(): Locator {
-    return this.page.locator("//div[text()=\"@|Custom Header|\"]/..//select[@id=\"id\"]");
-  }
+  // get Header_Value_In_Mapping(): Locator {
+  //   return this.page.locator("//div[text()=\"@|Custom Header|\"]/..//select[@id=\"id\"]");
+  // }
+  getHeaderValueInMapping(CustomHeader: string): Locator {
+  return this.page.locator(`//div[text()="${CustomHeader}"]/..//select[@id="id"]`);
+}
 
   get Headers_In_HeadersMapping(): Locator {
     return this.page.locator("//fieldset");
