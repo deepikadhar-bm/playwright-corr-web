@@ -129,8 +129,8 @@ Column_Count_UICommitted_Loans1(count: string): Locator {
     return this.page.locator("//div[text()=\"Commit. #\"]//following-sibling::h5");
   }
 
-  get Commitment_ID_Same_Loan_Num(): Locator {
-    return this.page.locator("//td[@data-title=\"Bid Request ID\"]//div[normalize-space(text())=\"$|BidReqId|\"]//ancestor::tr//td[@data-title=\"Comm. ID\"]//a[normalize-space(text())=\"$|CommitmentIDPriceOffered|\"]");
+  Commitment_ID_Same_Loan_Num(BidReqId:string,CommitmentIDPriceOffered:string): Locator {
+    return this.page.locator(`//td[@data-title=\"Bid Request ID\"]//div[normalize-space(text())=\"${BidReqId}\"]//ancestor::tr//td[@data-title=\"Comm. ID\"]//a[normalize-space(text())=\"${CommitmentIDPriceOffered}\"]`);
   }
 
   get Commitment_ID_DropdownChase(): Locator {
