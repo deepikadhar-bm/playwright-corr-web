@@ -129,8 +129,8 @@ export class PriceOfferedPage {
     return this.page.locator("//div[@aria-label=\"Status: Partially Committed\"]//..//..//a[contains(@aria-label, \"View details for price offered\")]");
   }
 
-  get Bid_Req_Id_other_than_the_given_id_Company_Name_Price_offered_or_Partial(): Locator {
-    return this.page.locator("(//tr[td[@data-title=\"Company\"]//div[contains(text(),\"@|Company Name|\")]]//td[@data-title=\"Bid Req. ID\"]//a[not(contains(text(),\"$|Bidreq_ID|\"))]/../..//td[@data-title=\"Status\"]//span[contains(text(),\" Price Offered \") or contains(text(),\" Partially Committed \")]/../../..//td[@data-title=\"Bid Req. ID\"])[1]");
+  Bid_Req_Id_other_than_the_given_id_Company_Name_Price_offered_or_Partial(CompanyName:string,BidreqID:string): Locator {
+    return this.page.locator(`(//tr[td[@data-title=\"Company\"]//div[contains(text(),\"${CompanyName}\")]]//td[@data-title=\"Bid Req. ID\"]//a[not(contains(text(),\"${BidreqID}\"))]/../..//td[@data-title=\"Status\"]//span[contains(text(),\" Price Offered \") or contains(text(),\" Partially Committed \")]/../../..//td[@data-title=\"Bid Req. ID\"])[1]`);
   }
 
   get Bid_Req_Id_Company_Freedom(): Locator {
@@ -201,8 +201,8 @@ export class PriceOfferedPage {
     return this.page.locator("//div[text()=\"Bid Req. ID\"]//..//h5[text()]");
   }
 
-  get Bid_Request_IDCompany_Name_Partial_or_Price_Offered(): Locator {
-    return this.page.locator("//tr[.//td[@data-title='Company']//div[normalize-space(text())='@|Company Name|'] and .//td[@data-title='Status']//span[normalize-space(text())='Partially Committed' or normalize-space(text())='Price Offered']]//td[@data-title='Bid Req. ID']");
+  Bid_Request_IDCompany_Name_Partial_or_Price_Offered(CompanyName:string): Locator {
+    return this.page.locator(`//tr[.//td[@data-title='Company']//div[normalize-space(text())='${CompanyName}'] and .//td[@data-title="Status"]//span[normalize-space(text())='Partially Committed' or normalize-space(text())='Price Offered']]//td[@data-title='Bid Req. ID']`);
   }
 
   get Bid_Request_Idprice_offered(): Locator {
@@ -2359,7 +2359,7 @@ Execution_TypeCommitment_List(BidReqId:string): Locator {
   }
 
   get Unidentified_Loan_Text(): Locator {
-    return this.page.locator("//div[contains(normalize-space(.),\"Unidentified Loan #\")]\n");
+    return this.page.locator("//div[contains(normalize-space(text()),'Unidentified Loan')]");
   }
 
   get Unidentified_Loanerrors_found_popup(): Locator {
