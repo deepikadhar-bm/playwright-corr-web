@@ -103,9 +103,9 @@ export class StatusInactive2Page {
     return this.page.locator("//div[@class='my-2'][contains(.,'$|$|EnumField||')]");
   }
 
-  get Error_Message_in_Hedaer_Mapping(): Locator {
-    return this.page.locator("//div[@class='p-2'][contains(.,'You have selected to delete \"$|BidSampleFieldName|\" mapping. Do you want to proceed?')]\" mapping. Do you want to proceed?')]");
-  }
+  get_Error_Message_in_Header_Mapping(DeleteHeaderMapping: string): Locator {
+  return this.page.locator(`//div[@class='p-2'][contains(.,'You have selected to delete "${DeleteHeaderMapping}" mapping. Do you want to proceed?')]`);
+}
 
   get File_Row_Bid_Request(): Locator {
     return this.page.locator("(//th[@aria-label=\"File Row\"]/../../..//div[@class=\"truncate\"])[$|Count|]");

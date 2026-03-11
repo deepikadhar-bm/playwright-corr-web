@@ -1,13 +1,15 @@
 // [PREREQ-APPLIED]
 // [POM-APPLIED]
 import { test, expect } from '@playwright/test';
-import path from 'path';
-import * as stepGroups from '../../../src/helpers/step-groups';
 import { CorrespondentPortal8Page } from '../../../src/pages/correspondant/correspondent-portal-8';
 import { CorrespondentPortalPage } from '../../../src/pages/correspondant/correspondent-portal';
 import { EnumerationMappingButtonPage } from '../../../src/pages/correspondant/enumeration-mapping-button';
 import { runPrereq_793 } from '../../../src/helpers/prereqs/prereq-793';
 import { CorrespondentPortal7Page } from '../../../src/pages/correspondant/correspondent-portal-7';
+import { Logger as log } from '../../../src/helpers/log-helper';
+
+const TC_ID = "REG_TS04_TC04";
+const TC_TITLE = "Verify that the user is able to perform all Checked the checkbox operations in the header mapping.";
 
 test.describe('Unassigned', () => {
   let vars: Record<string, string> = {};
@@ -25,10 +27,36 @@ test.describe('Unassigned', () => {
     enumerationMappingButtonPage = new EnumerationMappingButtonPage(page);
   });
 
-  test('REG_TS04_TC04_Verify that the user is able to perform all Checked the checkbox  operations in the header mapping.', async ({ page }) => {
+  test(`${TC_ID} - ${TC_TITLE}`, async ({ page }) => {
+    log.tcStart(TC_ID, TC_TITLE);
 
-    await correspondentPortalPage.First_Checkbox_Bid_Request.check();
-    await correspondentPortal7Page.Header_Mapping_checkbox.check();
-    await expect(enumerationMappingButtonPage.Enumeration_Mapping_Button).toBeVisible();
+    try {
+      log.step("Step 1: Verify prereq completed and header mapping controls are available");
+      try {
+        await expect(correspondentPortalPage.First_Checkbox_Bid_Request).toBeVisible();
+        await expect(correspondentPortal7Page.Header_Mapping_checkbox).toBeVisible();
+        log.stepPass("Step 1 passed: Checkboxes are visible.");
+      } catch (error) {
+        log.stepFail(page, "Step 1 failed: Required checkboxes are not visible after prereq.");
+        throw error;
+      }
+
+      log.step("Step 2: Check required checkboxes and verify Enumeration Mapping button");
+      try {
+        await correspondentPortalPage.First_Checkbox_Bid_Request.check();
+        await correspondentPortal7Page.Header_Mapping_checkbox.check();
+        await expect(enumerationMappingButtonPage.Enumeration_Mapping_Button).toBeVisible();
+        log.stepPass("Step 2 passed: Checkboxes checked and Enumeration Mapping button is visible.");
+      } catch (error) {
+        log.stepFail(page, "Step 2 failed: Unable to check checkboxes or verify Enumeration Mapping button.");
+        throw error;
+      }
+
+      log.tcEnd('PASS');
+    } catch (error) {
+      log.captureOnFailure(page, TC_ID, error);
+      log.tcEnd('FAIL');
+      throw error;
+    }
   });
 });

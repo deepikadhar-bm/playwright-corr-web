@@ -193,10 +193,6 @@ export class CorrPortalPage {
     return this.page.locator("//button[contains(text(),\"$|RequestIDDetails|\")]/../..//td[@data-title=\"Status\"]");
   }
 
-  get BidTapeFieldCountForBidField(): Locator {
-    return this.page.locator("//div[text()=\"$|ColumnHeader|\" and not(@class=\"my-2\")]/../..//div[contains(@class,\"input-field-name\")]");
-  }
-
   get Bid_Enumerated(): Locator {
     return this.page.locator("(//button[@id=\"singleSelectDropDownWithSearch\"])[2]");
   }
@@ -1099,17 +1095,18 @@ export class CorrPortalPage {
     return this.page.locator("//div[@class=\"dropdown-overflow\"]//*[contains(text(),\"$|ChaseName|\")]");
   }
 
-  get Individual_BidSample_Name(): Locator {
-    return this.page.locator("(//fieldset//div[@class=\"flex-grow-1\"])[$|count|]");
+  get_Individual_BidSample_Name(count: string): Locator {
+    return this.page.locator("(//fieldset//div[@class=\"flex-grow-1\"])[${count}]");
   }
 
-  get Individual_Bid_Sample_Name_Enum_Page(): Locator {
-    return this.page.locator("(//div[@class=\"my-2\"])[$|count1|]/ancestor::div[contains(@class,\"mapping-card\")]//div[@class=\"col-2\"]//div[not(contains(@class,\"my-2\"))]");
-  }
+  get_Individual_Bid_Sample_Name_Enum_Page(count1: string | number): Locator {
+    const selector = `(//div[@class="my-2"])[${count1}]/ancestor::div[contains(@class,"mapping-card")]//div[@class="col-2"]//div[not(contains(@class,"my-2"))]`;
+    return this.page.locator(selector);
+}
 
-  get Individual_Bid_Tape_Value_2(): Locator {
-    return this.page.locator("(//div[text()=\"$|ColumnHeader|\" and not(@class=\"my-2\")]/../..//div[contains(@class,\"input-field-name\")])[$|count2|]");
-  }
+  get_Individual_Bid_Tape_Value_2(columnHeader: string, count2: string | number): Locator {
+  return this.page.locator(`(//div[text()="${columnHeader}" and not(@class="my-2")]/../..//div[contains(@class,"input-field-name")])[${count2}]`);
+}
 
   get Individual_Cell_Data(): Locator {
     return this.page.locator("(//tr[$|RowsCount|]//td)[$|ColumnCount|]");
