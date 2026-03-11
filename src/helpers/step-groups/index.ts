@@ -147,15 +147,13 @@ export async function stepGroup_Creation_Of_Bid_Map_Upto_Header_Mapping(page: im
     const parts = new Intl.DateTimeFormat('en-US', { ...opts, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }).formatToParts(d);
     const p = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
     return fmt.replace('yyyy', p.year || '').replace('yy', (p.year || '').slice(-2)).replace('MM', p.month || '').replace('dd', p.day || '').replace('HH', String(d.getHours()).padStart(2, '0')).replace('hh', p.hour || '').replace('mm', p.minute || '').replace('ss', p.second || '').replace('a', p.dayPeriod || '').replace(/M(?!M)/g, String(parseInt(p.month || '0'))).replace(/d(?!d)/g, String(parseInt(p.day || '0'))).replace(/h(?!h)/g, String(parseInt(p.hour || '0')));
-    const p = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
-    return fmt.replace('yyyy', p.year || '').replace('yy', (p.year || '').slice(-2)).replace('MM', p.month || '').replace('dd', p.day || '').replace('HH', String(d.getHours()).padStart(2, '0')).replace('hh', p.hour || '').replace('mm', p.minute || '').replace('ss', p.second || '').replace('a', p.dayPeriod || '').replace(/M(?!M)/g, String(parseInt(p.month || '0'))).replace(/d(?!d)/g, String(parseInt(p.day || '0'))).replace(/h(?!h)/g, String(parseInt(p.hour || '0')));
+    
   })();
   vars["CreateNewMap"] = (() => {
     const d = new Date();
     const opts: Intl.DateTimeFormatOptions = { timeZone: "America/New_York" };
     const fmt = "MM/dd/yyyy/HH:mm:ss";
     const parts = new Intl.DateTimeFormat('en-US', { ...opts, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false }).formatToParts(d);
-    const p = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
     const p = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
     return fmt.replace('yyyy', p.year || '').replace('MM', p.month || '').replace('dd', p.day || '').replace('HH', p.hour || '').replace('mm', p.minute || '').replace('ss', p.second || '');
   })();
@@ -2781,8 +2779,6 @@ export async function stepGroup_Past_time_disable_verification_in_bidrequest_dro
 export async function stepGroup_Uploading_Bid_Request(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const profileName = 'Bid Requests';       // TDP sheet name
   const profile = testDataManager.getProfileByName(profileName);
-  const profileName = 'Bid Requests';       // TDP sheet name
-  const profile = testDataManager.getProfileByName(profileName);
 
   if (profile && profile.data) {
     const value = profile.data[0]['Company Name'];  // row 0, column name
@@ -3274,8 +3270,6 @@ export async function stepGroup_Upload_Bid_Request_For_Next_Business_Day_With_Ch
 export async function stepGroup_Uploading_Bid_Request_By_Selecting_both_standard_and_chase_t(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const profileName = 'Bid Requests';       // TDP sheet name
   const profile = testDataManager.getProfileByName(profileName);
-  const profile = testDataManager.getProfileByName(profileName);
-
   if (profile && profile.data) {
     const value = profile.data[0]['Company Name'];  // row 0, column name
     vars["CompanyName"] = value;
@@ -3975,14 +3969,6 @@ export async function stepGroup_Modifying_The_batch_Intervals_with_current_est_t
     minute: '2-digit',
     hour12: true
   });
-  const now = new Date();
-  vars["CurrentTime"] = now.toLocaleString('en-US', {
-    timeZone: 'America/New_York',
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: true
-  });
-
   console.log("CurrentTime:", vars["CurrentTime"]); // 04:45 AM
   console.log("CurrentTime:", vars["CurrentTime"]); // 04:45 AM
   await stepGroup_Separating_Hours_and_minutes_In_time_Current_EST_time(page, vars);
@@ -4416,9 +4402,6 @@ export async function stepGroup_Uploading_New_Bid_Request_Bid_Request_Screen(pag
     await CorrPortalElem.Enabled_Time_New.first().scrollIntoViewIfNeeded();
     await CorrPortalElem.Pricing_Return_Time.selectOption({ index: parseInt("2") });
   } else {
-    await CorrPortalElem.Enabled_Time_New.first().scrollIntoViewIfNeeded();
-    await CorrPortalElem.Enabled_Time_New.first().click();
-  } else {
     await stepGroup_Navigating_to_Bulk_Batch_Timing(page, vars);
     //await stepGroup_Modifying_The_Batch_Intervals_For_one_Hour_Prior(page, vars);
     await stepGroup_Modifying_batches_with_5_min_prior(page, vars);
@@ -4433,7 +4416,7 @@ export async function stepGroup_Uploading_New_Bid_Request_Bid_Request_Screen(pag
     await CorrPortalElem.Pricing_Return_Time.selectOption({ index: parseInt("2") });
     vars["ExtractedPrincingReturnTime"] = await CorrPortalElem.Pricing_Return_Time.evaluate(el => { const s = el as HTMLSelectElement; return s.options[s.selectedIndex]?.text || ''; });
     log.info("Extracted Pricing Return Time: " + vars["ExtractedPrincingReturnTime"]);
-
+ 
   await CorrPortalElem.Upload_File.setInputFiles([
           path.resolve(__dirname, '..', '..', '..', 'uploads', 'Bid_file_success_error_newly_updated (10).xlsx')
         ]);
