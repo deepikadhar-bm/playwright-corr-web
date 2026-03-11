@@ -92,7 +92,7 @@ test.describe('REG_Bid Maps', () => {
         await spinnerPage.Spinner.waitFor({ state: 'hidden' });
         await expect(p2142530YrFreddieMacFixedDropdownPage.Bid_Maps_Name)
           .toContainText(vars["BidMap"]);
-        log.stepPass("Step 7 passed: Navigated to Bid Map details and verified map name: " + vars["Create New Map"]);
+        log.stepPass("Step 7 passed: Navigated to Bid Map details and verified map name: " + vars["CreateNewMap"]);
       } catch (error) {
         log.stepFail(page, "Step 7 failed: Failed to navigate to Bid Map details or verify map name");
         throw error;
