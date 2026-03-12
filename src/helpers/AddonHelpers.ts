@@ -973,4 +973,31 @@ export class AddonHelpers {
       console.error(`[${METHOD}] Split "${sourceString}" by "${delimiter}" at position ${position}: ${e instanceof Error ? e.message : e}`);
     }
   }
+  getMonthFromDate(dateText: string): string {
+  const METHOD = 'getMonthFromDate';
+  try {
+    const uploadedDate = new Date(dateText.trim());
+    if (isNaN(uploadedDate.getTime())) {
+      throw new Error(`Invalid date format: ${dateText}`);
+    }
+    const month = String(uploadedDate.getMonth() + 1).padStart(2, '0');
+    pass(METHOD, `Extracted month "${month}" from date "${dateText}"`);
+    return month;
+  } catch (e) {
+    fail(METHOD, `Get month from date "${dateText}"`, e);
+  }
+}
+
+verifyDateStringMonthMatchesExpectedMonth(
+  uploadedDateText: string,
+  expectedMonth: string
+): void {
+  const METHOD = 'verifyDateStringMonthMatchesExpectedMonth';
+  try {
+    const uploadedMonth = this.getMonthFromDate(uploadedDateText.trim());
+    if (uploadedMonth !== expectedMonth)
+      throw new Error(`Month extracted from date "${uploadedDateText}" is "${uploadedMonth}" but expected "${expectedMonth}"`);
+    pass(METHOD, `Month "${uploadedMonth}" extracted from "${uploadedDateText}" matches expected month "${expectedMonth}"`);
+  } catch (e) { fail(METHOD, `Verify month from date "${uploadedDateText}" matches expected month "${expectedMonth}"`, e); }
+}
 }

@@ -2502,7 +2502,7 @@ export async function stepGroup_Getting_Last_Month_From_Current_Month(page: impo
     vars["Last Month"] = (parseFloat(String(vars["Current Month"])) - parseFloat(String("1"))).toFixed(0);
   }
   if (String("1,2,3,4,5,6,7,8,9").includes(String(vars["Last Month"]))) {
-    vars["Last Month"] = String('') + String('');
+    vars["Last Month"] = "0" + vars["Last Month"];;
   }
 }
 
@@ -2515,7 +2515,7 @@ export async function stepGroup_Verifying_last_month_and_Required_status_In_filt
   const CorrPortalElem = new CorrPortalPage(page);
   const testData: Record<string, string> = {}; // TODO: Load from test data profile
   await CorrPortalElem.Filter_Dropdown.click();
-  await page.waitForLoadState('networkidle');
+  await page.waitForLoadState('load');
   await CorrPortalElem.Select_Date_Range_Dropdown_Field.click();
   await CorrPortalElem.Last_One_Month_Button.click();
   await expect(CorrPortalElem.Select_Date_Range_Dropdown_Value).toContainText(testData["Last One Month"]);
@@ -2525,20 +2525,24 @@ export async function stepGroup_Verifying_last_month_and_Required_status_In_filt
   await CorrPortalElem.Apply_Selected2.click();
   await CorrPortalElem.Apply_Filters_Button.click();
   await stepGroup_Getting_Last_Month_From_Current_Month(page, vars);
-  await page.waitForLoadState('networkidle');
+  log.info("Applied filter for last month and required status as " + vars["ExpectedStatus"] + " and last month as " + vars["Last Month"]);
+  await page.waitForLoadState('load');
   await expect(CorrPortalElem.Date_Filter_Tube_Bid_request_List).toBeVisible();
   await expect(CorrPortalElem.Status_Filter_Tube).toBeVisible();
-  if (true) /* Element No result (Bid requests) is visible */ {
+  if (await page.getByText("No result").isVisible()) /* Element No result (Bid requests) is visible */ {
     await expect(page.getByText("No result")).toBeVisible();
+    log.info("Verified that no records are displayed when the last month filter is applied along with required status as " + vars["ExpectedStatus"] + " and last month as " + vars["Last Month"]);
   } else {
     vars["RowsCount"] = String(await CorrPortalElem.Total_Rows_Count.count());
     vars["LastMonthCount"] = String(await CorrPortalElem.Filtered_Lastmonth_Uploaded_Date.count());
     expect(String(vars["LastMonthCount"])).toBe(vars["RowsCount"]);
+    log.info("Verified that all the records displayed are uploaded in last month ->" + vars["Last Month"]);
     // [DISABLED] Verify that the elements with locator Bid Request Status Column Data displays text ExpectedStatus and With Scrollable FALSE
     // await expect(CorrPortalElem.Bid_Request_Status_Column_Data).toContainText(vars["ExpectedStatus"]);
     for (let i = 0; i < await CorrPortalElem.Bid_Request_Status_Column_Data.count(); i++) {
       await expect(CorrPortalElem.Bid_Request_Status_Column_Data.nth(i)).toHaveText(String(vars["ExpectedStatus"]));
     }
+    log.info("Verified that all the records displayed have the status as " + vars["ExpectedStatus"]);
   }
 }
 
