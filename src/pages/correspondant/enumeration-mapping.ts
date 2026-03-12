@@ -132,6 +132,11 @@ export class EnumerationMappingPage {
     return this.page.locator("(//i[@class=\"fa fas fa-trash trash-icon\"])[5]/../..//div");
   }
 
+  get Delete_icon_in_Enumeration_Mapping(): Locator {
+  return this.page.locator('//div[contains(text(),\'Conventional\')]//parent::div/button/i[contains(@class,"fa-trash")]');
+}
+  
+
   get Deleted_Enumeration_Value(): Locator {
     return this.page.locator("//select[@title=\"$|deletedEnumerationValue|\"]");
   }
