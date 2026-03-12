@@ -31,8 +31,8 @@ export class BidrequestPage {
     return this.page.locator("(//div[@class=\"card-body\"]//*[text()=\"$|LastBeforeBatchTime|\"])");
   }
 
-  get Filtered_Lastmonth_Uploaded_Date(): Locator {
-    return this.page.locator("//td[@data-title=\"Uploaded\"]//div[starts-with(text(),\" $|Last Month|\")]");
+  Filtered_Lastmonth_Uploaded_Date(lastMonth: string): Locator {
+    return this.page.locator(`//td[@data-title="Uploaded"]//div[starts-with(text(), " ${lastMonth}")]`);
   }
 
   get Filtered_Status_BidRequest_ID(): Locator {

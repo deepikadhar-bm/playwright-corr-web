@@ -28,7 +28,7 @@ export default defineConfig({
     timezoneId: 'UTC',
  
     launchOptions: {
-      slowMo: 2000,
+      slowMo: 3000,
     },
  
     trace: 'on',
@@ -58,7 +58,7 @@ export default defineConfig({
             '--force-device-scale-factor=0.9',
             '--window-size=1920,1080'
           ],
-          slowMo: 2000,
+          slowMo: 3000,
         },
  
  
