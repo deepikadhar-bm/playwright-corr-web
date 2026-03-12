@@ -183,7 +183,7 @@ export async function stepGroup_Creation_Of_Bid_Map_Upto_Header_Mapping(page: im
   await expect(CorrPortalElem.This_action_will_save_the_changes_and_Move_to_Next_Page).toBeVisible();
   await CorrPortalElem.Proceed_with_Saving_Button.click();
   await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
-  await expect(page.getByText(vars["Create New Map"])).toBeVisible();
+  await expect(page.getByText(vars["CreateNewMap"])).toBeVisible();
   await CorrPortalElem.Header_Mapping.waitFor({ state: 'visible' });
 }
 
@@ -230,7 +230,7 @@ export async function stepGroup_Smart_Mapper_from_Off_to_On(page: import('@playw
     await CorrPortalElem.Administration_Menu.click();
     await CorrPortalElem.GeneralSettings_Menu.click();
     await CorrPortalElem.Bid_Map_Creation_in_General_Settings.click();
-    await spinnerPage.Spinner.waitFor({ state: 'visible' });
+    // await spinnerPage.Spinner.waitFor({ state: 'visible' });
     await spinnerPage.Spinner.waitFor({ state: 'hidden' });
     await expect(CorrPortalElem.Bid_Map_Creation).toBeVisible();
     await expect(CorrPortalElem.Smart_Mapper).toBeVisible();
@@ -999,8 +999,8 @@ export async function stepGroup_Uploading_the_File(page: import('@playwright/tes
 export async function stepGroup_Add_Actions_in_Rules_and_Actions(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
   await CorrPortalElem.Chase_Field_Name.selectOption({ index: parseInt("16") });
-  await CorrPortalElem.Chase_Value.click();
-  await CorrPortalElem.Value_for_chase.click();
+  await CorrPortalElem.Chase_Value.selectOption({value: "false"});
+  // await CorrPortalElem.Value_for_chase.click();
   vars["ChaseFiledNameonAddActions"] = await CorrPortalElem.Add_Actions_Chase_Field_Name.evaluate(el => { const s = el as HTMLSelectElement; return s.options[s.selectedIndex]?.text || ''; });
   // [DISABLED] Store the value displayed in the text box Action Chase Field Name 1 field into a variable ChaseFiledNameonAddActions
   // vars["ChaseFiledNameonAddActions"] = await CorrPortalElem.Action_Chase_Field_Name_1.inputValue() || '';
@@ -1877,30 +1877,53 @@ export async function stepGroup_Fetching_Enum_from_Header_Mapping_and_verifying_
  * Steps: 22
  */
 export async function stepGroup_Adding_Rules_In_Rules_and_Actions_Screen(page: import('@playwright/test').Page, vars: Record<string, string>) {
+  const profileName = "Bid_Maps";
+  const profile = testDataManager.getProfileByName(profileName);
   const CorrPortalElem = new CorrPortalPage(page);
-  const testData: Record<string, string> = {}; // TODO: Load from test data profile
+  if (profile && profile.data) {
+        const ruleName = profile.data[0]['Rule Name'];
+        const conditionBidField = profile.data[0]['Condition Bid Field'];
+        const bidEnumeratedTapeValue = profile.data[0]['BidEnumeratedTapeValue']
+        const operation1 = profile.data[0]['Operation1']
+        vars["Rule Name"] = ruleName;
+        vars["Condition Bid Field"]=conditionBidField;
+        vars["BidEnumeratedTapeValue"]=bidEnumeratedTapeValue;
+        console.log("the bid enumerated tape value is :",vars["BidEnumeratedTapeValue"])
+        vars["Operation1"]=operation1;
+        console.log("the operation is :",vars["Operation1"])
+        vars["Username"] = credentials.username;
+        vars["Password"] = credentials.password;
+      }
+
+  // const testData: Record<string, string> = {}; // TODO: Load from test data profile
   await CorrPortalElem.Add_Rule_Button.click();
-  await CorrPortalElem.Rule_Name_Field.fill(testData["Rule Name"]);
+  await CorrPortalElem.Rule_Name_Field.fill(vars["Rule Name"]);
   vars["Rule Name"] = await CorrPortalElem.Rule_Name_Field.inputValue() || '';
   await expect(CorrPortalElem.Rule_Name_Field).toHaveValue(vars["Rule Name"]);
   await CorrPortalElem.Select_Category_Dropdown.click();
   vars["CategoryName"] = await CorrPortalElem.Select_Category_On_Rules_and_Actions.textContent() || '';
   await CorrPortalElem.Select_Category.check();
   await CorrPortalElem.Apply_Selected_1_button_in_Rule.click();
+  await CorrPortalElem.When_Bid_Field_in_Add_Conditions.waitFor({ state: "visible" })
   await CorrPortalElem.When_Bid_Field_in_Add_Conditions.click();
-  await CorrPortalElem.Search_Field.fill(testData["Condition Bid Field"]);
+  await CorrPortalElem.Search_Field.waitFor({ state: "visible" })
+  await CorrPortalElem.Search_Field.fill(vars["Condition Bid Field"]);
+  await page.pause();
   vars["BidField"] = await CorrPortalElem.Search_Field.inputValue() || '';
+  await CorrPortalElem.Select_Button.waitFor({ state: "visible" })
   await CorrPortalElem.Select_Button.click();
-  expect(String(vars["BidField"])).toBe(testData["Condition Bid Field"]);
-  await CorrPortalElem.Operation_Dropdown.selectOption({ label: testData["Operation1"] });
+  expect(String(vars["BidField"])).toBe(vars["Condition Bid Field"]);
+  // await CorrPortalElem.Operation_Dropdown.last().selectOption({ label: vars["Operation1"] });
+  await CorrPortalElem.Operation_Dropdown.last().selectOption({ value: vars["Operation1"] });
+  console.log("Operation selected:", vars["Operation1"]);
   await CorrPortalElem.Bid_Enumeration_Tape_Value_in_Rule.click();
   await CorrPortalElem.Search_Field_in_Bid_Enumerated_Tape_Value.click();
-  await CorrPortalElem.Search_Field.fill(testData["BidEnumeratedTapeValue"]);
-  await expect(CorrPortalElem.Search_Field_in_Bid_Enumerated_Tape_Value).toHaveValue(testData["BidEnumeratedTapeValue"]);
+  await CorrPortalElem.Bid_Enumerated_Search_Field.fill(vars["BidEnumeratedTapeValue"]);
+  await expect(CorrPortalElem.Search_Field_in_Bid_Enumerated_Tape_Value).toHaveValue(vars["BidEnumeratedTapeValue"]);
   await CorrPortalElem.Select_Button.click();
   vars["RuleBidField"] = vars["BidField"];
   vars["RuleCondition"] = await CorrPortalElem.Operation_Dropdown.inputValue() || '';
-  vars["RuleBidTapeValue"] = testData["BidEnumeratedTapeValue"];
+  vars["RuleBidTapeValue"] = vars["BidEnumeratedTapeValue"];
 }
 
 /**
