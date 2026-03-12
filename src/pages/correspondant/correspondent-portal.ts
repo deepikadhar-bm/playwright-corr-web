@@ -2106,8 +2106,8 @@ get Header_Mapping_Dropdown_New(): Locator {
     return this.page.locator("//span[text()[normalize-space() = \"Upload Bid\"]]");
   }
 
-  get Uploaded_Dates(): Locator {
-    return this.page.locator("(//td[@data-title=\"Uploaded\"])[$|count|]");
+   Uploaded_Dates(count : number): Locator {
+    return this.page.locator(`(//td[@data-title="Uploaded"])[${count}]`);
   }
 
   get Uploaded_Time(): Locator {

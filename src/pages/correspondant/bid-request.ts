@@ -179,7 +179,7 @@ export class BidRequestPage {
     return this.page.locator("//input[@type=\"checkbox\"]//..//span[@title=\"$|StatusToBeSet|\"]");
   }
 
-  get demo_individual_status(): Locator {
+  get Individual_Status_BidReqList(): Locator {
     return this.page.locator("//td[@data-title=\"Status\"]//span");
   }
 
