@@ -378,8 +378,8 @@ export class CorrPortalPage {
   }
 
   get Chase_Field_Name(): Locator {
-    return this.page.locator("//div[contains(@class, 'd-flex') and contains(@class, 'small')]/following-sibling::div[contains(@class, 'd-flex')]//select[contains(@class, 'form-select')]");
-  }
+  return this.page.locator("(//select[@id='id'])[2]");
+}
 
   get Chase_Field_Name_in_Rule(): Locator {
     return this.page.locator("(//*[text()=\"Add Actions\"]/..//select)[3]");
@@ -1591,6 +1591,10 @@ export class CorrPortalPage {
   get Search_Field(): Locator {
     return this.page.locator("(//input[@type=\"search\"])[1]");
   }
+
+  get Bid_Enumerated_Search_Field(): Locator {
+  return this.page.locator("//label[normalize-space()='Bid Enumerated Tape Value']/parent::div//input[@aria-label='Search options']");
+}
 
   get Search_FieldLon_Details_Popup(): Locator {
     return this.page.locator("//input[@placeholder=\"Search Fields\"]");
