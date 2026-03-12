@@ -1171,7 +1171,7 @@ Execution_TypeCommitment_List(BidReqId:string): Locator {
   }
 
   get Filter_Dropdown1(): Locator {
-    return this.page.locator("//span[text()[normalize-space() = \"Filter\"]]");
+    return this.page.locator("//span[text()[normalize-space() = \"Filter\"]]/..");
   }
 
   get Filtered_Company_NameChip(): Locator {
