@@ -37,4 +37,5 @@ export const APP_CONSTANTS = {
   PRICEOFFERED:"Price Offered",
  PARTIALLYCOMMITTED:"Partially Committed",
  EXPIRED:"Expired",
+ COMMITTED:"Committed",
 };
