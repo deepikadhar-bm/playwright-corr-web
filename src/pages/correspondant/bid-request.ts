@@ -135,7 +135,7 @@ export class BidRequestPage {
     return this.page.locator("(//div[normalize-space(text())='Company']//..//..//..//..//..//div[@class=\"text-nowrap\"])");
   }
 
-   Company_Names1(count: string): Locator {
+   Company_Names1(count: number): Locator {
     return this.page.locator(`(//div[normalize-space(text())='Company']//..//..//..//..//..//div[@class=\"text-nowrap\"])[${count}]`);
   }
 
@@ -275,8 +275,8 @@ export class BidRequestPage {
     return this.page.locator("((//table)[$|count|]//tbody//tr[$|RowsCount|]//td[position()<=5])[$|ColumnCount|]");
   }
 
-  get Individual_Column_Header(): Locator {
-    return this.page.locator("((//th//div[@role=\"button\"])[position() >=1 and position() <= 7])[$|count|]");
+  Individual_Column_Header(count: number): Locator {
+    return this.page.locator(`((//th//div[@role="button"])[position() >=1 and position() <= 7])[${count}]`);
   }
 
   get Individual_Column_Name(): Locator {
