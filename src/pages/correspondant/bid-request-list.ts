@@ -7,8 +7,8 @@ import { Page, Locator } from '@playwright/test';
 export class BidRequestListPage {
   constructor(private page: Page) {}
 
-  get BidStatus_From_List(): Locator {
-    return this.page.locator("//button[contains(text(),\"$|RequestIDDetails|\")]/../..//td[@data-title=\"Status\"]");
+  BidStatus_From_List(RequestIDDetails: string): Locator {
+    return this.page.locator(`//button[contains(text(),\"${RequestIDDetails}\")]/../..//td[@data-title=\"Status\"]`);
   }
 
   get Company_Name_From_List(): Locator {
@@ -43,8 +43,8 @@ export class BidRequestListPage {
     return this.page.locator("(//td[@data-title=\"Status\"]//*[contains(text(),\"Queued For Next Business Day\")]/../../..//button[@aria-label=\"Cancel Bid Request\"])[1]");
   }
 
-  get Request_Id_From_list(): Locator {
-    return this.page.locator("//button[contains(text(),\"$|RequestIDDetails|\")]/../..//td[@data-title=\"Bid Req. ID\"]");
+  Request_Id_From_list(RequestIDDetails: string): Locator {
+    return this.page.locator(`//button[contains(text(),\"${RequestIDDetails}\")]/../..//td[@data-title=\"Bid Req. ID\"]`);
   }
 
   get Request_Id_to_select(): Locator {

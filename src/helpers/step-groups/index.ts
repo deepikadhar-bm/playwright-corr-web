@@ -2795,14 +2795,14 @@ export async function stepGroup_Uploading_Bid_Request(page: import('@playwright/
     const bidMappingID = profile.data[0]['BidMappingID'];
     vars["BidMappingID"] = bidMappingID;                  // store in vars
   } // TODO: Get the profile name dynamically if needed
-  if (profile && profile.data) {
-    const value = profile.data[0]['Company Name'];  // row 0, column name
-    vars["CompanyName"] = value;
-    const bidMappingID = profile.data[0]['BidMappingID'];
-    vars["BidMappingID"] = bidMappingID;                  // store in vars
-  } // TODO: Get the profile name dynamically if needed
+  // if (profile && profile.data) {
+  //   const value = profile.data[0]['Company Name'];  // row 0, column name
+  //   vars["CompanyName"] = value;
+  //   const bidMappingID = profile.data[0]['BidMappingID'];
+  //   vars["BidMappingID"] = bidMappingID;                  // store in vars
+  // } // TODO: Get the profile name dynamically if needed
   const CorrPortalElem = new CorrPortalPage(page);
-  const testData: Record<string, string> = {}; // TODO: Load from test data profile
+  //const testData: Record<string, string> = {}; // TODO: Load from test data profile
   //await CorrPortalElem.Upload_New_Bid_Request_Button.isEnabled();
   await page.waitForTimeout(5000);
   await CorrPortalElem.Upload_New_Bid_Request_Button.click();
@@ -6304,26 +6304,6 @@ export async function stepGroup_Modifying_batches_with_5_min_prior(page: import(
     minute: '2-digit',
     hour12: true
   });
-  vars["CurrentTime"] = now.toLocaleString('en-US', {
-    timeZone: 'America/New_York',
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: true
-  });
-  // vars["CurrentTime"] = (() => {
-  //   const d = new Date();
-  //   const opts: Intl.DateTimeFormatOptions = { timeZone: "America/New_York" };
-  //   const fmt = "hh:mm a";
-  //   // Map Java date format to Intl parts
-  //   const parts = new Intl.DateTimeFormat('en-US', { ...opts, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }).formatToParts(d);
-  //   const p = Object.fromEntries(parts.map(({type, value}) => [type, value]));
-  //   return fmt.replace('yyyy', p.year || '').replace('yy', (p.year||'').slice(-2)).replace('MM', p.month || '').replace('dd', p.day || '').replace('HH', String(d.getHours()).padStart(2,'0')).replace('hh', p.hour || '').replace('mm', p.minute || '').replace('ss', p.second || '').replace('a', p.dayPeriod || '').replace(/M(?!M)/g, String(parseInt(p.month||'0'))).replace(/d(?!d)/g, String(parseInt(p.day||'0'))).replace(/h(?!h)/g, String(parseInt(p.hour||'0')));
-  // })();
-  // vars["CurrentTime"] = (() => {
-  //   const d = new Date('2000-01-01 ' + String(vars["CurrentTime"]));
-  //   d.setMinutes(d.getMinutes() + parseInt(String("5")));
-  //   return d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true }); // Format: hh:mm a
-  // })();
   await stepGroup_Separating_Hours_and_minutes_In_time_Current_EST_time(page, vars);
   await CorrPortalElem.StartTime_In_Hour.fill(vars["Time_Hour"]);
   await CorrPortalElem.StartTime_In_Minutes.fill(vars["Time_Min"]);
@@ -6355,7 +6335,8 @@ export async function stepGroup_Modifying_batches_with_5_min_prior(page: import(
  */
 export async function stepGroup_Selecting_Second_Enabled_Batch_Time_If_the_Condition_is_fail(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
-  vars["EnabledTime"] = await CorrPortalElem.Enabled_Time.textContent() || '';
+  vars["EnabledTime"] = (await CorrPortalElem.Enabled_Time.first().textContent() || '').trim();
+  log.info(`Enabled Time from UI: "${vars["EnabledTime"]} from the stepgroup"`);
   vars["CurrentEstTime"] = (() => {
     const d = new Date();
     const opts: Intl.DateTimeFormatOptions = { timeZone: "America/New_York" };
@@ -6367,10 +6348,10 @@ export async function stepGroup_Selecting_Second_Enabled_Batch_Time_If_the_Condi
   })();
   vars["TimeDiff"] = Math.abs(new Date('2000-01-01 ' + String(vars["CurrentEstTime"])).getTime() - new Date('2000-01-01 ' + String(vars["EnabledTime"])).getTime()) / 60000 + '';
   if (String(vars["TimeDiff"]) >= String("4")) {
-    await CorrPortalElem.Pricing_Return_Time.selectOption({ label: vars["EnabledTime"] });
+    await CorrPortalElem.Pricing_Return_Time.selectOption({ value: vars["EnabledTime"] });
   } else {
-    vars["SecondEnabledTime"] = await CorrPortalElem.Second_Enabled_Time.textContent() || '';
-    await CorrPortalElem.Pricing_Return_Time.selectOption({ label: vars["SecondEnabledTime"] });
+    vars["SecondEnabledTime"] = (await CorrPortalElem.Second_Enabled_Time.first().textContent() || '').trim();
+    await CorrPortalElem.Pricing_Return_Time.selectOption({ value: vars["SecondEnabledTime"] });
   }
 }
 
