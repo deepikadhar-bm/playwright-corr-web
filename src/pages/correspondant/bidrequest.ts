@@ -39,8 +39,8 @@ export class BidrequestPage {
     return this.page.locator("//div[   contains(@aria-label, 'Loans total:') and   number(substring-before(substring-after(@aria-label, 'Loans total: '), ',')) < 10 ]/../..//td[@data-title=\"Execution Type\"]//div[text()=\" $|ExecutionType| \"]/../..//td[@data-title=\"Status\"]//span[contains(text(),\"$|StatusToBeSelected|\")]/../../..//td[@data-title=\"Bid Req. ID\"]");
   }
 
-  get First_Column_Data(): Locator {
-    return this.page.locator("(//td[@data-title=\"$|IndividualHeaderName|\"])[1]");
+  First_Column_Data(IndividualHeaderName: string): Locator {
+    return this.page.locator(`(//td[@data-title="${IndividualHeaderName}"])[1]`);
   }
 
   get First_Filter_TubeBidRequest_List(): Locator {
