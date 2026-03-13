@@ -146,9 +146,9 @@ export class HeaderMappingPage {
     return this.page.locator("(//div[contains(@class,\"gap-2 header-grid-layout\")]//select)[$|count|]");
   }
 
-  get Individual_Mapped_Chase_Name(): Locator {
-    return this.page.locator("(//fieldset//div[@class=\"gap-2 header-grid-layout\"]//select)[$|count|]");
-  }
+ get_Individual_Mapped_Chase_Name(count: number): Locator {
+  return this.page.locator(`(//fieldset//div[@class="gap-2 header-grid-layout"]//select)[${count}]`);
+}
 
   get Loan_Purpose_chase_dropdown(): Locator {
     return this.page.locator("//div[@class=\"flex-grow-1\" and text()=\"Loan Purpose\"]/..//select");
