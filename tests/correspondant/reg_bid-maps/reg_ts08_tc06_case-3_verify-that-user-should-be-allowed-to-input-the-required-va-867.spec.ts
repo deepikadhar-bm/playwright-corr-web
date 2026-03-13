@@ -79,7 +79,6 @@ test.describe('REG_Bid Maps', () => {
         await stepGroups.stepGroup_Login_to_CORR_Portal(page, vars);
         await stepGroups.stepGroup_Smart_Mapper_from_Off_to_On(page, vars);
         await stepGroups.stepGroup_Creation_Of_New_Map(page, vars);
-
         log.stepPass("Step 1 passed: Successfully logged in, Smart Mapper enabled, and new map creation started.");
       } catch (error) {
         log.stepFail(page, "Step 1 failed: Unable to login, enable Smart Mapper, or start new map creation.");
@@ -91,12 +90,9 @@ test.describe('REG_Bid Maps', () => {
         await uploadFile(page, correspondentPortalPage.Upload_File, "Bid_Maps_File.xlsx");
         await correspondentPortal16Page.File_Field.hover();
         await mapHeadersButtonPage.Map_Headers_Button.click();
-
         await expect(thisActionWillSaveTheChangesAndMoveToNextPagePage.This_action_will_save_the_changes_and_Move_to_Next_Page).toBeVisible();
         await proceedWithSavingButtonPage.Proceed_with_Saving_Button.click();
-
         await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-
         log.stepPass("Step 2 passed: File uploaded and header mapping initiated successfully.");
       } catch (error) {
         log.stepFail(page, "Step 2 failed: Unable to upload file or proceed with header mapping.");
@@ -106,12 +102,9 @@ test.describe('REG_Bid Maps', () => {
       log.step("Step 3: Navigate to Enumeration Mapping and proceed past unidentified fields popup");
       try {
         await enumerationMappingButtonPage.Enumeration_Mapping_Button.click();
-
         await expect(correspondentPortalPage.You_have_unidentified_fields_do_you_want_to_proceed_Further).toBeVisible();
         await correspondentPortalPage.Yes_Proceed_Button.click();
-
         await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-
         log.stepPass("Step 3 passed: Enumeration Mapping opened and unidentified fields popup handled.");
       } catch (error) {
         log.stepFail(page, "Step 3 failed: Unable to open Enumeration Mapping or handle unidentified fields popup.");
@@ -121,14 +114,10 @@ test.describe('REG_Bid Maps', () => {
       log.step("Step 4: Select Product Name Chase Value in Enumeration Mapping");
       try {
         await correspondentPortalPage.Product_Name_Dropdown.click();
-
         await expect(correspondentPortal7Page.Search_Field_in_Enumeration_Mapping).toBeVisible();
         await correspondentPortal7Page.Search_Field_in_Enumeration_Mapping.fill("Hii");
-
         await correspondentPortal7Page.Select_Button_in_Enumeration_Mapping.click();
-
         await expect(p1MoreButtonPage.Product_Name_in_Enumeration_Mapping).toContainText("Hii");
-
         log.stepPass("Step 4 passed: Product Name Chase Value selected successfully.");
       } catch (error) {
         log.stepFail(page, "Step 4 failed: Unable to input or verify Product Name Chase Value.");
@@ -138,17 +127,11 @@ test.describe('REG_Bid Maps', () => {
       log.step("Step 5: Navigate to Rules and Actions and proceed with saving");
       try {
         await rulesAndActionsButtonPage.Rules_and_Actions_Button.click();
-
         await expect(statusInactivePage.You_have_unidentified_Fields_This_action_will_save_and_Move_to_Next_Page).toBeVisible();
-
         await proceedWithSavingButtonPage.Proceed_with_Saving_Button.click();
-
         await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-
         await backButtonPage.BACK_Button.click();
-
         await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-
         log.stepPass("Step 5 passed: Navigated through Rules and Actions and returned to previous page.");
       } catch (error) {
         log.stepFail(page, "Step 5 failed: Unable to navigate through Rules and Actions or return.");
@@ -158,29 +141,17 @@ test.describe('REG_Bid Maps', () => {
       log.step("Step 6: Input Loan Term Chase Value and verify persistence");
       try {
         await statusInactive2Page.Loan_Term_Dropdown.click();
-
         await expect(statusInactive2Page.Loan_Term_Search_TextField).toBeVisible();
-
         await statusInactive2Page.Loan_Term_Search_TextField.fill("hey");
-
         await p1morePage.Loan_Term_Select.click();
-
         await expect(p1morePage.Loan_Term_Chase_Value).toContainText("hey");
-
         await rulesAndActionsButtonPage.Rules_and_Actions_Button.click();
-
         await expect(statusInactivePage.You_have_unidentified_Fields_This_action_will_save_and_Move_to_Next_Page).toBeVisible();
-
         await proceedWithSavingButtonPage.Proceed_with_Saving_Button.click();
-
         await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-
         await backButtonPage.BACK_Button.click();
-
         await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-
         await expect(p1morePage.Loan_Term_Chase_Value).toBeVisible();
-
         log.stepPass("Step 6 passed: Loan Term Chase Value entered and verified successfully.");
       } catch (error) {
         log.stepFail(page, "Step 6 failed: Unable to input or verify Loan Term Chase Value.");
