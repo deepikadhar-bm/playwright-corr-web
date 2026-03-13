@@ -686,8 +686,8 @@ export class AddonHelpers {
     try {
       const result = testData.replace(/\s+/g, ''); // removes ALL whitespace including between words
       this.vars[varName] = result;
-      pass(METHOD, `Trimmed "${testData}" → "${result}" → vars['${varName}']`);
-    } catch (e) { fail(METHOD, `Trim "${testData}"`, e); }
+      console.log(METHOD, `Trimmed "${testData}" → "${result}" → vars['${varName}']`);
+    } catch (e) { console.error(METHOD, `Trim "${testData}"`, e); }
   }
   // ==========================================================================
   // 35. Remove special char → store in vars

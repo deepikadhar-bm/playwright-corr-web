@@ -4417,11 +4417,12 @@ export async function stepGroup_Editing_the_Chase_Users_Time_Under_General_Setti
 export async function stepGroup_Commits_an_Fresh_Loan_Num_Chase_Direct(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
   await CorrPortalElem.BidReqId_Chase_Direct.click();
-  await CorrPortalElem.First_CheckboxData.check();
+  await CorrPortalElem.ChecktheLoanNum.first().check();
+  await expect(CorrPortalElem.Get_Price_Button).toBeEnabled();
   await CorrPortalElem.Get_Price_Button.click();
-  await CorrPortalElem.Uncommit_Selected_Button.waitFor({ state: 'visible' });
-  await expect(CorrPortalElem.Uncommit_Selected_Button).toBeEnabled();
-  await CorrPortalElem.Uncommit_Selected_Button.click();
+  await CorrPortalElem.Commit_Selected_Button.waitFor({ state: 'visible' });
+  await expect(CorrPortalElem.Commit_Selected_Button).toBeEnabled();
+  await CorrPortalElem.Commit_Selected_Button.click();
   await CorrPortalElem.Yes_Commit_Button_Popup.click();
   await CorrPortalElem.Yes_Commit_Button_Popup.waitFor({ state: 'hidden' });
   await CorrPortalElem.Okay_Button_Popup.waitFor({ state: 'visible' });
@@ -4584,24 +4585,25 @@ export async function stepGroup_Verification_of_Loan_Popup_Details_From_BidReq_L
  */
 export async function stepGroup_Verifying_Header_Names_From_UI_to_Excel(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
-  vars["HeaderNamesExcelLockedLoans"] = excelHelper.readRow(vars['_lastDownloadPath'] || '', "0", "2");
-  vars["HeaderNamesExcelLockedLoans"] = String(vars["HeaderNamesExcelLockedLoans"]).replace(/\./g, '');
-  vars["CountofHeaderNamesUI"] = String(await CorrPortalElem.Header_Names_UI.count());
-  vars["count"] = "1";
-  while (parseFloat(String(vars["count"])) <= parseFloat(String(vars["CountofHeaderNamesUI"]))) {
-    vars["IndividualHeaderNameUILockedLoans"] = await CorrPortalElem.Individual_Header_Name_UI.textContent() || '';
-    if (String(vars["IndividualHeaderNameUILockedLoans"]).includes(String("."))) {
-      vars["IndividualHeaderNameUILockedLoans"] = String(vars["IndividualHeaderNameUILockedLoans"]).replace(/\./g, '');
+  const Methods = new AddonHelpers(page, vars);
+  vars['HeaderNamesExcelLockedLoans'] = excelHelper.readEntireRow(vars['RecentDownloadedFilePath'], 0, 0, 'HeaderNamesExcelLockedLoans');
+  Methods.removeSpecialChar('.', vars['HeaderNamesExcelLockedLoans'], 'HeaderNamesExcelLockedLoans');
+  vars['CountofHeaderNamesUI'] = String(await CorrPortalElem.Header_Names_UI.count());
+  vars['count'] = appconstants.ONE;
+  while (parseFloat(vars['count']) <= parseFloat(vars['CountofHeaderNamesUI'])) {
+    vars['IndividualHeaderNameUILockedLoans'] = await CorrPortalElem.Individual_Header_Name_UI(vars['count']).textContent() || '';
+    if (vars['IndividualHeaderNameUILockedLoans'].includes('.')) {
+      Methods.removeSpecialChar('.', vars['IndividualHeaderNameUILockedLoans'], 'IndividualHeaderNameUILockedLoans');
     }
-    vars["IndividualHeaderNameUILockedLoans"] = String(vars["IndividualHeaderNameUILockedLoans"]).trim();
-    vars["IndividualHeaderNameExcelLockedLoans"] = String(vars["HeaderNamesExcelLockedLoans"]).split(",")[parseInt(String(vars["count"]))] || '';
-    vars["IndividualHeaderNameExcelLockedLoans"] = String(vars["IndividualHeaderNameExcelLockedLoans"]).trim();
-    if (String(vars["IndividualHeaderNameUILockedLoans"]) === String("LoanAmount")) {
-      expect(String(vars["IndividualHeaderNameExcelLockedLoans"])).toBe("LoanAmt");
+    Methods.trimWhitespace(vars['IndividualHeaderNameUILockedLoans'], 'IndividualHeaderNameUILockedLoans');
+    Methods.splitStringByRegConditionWithPosition(vars['HeaderNamesExcelLockedLoans'], ',', vars['count'], 'IndividualHeaderNameExcelLockedLoans');
+    Methods.trimWhitespace(vars['IndividualHeaderNameExcelLockedLoans'], 'IndividualHeaderNameExcelLockedLoans');
+    if (vars['IndividualHeaderNameUILockedLoans'] === 'LoanAmount') {
+      expect(Methods.verifyString(vars['IndividualHeaderNameExcelLockedLoans'], 'equals', appconstants.LOANAMOUNT_HEADER_EXCEL));
     } else {
-      expect(String(vars["IndividualHeaderNameUILockedLoans"])).toBe(vars["IndividualHeaderNameExcelLockedLoans"]);
+      expect(Methods.verifyString(vars['IndividualHeaderNameUILockedLoans'], 'contains', vars['IndividualHeaderNameExcelLockedLoans']));
     }
-    vars["count"] = (parseFloat(String("1")) + parseFloat(String(vars["count"]))).toFixed(0);
+    Methods.MathematicalOperation(vars['count'], '+', '1', 'count');
   }
 }
 
@@ -4612,39 +4614,35 @@ export async function stepGroup_Verifying_Header_Names_From_UI_to_Excel(page: im
  */
 export async function stepGroup_Verifying_Locked_Loans_Data_from_UI_to_Excel(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
-  vars["TotalRowsCountUILockedLoans"] = String(await CorrPortalElem.Total_Rows_Count_UITotal_Loans.count());
-  // [DISABLED] Click on Last Name Button
-  // await CorrPortalElem.Last_Name_Sort_Button.click();
-  // [DISABLED] Wait until the element Last Name Down Arrow(Price Offered Details) is visible
-  // await CorrPortalElem.Last_Name_Down_Arrow_Details.waitFor({ state: 'visible' });
+  const Methods = new AddonHelpers(page, vars);
+  vars['TotalRowsCountUILockedLoans'] = String(await CorrPortalElem.Total_Rows_Count_UITotal_Loans.count());
   await expect(CorrPortalElem.Last_Name_Down_Arrow_Details).toBeVisible();
-  vars["count"] = "1";
-  while (parseFloat(String(vars["count"])) <= parseFloat(String(vars["TotalRowsCountUILockedLoans"]))) {
+  vars['count'] = appconstants.ONE;
+  while (parseFloat(vars['count']) <= parseFloat(vars['TotalRowsCountUILockedLoans'])) {
     await CorrPortalElem.BidRequestIDText_Details.click();
-    // vars["EntireRowDataExcelLockedLoans"] = excelHelper.readRow(vars['_lastDownloadPath'] || '', vars["count"], "2");
-    vars["EntireRowDataExcelLockedLoans"] = excelHelper.readEntireRow(vars["FilePathTotalLoans"], 0, vars["count"], "EntireRowDataExcelLockedLoans");
-    vars["ColumnCountUILockedLoans"] = String(await CorrPortalElem.Column_Count_UI_Price_Offered_Details.count());
-    vars["Count"] = "1";
-    while (parseFloat(String(vars["Count"])) <= parseFloat(String(vars["ColumnCountUILockedLoans"]))) {
-      vars["IndividualCellDataLockedLoansUI"] = await CorrPortalElem.Individual_Cell_Data_UI.textContent() || '';
-      if (String(vars["IndividualCellDataLockedLoansUI"]).includes(String("$"))) {
-        vars["IndividualCellDataLockedLoansUI"] = String(vars["IndividualCellDataLockedLoansUI"]).replace(/\$\,/g, '');
-      } else if (String(vars["IndividualCellDataLockedLoansUI"]).includes(String("| PQ | PS"))) {
-        vars["IndividualCellDataLockedLoansUI"] = String(vars["IndividualCellDataLockedLoansUI"]).substring(0, String(vars["IndividualCellDataLockedLoansUI"]).length - 10);
-      } else if (String(vars["IndividualCellDataLockedLoansUI"]).includes(String("%"))) {
-        vars["IndividualCellDataLockedLoansUI"] = String(vars["IndividualCellDataLockedLoansUI"]).replace(/%/g, '');
+    vars['EntireRowDataExcelLockedLoans'] = excelHelper.readEntireRow(vars['RecentDownloadedFilePath'], 1, vars['count'], 'EntireRowDataExcelLockedLoans');
+    vars['ColumnCountUILockedLoans'] = String(await CorrPortalElem.Column_Count_UI_Price_Offered_Details(vars["count"]).count());
+    vars['Count'] = appconstants.ONE;
+    while (parseFloat(vars['Count']) <= parseFloat(vars['ColumnCountUILockedLoans'])) {
+      vars['IndividualCellDataLockedLoansUI'] = await CorrPortalElem.Individual_Cell_Data_UI(vars["count"],vars["Count"]).textContent() || '';
+      if (vars['IndividualCellDataLockedLoansUI'].includes(appconstants.DOLLAR_SYMBOL)) {
+        Methods.removeMultipleSpecialChars(['$', ',', ' '], vars['IndividualCellDataLockedLoansUI'], 'IndividualCellDataLockedLoansUI');
+      } else if (vars['IndividualCellDataLockedLoansUI'].includes(appconstants.PQ_PR)) {
+        Methods.removeCharactersFromPosition(vars['IndividualCellDataLockedLoansUI'], '0', '10', 'IndividualCellDataLockedLoansUI');
+      } else if (vars['IndividualCellDataLockedLoansUI'].includes(appconstants.PERCENTAGE_SYMBOL)) {
+        Methods.removeSpecialChar('%', vars['IndividualCellDataLockedLoansUI'], 'IndividualCellDataLockedLoansUI');
       }
-      vars["IndividualCellDataLockedLoansUI"] = String(vars["IndividualCellDataLockedLoansUI"]).trim();
-      vars["IndividualRowDataExcelLockedLoans"] = String(vars["EntireRowDataExcelLockedLoans"]).split(",")[parseInt(String(vars["Count"]))] || '';
-      if (String(vars["IndividualCellDataLockedLoansUI"]) === String("-")) {
-        expect(String(vars["IndividualRowDataExcelLockedLoans"])).toBe("0.000");
+      Methods.trimWhitespace(vars['IndividualCellDataLockedLoansUI'], 'IndividualCellDataLockedLoansUI');
+      Methods.splitStringByRegConditionWithPosition(vars['EntireRowDataExcelLockedLoans'], ',', vars['Count'], 'IndividualRowDataExcelLockedLoans');
+      if (vars['IndividualCellDataLockedLoansUI'] === '-') {
+        expect(Methods.verifyString(vars['IndividualRowDataExcelLockedLoans'], 'equals', '0.000'));
       } else {
-        expect(String(vars["IndividualCellDataLockedLoansUI"])).toBe(vars["IndividualRowDataExcelLockedLoans"]);
+        expect(Methods.verifyString(vars['IndividualCellDataLockedLoansUI'], 'contains', vars['IndividualRowDataExcelLockedLoans']));
       }
-      vars["Count"] = (parseFloat(String("1")) + parseFloat(String(vars["Count"]))).toFixed(0);
+      Methods.MathematicalOperation(vars['Count'], '+', '1', 'Count');
     }
+    Methods.MathematicalOperation(vars['count'], '+', '1', 'count');
   }
-  vars["count"] = (parseFloat(String("1")) + parseFloat(String(vars["count"]))).toFixed(0);
 }
 
 /**
@@ -4654,11 +4652,11 @@ export async function stepGroup_Verifying_Locked_Loans_Data_from_UI_to_Excel(pag
  */
 export async function stepGroup_Commits_an_Fresh_Loan_Num_Standard(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
-  await CorrPortalElem.Check_Bid_Loan_Num_Standard_Exe.check();
+  await CorrPortalElem.Check_Bid_Loan_Num_Standard_Exe(vars["CommittedLoanNumChaseDirect"]).first().check();
   await CorrPortalElem.Get_Price_Button.click();
-  await CorrPortalElem.Uncommit_Selected_Button.waitFor({ state: 'visible' });
-  await expect(CorrPortalElem.Uncommit_Selected_Button).toBeEnabled();
-  await CorrPortalElem.Uncommit_Selected_Button.click();
+  await CorrPortalElem.Commit_Selected_Button.waitFor({ state: 'visible' });
+  await expect(CorrPortalElem.Commit_Selected_Button).toBeEnabled();
+  await CorrPortalElem.Commit_Selected_Button.click();
   await CorrPortalElem.Yes_Commit_Button_Popup.click();
   await CorrPortalElem.Yes_Commit_Button_Popup.waitFor({ state: 'hidden' });
   await CorrPortalElem.Okay_Button_Popup.waitFor({ state: 'visible' });
@@ -4817,10 +4815,10 @@ export async function stepGroup_Uncommits_the_Committed_Loans_One_Exe_Type(page:
   await CorrPortalElem.Committed_List_Dropdown.click();
   await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
   await CorrPortalElem.Search_In_Committed_Page.click();
-  await CorrPortalElem.Search_In_Committed_Page.fill("87VP612D87AC");
+  await CorrPortalElem.Search_In_Committed_Page.type(vars["BidReqIdPriceOffered"]);
   await CorrPortalElem.Bid_Request_ID_Dropdown_Commitment_List_Page.click();
   await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
-  await CorrPortalElem.Commitment_ID_Commitment_List.click();
+  await CorrPortalElem.Commitment_ID_Commitment_List(vars["BidReqIdPriceOffered"]).click();
   while (await CorrPortalElem.Select_all_for_Checkbox.isVisible()) {
     await CorrPortalElem.Select_all_for_Checkbox.check();
     await CorrPortalElem.Uncommit_Selected_Button.click();

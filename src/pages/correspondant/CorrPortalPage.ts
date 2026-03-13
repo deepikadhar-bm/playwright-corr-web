@@ -457,8 +457,8 @@ export class CorrPortalPage {
     return this.page.locator("(//div[@class=\"mb-2\"]//..//select[@class=\"form-select\"])[$|count|]");
   }
 
-  get Check_Bid_Loan_Num_Standard_Exe(): Locator {
-    return this.page.locator("//tbody//tr[not(descendant::button[contains(text(),\"$|CommittedLoanNumChaseDirect|\")])]//input[@type=\"checkbox\"]");
+  Check_Bid_Loan_Num_Standard_Exe(CommittedLoanNumChaseDirect:string): Locator {
+    return this.page.locator(`//tbody//tr[not(descendant::button[contains(text(),\"${CommittedLoanNumChaseDirect}\")])]//input[@type=\"checkbox\"]`);
   }
 
   get Check_box(): Locator {
@@ -501,8 +501,8 @@ export class CorrPortalPage {
     return this.page.locator(`(//span[contains(@class,\"fa fas fa-lock lock-icon\")])[${count}]//ancestor::tr//td[@data-title][position() >2 and position()!= 4 and position()!= 12]`);
   }
 
-  Column_Count_UI_Price_Offered_Details(): Locator {
-    return this.page.locator("//table[@role='table']//tbody//tr[$|count|]//td[@data-title][position() >= 3]");
+  Column_Count_UI_Price_Offered_Details(count:string): Locator {
+    return this.page.locator(`//table[@role='table']//tbody//tr[${count}]//td[@data-title][position() >= 3]`);
   }
 
   get CommitCutOffTime(): Locator {
@@ -521,8 +521,8 @@ export class CorrPortalPage {
     return this.page.locator("//td[@data-title=\"Execution Type\"]//div[contains(text(),\"CHASE_DIRECT\")]//ancestor::tr//a[contains(@aria-label,\"View details for commitment ID\")]");
   }
 
-  get Commitment_ID_Commitment_List(): Locator {
-    return this.page.locator("//div[contains(text(),\"$|BidReqIdPriceOffered|\")]/ancestor::tr/td[@data-title=\"Comm. ID\"]");
+  Commitment_ID_Commitment_List(BidReqIdPriceOffered:string): Locator {
+    return this.page.locator(`//div[contains(text(),\"${BidReqIdPriceOffered}\")]/ancestor::tr/td[@data-title=\"Comm. ID\"]`);
   }
 
   get Commitment_ID_Standard(): Locator {
@@ -1112,8 +1112,8 @@ export class CorrPortalPage {
     return this.page.locator("(//tr[$|RowsCount|]//td)[$|ColumnCount|]");
   }
 
-  get Individual_Cell_Data_UI(): Locator {
-    return this.page.locator("(//table[@role='table']//tbody//tr[$|count|]//td[@data-title][position() >= 3])[$|Count|]");
+  Individual_Cell_Data_UI(count:string,Count:string): Locator {
+    return this.page.locator(`(//table[@role='table']//tbody//tr[${count}]//td[@data-title][position() >= 3])[${Count}]`);
   }
 
   Individual_Cell_Data_UI_Locked_Loans(count:string, Count:string): Locator {
@@ -1160,12 +1160,12 @@ export class CorrPortalPage {
     return this.page.locator(`(//td[@data-title=\"Corr. Loan#\"]//button[1])[${RowCount}]`);
   }
 
-  get Individual_Header_Name_UI(): Locator {
-    return this.page.locator("(//div[contains(@aria-label,\"Sort by\")])[$|count|]");
+  Individual_Header_Name_UI(count:string): Locator {
+    return this.page.locator(`(//div[contains(@aria-label,\"Sort by\")])[${count}]`);
   }
 
-  get Individual_Header_Names_UI_Commitment_List(): Locator {
-    return this.page.locator("((//div[contains(@aria-label,\"Sort by\")])[position() != 2 and position() != 10])[$|count|]");
+  Individual_Header_Names_UI_Commitment_List(count:string): Locator {
+    return this.page.locator(`((//div[contains(@aria-label,\"Sort by\")])[position() != 2 and position() != 10])[${count}]`);
   }
 
   Individual_Headers(Count: string): Locator {
@@ -2059,5 +2059,7 @@ export class CorrPortalPage {
   get datepicker_Input(): Locator {
     return this.page.locator("//input[@placeholder=\"Select Date\"]");
   }
-
+get Uncommit_Selected_Button(): Locator {
+    return this.page.locator("//button[@id='commitdropdownMenuButton']");
+  }
 }
