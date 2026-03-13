@@ -67,7 +67,7 @@ test.describe('REG_Bid Maps', () => {
   const profileName = "Bid_Maps";
   const profile = testDataManager.getProfileByName(profileName);
 
-  test(`${TC_ID} - ${TC_TITLE}`, async ({ page }) => {
+  test.only(`${TC_ID} - ${TC_TITLE}`, async ({ page }) => {
     log.tcStart(TC_ID, TC_TITLE);
 
     try {
@@ -76,11 +76,11 @@ test.describe('REG_Bid Maps', () => {
         if (profile && profile.data) {
           vars["Save and Move to Next Page"] = profile.data[0]['Save and Move to Next Page'];
           vars["Unidentified fields Message"] = profile.data[0]['Unidentified fields Message'];
+          const searchMapInput = profile.data[0]['Search Map Input'];
+          vars["Search Map Input"] = searchMapInput;
+          vars["Username"] = credentials.username;
+          vars["Password"] = credentials.password;
         }
-
-        vars["Username"] = credentials.username;
-        vars["Password"] = credentials.password;
-
         await stepGroups.stepGroup_Login_to_CORR_Portal(page, vars);
         await stepGroups.stepGroup_Smart_Mapper_from_Off_to_On(page, vars);
         log.stepPass("Step 1 passed: Logged in and Smart Mapper enabled.");

@@ -55,7 +55,6 @@ test.describe('REG_Bid Maps', () => {
         if (profile && profile.data) {
           const unidentified_Fields_Message = profile.data[0]['Unidentified fields Message'];
           vars["Unidentified fields Message"] = unidentified_Fields_Message;
-          console.log("Value for Unidentified fields Message: " + vars["Unidentified fields Message"]);
           vars["Username"] = credentials.username;
           vars["Password"] = credentials.password;
         }

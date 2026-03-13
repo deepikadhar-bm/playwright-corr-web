@@ -75,7 +75,6 @@ test.describe('REG_Bid Maps', () => {
       try {
         vars["Username"] = credentials.username;
         vars["Password"] = credentials.password;
-
         await stepGroups.stepGroup_Login_to_CORR_Portal(page, vars);
         await stepGroups.stepGroup_Smart_Mapper_from_Off_to_On(page, vars);
         await stepGroups.stepGroup_Creation_Of_New_Map(page, vars);
