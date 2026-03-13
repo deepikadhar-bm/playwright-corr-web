@@ -13,33 +13,43 @@ import { add } from 'date-fns';
 import { CorrPortalPage } from '@pages/correspondant/CorrPortalPage';
 import { waitForSpinnerToDisappear } from '@helpers/wait-helpers';
 import { Logger as log } from '../log-helper';
-import { ENV } from '@config/environments'; 
+import { ENV } from '@config/environments';
+import { testDataManager } from 'testdata/TestDataManager';
 
-const TC_ID    = 'PREREQ-1394';
+const TC_ID = 'PREREQ-1394';
 const TC_TITLE = 'Create a new Bid Request and submit for pricing to get the Price Offered status.';
 
 export async function runPrereq_1394(page: Page, vars: Record<string, string>): Promise<void> {
 
   // ─── TC Start ────────────────────────────────────────────────────
   log.tcStart(TC_ID, TC_TITLE);
-const crederntials = ENV.getCredentials('internal'); // 2
+  const crederntials = ENV.getCredentials('internal'); // 2
   try {
 
     await runPrereq_1381(page, vars);
 
     const bidRequestDetailsPage = new BidRequestDetailsPage(page);
-    const bidRequestListPage    = new BidRequestListPage(page);
-    const bidRequestPage        = new BidRequestPage(page);
-    const bidRequestsPage       = new BidRequestsPage(page);
+    const bidRequestListPage = new BidRequestListPage(page);
+    const bidRequestPage = new BidRequestPage(page);
+    const bidRequestsPage = new BidRequestsPage(page);
     const correspondentPortalPage = new CorrespondentPortalPage(page);
-    const spinnerPage           = new SpinnerPage(page);
-    const CorrPortalElem        = new CorrPortalPage(page);
-    
+    const spinnerPage = new SpinnerPage(page);
+    const CorrPortalElem = new CorrPortalPage(page);
+
     vars["Username"] = crederntials.username;// 3
     vars["Password"] = crederntials.password;// 4
     // console.log("Test Data: ", testData);
     console.log("Credentials: ", crederntials.username, crederntials.password);
-console.log("Credentials:==> ",  vars["Username"], vars["Password"]);
+    console.log("Credentials:==> ", vars["Username"], vars["Password"]);
+    const profileName = 'Bid Requests';       // TDP sheet name
+    const profile = testDataManager.getProfileByName(profileName);
+
+    if (profile && profile.data) {
+      const value = profile.data[0]['Company Name'];  // row 0, column name
+      vars["CompanyName"] = value;
+      const bidMappingID = profile.data[0]['BidMappingID'];
+      vars["BidMappingID"] = bidMappingID;                  // store in vars
+    }
     // ── Step 1: Login ─────────────────────────────────────────────
     log.step('Login to Correspondent Portal');
     try {

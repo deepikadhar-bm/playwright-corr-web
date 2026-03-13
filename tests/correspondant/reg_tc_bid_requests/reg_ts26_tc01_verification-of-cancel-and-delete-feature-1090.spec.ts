@@ -58,6 +58,10 @@ test.describe('REG_TC_Bid_Requests', () => {
           const reasonForDeletion = profile.data[0]['Reason For Deletion'];
           vars["reasonForCancellation"] = reasonForCancellation;
           vars["reasonForDeletion"] = reasonForDeletion;
+          const value = profile.data[0]['Company Name'];  // row 0, column name
+          vars["CompanyName"] = value;
+          const bidMappingID = profile.data[0]['BidMappingID'];
+          vars["BidMappingID"] = bidMappingID;
         }
         log.stepPass('Credentials and test data loaded successfully');
       } catch (e) {
