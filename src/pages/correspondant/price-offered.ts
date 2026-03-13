@@ -157,8 +157,8 @@ export class PriceOfferedPage {
     return this.page.locator("//span[@id=\"expirePricingTitle\"]//b");
   }
 
-  get Bid_Req_IdPrice_Offered_Page(): Locator {
-    return this.page.locator("//td[@data-title=\"Bid Req. ID\"]//a[contains(text(),\"$|BidReqIdPriceOffered|\")]");
+  Bid_Req_IdPrice_Offered_Page(BidReqIdPriceOffered:string): Locator {
+    return this.page.locator(`//td[@data-title=\"Bid Req. ID\"]//a[contains(text(),\"${BidReqIdPriceOffered}\")]`);
   }
 
   get Bid_Req_IDPrice_Offered(): Locator {
@@ -213,28 +213,28 @@ export class PriceOfferedPage {
     return this.page.locator("//div[@id=\"price-offered-details-header\"]//div/div[text()=\"Bid Req. ID\"]/..//h5");
   }
 
-  get Bid_Request_ID1Price_Offered(): Locator {
-    return this.page.locator("//td[@data-title=\"Bid Req. ID\"]//a[contains(text(),\"$|BidReqId1|\")]");
+  Bid_Request_ID1Price_Offered(BidReqId1:string): Locator {
+    return this.page.locator(`//td[@data-title=\"Bid Req. ID\"]//a[contains(text(),\"${BidReqId1}\")]`);
   }
 
-  get Bid_Status(): Locator {
-    return this.page.locator("//a[contains(text(),\"$|BidReqIdPriceOffered|\")]//ancestor::tr//td[@data-title=\"Status\"]//span[text()[normalize-space() = \"Expired\"]]");
+  Bid_Status(BidReqIdPriceOffered:string): Locator {
+    return this.page.locator(`//a[contains(text(),\"${BidReqIdPriceOffered}\")]//ancestor::tr//td[@data-title=\"Status\"]//span[text()[normalize-space() = \"Expired\"]]`);
   }
 
   get Bid_Status_Chase_DirectPrice_Offered_Page(): Locator {
     return this.page.locator("//td[@data-title=\"Execution Type\"]//div[contains(text(),\"CHASE_DIRECT\")]//ancestor::tr//td[@data-title=\"Status\"]");
   }
 
-  get Bid_Status_Price_OfferedExe_Type1(): Locator {
-    return this.page.locator("//a[contains(text(),\"$|BidReqIdPriceOffered|\")]//ancestor::tr//td[@data-title=\"Status\"]//span");
+  Bid_Status_Price_OfferedExe_Type1(BidReqIdPriceOffered:string): Locator {
+    return this.page.locator(`//a[contains(text(),\"${BidReqIdPriceOffered}\")]//ancestor::tr//td[@data-title=\"Status\"]//span`);
   }
 
   get Bid_Status_StandardPrice_Offered_Page(): Locator {
     return this.page.locator("//td[@data-title=\"Execution Type\"]//div[contains(text(),\"STANDARD\")]//ancestor::tr//td[@data-title=\"Status\"]");
   }
 
-  get Bid_StatusPrice_Offered(): Locator {
-    return this.page.locator("//a[contains(text(),\"$|BidReqIdPriceOffered|\")]//ancestor::tr//td[@data-title=\"Status\"]//span");
+  Bid_StatusPrice_Offered(BidReqIdPriceOffered:string): Locator {
+    return this.page.locator(`//a[contains(text(),\"${BidReqIdPriceOffered}\")]//ancestor::tr//td[@data-title=\"Status\"]//span`);
   }
 
   get Bid_Value(): Locator {
@@ -245,20 +245,20 @@ export class PriceOfferedPage {
     return this.page.locator("//div[text()=\"Bid Value: \"]//following-sibling::h4");
   }
 
-  get Bid_ValuePrice_Offered_Page(): Locator {
-    return this.page.locator("//a[contains(text(),\"$|BidReqIdPriceOffered|\")]//ancestor::tr//td[@data-title=\"Bid Value\"]");
+  Bid_ValuePrice_Offered_Page(BidReqIdPriceOffered:string): Locator {
+    return this.page.locator(`//a[contains(text(),\"${BidReqIdPriceOffered}\")]//ancestor::tr//td[@data-title=\"Bid Value\"]`);
   }
 
-  get Bid_ValuePrice_Offered_Screen(): Locator {
-    return this.page.locator("//td[@data-title='Bid Req. ID']/a[normalize-space(text())='$|BidReqIdCommitmentList|']//ancestor::tr//td[@data-title=\"Bid Value\"]");
+  Bid_ValuePrice_Offered_Screen(BidReqIdCommitmentList:string): Locator {
+    return this.page.locator(`//td[@data-title='Bid Req. ID']/a[normalize-space(text())='${BidReqIdCommitmentList}']//ancestor::tr//td[@data-title=\"Bid Value\"]`);
   }
 
   get Bid_Value1price_offered_standard(): Locator {
     return this.page.locator("(//table[@aria-label=\"Data Table\"]//tr[@role=\"row\"]//td[@data-title=\"Bid Value\"]/div)[1]");
   }
 
-  get Bid_Value1price_offered(): Locator {
-    return this.page.locator("(//table[@aria-label=\"Data Table\"]//tr[@role=\"row\"]//td[@data-title=\"Bid Value\"]/div)[$|count|]");
+  Bid_Value1price_offered(count:string): Locator {
+    return this.page.locator(`(//table[@aria-label=\"Data Table\"]//tr[@role=\"row\"]//td[@data-title=\"Bid Value\"]/div)[${count}]`);
   }
 
   get BidLoan_Number(): Locator {
@@ -353,8 +353,8 @@ export class PriceOfferedPage {
     return this.page.locator(`//a[contains(text(),\"${BidReqId}\")]`);
   }
 
-  get BidRequestIDPrice_Offered(): Locator {
-    return this.page.locator("//a[contains(text(),\"$|BidReqIdPriceOffered|\")]");
+  BidRequestIDPrice_Offered(BidReqIdPriceOffered:string): Locator {
+    return this.page.locator(`//a[contains(text(),\"${BidReqIdPriceOffered}\")]`);
   }
 
   get BidRequestIDTextDetails(): Locator {
@@ -409,8 +409,8 @@ export class PriceOfferedPage {
     return this.page.locator("//h5[text()=\"Change Status\"]//ancestor::div//button[@aria-label=\"Change Status\"]");
   }
 
-  get Change_StatusPrice_Offered(): Locator {
-    return this.page.locator("//a[contains(text(),\"$|BidReqIdPriceOffered|\")]//ancestor::tr//button[@aria-label=\"Change Status\"]");
+  Change_StatusPrice_Offered(BidReqIdPriceOffered:string): Locator {
+    return this.page.locator(`//a[contains(text(),\"${BidReqIdPriceOffered}\")]//ancestor::tr//button[@aria-label=\"Change Status\"]`);
   }
 
   get Chase_Field_Count(): Locator {
@@ -655,8 +655,8 @@ Column_Data_UI_DetainsScreen(IndividualHeaderUI:string): Locator {
     return this.page.locator("//span[@class=\"fw-bold\"]");
   }
 
-  get Commitment_ID_2(): Locator {
-    return this.page.locator("//tr[td[@data-title=\"Bid Request ID\"]//div[contains(text(),\"$|BidReqIdPriceOffered|\")]]//td[@data-title=\"Comm. ID\"]");
+  Commitment_ID_2(BidReqIdPriceOffered:string): Locator {
+    return this.page.locator(`//tr[td[@data-title=\"Bid Request ID\"]//div[contains(text(),\"${BidReqIdPriceOffered}\")]]//td[@data-title=\"Comm. ID\"]`);
   }
 
   get Commitment_ID_Chase_Direct(): Locator {
@@ -715,12 +715,12 @@ Column_Data_UI_DetainsScreen(IndividualHeaderUI:string): Locator {
     return this.page.locator(`//td[@data-title=\"Bid Request ID\"]//div[normalize-space(text())='${BidReqId}']//ancestor::tr//td[@data-title=\"Comm. ID\"]`);
   }
 
-  get CommitmentID(): Locator {
-    return this.page.locator("//div[contains(text(),\"$|BidReqIdPriceOffered|\")]/ancestor::tr/td[@data-title=\"Comm. ID\"]");
+  CommitmentID(BidReqIdPriceOffered:string): Locator {
+    return this.page.locator(`//div[contains(text(),\"${BidReqIdPriceOffered}\")]/ancestor::tr/td[@data-title=\"Comm. ID\"]`);
   }
 
-  get CommitmentID_from_commitmentList(): Locator {
-    return this.page.locator("//div[contains(text(), '$|BidReqIdPriceOffered|')]/../..//td[@data-title='Comm. ID']");
+  CommitmentID_from_commitmentList(BidReqIdPriceOffered:string): Locator {
+    return this.page.locator(`//div[contains(text(), '${BidReqIdPriceOffered}')]/../..//td[@data-title='Comm. ID']`);
   }
 
   get Committed_Bid_Loan_Number(): Locator {
@@ -731,40 +731,40 @@ Column_Data_UI_DetainsScreen(IndividualHeaderUI:string): Locator {
     return this.page.locator("//tr[td[normalize-space(.)='Committed']]//a");
   }
 
-  get Committed_Corr_LoanLocked_Icon(): Locator {
-    return this.page.locator("//button[text()=\"$|CommittedCorrLoan|\"]//ancestor::tr//span[@aria-label=\"Committed loan\"]");
+  Committed_Corr_LoanLocked_Icon(CommittedCorrLoan:string): Locator {
+    return this.page.locator(`//button[text()=\"${CommittedCorrLoan}\"]//ancestor::tr//span[@aria-label=\"Committed loan\"]`);
   }
 
   get Committed_Corr_LoanPrice_Offered(): Locator {
     return this.page.locator("//button[contains(@aria-label,\"View loan details for \")]");
   }
 
-  get Committed_CorrLoan(): Locator {
-    return this.page.locator("//button[text()=\"$|CommittedCorrLoan|\"]");
+  Committed_CorrLoan(CommittedCorrLoan:string): Locator {
+    return this.page.locator(`//button[text()=\"${CommittedCorrLoan}\"]`);
   }
 
-  get Committed_Curr_GrossPrice_Offered(): Locator {
-    return this.page.locator("//button[text()=\"$|CommittedCorrLoan|\"]//ancestor::tr//td[@data-title=\"Curr Gross\"]");
+  Committed_Curr_GrossPrice_Offered(CommittedCorrLoan:string): Locator {
+    return this.page.locator(`//button[text()=\"${CommittedCorrLoan}\"]//ancestor::tr//td[@data-title=\"Curr Gross\"]`);
   }
 
   Committed_DateCommitment_List(BidReqId:string): Locator {
     return this.page.locator(`//td[@data-title=\"Bid Request ID\"]//div[normalize-space(text())='${BidReqId}']//ancestor::tr//td[@data-title=\"Comm. Date\"]`);
   }
 
-  get Committed_Gross_PricePrice_Offered(): Locator {
-    return this.page.locator("//button[text()=\"$|CommittedCorrLoan|\"]//ancestor::tr//td[@data-title=\"Gross Price\"]");
+  Committed_Gross_PricePrice_Offered(CommittedCorrLoan:string): Locator {
+    return this.page.locator(`//button[text()=\"${CommittedCorrLoan}\"]//ancestor::tr//td[@data-title=\"Gross Price\"]`);
   }
 
-  get Committed_Hedge_RatioPrice_Offered(): Locator {
-    return this.page.locator("//button[text()=\"$|CommittedCorrLoan|\"]//ancestor::tr//td[@data-title=\"Hedge Ratio\"]  ");
+  Committed_Hedge_RatioPrice_Offered(CommittedCorrLoan:string): Locator {
+    return this.page.locator(`//button[text()=\"${CommittedCorrLoan}\"]//ancestor::tr//td[@data-title=\"Hedge Ratio\"]  `);
   }
 
-  get Committed_Interest_RatePrice_Offered(): Locator {
-    return this.page.locator("//button[text()=\"$|CommittedCorrLoan|\"]//ancestor::tr//td[@data-title=\"Int. Rate\"]");
+  Committed_Interest_RatePrice_Offered(CommittedCorrLoan:string): Locator {
+    return this.page.locator(`//button[text()=\"${CommittedCorrLoan}\"]//ancestor::tr//td[@data-title=\"Int. Rate\"]`);
   }
 
-  get Committed_Last_NamePrice_Offered(): Locator {
-    return this.page.locator("//button[text()=\"$|CommittedCorrLoan|\"]//ancestor::tr//td[@data-title=\"Last Name\"]\n ");
+  Committed_Last_NamePrice_Offered(CommittedCorrLoan:string): Locator {
+    return this.page.locator(`//button[text()=\"${CommittedCorrLoan}\"]//ancestor::tr//td[@data-title=\"Last Name\"]\n `);
   }
 
   get Committed_Loan(): Locator {
@@ -807,8 +807,8 @@ Column_Data_UI_DetainsScreen(IndividualHeaderUI:string): Locator {
     return this.page.locator("//button[text()=\"$|UncommittedLoanNumStandard|\"]");
   }
 
-  get Committed_Loan_NumLatest(): Locator {
-    return this.page.locator("//button[text()=\"$|UncommittedLoanNum|\"]");
+  Committed_Loan_NumLatest(UncommittedLoanNum:string): Locator {
+    return this.page.locator(`//button[text()=\"${UncommittedLoanNum}\"]`);
   }
 
   get Committed_Loan_NumPrice_Offered_Page(): Locator {
@@ -1162,8 +1162,8 @@ Execution_TypeCommitment_List(BidReqId:string): Locator {
     return this.page.locator("//button[@aria-label=\"Expire Pricing\"]//span");
   }
 
-  get Expire_Pricing_ButtonPrice_Offered(): Locator {
-    return this.page.locator("//a[contains(text(),\"$|BidReqIdPriceOffered|\")]//ancestor::tr//button[@aria-label=\"Expire Pricing\"]//span");
+  Expire_Pricing_ButtonPrice_Offered(BidReqIdPriceOffered:string): Locator {
+    return this.page.locator(`//a[contains(text(),\"${BidReqIdPriceOffered}\")]//ancestor::tr//button[@aria-label=\"Expire Pricing\"]//span`);
   }
 
   get Export_Selected_Count(): Locator {
@@ -1199,7 +1199,7 @@ Execution_TypeCommitment_List(BidReqId:string): Locator {
   }
 
   get First_Chase_Field_Name(): Locator {
-    return this.page.locator("//div[text()=\"Chase Field Name\"]    /ancestor::div[2]     //div[@class=\"apply-grid\"]     //div[@class=\"border-bottom p-2\"]");
+    return this.page.locator("//div[text()=\"Chase Field Name\"]/ancestor::div[2]//div[@class=\"apply-grid\"]//div[@class=\"border-bottom p-2\"]");
   }
 
   get First_Check_Boxprice_offered_screen(): Locator {
@@ -1358,24 +1358,24 @@ Execution_TypeCommitment_List(BidReqId:string): Locator {
     return this.page.locator(`((//div[contains(@aria-label,\"Sort by\")])[position() <= 8])[${Count}]`);
   }
 
-  get Individual_ID(): Locator {
-    return this.page.locator("(//td//a[@role=\"button\"])[$|Count|]");
+  Individual_ID(Count:string): Locator {
+    return this.page.locator(`(//td//a[@role=\"button\"])[${Count}]`);
   }
 
-  get Individual_Loan_AmountPrice_Offered(): Locator {
-    return this.page.locator("(//td[@data-title=\"Loan Amount\"])[$|count|]");
+  Individual_Loan_AmountPrice_Offered(count:string): Locator {
+    return this.page.locator(`(//td[@data-title=\"Loan Amount\"])[${count}]`);
   }
 
-  get Individual_Loan_Num_Price_Offered(): Locator {
-    return this.page.locator("(//button[contains(@aria-label,\"View loan details\")])[$|count|]");
+  Individual_Loan_Num_Price_Offered(count:string): Locator {
+    return this.page.locator(`(//button[contains(@aria-label,\"View loan details\")])[${count}]`);
   }
 
-  get Individual_Loans_AmountPrice_Offered_Details(): Locator {
-    return this.page.locator("(//input//ancestor::tr//td[@data-title=\"Loan Amount\"])[$|count|]");
+  Individual_Loans_AmountPrice_Offered_Details(count:string): Locator {
+    return this.page.locator(`(//input//ancestor::tr//td[@data-title=\"Loan Amount\"])[${count}]`);
   }
 
-  get Individual_Mark_Adj_New(): Locator {
-    return this.page.locator("(//td[@data-title=\"Mark Adj\"])[$|count|]");
+  Individual_Mark_Adj_New(count:string): Locator {
+    return this.page.locator(`(//td[@data-title=\"Mark Adj\"])[${count}]`);
   }
 
   get Individual_Mark_Adj_Value_Commited_Loans(): Locator {
@@ -1638,8 +1638,8 @@ Execution_TypeCommitment_List(BidReqId:string): Locator {
     return this.page.locator("//span[@aria-label=\"Committed loan\"]//ancestor::tr//td[@data-title=\"Hedge Ratio\"]");
   }
 
-  get Locked_IconLatest_Committed_Loan(): Locator {
-    return this.page.locator("//button[text()=\"$|UncommittedLoanNum|\"]//ancestor::tr//span[@aria-label=\"Committed loan\"]");
+  Locked_IconLatest_Committed_Loan(UncommittedLoanNum:string): Locator {
+    return this.page.locator(`//button[text()=\"${UncommittedLoanNum}\"]//ancestor::tr//span[@aria-label=\"Committed loan\"]`);
   }
 
   get Locked_Last_Commited_Bid(): Locator {
@@ -2181,8 +2181,8 @@ Execution_TypeCommitment_List(BidReqId:string): Locator {
     return this.page.locator("//label[@class=\"dropdown-item d-flex checked\"]");
   }
 
-  get Selected_Uncommitted_Loan_Amount(): Locator {
-    return this.page.locator("//button[text()=\"$|CommittedLoan|\"]//ancestor::tr//td[@data-title=\"Loan Amount\"]");
+  Selected_Uncommitted_Loan_Amount(CommittedLoan:string): Locator {
+  return this.page.locator(`//button[text()=\"${CommittedLoan}\"]//ancestor::tr//td[@data-title=\"Loan Amount\"]`);
   }
 
   get Show_Selected(): Locator {
@@ -2193,8 +2193,8 @@ Execution_TypeCommitment_List(BidReqId:string): Locator {
     return this.page.locator("//span[contains(@class, 'circle')]");
   }
 
-  get Standard_Time_Selection(): Locator {
-    return this.page.locator("//option[@value=\"$|TimeStandard|\"]");
+  Standard_Time_Selection(TimeStandard:string): Locator {
+    return this.page.locator(`//option[@value=\"${TimeStandard}\"]`);
   }
 
   get Status(): Locator {
@@ -2302,12 +2302,12 @@ Execution_TypeCommitment_List(BidReqId:string): Locator {
     return this.page.locator("//td[@data-title=\"Corr. Loan#\"]");
   }
 
-  get Total_LoansPrice_Offered_Page(): Locator {
-    return this.page.locator("//a[contains(text(),\"$|BidReqIdPriceOffered|\")]//ancestor::tr//td[@data-title=\"#Loans\"]\n ");
+  Total_LoansPrice_Offered_Page(BidReqIdPriceOffered:string): Locator {
+    return this.page.locator(`//a[contains(text(),\"${BidReqIdPriceOffered}\")]//ancestor::tr//td[@data-title=\"#Loans\"]\n `);
   }
 
-  get Total_LoansPrice_Offered_Screen(): Locator {
-    return this.page.locator("//td[@data-title='Bid Req. ID']/a[normalize-space(text())='$|BidReqIdCommitmentList|']//ancestor::tr//td[@data-title=\"#Loans\"]");
+  Total_LoansPrice_Offered_Screen(BidReqIdCommitmentList:string): Locator {
+    return this.page.locator(`//td[@data-title='Bid Req. ID']/a[normalize-space(text())='${BidReqIdCommitmentList}']//ancestor::tr//td[@data-title=\"#Loans\"]`);
   }
 
   get Total_Rows_Count_UIDetails(): Locator {
@@ -2334,12 +2334,12 @@ Execution_TypeCommitment_List(BidReqId:string): Locator {
     return this.page.locator("//input[contains(@aria-label,\"Select loan\")]/ancestor::tr//button[contains(@aria-label,\"View loan details\")]");
   }
 
-  get Uncommitted_LoanCheck_Box(): Locator {
-    return this.page.locator("//button[text()=\"$|UncommittedLoanNum|\"]//ancestor::tr//input[@type=\"checkbox\"]");
+   Uncommitted_LoanCheck_Box(UncommittedLoanNum:string): Locator {
+    return this.page.locator(`//button[text()=\"${UncommittedLoanNum}\"]//ancestor::tr//input[@type=\"checkbox\"]`);
   }
 
-  get Uncommitted_LoanLocked_Icon(): Locator {
-    return this.page.locator("//button[text()=\"$|UncommittedLoanNum|\"]//ancestor::tr//span[@aria-label=\"Committed loan\"]");
+  Uncommitted_LoanLocked_Icon(UncommittedLoanNum:string): Locator {
+    return this.page.locator(`//button[text()=\"${UncommittedLoanNum}\"]//ancestor::tr//span[@aria-label=\"Committed loan\"]`);
   }
 
   get Uncommitted_successfully(): Locator {
