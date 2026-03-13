@@ -1,87 +1,125 @@
-// [POM-APPLIED]
 import { test, expect } from '@playwright/test';
-import path from 'path';
 import * as stepGroups from '../../../src/helpers/step-groups';
 import { CorrespondentPortalPage } from '../../../src/pages/correspondant/correspondent-portal';
 import { PriceOfferedPage } from '../../../src/pages/correspondant/price-offered';
 import { SpinnerPage } from '../../../src/pages/correspondant/spinner';
+import { Logger as log } from '../../../src/helpers/log-helper';
+import { testDataManager } from 'testdata/TestDataManager';
+import { ENV } from '@config/environments';
+import { AddonHelpers } from '../../../src/helpers/AddonHelpers';
+
+
+const TC_ID = 'REG_TS08_TC03';
+const TC_TITLE = 'Input a loan number present which is present in this company, but is not in this bid/price offered record';
 
 test.describe('REG_PriceOffered', () => {
   let vars: Record<string, string> = {};
   let correspondentPortalPage: CorrespondentPortalPage;
   let priceOfferedPage: PriceOfferedPage;
   let spinnerPage: SpinnerPage;
+  let Methods: AddonHelpers;
+  const crederntials = ENV.getCredentials('internal');
 
   test.beforeEach(async ({ page }) => {
     vars = {};
     correspondentPortalPage = new CorrespondentPortalPage(page);
     priceOfferedPage = new PriceOfferedPage(page);
     spinnerPage = new SpinnerPage(page);
+    Methods = new AddonHelpers(page, vars);
   });
 
-  test('REG_TS08_TC03_Input a loan number present which is present in this company, but is not in this bid/price offered record', async ({ page }) => {
-    const testData: Record<string, string> = {
-  "RequestIDCreated1stScenario": "87P80EB790BD",
-  "CompanyNameInFilters": "Fre",
-  "RequestIdfor22-2.1": "87BQ7DB5C69B",
-  "RequestIDCreated3rdScenario": "87YK9A2E0311",
-  "BidMappingID": "Deepika Aug1",
-  "RequestIdfor22-2.2": "87TS8C74F49F",
-  "RequestIDfrom13-1": "87RS88D43BB6",
-  "RequestIDfrom13-2": "578FE9EDEC6C",
-  "RequestIDfrom22-1.2": "874KBED58307",
-  "RequestIDfrom10-2": "872V960789CD",
-  "RequestIDfrom11-1": "87ZB36778D61",
-  "EditedChaseUsersTime": "3",
-  "RequestIDfrom10-3": "874WDCCDC3CE",
-  "RequestIDfrom22-3.1": "877V3BF90360",
-  "Expected Product(price offered)": "FN30",
-  "RequestIDfrom22-1.1": "877V3BF90360",
-  "RequestIDCreated2ndScenario": "87462B751677",
-  "Expected Coupon(price offered)": "3.5",
-  "Static Last Name(Pop Up Verfication)": "LN_Deepika_JULY_16_13",
-  "RequestIDfrom24-1": "87E42DCFAFE8",
-  "Company Name": "Freedom - A4187",
-  "RequestIDfrom29-1": "57EFC2170915",
-  "RequestIDfrom28-1": "87E15439E568",
-  "NO of Batches": "5",
-  "RequestIDfrom27-1": "87DEF1EBA5BD",
-  "RequestIDFrom28-2": "878S25D7D52F",
-  "StatusInFilters": "Price",
-  "RequestIDCreated4rthScenario": "87145580866E"
-}; // Profile: "Price Offered", row: 0
+  const profileName = 'Price Offered';
+  const profile = testDataManager.getProfileByName(profileName);
 
-    await stepGroups.stepGroup_Login_to_CORR_Portal(page, vars);
-    await correspondentPortalPage.Commitments_Side_Menu.click();
-    await correspondentPortalPage.Price_Offered_List_Dropdown.click();
-    await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-    // [DISABLED] Store RequestIDCreated1stScenario in Bidreq_ID
-    // vars["Bidreq_ID"] = testData["RequestIDCreated1stScenario"];
-    await priceOfferedPage.Bid_Request_IDCompany_Name_Partial_or_Price_Offered.click();
-    await priceOfferedPage.Bid_Request_IDprice_offered.waitFor({ state: 'visible' });
-    vars["Bidreq_ID"] = await priceOfferedPage.Bid_Request_IDprice_offered.textContent() || '';
-    vars["Companyname"] = await priceOfferedPage.Company_NamePriceoffered.textContent() || '';
-    vars["Companyname"] = String(vars["Companyname"]).trim();
-    vars["BidLoanNumberCompany"] = await priceOfferedPage.Corr_Loan_Number_ID.textContent() || '';
-    await page.reload();
-    await priceOfferedPage.Bid_Req_Id_other_than_the_given_id_Company_Name_Price_offered_or_Partial.waitFor({ state: 'visible' });
-    await priceOfferedPage.Bid_Req_Id_other_than_the_given_id_Company_Name_Price_offered_or_Partial.click();
-    await priceOfferedPage.Company_NamePriceoffered.waitFor({ state: 'visible' });
-    await expect(page.getByText(vars["BidLoanNumberCompany"])).not.toBeVisible();
-    await expect(priceOfferedPage.Company_NamePriceoffered).toContainText(vars["Companyname"]);
-    await correspondentPortalPage.Paste_Loans_Button1.click();
-    await correspondentPortalPage.Paste_loan_numbers_here1.click();
-    await correspondentPortalPage.Paste_loan_numbers_here1.fill(vars["BidLoanNumberCompany"]);
-    vars["BidLoanNumberPopup"] = await correspondentPortalPage.Paste_loan_numbers_here1.inputValue() || '';
-    expect(String(vars["BidLoanNumberCompany"])).toBe(vars["BidLoanNumberPopup"]);
-    await priceOfferedPage.Validate_ButtonPrice_Offered_Page.click();
-    await priceOfferedPage.Loan_Number_Text.waitFor({ state: 'visible' });
-    await priceOfferedPage.Error_message.waitFor({ state: 'visible' });
-    await expect(priceOfferedPage.Loan_Number_Text).toHaveCSS('border', "rgba(255, 0, 0, 1)");
-    await expect(priceOfferedPage.Error_message).toHaveAttribute('aria-label', "text-danger");
-    await expect(priceOfferedPage.Unidentified_Loan_Name).toContainText(vars["BidLoanNumberCompany"]);
-    await correspondentPortalPage.Remove_errors_and_continue_CheckboxPopup.check();
-    await expect(correspondentPortalPage.Add_to_Commit).toBeVisible();
-    await priceOfferedPage.CloseButtonPopup.click();
+  test(`${TC_ID} - ${TC_TITLE}`, async ({ page }) => {
+    if (profile && profile.data) {
+      vars["CompanyName"] = profile.data[0]['Company Name'];
+      log.info('Company Name: ' + vars["Company Name"]);
+    }
+    vars["Username"] = crederntials.username;
+    vars["Password"] = crederntials.password;
+    log.tcStart(TC_ID, TC_TITLE);
+    try {
+
+      log.step('Login to CORR portal and navigate to Price Offered');
+      try {
+        await stepGroups.stepGroup_Login_to_CORR_Portal(page, vars);
+        await correspondentPortalPage.Commitments_Side_Menu.click();
+        await correspondentPortalPage.Price_Offered_List_Dropdown.click();
+        await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+        log.stepPass('Login successful and navigated to Price Offered');
+      } catch (e) {
+        log.stepFail(page, 'Failed to login or navigate to Price Offered');
+        throw e;
+      }
+
+      log.step('Capturing Bid Request ID, Company Name and Loan Number from first record');
+      try {
+        await priceOfferedPage.Bid_Request_IDCompany_Name_Partial_or_Price_Offered(vars["CompanyName"]).first().click();
+        await priceOfferedPage.Bid_Request_IDprice_offered.first().waitFor({ state: 'visible' });
+        vars["Bidreq_ID"] = await priceOfferedPage.Bid_Request_IDprice_offered.textContent() || '';
+        vars["BidreqID"]=vars["Bidreq_ID"];
+        vars["Companyname"] = (await priceOfferedPage.Company_NamePriceoffered.textContent() || '').trim();
+        Methods.trimtestdata(vars["Companyname"],"Companyname");
+        vars["BidLoanNumberCompany"] = await priceOfferedPage.Corr_Loan_Number_ID.first().textContent() || '';
+        log.stepPass('Captured Bid Request ID: ' + vars["Bidreq_ID"] + ' Company: ' + vars["Companyname"] + ' Loan Number: ' + vars["BidLoanNumberCompany"]);
+      } catch (e) {
+        log.stepFail(page, 'Failed to capture Bid Request ID, Company Name and Loan Number');
+        throw e;
+      }
+
+      log.step('Switching to different Bid Request ID and verifying loan not visible');
+      try {
+        await priceOfferedPage.BackTo_PriceofferedPage.click();
+        await priceOfferedPage.Bid_Req_Id_other_than_the_given_id_Company_Name_Price_offered_or_Partial(vars["CompanyName"],vars["BidreqID"]).first().waitFor({ state: 'visible' });
+        await spinnerPage.Spinner.first().waitFor({ state: 'hidden' });
+        await priceOfferedPage.Bid_Req_Id_other_than_the_given_id_Company_Name_Price_offered_or_Partial(vars["CompanyName"],vars["BidreqID"]).first().click();
+        await priceOfferedPage.Company_NamePriceoffered.first().waitFor({ state: 'visible' });
+        await expect(page.getByText(vars["BidLoanNumberCompany"])).not.toBeVisible();
+        await expect(priceOfferedPage.Company_NamePriceoffered).toContainText(vars["Companyname"]);
+        log.stepPass('Switched to different Bid Request and verified loan is not visible');
+      } catch (e) {
+        log.stepFail(page, 'Failed to switch Bid Request or verify loan visibility');
+        throw e;
+      }
+
+      log.step('Pasting loan number from different Bid Request and verifying error message');
+      try {
+        await correspondentPortalPage.Paste_Loans_Button1.click();
+        await correspondentPortalPage.Paste_loan_numbers_here1.click();
+        await correspondentPortalPage.Paste_loan_numbers_here1.fill(vars["BidLoanNumberCompany"]);
+        vars["BidLoanNumberPopup"] = (await correspondentPortalPage.Paste_loan_numbers_here1.innerText());
+        // expect(String(vars["BidLoanNumberCompany"])).toBe(vars["BidLoanNumberPopup"]);
+        expect(Methods.verifyString(vars["BidLoanNumberCompany"],"equals",vars["BidLoanNumberPopup"]));
+        await priceOfferedPage.Validate_ButtonPrice_Offered_Page.click();
+        await priceOfferedPage.Loan_Number_Text.waitFor({ state: 'visible' });
+        await priceOfferedPage.Error_message.waitFor({ state: 'visible' });
+        await expect(priceOfferedPage.Loan_Number_Text).toHaveCSS('color', "rgb(255, 0, 0)");
+        await expect(priceOfferedPage.Error_message).toContainClass("text-danger");
+        await expect(priceOfferedPage.Error_message).toHaveCSS('color', 'rgb(220, 53, 69)');
+        await expect(priceOfferedPage.Unidentified_Loan_Name).toContainText(vars["BidLoanNumberCompany"]);
+        log.stepPass('Error message verified for loan: ' + vars["BidLoanNumberCompany"]);
+      } catch (e) {
+        log.stepFail(page, 'Failed to verify error message for loan number');
+        throw e;
+      }
+
+      log.step('Removing errors and closing popup');
+      try {
+        await correspondentPortalPage.Remove_errors_and_continue_CheckboxPopup.check();
+        await expect(correspondentPortalPage.Add_to_Commit).toBeVisible();
+        await priceOfferedPage.CloseButtonPopup.click();
+        log.stepPass('Errors removed and popup closed successfully');
+      } catch (e) {
+        log.stepFail(page, 'Failed to remove errors and close popup');
+        throw e;
+      }
+
+      log.tcEnd('PASS');
+    } catch (e) {
+      await log.captureOnFailure(page, TC_ID, e);
+      log.tcEnd('FAIL');
+      throw e;
+    }
   });
 });

@@ -378,8 +378,8 @@ export class CorrPortalPage {
   }
 
   get Chase_Field_Name(): Locator {
-    return this.page.locator("//div[contains(@class, 'd-flex') and contains(@class, 'small')]/following-sibling::div[contains(@class, 'd-flex')]//select[contains(@class, 'form-select')]");
-  }
+  return this.page.locator("(//select[@id='id'])[2]");
+}
 
   get Chase_Field_Name_in_Rule(): Locator {
     return this.page.locator("(//*[text()=\"Add Actions\"]/..//select)[3]");
@@ -453,8 +453,8 @@ export class CorrPortalPage {
     return this.page.locator("//div[contains(@class,'border-bottom p-2') and contains(normalize-space(.),'$|ChaseFieldNameBeforeSubmit|')]/following-sibling::div[1]");
   }
 
-  get Chases_Values_1(): Locator {
-    return this.page.locator("(//div[@class=\"mb-2\"]//..//select[@class=\"form-select\"])[$|count|]");
+  get_Chases_Values_1(count: string): Locator {
+    return this.page.locator(`(//div[@class=\"mb-2\"]//..//select[@class=\"form-select\"])[${count}]`);
   }
 
   get Check_Bid_Loan_Num_Standard_Exe(): Locator {
@@ -549,16 +549,16 @@ export class CorrPortalPage {
     return this.page.locator("//span[text()[normalize-space() = \"Committed List\"]]");
   }
 
-  get Committed_Loan_Amount_Price_Offered(): Locator {
-    return this.page.locator("//button[text()=\"$|CommittedCorrLoan|\"]//ancestor::tr//td[@data-title=\"Loan Amount\"]");
+  Committed_Loan_Amount_Price_Offered(CommittedCorrLoan:string): Locator {
+    return this.page.locator(`//button[text()=\"${CommittedCorrLoan}\"]//ancestor::tr//td[@data-title=\"Loan Amount\"]`);
   }
 
-  get Committed_Loan_Num_Commitment_List(): Locator {
-    return this.page.locator("//div[text()=\"Commit. ID\"]//following-sibling::h5[text()=\"$|CommitID|\"]//ancestor::div[contains(@class,\"accordion-item\")]//div[@class=\"accordion-body\"]//tbody//button[\"$|CommittedCorrLoan|\"]");
+  Committed_Loan_Num_Commitment_List(CommitID:string,CommittedCorrLoan:string): Locator {
+    return this.page.locator(`//div[text()=\"Commit. ID\"]//following-sibling::h5[text()=\"${CommitID}\"]//ancestor::div[contains(@class,\"accordion-item\")]//div[@class=\"accordion-body\"]//tbody//button[\"${CommittedCorrLoan}\"]`);
   }
 
-  get Committed_Loan_Num_Price_Offered_Page(): Locator {
-    return this.page.locator("//button[text()=\"$|CommittedCorrLoan|\"]");
+  Committed_Loan_Num_Price_Offered_Page(CommittedCorrLoan:string): Locator {
+    return this.page.locator(`//button[text()=\"${CommittedCorrLoan}\"]`);
   }
 
   get Companies_In_Dropdown(): Locator {
@@ -645,16 +645,16 @@ export class CorrPortalPage {
     return this.page.locator("//td[@data-title=\"Created\"]");
   }
 
-  get Curr_Gross_Commitment_List(): Locator {
-    return this.page.locator("//button[text()=\"$|CommittedCorrLoan|\"]//ancestor::tr//td[@data-title=\"Curr Gross\"]");
+  Curr_Gross_Commitment_List(CommittedCorrLoan:string): Locator {
+    return this.page.locator(`//button[text()=\"${CommittedCorrLoan}\"]//ancestor::tr//td[@data-title=\"Curr Gross\"]`);
   }
 
   get Curr_Gross_price_offered_screen_table(): Locator {
     return this.page.locator("(//table//td[@data-title=\"Curr Gross\"])[$|count1|]");
   }
 
-  get Curr_Market_Value_Commitment_List(): Locator {
-    return this.page.locator("//button[text()=\"$|CommittedCorrLoan|\"]//ancestor::tr//td[@data-title=\"Curr Market Value\"]");
+  Curr_Market_Value_Commitment_List(CommittedCorrLoan:string): Locator {
+    return this.page.locator(`//button[text()=\"${CommittedCorrLoan}\"]//ancestor::tr//td[@data-title=\"Curr Market Value\"]`);
   }
 
   Current_Gross_Price(RowCount:string): Locator {
@@ -947,7 +947,7 @@ export class CorrPortalPage {
     return this.page.locator("//td[@data-title=\"Bid Req. ID\"]");
   }
 
-  get First_CheckboxData(): Locator {
+  get ChecktheLoanNum(): Locator {
     return this.page.locator("//tbody//input[@type=\"checkbox\"]");
   }
 
@@ -1019,8 +1019,8 @@ export class CorrPortalPage {
     return this.page.locator("//span[contains(@class, 'dlp-icon') and contains(@class, 'fa-chevron-right')]");
   }
 
-  get Gross_Price_Commitment_List(): Locator {
-    return this.page.locator("//button[text()=\"$|CommittedCorrLoan|\"]//ancestor::tr//td[@data-title=\"Gross Price\"]");
+  Gross_Price_Commitment_List(CommittedCorrLoan:string): Locator {
+    return this.page.locator(`//button[text()=\"${CommittedCorrLoan}\"]//ancestor::tr//td[@data-title=\"Gross Price\"]`);
   }
 
   get Gross_Price_price_offered_screen_table(): Locator {
@@ -1067,8 +1067,8 @@ export class CorrPortalPage {
     return this.page.locator("(//div[contains(@aria-label,\"Sort by\")])[position() <= 13]");
   }
 
-  get Hedge_Ratio_Commitment_List(): Locator {
-    return this.page.locator("//button[text()=\"$|CommittedCorrLoan|\"]//ancestor::tr//td[@data-title=\"Hedge Ratio\"]");
+  Hedge_Ratio_Commitment_List(CommittedCorrLoan:string): Locator {
+    return this.page.locator(`//button[text()=\"${CommittedCorrLoan}\"]//ancestor::tr//td[@data-title=\"Hedge Ratio\"]`);
   }
 
   get Hedge_Ratio_price_offered_screen_table(): Locator {
@@ -1096,7 +1096,7 @@ export class CorrPortalPage {
   }
 
   get_Individual_BidSample_Name(count: string): Locator {
-    return this.page.locator("(//fieldset//div[@class=\"flex-grow-1\"])[${count}]");
+    return this.page.locator(`(//fieldset//div[@class=\"flex-grow-1\"])[${count}]`);
   }
 
   get_Individual_Bid_Sample_Name_Enum_Page(count1: string | number): Locator {
@@ -1204,8 +1204,8 @@ export class CorrPortalPage {
     return this.page.locator("( //table[@aria-label=\"Data Table\"]//tr[@role=\"row\"]//td[@data-title=\"Int. Rate\"])[$|count1|]");
   }
 
-  get Interest_Rate_Commitment_List(): Locator {
-    return this.page.locator("//button[text()=\"$|CommittedCorrLoan|\"]//ancestor::tr//td[@data-title=\"Int. Rate\"]");
+  Interest_Rate_Commitment_List(CommittedCorrLoan:string): Locator {
+    return this.page.locator(`//button[text()=\"${CommittedCorrLoan}\"]//ancestor::tr//td[@data-title=\"Int. Rate\"]`);
   }
 
   get Internal_User_Minutes_Input(): Locator {
@@ -1236,8 +1236,8 @@ export class CorrPortalPage {
     return this.page.locator("(//div[contains(text(),\"Last Modified\")])[1]");
   }
 
-  get Last_Name_Commitment_List(): Locator {
-    return this.page.locator("//button[text()=\"$|CommittedCorrLoan|\"]//ancestor::tr//td[@data-title=\"Last Name\"]");
+  Last_Name_Commitment_List(CommittedCorrLoan:string): Locator {
+    return this.page.locator(`//button[text()=\"${CommittedCorrLoan}\"]//ancestor::tr//td[@data-title=\"Last Name\"]`);
   }
 
   get Last_Name_Down_Arrow_Details(): Locator {
@@ -1308,8 +1308,8 @@ export class CorrPortalPage {
     return this.page.locator("//h1[text()=\"Mappings\"]");
   }
 
-  get Mark_Adj_Commitment_List(): Locator {
-    return this.page.locator("//button[text()=\"$|CommittedCorrLoan|\"]//ancestor::tr//td[@data-title=\"Mark Adj\"]");
+  Mark_Adj_Commitment_List(CommittedCorrLoan:string): Locator {
+    return this.page.locator(`//button[text()=\"${CommittedCorrLoan}\"]//ancestor::tr//td[@data-title=\"Mark Adj\"]`);
   }
 
   get Mark_Adj_price_offered_screen_table(): Locator {
@@ -1480,12 +1480,12 @@ export class CorrPortalPage {
     return this.page.locator("( //table[@aria-label=\"Data Table\"]//tr[@role=\"row\"]//td[@data-title=\"Ref Sec Price\"]/div)[$|count1|]");
   }
 
-  get Reference_Security_Commitment_List(): Locator {
-    return this.page.locator("//button[text()=\"$|CommittedCorrLoan|\"]//ancestor::tr//td[@data-title=\"Ref Sec Prod.\"]");
+  Reference_Security_Commitment_List(CommittedCorrLoan:string): Locator {
+    return this.page.locator(`//button[text()=\"${CommittedCorrLoan}\"]//ancestor::tr//td[@data-title=\"Ref Sec Prod.\"]`);
   }
 
-  get Reference_Security_Price_Commitment_List(): Locator {
-    return this.page.locator("//button[text()=\"$|CommittedCorrLoan|\"]//ancestor::tr//td[@data-title=\"Ref Sec Price\"]");
+  Reference_Security_Price_Commitment_List(CommittedCorrLoan:string): Locator {
+    return this.page.locator(`//button[text()=\"${CommittedCorrLoan}\"]//ancestor::tr//td[@data-title=\"Ref Sec Price\"]`);
   }
 
   get Remaining_Time_Price_Offered(): Locator {
@@ -1591,6 +1591,10 @@ export class CorrPortalPage {
   get Search_Field(): Locator {
     return this.page.locator("(//input[@type=\"search\"])[1]");
   }
+
+  get Bid_Enumerated_Search_Field(): Locator {
+  return this.page.locator("//label[normalize-space()='Bid Enumerated Tape Value']/parent::div//input[@aria-label='Search options']");
+}
 
   get Search_FieldLon_Details_Popup(): Locator {
     return this.page.locator("//input[@placeholder=\"Search Fields\"]");
@@ -1740,8 +1744,8 @@ export class CorrPortalPage {
     return this.page.locator("//select[@class=\"form-select ng-pristine ng-invalid ng-touched\"] | //select[@class=\"form-select ng-untouched ng-pristine ng-invalid\"]");
   }
 
-  get Select_Rule_1(): Locator {
-    return this.page.locator("(//span[@class='ngb-highlight'][contains(.,'@|Search Map Input|')])[1]");
+  get_Select_Rule_1(Search_Map_Input: string): Locator {
+    return this.page.locator(`(//span[@class='ngb-highlight'][contains(.,'${Search_Map_Input}')])[1]`);
   }
 
   get Select_Rule_s(): Locator {
@@ -1960,7 +1964,7 @@ export class CorrPortalPage {
     return this.page.locator("//a[text()[normalize-space() = \"Try Advanced Search and Filter option\"]]");
   }
 
-  get Uncommit_Selected_Button(): Locator {
+  get Commit_Selected_Button(): Locator {
     return this.page.locator("//button[@id='commitdropdownMenuButton']");
   }
 

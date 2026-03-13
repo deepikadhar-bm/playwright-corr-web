@@ -33,7 +33,7 @@ export async function runPrereq_793(page: Page, vars: Record<string, string>): P
       vars["BidSampleFieldName"] = (await statusInactivePage.getDelete_Message(vars["DeleteHeaderMapping"]).textContent()) || '';
       await expect(page.getByText(vars["BidSampleFieldName"])).toBeVisible();
       await correspondentPortalPage.Yes_Proceed_Button.click();
-      await expect(statusInactive2Page.get_Error_Message_in_Header_Mapping(vars["DeleteHeaderMapping"])).toBeVisible();
+      await expect(statusInactive2Page.get_Error_Message_in_Header_Mapping(vars["DeleteHeaderMapping"])).toBeHidden();
       await expect(enumerationMappingButtonPage.Enumeration_Mapping_Button).toBeVisible();
       log.stepPass("Prereq 793 - Header mapping deleted and verified successfully.");
     } catch (error) {
