@@ -263,32 +263,32 @@ export class BidRequestDetailsPage {
     return this.page.locator("(//div[@class=\"border-bottom p-2\" and contains(text(),\"$|ChaseFieldPopupAfterSubmit|\")]/following-sibling::div)[1]");
   }
 
-  get Individual_Error_Danger_TextTool_Tip(): Locator {
-    return this.page.locator("(//div[@class=\"tooltip-inner\"]//div[@class=\"text-danger\"])[$|ErrorCount|]");
+  Individual_Error_Danger_TextTool_Tip(ErrorCount:string): Locator {
+    return this.page.locator(`(//div[@class=\"tooltip-inner\"]//div[@class=\"text-danger\"])[${ErrorCount}]`);
   }
 
-  get Individual_Loan_Amount(): Locator {
-    return this.page.locator("(//td[@data-title=\"Loan Amount\"])[$|count|]");
+  Individual_Loan_Amount(count:string): Locator {
+    return this.page.locator(`(//td[@data-title=\"Loan Amount\"])[${count}]`);
   }
 
-  get Individual_Loan_Amount_table_2(): Locator {
-    return this.page.locator("((//tbody)[2]//td[@data-title=\"Loan Amount\"])[$|count|]");
+  Individual_Loan_Amount_table_2(count:string): Locator {
+    return this.page.locator(`((//tbody)[2]//td[@data-title=\"Loan Amount\"])[${count}]`);
   }
 
-  get Individual_PQ_Button(): Locator {
-    return this.page.locator("(//td//button[text()=\"PQ\"])[$|RowsCount|]");
+Individual_PQ_Button(RowsCount:string): Locator {
+    return this.page.locator(`(//td//button[text()=\"PQ\"])[${RowsCount}]`);
   }
 
-  get Individual_PQ_Button_table2(): Locator {
-    return this.page.locator("((//table)[2]//td//button[text()=\"PQ\"])[$|RowsCount|]");
+  Individual_PQ_Button_table2(RowsCount:string): Locator {
+    return this.page.locator(`((//table)[2]//td//button[text()=\"PQ\"])[${RowsCount}]`);
   }
 
-  get Individual_PS_Button(): Locator {
-    return this.page.locator("(//td//button[text()=\"PS\"])[$|RowsCount|]");
+  Individual_PS_Button(RowsCount:string): Locator {
+    return this.page.locator(`(//td//button[text()=\"PS\"])[${RowsCount}]`);
   }
 
-  get Individual_PS_Button_Table2(): Locator {
-    return this.page.locator("((//table)[2]//td//button[text()=\"PS\"])[$|RowsCount|]");
+  Individual_PS_Button_Table2(RowsCount:string): Locator {
+    return this.page.locator(`((//table)[2]//td//button[text()=\"PS\"])[${RowsCount}]`);
   }
 
   get Last_Name_Sort_Button(): Locator {

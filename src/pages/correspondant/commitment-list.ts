@@ -129,8 +129,8 @@ Column_Count_UICommitted_Loans1(count: string): Locator {
     return this.page.locator("//div[text()=\"Commit. #\"]//following-sibling::h5");
   }
 
-  get Commitment_ID_Same_Loan_Num(): Locator {
-    return this.page.locator("//td[@data-title=\"Bid Request ID\"]//div[normalize-space(text())=\"$|BidReqId|\"]//ancestor::tr//td[@data-title=\"Comm. ID\"]//a[normalize-space(text())=\"$|CommitmentIDPriceOffered|\"]");
+  Commitment_ID_Same_Loan_Num(BidReqId:string,CommitmentIDPriceOffered:string): Locator {
+    return this.page.locator(`//td[@data-title=\"Bid Request ID\"]//div[normalize-space(text())=\"${BidReqId}\"]//ancestor::tr//td[@data-title=\"Comm. ID\"]//a[normalize-space(text())=\"${CommitmentIDPriceOffered}\"]`);
   }
 
   get Commitment_ID_DropdownChase(): Locator {
@@ -257,20 +257,20 @@ Column_Count_UICommitted_Loans1(count: string): Locator {
     return this.page.locator("//button[text()=\"@|Corr Loan Num|\"]//ancestor::tr//span[contains(@class,\"fa fas fa-lock lock-icon\")]");
   }
 
-  get Committed_Loan_NumCommitment_List(): Locator {
-    return this.page.locator("//div[text()=\"Commit. ID\"]//following-sibling::h5[text()=\"$|CommitID|\"]//ancestor::div[contains(@class,\"accordion-item\")]//div[@class=\"accordion-body\"]//tbody//button[\"$|CommittedCorrLoan|\"]");
+  Committed_Loan_NumCommitment_List(CommitID:string,CommittedCorrLoan:string): Locator {
+    return this.page.locator(`//div[text()=\"Commit. ID\"]//following-sibling::h5[text()=\"${CommitID}\"]//ancestor::div[contains(@class,\"accordion-item\")]//div[@class=\"accordion-body\"]//tbody//button[\"${CommittedCorrLoan}\"]`);
   }
 
   get Committed_Loan_NumStandard_Commitment_List(): Locator {
     return this.page.locator("//span[contains(@class,\"fa fas fa-lock lock-icon\")]//ancestor::tr//td[@data-title=\"Corr. Loan#\"]//button[contains(@class,\"btn bg-transparent text-primary\")][1]");
   }
 
-  get Committed_Loan_NumUncommitted_Loan(): Locator {
-    return this.page.locator("//div[text()=\"Commit. ID\"]//following-sibling::h5[text()=\"$|CommitID|\"]//ancestor::div[contains(@class,\"accordion-item\")]//div[@class=\"accordion-body\"]//tbody//button[\"|$UncommittedLoanNum|\"]");
+  Committed_Loan_NumUncommitted_Loan(CommitID:string,UncommittedLoanNum:string): Locator {
+    return this.page.locator(`//div[text()=\"Commit. ID\"]//following-sibling::h5[text()=\"${CommitID}\"]//ancestor::div[contains(@class,\"accordion-item\")]//div[@class=\"accordion-body\"]//tbody//button[\"${UncommittedLoanNum}\"]`);
   }
 
-  get Committed_Loan_Number(): Locator {
-    return this.page.locator("//button[contains(text(),\"$|CommittedLoan|\")]/ancestor::tr//input[@type=\"checkbox\"]");
+  Committed_Loan_Number(CommittedLoan:string): Locator {
+    return this.page.locator(`//button[contains(text(),\"${CommittedLoan}\")]/ancestor::tr//input[@type=\"checkbox\"]`);
   }
 
   get Committed_Loan_NumberChase_Direct(): Locator {
