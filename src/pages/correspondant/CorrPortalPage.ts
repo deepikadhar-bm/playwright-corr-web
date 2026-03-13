@@ -453,8 +453,8 @@ export class CorrPortalPage {
     return this.page.locator("//div[contains(@class,'border-bottom p-2') and contains(normalize-space(.),'$|ChaseFieldNameBeforeSubmit|')]/following-sibling::div[1]");
   }
 
-  get Chases_Values_1(): Locator {
-    return this.page.locator("(//div[@class=\"mb-2\"]//..//select[@class=\"form-select\"])[$|count|]");
+  get_Chases_Values_1(count: string): Locator {
+    return this.page.locator(`(//div[@class=\"mb-2\"]//..//select[@class=\"form-select\"])[${count}]`);
   }
 
   Check_Bid_Loan_Num_Standard_Exe(CommittedLoanNumChaseDirect:string): Locator {
@@ -1096,7 +1096,7 @@ export class CorrPortalPage {
   }
 
   get_Individual_BidSample_Name(count: string): Locator {
-    return this.page.locator("(//fieldset//div[@class=\"flex-grow-1\"])[${count}]");
+    return this.page.locator(`(//fieldset//div[@class=\"flex-grow-1\"])[${count}]`);
   }
 
   get_Individual_Bid_Sample_Name_Enum_Page(count1: string | number): Locator {
@@ -1744,8 +1744,8 @@ export class CorrPortalPage {
     return this.page.locator("//select[@class=\"form-select ng-pristine ng-invalid ng-touched\"] | //select[@class=\"form-select ng-untouched ng-pristine ng-invalid\"]");
   }
 
-  get Select_Rule_1(): Locator {
-    return this.page.locator("(//span[@class='ngb-highlight'][contains(.,'@|Search Map Input|')])[1]");
+  get_Select_Rule_1(Search_Map_Input: string): Locator {
+    return this.page.locator(`(//span[@class='ngb-highlight'][contains(.,'${Search_Map_Input}')])[1]`);
   }
 
   get Select_Rule_s(): Locator {
