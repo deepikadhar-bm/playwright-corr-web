@@ -63,8 +63,8 @@ export class BidRequestPage {
     return this.page.locator("//td[@data-title=\"Status\"]//span");
   }
 
-  get Bid_Status_BidRequestsPage(): Locator {
-    return this.page.locator("//button[contains(text(),\"$|BidReqIdPriceOffered|\")]//ancestor::tr//td[@data-title=\"Status\"]//span");
+  Bid_Status_BidRequestsPage(BidReqIdPriceOffered:string): Locator {
+    return this.page.locator(`//button[contains(text(),\"${BidReqIdPriceOffered}\")]//ancestor::tr//td[@data-title=\"Status\"]//span`);
   }
 
   get Bid_StatusBid_Req_Details(): Locator {
@@ -415,8 +415,8 @@ export class BidRequestPage {
     return this.page.locator("//div[text()=\"Request ID\"]/..//h5");
   }
 
-  get Required_Bid_Req_IDBid_Req_Page(): Locator {
-    return this.page.locator("//button[contains(text(),\"$|BidReqIdPriceOffered|\")]");
+  Required_Bid_Req_IDBid_Req_Page(BidReqIdPriceOffered:string): Locator {
+    return this.page.locator(`//button[contains(text(),\"${BidReqIdPriceOffered}\")]`);
   }
 
   get Required_Status_Name(): Locator {

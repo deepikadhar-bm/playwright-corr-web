@@ -95,9 +95,9 @@ export class ChaseFieldNamePage {
     return this.page.locator("(//label[text()=\" Bid Enumerated Tape Value \"]/..//div[contains(@class,\"flex-grow-1 text-start\")])[1]");
   }
 
-  get Chase_Field_Name_common_one_Field(): Locator {
-    return this.page.locator("(//div[@class=\"my-2\"])[$|count1|]");
-  }
+  get_Chase_Field_Name_common_one_Field(count: string): Locator {
+  return this.page.locator(`(//div[@class="my-2"])[${count}]`);
+}
 
   get Chase_Field_Name_for_Add_action(): Locator {
     return this.page.locator("((//*[text()=\"Chase Field Name\"]/..//select)[1]/../..//option)[17]");

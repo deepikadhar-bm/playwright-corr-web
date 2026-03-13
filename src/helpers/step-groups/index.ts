@@ -128,7 +128,6 @@ export async function stepGroup_Rename_File(page: import('@playwright/test').Pag
 export async function stepGroup_Creation_Of_Bid_Map_Upto_Header_Mapping(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
   const Helpers = new AddonHelpers(page, vars);
-
   const correspondentPortalPage = new CorrespondentPortalPage(page);
   const CorrespondentPortal4Elem = new CorrespondentPortal4Page(page);
   await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
@@ -137,7 +136,7 @@ export async function stepGroup_Creation_Of_Bid_Map_Upto_Header_Mapping(page: im
   await stepGroup_Navigation_to_Customer_Permission(page, vars);
   await CorrPortalElem.Administration_Menu.click();
   await CorrPortalElem.Bid_Maps_Menu.click();
-  await CorrPortalElem.Spinner.waitFor( { state: 'hidden' });
+  await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
   await expect(CorrPortalElem.Mappings).toBeVisible();
   await CorrPortalElem.Add_New_Mapping_Button.click();
   await expect(CorrPortalElem.Create_New_Map).toBeVisible();
@@ -149,7 +148,7 @@ export async function stepGroup_Creation_Of_Bid_Map_Upto_Header_Mapping(page: im
     const parts = new Intl.DateTimeFormat('en-US', { ...opts, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }).formatToParts(d);
     const p = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
     return fmt.replace('yyyy', p.year || '').replace('yy', (p.year || '').slice(-2)).replace('MM', p.month || '').replace('dd', p.day || '').replace('HH', String(d.getHours()).padStart(2, '0')).replace('hh', p.hour || '').replace('mm', p.minute || '').replace('ss', p.second || '').replace('a', p.dayPeriod || '').replace(/M(?!M)/g, String(parseInt(p.month || '0'))).replace(/d(?!d)/g, String(parseInt(p.day || '0'))).replace(/h(?!h)/g, String(parseInt(p.hour || '0')));
-    
+
   })();
   vars["CreateNewMap"] = (() => {
     const d = new Date();
@@ -183,7 +182,7 @@ export async function stepGroup_Creation_Of_Bid_Map_Upto_Header_Mapping(page: im
   await expect(CorrPortalElem.This_action_will_save_the_changes_and_Move_to_Next_Page).toBeVisible();
   await CorrPortalElem.Proceed_with_Saving_Button.click();
   await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
-  await expect(page.getByText(vars["Create New Map"])).toBeVisible();
+  await expect(page.getByText(vars["CreateNewMap"])).toBeVisible();
   await CorrPortalElem.Header_Mapping.waitFor({ state: 'visible' });
 }
 
@@ -230,11 +229,10 @@ export async function stepGroup_Smart_Mapper_from_Off_to_On(page: import('@playw
     await CorrPortalElem.Administration_Menu.click();
     await CorrPortalElem.GeneralSettings_Menu.click();
     await CorrPortalElem.Bid_Map_Creation_in_General_Settings.click();
-    await spinnerPage.Spinner.waitFor({ state: 'visible' });
+    // await spinnerPage.Spinner.waitFor({ state: 'visible' });
     await spinnerPage.Spinner.waitFor({ state: 'hidden' });
     await expect(CorrPortalElem.Bid_Map_Creation).toBeVisible();
     await expect(CorrPortalElem.Smart_Mapper).toBeVisible();
-
     if (!(await CorrPortalElem.On_Radio_Button.isChecked())) {
       await CorrPortalElem.On_Radio_Button.waitFor({ state: 'visible' });
       await CorrPortalElem.On_Radio_Button.check();
@@ -401,7 +399,6 @@ export async function stepGroup_Creation_Of_New_Map(page: import('@playwright/te
     Methods.concatenate('Testsigma_', vars['CurrentDate'], 'Create New Map');
     await CorrPortalElem.Create_New_Map_Field.fill(vars["Create New Map"]);
     vars["BidMap"] = await CorrPortalElem.Create_New_Map_Field.inputValue() || '';
-    console.log(`Bid Map created: ${vars["BidMap"]}`);
     await CorrPortalElem.Compare_Button.click();
     await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
     await expect(page.getByText(vars["Create New Map"])).toBeVisible();
@@ -999,8 +996,8 @@ export async function stepGroup_Uploading_the_File(page: import('@playwright/tes
 export async function stepGroup_Add_Actions_in_Rules_and_Actions(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
   await CorrPortalElem.Chase_Field_Name.selectOption({ index: parseInt("16") });
-  await CorrPortalElem.Chase_Value.click();
-  await CorrPortalElem.Value_for_chase.click();
+  await CorrPortalElem.Chase_Value.selectOption({ value: "false" });
+  // await CorrPortalElem.Value_for_chase.click();
   vars["ChaseFiledNameonAddActions"] = await CorrPortalElem.Add_Actions_Chase_Field_Name.evaluate(el => { const s = el as HTMLSelectElement; return s.options[s.selectedIndex]?.text || ''; });
   // [DISABLED] Store the value displayed in the text box Action Chase Field Name 1 field into a variable ChaseFiledNameonAddActions
   // vars["ChaseFiledNameonAddActions"] = await CorrPortalElem.Action_Chase_Field_Name_1.inputValue() || '';
@@ -1066,13 +1063,13 @@ export async function stepGroup_Deleting_the_Header_Mapping(page: import('@playw
  */
 export async function stepGroup_Import_Rule_In_Rules_and_Actions(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
-  const testData: Record<string, string> = {}; // TODO: Load from test data profile
+  // const testData: Record<string, string> = {}; // TODO: Load from test data profile
   await expect(CorrPortalElem.Save_and_Publish_Button).toBeVisible();
   await CorrPortalElem.Import_Rule_Button.click();
   await expect(CorrPortalElem.Select_Rule_s).toBeVisible();
   await CorrPortalElem.Search_Map_Input.waitFor({ state: 'visible' });
-  await CorrPortalElem.Search_Map_Input.fill(testData["Search Map Input"]);
-  await CorrPortalElem.Select_Rule_1.click();
+  await CorrPortalElem.Search_Map_Input.fill(vars["Search Map Input"]);
+  await CorrPortalElem.get_Select_Rule_1(vars["Search Map Input"]).click();
   await CorrPortalElem.Import_Rule_Checkbox.check();
   await CorrPortalElem.Apply_Selected_Button_in_Import_Rule.click();
   await expect(CorrPortalElem.Add_Conditions).toBeVisible();
@@ -1563,10 +1560,10 @@ export async function stepGroup_Verifying_ChaseValue_In_EnumerationMapping(page:
   vars["count"] = "1";
   vars["ChaseValues"] = String(await CorrPortalElem.Chase_Values_In_Enumration_Page.count());
   while (parseFloat(String(vars["count"])) <= parseFloat(String(vars["ChaseValues"]))) {
-    vars["values"] = await CorrPortalElem.Chases_Values_1.evaluate(el => { const s = el as HTMLSelectElement; return s.options[s.selectedIndex]?.text || ''; });
+    vars["values"] = await CorrPortalElem.get_Chases_Values_1(vars["count"]).evaluate(el => { const s = el as HTMLSelectElement; return s.options[s.selectedIndex]?.text || ''; });
     vars["value"] = String(vars["values"]).trim();
     if (String(vars["value"]) === String("Select")) {
-      await CorrPortalElem.Chases_Values_1.selectOption({ index: parseInt("1") });
+      await CorrPortalElem.get_Chases_Values_1(vars["count"]).selectOption({ index: parseInt("1") });
       // [DISABLED] Step group
       // // TODO: No template - Unknown step
     }
@@ -1877,30 +1874,53 @@ export async function stepGroup_Fetching_Enum_from_Header_Mapping_and_verifying_
  * Steps: 22
  */
 export async function stepGroup_Adding_Rules_In_Rules_and_Actions_Screen(page: import('@playwright/test').Page, vars: Record<string, string>) {
+  const profileName = "Bid_Maps";
+  const profile = testDataManager.getProfileByName(profileName);
   const CorrPortalElem = new CorrPortalPage(page);
-  const testData: Record<string, string> = {}; // TODO: Load from test data profile
+  if (profile && profile.data) {
+    const ruleName = profile.data[0]['Rule Name'];
+    const conditionBidField = profile.data[0]['Condition Bid Field'];
+    const bidEnumeratedTapeValue = profile.data[0]['BidEnumeratedTapeValue']
+    const operation1 = profile.data[0]['Operation1']
+    vars["Rule Name"] = ruleName;
+    vars["Condition Bid Field"] = conditionBidField;
+    vars["BidEnumeratedTapeValue"] = bidEnumeratedTapeValue;
+    console.log("the bid enumerated tape value is :", vars["BidEnumeratedTapeValue"])
+    vars["Operation1"] = operation1;
+    console.log("the operation is :", vars["Operation1"])
+    vars["Username"] = credentials.username;
+    vars["Password"] = credentials.password;
+  }
+
+  // const testData: Record<string, string> = {}; // TODO: Load from test data profile
   await CorrPortalElem.Add_Rule_Button.click();
-  await CorrPortalElem.Rule_Name_Field.fill(testData["Rule Name"]);
+  await CorrPortalElem.Rule_Name_Field.fill(vars["Rule Name"]);
   vars["Rule Name"] = await CorrPortalElem.Rule_Name_Field.inputValue() || '';
   await expect(CorrPortalElem.Rule_Name_Field).toHaveValue(vars["Rule Name"]);
   await CorrPortalElem.Select_Category_Dropdown.click();
   vars["CategoryName"] = await CorrPortalElem.Select_Category_On_Rules_and_Actions.textContent() || '';
   await CorrPortalElem.Select_Category.check();
   await CorrPortalElem.Apply_Selected_1_button_in_Rule.click();
+  await CorrPortalElem.When_Bid_Field_in_Add_Conditions.waitFor({ state: "visible" })
   await CorrPortalElem.When_Bid_Field_in_Add_Conditions.click();
-  await CorrPortalElem.Search_Field.fill(testData["Condition Bid Field"]);
+  await CorrPortalElem.Search_Field.waitFor({ state: "visible" })
+  await CorrPortalElem.Search_Field.fill(vars["Condition Bid Field"]);
+  await page.pause();
   vars["BidField"] = await CorrPortalElem.Search_Field.inputValue() || '';
+  await CorrPortalElem.Select_Button.waitFor({ state: "visible" })
   await CorrPortalElem.Select_Button.click();
-  expect(String(vars["BidField"])).toBe(testData["Condition Bid Field"]);
-  await CorrPortalElem.Operation_Dropdown.selectOption({ label: testData["Operation1"] });
+  expect(String(vars["BidField"])).toBe(vars["Condition Bid Field"]);
+  // await CorrPortalElem.Operation_Dropdown.last().selectOption({ label: vars["Operation1"] });
+  await CorrPortalElem.Operation_Dropdown.last().selectOption({ value: vars["Operation1"] });
+  console.log("Operation selected:", vars["Operation1"]);
   await CorrPortalElem.Bid_Enumeration_Tape_Value_in_Rule.click();
   await CorrPortalElem.Search_Field_in_Bid_Enumerated_Tape_Value.click();
-  await CorrPortalElem.Search_Field.fill(testData["BidEnumeratedTapeValue"]);
-  await expect(CorrPortalElem.Search_Field_in_Bid_Enumerated_Tape_Value).toHaveValue(testData["BidEnumeratedTapeValue"]);
+  await CorrPortalElem.Bid_Enumerated_Search_Field.fill(vars["BidEnumeratedTapeValue"]);
+  await expect(CorrPortalElem.Search_Field_in_Bid_Enumerated_Tape_Value).toHaveValue(vars["BidEnumeratedTapeValue"]);
   await CorrPortalElem.Select_Button.click();
   vars["RuleBidField"] = vars["BidField"];
   vars["RuleCondition"] = await CorrPortalElem.Operation_Dropdown.inputValue() || '';
-  vars["RuleBidTapeValue"] = testData["BidEnumeratedTapeValue"];
+  vars["RuleBidTapeValue"] = vars["BidEnumeratedTapeValue"];
 }
 
 /**
@@ -4142,7 +4162,7 @@ export async function stepGroup_Storing_BidSample_and_BidTape_Values_from_Enum_P
         vars["BidTapeCount"] = String(await enumerationMappingPage.get_BidTapeFieldCountForBidField(vars["ColumnHeader"]).count());
         vars["count2"] = "1";
         while (parseFloat(String(vars["count2"])) <= parseFloat(String(vars["BidTapeCount"]))) {
-          vars["BidTapeValue"] = await CorrPortalElem.get_Individual_Bid_Tape_Value_2(vars["ColumnHeader"],vars["count2"]).textContent() || '';
+          vars["BidTapeValue"] = await CorrPortalElem.get_Individual_Bid_Tape_Value_2(vars["ColumnHeader"], vars["count2"]).textContent() || '';
           vars["IndividualBidTapeValue"] = String(vars["BidTapeValue"]) + "," + String(vars["IndividualBidTapeValue"]);
           vars["count2"] = (parseFloat(String("1")) + parseFloat(String(vars["count2"]))).toFixed(0);
         }
@@ -4184,10 +4204,10 @@ export async function stepGroup_Storing_Chase_Field_and_Chase_Value_from_Enum_Pa
     await CorrPortalElem.First_Checkbox_Enum.uncheck();
     for (let dataIdx = parseInt(vars["count1"]); dataIdx <= parseInt(vars["count1"]); dataIdx++) {
       vars["IndividualChaseFieldName"] = await CorrPortalElem.Individual_Chase_Enum_Name.textContent() || '';
-      
+
       // Write to test data profile: "ChaseFieldName" = vars["IndividualChaseFieldName"]
       // TODO: Test data profile writes need custom implementation
-      if (!(await  enumerationMappingPage.get_ChaseValues_Corresponding_to_Chase_Field(vars["IndividualChaseFieldName"]).isVisible())) /* Element ChaseValues Corresponding to Chase Field is not visible*/ {
+      if (!(await enumerationMappingPage.get_ChaseValues_Corresponding_to_Chase_Field(vars["IndividualChaseFieldName"]).isVisible())) /* Element ChaseValues Corresponding to Chase Field is not visible*/ {
         // Write to test data profile: "Chase Value" = "No ChaseValue"
         // TODO: Test data profile writes need custom implementation
       } else {
@@ -4431,13 +4451,13 @@ export async function stepGroup_Uploading_New_Bid_Request_Bid_Request_Screen(pag
     await CorrPortalElem.Pricing_Return_Time.selectOption({ index: parseInt("2") });
     vars["ExtractedPrincingReturnTime"] = await CorrPortalElem.Pricing_Return_Time.evaluate(el => { const s = el as HTMLSelectElement; return s.options[s.selectedIndex]?.text || ''; });
     log.info("Extracted Pricing Return Time: " + vars["ExtractedPrincingReturnTime"]);
- 
-  await CorrPortalElem.Upload_File.setInputFiles([
-          path.resolve(__dirname, '..', '..', '..', 'uploads', 'Bid_file_success_error_newly_updated (10).xlsx')
-        ]);
-  await expect(CorrPortalElem.UploadBid_Button).toBeVisible();
-  await CorrPortalElem.UploadBid_Button.click();
-}
+
+    await CorrPortalElem.Upload_File.setInputFiles([
+      path.resolve(__dirname, '..', '..', '..', 'uploads', 'Bid_file_success_error_newly_updated (10).xlsx')
+    ]);
+    await expect(CorrPortalElem.UploadBid_Button).toBeVisible();
+    await CorrPortalElem.UploadBid_Button.click();
+  }
 }
 /**
  * Step Group: Verification of Loan Pop up Details From Locked Loans Tab (Price Offered Screen)
@@ -4827,7 +4847,7 @@ export async function stepGroup_Uncommits_the_Committed_Loans_Two_Exe_Type(page:
   await CorrPortalElem.Total_Committed_Loans_Tab.waitFor({ state: 'visible' });
   while (await CorrPortalElem.Select_all_for_Checkbox.isVisible()) {
     await CorrPortalElem.Select_all_for_Checkbox.click();
-    await CorrPortalElem.Uncommit_Selected_Button.click();
+    await CorrPortalElem.Commit_Selected_Button.click();
     await CorrPortalElem.Yes_Uncommit_Button.click();
     await CorrPortalElem.Okay_Button.waitFor({ state: 'visible' });
     await CorrPortalElem.Okay_Button.click();
@@ -4840,7 +4860,7 @@ export async function stepGroup_Uncommits_the_Committed_Loans_Two_Exe_Type(page:
   await CorrPortalElem.Total_Committed_Loans_Tab.waitFor({ state: 'visible' });
   while (await CorrPortalElem.Select_all_for_Checkbox.isVisible()) {
     await CorrPortalElem.Select_all_for_Checkbox.click();
-    await CorrPortalElem.Uncommit_Selected_Button.click();
+    await CorrPortalElem.Commit_Selected_Button.click();
     await CorrPortalElem.Yes_Uncommit_Button.click();
   }
 }
@@ -4853,12 +4873,12 @@ export async function stepGroup_Uncommits_the_Committed_Loans_Two_Exe_Type(page:
 export async function stepGroup_Commits_an_Fresh_Loan_Num(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
   await CorrPortalElem.First_Bid_Request_ID.click();
-  await CorrPortalElem.First_CheckboxData.check();
+  await CorrPortalElem.ChecktheLoanNum.first().check();
   await CorrPortalElem.Get_Price_Button.waitFor({ state: 'visible' });
   await CorrPortalElem.Get_Price_Button.click();
-  await CorrPortalElem.Uncommit_Selected_Button.waitFor({ state: 'visible' });
-  await expect(CorrPortalElem.Uncommit_Selected_Button).toBeEnabled();
-  await CorrPortalElem.Uncommit_Selected_Button.click();
+  await CorrPortalElem.Commit_Selected_Button.waitFor({ state: 'visible' });
+  await expect(CorrPortalElem.Commit_Selected_Button).toBeEnabled();
+  await CorrPortalElem.Commit_Selected_Button.click();
   await CorrPortalElem.Yes_Commit_Button_Popup.click();
   await CorrPortalElem.Yes_Commit_Button_Popup.waitFor({ state: 'hidden' });
   await CorrPortalElem.Okay_Button_Popup.waitFor({ state: 'visible' });
@@ -5067,16 +5087,16 @@ export async function stepGroup_Updating_the_Loan_Numbers_in_a_file(page: import
  */
 export async function stepGroup_Storing_Required_Loan_Number_Details(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
-  vars["LastNameBeforeCommit"] = await CorrPortalElem.Last_Name_Commitment_List.textContent() || '';
-  vars["LoanAmountBeforeCommit"] = await CorrPortalElem.Committed_Loan_Amount_Price_Offered.textContent() || '';
-  vars["InterestRateBeforeCommit"] = await CorrPortalElem.Interest_Rate_Commitment_List.textContent() || '';
-  vars["RefSecProdBeforeCommit"] = await CorrPortalElem.Reference_Security_Commitment_List.textContent() || '';
-  vars["RefSecPriceBeforeCommit"] = await CorrPortalElem.Reference_Security_Price_Commitment_List.textContent() || '';
-  vars["GrossPriceBeforeCommit"] = await CorrPortalElem.Gross_Price_Commitment_List.textContent() || '';
-  vars["HedgeRatioBeforeCommit"] = await CorrPortalElem.Hedge_Ratio_Commitment_List.textContent() || '';
-  vars["CurrMarketValueBeforeCommit"] = await CorrPortalElem.Curr_Market_Value_Commitment_List.textContent() || '';
-  vars["MarkAdjBeforeCommit"] = await CorrPortalElem.Mark_Adj_Commitment_List.textContent() || '';
-  vars["CurrGrossBeforeCommit"] = await CorrPortalElem.Curr_Gross_Commitment_List.textContent() || '';
+  vars["LastNameBeforeCommit"] = await CorrPortalElem.Last_Name_Commitment_List(vars["CommittedCorrLoan"]).textContent() || '';
+  vars["LoanAmountBeforeCommit"] = await CorrPortalElem.Committed_Loan_Amount_Price_Offered(vars["CommittedCorrLoan"]).textContent() || '';
+  vars["InterestRateBeforeCommit"] = await CorrPortalElem.Interest_Rate_Commitment_List(vars["CommittedCorrLoan"]).textContent() || '';
+  vars["RefSecProdBeforeCommit"] = await CorrPortalElem.Reference_Security_Commitment_List(vars["CommittedCorrLoan"]).textContent() || '';
+  vars["RefSecPriceBeforeCommit"] = await CorrPortalElem.Reference_Security_Price_Commitment_List(vars["CommittedCorrLoan"]).textContent() || '';
+  vars["GrossPriceBeforeCommit"] = await CorrPortalElem.Gross_Price_Commitment_List(vars["CommittedCorrLoan"]).textContent() || '';
+  vars["HedgeRatioBeforeCommit"] = await CorrPortalElem.Hedge_Ratio_Commitment_List(vars["CommittedCorrLoan"]).textContent() || '';
+  vars["CurrMarketValueBeforeCommit"] = await CorrPortalElem.Curr_Market_Value_Commitment_List(vars["CommittedCorrLoan"]).textContent() || '';
+  vars["MarkAdjBeforeCommit"] = await CorrPortalElem.Mark_Adj_Commitment_List(vars["CommittedCorrLoan"]).textContent() || '';
+  vars["CurrGrossBeforeCommit"] = await CorrPortalElem.Curr_Gross_Commitment_List(vars["CommittedCorrLoan"]).textContent() || '';
 }
 
 /**
@@ -5086,16 +5106,16 @@ export async function stepGroup_Storing_Required_Loan_Number_Details(page: impor
  */
 export async function stepGroup_Verifying_Loan_Details(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
-  await expect(CorrPortalElem.Last_Name_Commitment_List).toContainText(vars["CommittedLastNameTotalLoans"]);
-  await expect(CorrPortalElem.Committed_Loan_Amount_Price_Offered).toContainText(vars["CommittedLoanAmountTotalLoans"]);
-  await expect(CorrPortalElem.Interest_Rate_Commitment_List).toContainText(vars["CommittedIntRateTotalLoans"]);
-  await expect(CorrPortalElem.Reference_Security_Commitment_List).toContainText(vars["CommittedRefSecProdTotalLoans"]);
-  await expect(CorrPortalElem.Reference_Security_Price_Commitment_List).toContainText(vars["CommittedRefSecPriceTotalLoans"]);
-  await expect(CorrPortalElem.Gross_Price_Commitment_List).toContainText(vars["CommittedGrossPriceTotalLoans"]);
-  await expect(CorrPortalElem.Hedge_Ratio_Commitment_List).toContainText(vars["CommittedHedgeRatioTotalLoans"]);
-  await expect(CorrPortalElem.Curr_Market_Value_Commitment_List).toContainText(vars["CommittedCurrMarketValueTotalLoans"]);
-  await expect(CorrPortalElem.Mark_Adj_Commitment_List).toContainText(vars["CommittedMarkAdjTotalLoans"]);
-  await expect(CorrPortalElem.Curr_Gross_Commitment_List).toContainText(vars["CommittedCurrGrossTotalLoans"]);
+  await expect(CorrPortalElem.Last_Name_Commitment_List(vars["CommittedCorrLoan"])).toContainText(vars["CommittedLastNameTotalLoans"]);
+  await expect(CorrPortalElem.Committed_Loan_Amount_Price_Offered(vars["CommittedCorrLoan"])).toContainText(vars["CommittedLoanAmountTotalLoans"]);
+  await expect(CorrPortalElem.Interest_Rate_Commitment_List(vars["CommittedCorrLoan"])).toContainText(vars["CommittedIntRateTotalLoans"]);
+  await expect(CorrPortalElem.Reference_Security_Commitment_List(vars["CommittedCorrLoan"])).toContainText(vars["CommittedRefSecProdTotalLoans"]);
+  await expect(CorrPortalElem.Reference_Security_Price_Commitment_List(vars["CommittedCorrLoan"])).toContainText(vars["CommittedRefSecPriceTotalLoans"]);
+  await expect(CorrPortalElem.Gross_Price_Commitment_List(vars["CommittedCorrLoan"])).toContainText(vars["CommittedGrossPriceTotalLoans"]);
+  await expect(CorrPortalElem.Hedge_Ratio_Commitment_List(vars["CommittedCorrLoan"])).toContainText(vars["CommittedHedgeRatioTotalLoans"]);
+  await expect(CorrPortalElem.Curr_Market_Value_Commitment_List(vars["CommittedCorrLoan"])).toContainText(vars["CommittedCurrMarketValueTotalLoans"]);
+  await expect(CorrPortalElem.Mark_Adj_Commitment_List(vars["CommittedCorrLoan"])).toContainText(vars["CommittedMarkAdjTotalLoans"]);
+  await expect(CorrPortalElem.Curr_Gross_Commitment_List(vars["CommittedCorrLoan"])).toContainText(vars["CommittedCurrGrossTotalLoans"]);
 }
 
 /**
@@ -5243,15 +5263,15 @@ export async function stepGroup_Verifying_MarkAdjValue(page: import('@playwright
  */
 export async function stepGroup_Storing_Committed_Corr_Loan_Num_DetailsCommitment_List(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
-  vars["CommittedLastName"] = await CorrPortalElem.Last_Name_Commitment_List.textContent() || '';
-  vars["CommittedLoanAmount"] = await CorrPortalElem.Committed_Loan_Amount_Price_Offered.textContent() || '';
-  vars["CommittedIntRate"] = await CorrPortalElem.Interest_Rate_Commitment_List.textContent() || '';
-  vars["CommittedRefSecProd"] = await CorrPortalElem.Reference_Security_Commitment_List.textContent() || '';
-  vars["CommittedRefSecPrice"] = await CorrPortalElem.Reference_Security_Price_Commitment_List.textContent() || '';
-  vars["CommittedGrossPrice"] = await CorrPortalElem.Gross_Price_Commitment_List.textContent() || '';
-  vars["CommittedHedgeRatio"] = await CorrPortalElem.Hedge_Ratio_Commitment_List.textContent() || '';
-  vars["CommittedMarkAdj"] = await CorrPortalElem.Mark_Adj_Commitment_List.textContent() || '';
-  vars["CommittedCurrGross"] = await CorrPortalElem.Curr_Gross_Commitment_List.textContent() || '';
+  vars["CommittedLastName"] = await CorrPortalElem.Last_Name_Commitment_List(vars["CommittedCorrLoan"]).textContent() || '';
+  vars["CommittedLoanAmount"] = await CorrPortalElem.Committed_Loan_Amount_Price_Offered(vars["CommittedCorrLoan"]).textContent() || '';
+  vars["CommittedIntRate"] = await CorrPortalElem.Interest_Rate_Commitment_List(vars["CommittedCorrLoan"]).textContent() || '';
+  vars["CommittedRefSecProd"] = await CorrPortalElem.Reference_Security_Commitment_List(vars["CommittedCorrLoan"]).textContent() || '';
+  vars["CommittedRefSecPrice"] = await CorrPortalElem.Reference_Security_Price_Commitment_List(vars["CommittedCorrLoan"]).textContent() || '';
+  vars["CommittedGrossPrice"] = await CorrPortalElem.Gross_Price_Commitment_List(vars["CommittedCorrLoan"]).textContent() || '';
+  vars["CommittedHedgeRatio"] = await CorrPortalElem.Hedge_Ratio_Commitment_List(vars["CommittedCorrLoan"]).textContent() || '';
+  vars["CommittedMarkAdj"] = await CorrPortalElem.Mark_Adj_Commitment_List(vars["CommittedCorrLoan"]).textContent() || '';
+  vars["CommittedCurrGross"] = await CorrPortalElem.Curr_Gross_Commitment_List(vars["CommittedCorrLoan"]).textContent() || '';
 }
 
 /**
@@ -5261,16 +5281,16 @@ export async function stepGroup_Storing_Committed_Corr_Loan_Num_DetailsCommitmen
  */
 export async function stepGroup_Verifying_the_Committed_Loan_DetailsPrice_Offered(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
-  await expect(CorrPortalElem.Committed_Loan_Num_Price_Offered_Page).toBeVisible();
-  await expect(CorrPortalElem.Last_Name_Commitment_List).toContainText(vars["CommittedLastName"]);
-  await expect(CorrPortalElem.Committed_Loan_Amount_Price_Offered).toContainText(vars["CommittedLoanAmount"]);
-  await expect(CorrPortalElem.Interest_Rate_Commitment_List).toContainText(vars["CommittedIntRate"]);
-  await expect(CorrPortalElem.Reference_Security_Commitment_List).toContainText(vars["CommittedRefSecProd"]);
-  await expect(CorrPortalElem.Reference_Security_Price_Commitment_List).toContainText(vars["CommittedRefSecPrice"]);
-  await expect(CorrPortalElem.Gross_Price_Commitment_List).toContainText(vars["CommittedGrossPrice"]);
-  await expect(CorrPortalElem.Hedge_Ratio_Commitment_List).toContainText(vars["CommittedHedgeRatio"]);
-  await expect(CorrPortalElem.Mark_Adj_Commitment_List).toContainText(vars["CommittedMarkAdj"]);
-  await expect(CorrPortalElem.Curr_Gross_Commitment_List).toContainText(vars["CommittedCurrGross"]);
+  await expect(CorrPortalElem.Committed_Loan_Num_Price_Offered_Page(vars["CommittedCorrLoan"])).toBeVisible();
+  await expect(CorrPortalElem.Last_Name_Commitment_List(vars["CommittedCorrLoan"])).toContainText(vars["CommittedLastName"]);
+  await expect(CorrPortalElem.Committed_Loan_Amount_Price_Offered(vars["CommittedCorrLoan"])).toContainText(vars["CommittedLoanAmount"]);
+  await expect(CorrPortalElem.Interest_Rate_Commitment_List(vars["CommittedCorrLoan"])).toContainText(vars["CommittedIntRate"]);
+  await expect(CorrPortalElem.Reference_Security_Commitment_List(vars["CommittedCorrLoan"])).toContainText(vars["CommittedRefSecProd"]);
+  await expect(CorrPortalElem.Reference_Security_Price_Commitment_List(vars["CommittedCorrLoan"])).toContainText(vars["CommittedRefSecPrice"]);
+  await expect(CorrPortalElem.Gross_Price_Commitment_List(vars["CommittedCorrLoan"])).toContainText(vars["CommittedGrossPrice"]);
+  await expect(CorrPortalElem.Hedge_Ratio_Commitment_List(vars["CommittedCorrLoan"])).toContainText(vars["CommittedHedgeRatio"]);
+  await expect(CorrPortalElem.Mark_Adj_Commitment_List(vars["CommittedCorrLoan"])).toContainText(vars["CommittedMarkAdj"]);
+  await expect(CorrPortalElem.Curr_Gross_Commitment_List(vars["CommittedCorrLoan"])).toContainText(vars["CommittedCurrGross"]);
 }
 
 /**
@@ -6729,8 +6749,8 @@ export async function stepGroup_Add_to_Commit_an_Loan_Num_And_Verifying_The_Comm
   await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
   await CorrPortalElem.Required_Loan_Num.check();
   vars["CommittedCorrLoan"] = await CorrPortalElem.Checked_Corr_Loan.textContent() || '';
-  await CorrPortalElem.Uncommit_Selected_Button.waitFor({ state: 'visible' });
-  await CorrPortalElem.Uncommit_Selected_Button.click();
+  await CorrPortalElem.Commit_Selected_Button.waitFor({ state: 'visible' });
+  await CorrPortalElem.Commit_Selected_Button.click();
   await CorrPortalElem.Commitment_Order_Dropdown.click();
   await CorrPortalElem.Yes_Commit_Button.click();
   await CorrPortalElem.Okay_Button.waitFor({ state: 'visible' });
@@ -6738,7 +6758,7 @@ export async function stepGroup_Add_to_Commit_an_Loan_Num_And_Verifying_The_Comm
   await CorrPortalElem.Total_Committed_Loans_Tab.waitFor({ state: 'visible' });
   await CorrPortalElem.Total_Committed_Loans_Tab.click();
   await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
-  await expect(CorrPortalElem.Committed_Loan_Num_Commitment_List).toBeVisible();
+  await expect(CorrPortalElem.Committed_Loan_Num_Commitment_List(vars["CommitID"],vars["CommittedCorrLoan"])).toBeVisible();
 }
 
 /**
