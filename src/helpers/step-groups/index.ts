@@ -2806,21 +2806,6 @@ export async function stepGroup_Past_time_disable_verification_in_bidrequest_dro
  * Steps: 24
  */
 export async function stepGroup_Uploading_Bid_Request(page: import('@playwright/test').Page, vars: Record<string, string>) {
-  const profileName = 'Bid Requests';       // TDP sheet name
-  const profile = testDataManager.getProfileByName(profileName);
-
-  if (profile && profile.data) {
-    const value = profile.data[0]['Company Name'];  // row 0, column name
-    vars["CompanyName"] = value;
-    const bidMappingID = profile.data[0]['BidMappingID'];
-    vars["BidMappingID"] = bidMappingID;                  // store in vars
-  } // TODO: Get the profile name dynamically if needed
-  // if (profile && profile.data) {
-  //   const value = profile.data[0]['Company Name'];  // row 0, column name
-  //   vars["CompanyName"] = value;
-  //   const bidMappingID = profile.data[0]['BidMappingID'];
-  //   vars["BidMappingID"] = bidMappingID;                  // store in vars
-  // } // TODO: Get the profile name dynamically if needed
   const CorrPortalElem = new CorrPortalPage(page);
   //const testData: Record<string, string> = {}; // TODO: Load from test data profile
   //await CorrPortalElem.Upload_New_Bid_Request_Button.isEnabled();
@@ -3297,22 +3282,6 @@ export async function stepGroup_Upload_Bid_Request_For_Next_Business_Day_With_Ch
  * Steps: 17
  */
 export async function stepGroup_Uploading_Bid_Request_By_Selecting_both_standard_and_chase_t(page: import('@playwright/test').Page, vars: Record<string, string>) {
-  const profileName = 'Bid Requests';       // TDP sheet name
-  const profile = testDataManager.getProfileByName(profileName);
-  if (profile && profile.data) {
-    const value = profile.data[0]['Company Name'];  // row 0, column name
-    vars["CompanyName"] = value;
-    const bidMappingID = profile.data[0]['BidMappingID'];
-    vars["BidMappingID"] = bidMappingID;                  // store in vars
-  }
-
-  if (profile && profile.data) {
-    const value = profile.data[0]['Company Name'];  // row 0, column name
-    vars["CompanyName"] = value;
-    const bidMappingID = profile.data[0]['BidMappingID'];
-    vars["BidMappingID"] = bidMappingID;                  // store in vars
-  }
-
   const CorrPortalElem = new CorrPortalPage(page);
   const testData: Record<string, string> = {}; // TODO: Load from test data profile
   await CorrPortalElem.Select_Company_In_BidRequest.click();
