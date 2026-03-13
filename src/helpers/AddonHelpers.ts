@@ -649,8 +649,8 @@ export class AddonHelpers {
         return;
       }
       this.vars[varName] = value;
-      pass(METHOD, `Split "${sourceString}" by "${delimiter}" → position[${pos}] = "${value}" → vars['${varName}']`);
-    } catch (e) { fail(METHOD, `Split "${sourceString}" by "${delimiter}"`, e); }
+      console.log(METHOD, `Split "${sourceString}" by "${delimiter}" → position[${pos}] = "${value}" → vars['${varName}']`);
+    } catch (e) { console.error(METHOD, `Split "${sourceString}" by "${delimiter}"`, e); }
   }
   // ==========================================================================
   // 32. Concatenate with special char → store in vars
@@ -843,8 +843,11 @@ export class AddonHelpers {
       const last = parseInt(lastCount, 10) || 0;
       const result = sourceString.substring(first, last === 0 ? undefined : sourceString.length - last);
       this.vars[varName] = result;
-      pass(METHOD, `Removed ${first} from first and ${last} from last of "${sourceString}" → "${result}" → vars['${varName}']`);
-    } catch (e) { fail(METHOD, `Remove characters from "${sourceString}"`, e); }
+      console.log(`${METHOD} | Removed ${first} from start and ${last} from end of '${sourceString}' = '${result}' | stored in '${varName}'`);
+    } catch (e) {
+      console.error(`${METHOD} | Failed to remove characters from '${sourceString}': ${(e as Error).message}`);
+      throw e;
+    }
   }
   //verifying the element contains text with ignore case
   async verifyElementContainsTextIgnoreCase(element: Locator, expectedText: string): Promise<void> {
@@ -1000,4 +1003,61 @@ verifyDateStringMonthMatchesExpectedMonth(
     pass(METHOD, `Month "${uploadedMonth}" extracted from "${uploadedDateText}" matches expected month "${expectedMonth}"`);
   } catch (e) { fail(METHOD, `Verify month from date "${uploadedDateText}" matches expected month "${expectedMonth}"`, e); }
 }
+//perform arithmetic operation and store the results with decimal
+performArithmetic(
+    value1: string,
+    operation: 'ADDITION' | 'SUBTRACTION' | 'MULTIPLICATION' | 'DIVISION',
+    value2: string,
+    varName: string,
+    decimalPlaces: number = 0
+  ): void {
+    const METHOD = 'performArithmetic';
+    try {
+      const clean = (val: string): string =>
+        String(val)
+          .replace(/\(.*?\)/g, '')   // remove (13.01%) style suffix
+          .replace(/[^\d.\-]/g, '')  // keep only digits, dot and minus
+          .trim();
+
+      const cleaned1 = clean(value1);
+      const cleaned2 = clean(value2);
+
+      const num1 = parseFloat(cleaned1);
+      const num2 = parseFloat(cleaned2);
+
+      if (isNaN(num1)) throw new Error(`value1 is not a valid number: '${value1}' → cleaned: '${cleaned1}'`);
+      if (isNaN(num2)) throw new Error(`value2 is not a valid number: '${value2}' → cleaned: '${cleaned2}'`);
+      if (operation === 'DIVISION' && num2 === 0) throw new Error(`Division by zero is not allowed`);
+
+      let result: number;
+      switch (operation) {
+        case 'ADDITION':       result = num1 + num2; break;
+        case 'SUBTRACTION':    result = num1 - num2; break;
+        case 'MULTIPLICATION': result = num1 * num2; break;
+        case 'DIVISION':       result = num1 / num2; break;
+        default: throw new Error(`Unsupported operation: '${operation}'. Use ADDITION, SUBTRACTION, MULTIPLICATION or DIVISION`);
+      }
+
+      this.vars[varName] = result.toFixed(decimalPlaces);
+      console.log(`${METHOD} | '${value1}' ${operation} '${value2}' = ${this.vars[varName]} | stored in '${varName}'`);
+    } catch (e) {
+      console.error(`${METHOD} | Failed: ${(e as Error).message}`);
+      throw e;
+    }
+  }
+
+  //Get last no.of character by index
+   getLastCharacters(value: string, Index: string, varName: string): void {
+    const METHOD = 'getLastCharacters';
+    try {
+      const n = parseInt(String(Index));
+      if (isNaN(n) || n < 0) throw new Error(`count is not a valid number: '${Index}'`);
+      const result = String(value).slice(-n);
+      this.vars[varName] = result;
+      console.log(`${METHOD} | Last ${n} character(s) of '${value}' = '${result}' | stored in '${varName}'`);
+    } catch (e) {
+      console.error(`${METHOD} | Failed: ${(e as Error).message}`);
+      throw e;
+    }
+  }
 }

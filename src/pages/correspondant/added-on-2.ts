@@ -15,8 +15,8 @@ export class AddedOn2Page {
     return this.page.locator(`//td[@data-title="Company" and contains(text(),"${fourthCompanySelected}")]`);
   }
 
-  get Select_Rule_1(): Locator {
-    return this.page.locator("(//span[@class='ngb-highlight'][contains(.,'@|Search Map Input|')])[1]");
-  }
+  // get Select_Rule_1(): Locator {
+  //   return this.page.locator("(//span[@class='ngb-highlight'][contains(.,'@|Search Map Input|')])[1]");
+  // }
 
 }
