@@ -12,11 +12,12 @@ import { runPrereq_1381 } from './prereq-1381';
 import path from 'path';
 import { Logger as log } from '../../../src/helpers/log-helper';
 import { ENV } from '@config/environments';
+import { testDataManager } from 'testdata/TestDataManager';
 
 export async function runPrereq_1389(page: Page, vars: Record<string, string>): Promise<void> {
 
   // ─── TC Start ─────────────────────────────────────────────────────────
-  const TC_ID    = 'PREREQ-1389';
+  const TC_ID = 'PREREQ-1389';
   const TC_TITLE = 'Create a new Bid Request and submit for pricing to get the Price Offered status.';
   log.tcStart(TC_ID, TC_TITLE);
   const crederntials = ENV.getCredentials('internal'); // 2
@@ -26,16 +27,23 @@ export async function runPrereq_1389(page: Page, vars: Record<string, string>): 
     vars["Password"] = crederntials.password;// 4
     // console.log("Test Data: ", testData);
     console.log("Credentials: ", crederntials.username, crederntials.password);
-console.log("Credentials:==> ",  vars["Username"], vars["Password"]);
-
+    console.log("Credentials:==> ", vars["Username"], vars["Password"]);
+    const profileName = 'Bid Requests';       // TDP sheet name
+    const profile = testDataManager.getProfileByName(profileName);
+    if (profile && profile.data) {
+      const value = profile.data[0]['Company Name'];  // row 0, column name
+      vars["CompanyName"] = value;
+      const bidMappingID = profile.data[0]['BidMappingID'];
+      vars["BidMappingID"] = bidMappingID;                  // store in vars
+    }
     await runPrereq_1381(page, vars);
 
-    const bidRequestDetailsPage   = new BidRequestDetailsPage(page);
-    const bidRequestListPage      = new BidRequestListPage(page);
-    const bidRequestPage          = new BidRequestPage(page);
-    const bidRequestsPage         = new BidRequestsPage(page);
+    const bidRequestDetailsPage = new BidRequestDetailsPage(page);
+    const bidRequestListPage = new BidRequestListPage(page);
+    const bidRequestPage = new BidRequestPage(page);
+    const bidRequestsPage = new BidRequestsPage(page);
     const correspondentPortalPage = new CorrespondentPortalPage(page);
-    const spinnerPage             = new SpinnerPage(page);
+    const spinnerPage = new SpinnerPage(page);
 
     // ── Step 1: Login ──────────────────────────────────────────────────
     log.step('Login to Correspondent Portal');
