@@ -128,7 +128,6 @@ export async function stepGroup_Rename_File(page: import('@playwright/test').Pag
 export async function stepGroup_Creation_Of_Bid_Map_Upto_Header_Mapping(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
   const Helpers = new AddonHelpers(page, vars);
-
   const correspondentPortalPage = new CorrespondentPortalPage(page);
   const CorrespondentPortal4Elem = new CorrespondentPortal4Page(page);
   await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
@@ -234,7 +233,6 @@ export async function stepGroup_Smart_Mapper_from_Off_to_On(page: import('@playw
     await spinnerPage.Spinner.waitFor({ state: 'hidden' });
     await expect(CorrPortalElem.Bid_Map_Creation).toBeVisible();
     await expect(CorrPortalElem.Smart_Mapper).toBeVisible();
-
     if (!(await CorrPortalElem.On_Radio_Button.isChecked())) {
       await CorrPortalElem.On_Radio_Button.waitFor({ state: 'visible' });
       await CorrPortalElem.On_Radio_Button.check();
@@ -1065,14 +1063,6 @@ export async function stepGroup_Deleting_the_Header_Mapping(page: import('@playw
  */
 export async function stepGroup_Import_Rule_In_Rules_and_Actions(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
-  const profileName = "Bid_Maps";
-  const profile = testDataManager.getProfileByName(profileName);
-  if (profile && profile.data) {
-        const searchMapInput = profile.data[0]['Search Map Input'];
-        vars["Search Map Input"] = searchMapInput;
-        vars["Username"] = credentials.username;
-        vars["Password"] = credentials.password;
-      }
   // const testData: Record<string, string> = {}; // TODO: Load from test data profile
   await expect(CorrPortalElem.Save_and_Publish_Button).toBeVisible();
   await CorrPortalElem.Import_Rule_Button.click();
