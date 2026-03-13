@@ -71,7 +71,6 @@ test.describe('REG_Bid Maps', () => {
     log.tcStart(TC_ID, TC_TITLE);
 
     try {
-
       log.step("Step 1: Load test data and login to CORR portal");
       try {
         if (profile && profile.data) {
@@ -84,42 +83,31 @@ test.describe('REG_Bid Maps', () => {
 
         await stepGroups.stepGroup_Login_to_CORR_Portal(page, vars);
         await stepGroups.stepGroup_Smart_Mapper_from_Off_to_On(page, vars);
-
         log.stepPass("Step 1 passed: Logged in and Smart Mapper enabled.");
       } catch (error) {
         log.stepFail(page, "Step 1 failed: Unable to load data or login.");
         throw error;
       }
-
       log.step("Step 2: Navigate to Bid Maps and create a new Bid Map up to header mapping");
       try {
         await correspondentPortalPage.Administration_Menu.click();
         await correspondentPortalPage.Bid_Maps_Menu.click();
-
         await stepGroups.stepGroup_Creation_Of_Bid_Map_Upto_Header_Mapping(page, vars);
-
         log.stepPass("Step 2 passed: Bid Map created up to header mapping.");
       } catch (error) {
         log.stepFail(page, "Step 2 failed: Unable to create Bid Map.");
         throw error;
       }
-
       log.step("Step 3: Handle unidentified fields popup and proceed to Rules and Actions");
       try {
         await enumerationMappingButtonPage.Enumeration_Mapping_Button.click();
-
         await expect(page.getByText(vars["Save and Move to Next Page"])).toBeVisible();
         await expect(page.getByText(vars["Unidentified fields Message"])).toBeVisible();
-
         await bidmapPage.Yes_Proceed_Button_Text.click();
-
         await rulesAndActionsButtonPage.Rules_and_Actions_Button.click();
-
         await expect(page.getByText(vars["Save and Move to Next Page"])).toBeVisible();
         await expect(page.getByText(vars["Unidentified fields Message"])).toBeVisible();
-
         await bidmapPage.Yes_Proceed_Button_Text.click();
-
         log.stepPass("Step 3 passed: Unidentified fields popup handled.");
       } catch (error) {
         log.stepFail(page, "Step 3 failed: Unable to handle unidentified fields popup.");
@@ -129,11 +117,8 @@ test.describe('REG_Bid Maps', () => {
       log.step("Step 4: Import rule and publish the Bid Map");
       try {
         await stepGroups.stepGroup_Import_Rule_In_Rules_and_Actions(page, vars);
-
         await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-
         await saveAndPublishButtonPage.Save_and_Publish_Button.click();
-
         log.stepPass("Step 4 passed: Rule imported and map published.");
       } catch (error) {
         log.stepFail(page, "Step 4 failed: Unable to import rule or publish map.");
@@ -143,22 +128,15 @@ test.describe('REG_Bid Maps', () => {
       log.step("Step 5: Search for created map and delete it");
       try {
         await page.reload();
-
         await statusInactive2Page.SearchFilter_Fields.click();
         await statusInactive2Page.SearchFilter_Fields.pressSequentially(vars["CreateNewMap"]);
-
         await page.getByText(vars["CreateNewMap"]).last().hover();
-
         await showAllPage.Show_All_2.hover();
         await deleteIdPage.Click_on_Show_All.click();
-
         await deleteMapPage.Delete_Option.click();
         await correspondentPortalPage.Yes_Proceed_Button.click();
-
         await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-
         await expect(page.getByText("No result")).toBeVisible();
-
         log.stepPass("Step 5 passed: Map deleted successfully.");
       } catch (error) {
         log.stepFail(page, "Step 5 failed: Unable to delete the Bid Map.");
@@ -168,16 +146,11 @@ test.describe('REG_Bid Maps', () => {
       log.step("Step 6: Create a new map using the same deleted map name");
       try {
         await correspondentPortalPage.Add_New_Mapping_Button.click();
-
         await mapnamePage.mapNamefiled.fill(vars["CreateNewMap"]);
         vars["BidMap"] = await mapnamePage.mapNamefiled.inputValue() || '';
-
         await correspondentPortalPage.Create_Button.click();
-
         await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-
         await expect(correspondentPortal3Page.Create_New_Map_Field).toHaveValue(vars["BidMap"]);
-
         log.stepPass("Step 6 passed: New map created with the same deleted name.");
       } catch (error) {
         log.stepFail(page, "Step 6 failed: Unable to recreate map with same name.");
@@ -189,19 +162,12 @@ test.describe('REG_Bid Maps', () => {
         await correspondentPortalPage.Select_Companys_Dropdown.click();
         await statusInactive2Page.Select_Required_Company_Name.click();
         await correspondentPortalPage.Apply_Selected.click();
-
         await expect(correspondentPortalPage.Upload_File).toHaveValue('');
-
         await uploadFile(page, correspondentPortalPage.Upload_File, "Bid_Maps_File.xlsx");
-
         await mapHeadersButtonPage.Map_Headers_Button.click();
-
         await expect(thisActionWillSaveTheChangesAndMoveToNextPagePage.This_action_will_save_the_changes_and_Move_to_Next_Page).toBeVisible();
-
         await proceedWithSavingButtonPage.Proceed_with_Saving_Button.click();
-
         await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-
         log.stepPass("Step 7 passed: File uploaded and header mapping reached.");
       } catch (error) {
         log.stepFail(page, "Step 7 failed: Unable to upload file or proceed.");

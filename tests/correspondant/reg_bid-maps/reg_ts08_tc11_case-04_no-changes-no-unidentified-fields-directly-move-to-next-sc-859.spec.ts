@@ -80,15 +80,12 @@ test.describe('REG_Bid Maps', () => {
       try {
         await enumerationMappingButtonPage.Enumeration_Mapping_Button.click();
         await expect(page.getByText(vars["Unidentified fields Message"])).toBeVisible();
-
         if (await bidmapPage.Yes_Proceed_Button_Text.isVisible()) {
           await bidmapPage.Yes_Proceed_Button_Text.click();
         } else {
           await proceedWithSavingButtonPage.Proceed_with_Saving_Button.click();
         }
-
         await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-
         log.stepPass("Step 3 passed: Enumeration Mapping opened and popup handled.");
       } catch (error) {
         log.stepFail(page, "Step 3 failed: Unable to open Enumeration Mapping or handle unidentified fields popup.");
@@ -98,18 +95,13 @@ test.describe('REG_Bid Maps', () => {
       log.step("Step 4: Verify Chase Values in Enumeration Mapping and navigate to Rules and Actions");
       try {
         await stepGroups.stepGroup_Verifying_ChaseValue_In_EnumerationMapping(page, vars);
-
         await expect(rulesAndActionsButtonPage.Rules_and_Actions_Button).toBeVisible();
         await rulesAndActionsButtonPage.Rules_and_Actions_Button.click();
-
         await proceedWithSavingButtonPage.Proceed_with_Saving_Button.waitFor({ state: 'visible' });
         await expect(page.getByText("This action will save the changes and Move to Next Page")).toBeVisible();
-
         await proceedWithSavingButtonPage.Proceed_with_Saving_Button.click();
         await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-
         await expect(clickOnAddRuleOrImportRulePage.Click_on_Add_Rule_Or_Import_Rule).toBeVisible();
-
         log.stepPass("Step 4 passed: Chase values verified and navigation to Rules and Actions successful.");
       } catch (error) {
         log.stepFail(page, "Step 4 failed: Unable to verify chase values or navigate to Rules and Actions.");
@@ -120,19 +112,13 @@ test.describe('REG_Bid Maps', () => {
       try {
         await backButtonPage.BACK_Button.click();
         await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-
         await rulesAndActionsButtonPage.Rules_and_Actions_Button.click();
-
         await expect(thisActionWillSaveTheChangesAndMoveToNextPagePage.This_action_will_save_the_changes_and_Move_to_Next_Page).not.toBeVisible();
-
         if (await bidmapPage.Yes_Proceed_Button_Text.isVisible()) {
           await bidmapPage.Yes_Proceed_Button_Text.click();
         }
-
         await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-
         await expect(clickOnAddRuleOrImportRulePage.Click_on_Add_Rule_Or_Import_Rule).toBeVisible();
-
         log.stepPass("Step 5 passed: Returned to Rules and Actions without prompt and verified next screen.");
       } catch (error) {
         log.stepFail(page, "Step 5 failed: Unable to navigate back or verify absence of prompt.");

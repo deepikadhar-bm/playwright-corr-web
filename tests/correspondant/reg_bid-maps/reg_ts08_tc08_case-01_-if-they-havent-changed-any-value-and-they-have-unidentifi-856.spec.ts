@@ -46,7 +46,6 @@ test.describe('REG_Bid Maps', () => {
         await stepGroups.stepGroup_Login_to_CORR_Portal(page, vars);
         await stepGroups.stepGroup_Smart_Mapper_from_Off_to_On(page, vars);
         await stepGroups.stepGroup_Creation_Of_Bid_Map_Upto_Header_Mapping(page, vars);
-
         log.stepPass("Step 1 passed: Logged in successfully, Smart Mapper enabled, and Bid Map created up to Header Mapping.");
       } catch (error) {
         log.stepFail(page, "Step 1 failed: Unable to login, enable Smart Mapper, or create Bid Map up to Header Mapping.");
@@ -56,13 +55,9 @@ test.describe('REG_Bid Maps', () => {
       log.step("Step 2: Open Enumeration Mapping and proceed using Yes, Proceed button");
       try {
         await enumerationMappingButtonPage.Enumeration_Mapping_Button.click();
-
         await expect(correspondentPortalPage.Yes_Proceed_Button).toBeVisible();
-
         await correspondentPortalPage.Yes_Proceed_Button.click();
-
         await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-
         log.stepPass("Step 2 passed: Enumeration Mapping opened and proceeded using Yes, Proceed button.");
       } catch (error) {
         log.stepFail(page, "Step 2 failed: Unable to open Enumeration Mapping or click Yes, Proceed button.");
@@ -72,9 +67,7 @@ test.describe('REG_Bid Maps', () => {
       log.step("Step 3: Verify unidentified fields exist in Enumeration Mapping page");
       try {
         vars["UnidentifiedFieldsCount"] = String(await enumerationMappingPage.UnIdentified_Fields.count());
-
         expect(parseInt(vars["UnidentifiedFieldsCount"])).toBeGreaterThanOrEqual(1);
-
         log.stepPass("Step 3 passed: Unidentified fields detected successfully.");
       } catch (error) {
         log.stepFail(page, "Step 3 failed: Unable to verify unidentified fields in Enumeration Mapping.");
@@ -84,13 +77,9 @@ test.describe('REG_Bid Maps', () => {
       log.step("Step 4: Navigate to Rules and Actions and verify unidentified fields message");
       try {
         await rulesAndActionsButtonPage.Rules_and_Actions_Button.click();
-
         await expect(correspondentPortalPage.You_have_unidentified_fields_do_you_want_to_proceed_Further).toBeVisible();
-
         await stepGroups.stepGroup_IF_Condition_for_Yes_Proceed_Button(page, vars);
-
         await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-
         log.stepPass("Step 4 passed: Unidentified fields message verified and proceeded successfully.");
       } catch (error) {
         log.stepFail(page, "Step 4 failed: Unable to verify unidentified fields message or proceed.");
