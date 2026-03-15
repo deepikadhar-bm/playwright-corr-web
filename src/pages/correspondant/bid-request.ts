@@ -71,8 +71,8 @@ export class BidRequestPage {
     return this.page.locator("//div[contains(@aria-label,\"Status:\")]//h5");
   }
 
-  get BidReqIDBid_Req_Page(): Locator {
-    return this.page.locator("//button[contains(text(),\"$|RequestIDDetails|\")]");
+  BidReqIDBid_Req_Page(RequestIDDetails:string): Locator {
+    return this.page.locator(`//button[contains(text(),\"${RequestIDDetails}\")]`);
   }
 
   get BidRequest_Company_Column_Data(): Locator {

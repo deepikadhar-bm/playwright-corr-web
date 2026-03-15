@@ -11,7 +11,8 @@ export async function runPrereq_1381(page: Page, vars: Record<string, string>): 
   log.tcStart(TC_ID, TC_TITLE);
   try {
     console.log('\n========== PREREQ 1 START: Updating Loan Numbers In File ==========');
-    const filePath = path.resolve(__dirname, '../../../uploads/Bid_file_success_error_newly_updated (10).xlsx');
+    // const filePath = path.resolve(__dirname, '../../../uploads/Bid_file_success_error_newly_updated (10).xlsx');
+    const filePath = path.resolve(__dirname, '../../../uploads/Bid_file_success_error_newly_updated.xlsx');
     console.log('[PREREQ 1] File path: ' + filePath);
 
     let totalRows = excelHelper.getRowCount(filePath, 'Sheet1');
