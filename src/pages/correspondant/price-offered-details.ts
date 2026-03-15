@@ -20,7 +20,7 @@ export class PriceOfferedDetailsPage {
   }
 
   get Locked_Loan_Num_Price_Offered_details(): Locator {
-    return this.page.locator("//div[@aria-label=\"Locked loan\"]/../..//td[@data-title=\"Corr. Loan#\"]");
+    return this.page.locator(`//div[@aria-label="Locked loan"]/../..//td[@data-title="Corr. Loan#"]//button[1]`);
   }
 
   get Market_Adjust_Valuenew(): Locator {
