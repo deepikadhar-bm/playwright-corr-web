@@ -7,8 +7,8 @@ import { Page, Locator } from '@playwright/test';
 export class BidrequestPage {
   constructor(private page: Page) {}
 
-  get BidRequestID(): Locator {
-    return this.page.locator("(//td[@data-title=\"#Loans / #Errors\"]/..//td[@data-title=\"Bid Req. ID\"])[$|Count|]");
+  BidRequestID(Count: string): Locator {
+    return this.page.locator(`(//td[@data-title="#Loans / #Errors"]/..//td[@data-title="Bid Req. ID"])[${Count}]`);
   }
 
   get BidTapeValueUI(): Locator {
@@ -75,8 +75,8 @@ export class BidrequestPage {
     return this.page.locator("(//td[@data-title=\"Status\"])[position() >=7 and position()<=last()]");
   }
 
-  get StatusOfBidRequestID(): Locator {
-    return this.page.locator("(//td[@data-title=\"Status\"])[$|Count|]");
+  StatusOfBidRequestID(count: string): Locator {
+    return this.page.locator(`(//td[@data-title="Status"])[${count}]`);
   }
 
   get Uploaded_Date_Header(): Locator {

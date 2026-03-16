@@ -105,7 +105,7 @@ test.describe('REG_TC_Bid_Requests', () => {
             vars["All Company Count"] = String(await bidRequestPage.Company_Name_Count.count());
             log.info(`Iteration ${vars["count"]}: Verifying company name for ${vars["All Company Count"]} rows - Expected: ${vars["ExpectedCompany"]}`);
             while (parseFloat(String(vars["count1"])) <= parseFloat(String(vars["All Company Count"]))) {
-              vars["IndividualCompany"] = (await bidRequestPage.Company_Names1(vars["count1"]).textContent() || '').trim();
+              vars["IndividualCompany"] = (await bidRequestPage.Company_Names1(parseInt(vars["count"])).textContent() || '').trim();
               expect(String(vars["ExpectedCompany"])).toBe(vars["IndividualCompany"]);
               vars["count1"] = (parseFloat(String(vars["count1"])) + parseFloat(String("1"))).toFixed(0);
             }

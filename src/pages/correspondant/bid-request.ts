@@ -335,8 +335,8 @@ export class BidRequestPage {
     return this.page.locator("//div[text()=\" Success \"]/../..//td[@data-title=\"Loan Amount\"]//div");
   }
 
-  get LoansErrors(): Locator {
-    return this.page.locator("(//td[@data-title=\"#Loans / #Errors\"])[$|Count|]");
+  LoansErrors(Count: string): Locator {
+    return this.page.locator(`(//td[@data-title="#Loans / #Errors"])[${Count}]`);
   }
 
   get LoansErrorsCount(): Locator {
