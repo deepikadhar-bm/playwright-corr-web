@@ -3945,8 +3945,8 @@ export async function stepGroup_Modifying_The_batch_Intervals_with_current_est_t
 
 
   // Load test data from TestDataManager
-  const profile = testDataManager.getProfileByName("Administration_Bulk Batch Timing");
-  const testData = profile?.data?.[0] || {};
+  // const profile = testDataManager.getProfileByName("Administration_Bulk Batch Timing");
+  // const testData = profile?.data?.[0] || {};
   await CorrPortalElem.Modify_Batch_Intervals_Button.click();
   await expect(page.getByText("Edit Batch Timing")).toBeVisible();
   // vars["CurrentTime"] = (() => {
@@ -3967,18 +3967,15 @@ export async function stepGroup_Modifying_The_batch_Intervals_with_current_est_t
     minute: '2-digit',
     hour12: true
   });
-  console.log("CurrentTime:", vars["CurrentTime"]); // 04:45 AM
-  console.log("CurrentTime:", vars["CurrentTime"]); // 04:45 AM
   await stepGroup_Separating_Hours_and_minutes_In_time_Current_EST_time(page, vars);
   await CorrPortalElem.StartTime_In_Hour.fill(vars["Time_Hour"]);
-  console.log("Time_Min value:", vars["Time_Min"]);
   await CorrPortalElem.StartTime_In_Minutes.click({ clickCount: 3 });
   await CorrPortalElem.StartTime_In_Minutes.type(vars["Time_Min"]);
-  await CorrPortalElem.StartTime_In_Minutes.type(vars["Time_Min"]);
+  //await CorrPortalElem.StartTime_In_Minutes.type(vars["Time_Min"]);
   //await CorrPortalElem.StartTime_In_Minutes.fill(vars["Time_Min"]);
   await stepGroup_selecting_time_unit_bulk_batch(page, vars);
-  await CorrPortalElem.Time_Interval.fill(testData["Time Interval"]);
-  await CorrPortalElem.No_Of_Batches.fill(testData["NO of Batches"]);
+  await CorrPortalElem.Time_Interval.fill(vars["Time Interval"]);
+  await CorrPortalElem.No_Of_Batches.fill(vars["NO of Batches"]);
   await expect(CorrPortalElem.On_Radio_button_in_Bid_Request).toBeEnabled();
   await CorrPortalElem.Modify_Batch_Button.click();
   await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
@@ -3989,16 +3986,17 @@ export async function stepGroup_Modifying_The_batch_Intervals_with_current_est_t
 /**
  * Step Group: Separating Hours and minutes In time (Current EST time)
  * ID: 1325
+ * 
  * Steps: 4
  */
 export async function stepGroup_Separating_Hours_and_minutes_In_time_Current_EST_time(page: import('@playwright/test').Page, vars: Record<string, string>) {
-  log.info("CurrentTime value: inside", vars["CurrentTime"]);
+  log.info(`CurrentTime value: inside vars: ${vars["CurrentTime"]}`);
   vars["MinWithStandard"] = String(vars["CurrentTime"]).split(":")["1"] || '';
-  log.info("MinWithStandard value:", vars["MinWithStandard"]);
+  log.info(`MinWithStandard value: ${vars["MinWithStandard"]}`);
   vars["Time_Hour"] = String(vars["CurrentTime"]).substring(0, String(vars["CurrentTime"]).length - 6);
-  log.info("Time_Hour value:", vars["Time_Hour"]);
+  log.info(`Time_Hour value: ${vars["Time_Hour"]}`);
   vars["Time_Min"] = String(vars["MinWithStandard"]).substring(0, String(vars["MinWithStandard"]).length - 3);
-  log.info("Time_Min value:", vars["Time_Min"]);
+  log.info(`Time_Min value: ${vars["Time_Min"]}`);
   vars["Time_Unit"] = String(vars["MinWithStandard"]).substring(3);
 }
 
@@ -6293,15 +6291,16 @@ export async function stepGroup_Modifying_batches_with_5_min_prior(page: import(
   await CorrPortalElem.StartTime_In_Hour.fill(vars["Time_Hour"]);
   await CorrPortalElem.StartTime_In_Minutes.fill(vars["Time_Min"]);
   await stepGroup_selecting_time_unit_bulk_batch(page, vars);
-  const profileName = 'Administration_Bulk Batch Timing';
-  const profile = testDataManager.getProfileByName(profileName);
-  if (profile && profile.data) {
-    const TimeInterval = profile.data[0]['Time Interval'] || '';
-    vars["Time_Interval"] = TimeInterval;
-    const NoOfBatches = profile.data[0]['NO of Batches'] || '';
-    vars["NO of Batches"] = NoOfBatches;
-    log.info(`[${profileName}] Loaded Time Interval: "${vars["Time_Interval"]}", NO of Batches: "${vars["NO of Batches"]}"`);
-  }
+  // const profileName = 'Administration_Bulk Batch Timing';
+  // const profile = testDataManager.getProfileByName(profileName);
+  // if (profile && profile.data) {
+  //   const TimeInterval = profile.data[0]['Time Interval'] || '';
+  //   vars["Time_Interval"] = TimeInterval;
+  //   const NoOfBatches = profile.data[0]['NO of Batches'] || '';
+  //   vars["NO of Batches"] = NoOfBatches;
+  //   log.info(`[${profileName}] Loaded Time Interval: "${vars["Time_Interval"]}", NO of Batches: "${vars["NO of Batches"]}"`);
+  // }
+  //log.info(`[${profileName}] Loaded Time Interval: "${vars["Time_Interval"]}", NO of Batches: "${vars["NO of Batches"]}"`);
   //const profile = testDataManager.getProfileByName("Administration_Bulk Batch Timing");
   //const testData = profile?.data?.[0] || {};
   await CorrPortalElem.Time_Interval.fill(vars["Time_Interval"]);

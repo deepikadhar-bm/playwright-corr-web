@@ -8,6 +8,11 @@ import { BidRequestPage } from '../../../src/pages/correspondant/bid-request';
 import { CorrespondentPortalPage } from '../../../src/pages/correspondant/correspondent-portal';
 import { SpinnerPage } from '../../../src/pages/correspondant/spinner';
 import * as fileHelper from '../../../src/helpers/file-helpers';
+import { ENV } from '@config/environments';
+import { Logger as log } from '../../../src/helpers/log-helper';
+
+const TC_ID = 'REG_TS17_TC01';
+const TC_TITLE = 'Download the PQ file and verify the filename and required file data';
 
 test.describe('REG_TC_Bid_Requests', () => {
   let vars: Record<string, string> = {};
@@ -26,59 +31,154 @@ test.describe('REG_TC_Bid_Requests', () => {
     spinnerPage = new SpinnerPage(page);
   });
 
-  test('REG_TS17_TC01_Download the PQ file and verify the filename and required file data', async ({ page }) => {
-    // Set up download handler
-    page.on('download', async (download) => {
-      const filePath = path.join('test-results', 'downloads', download.suggestedFilename());
-      await download.saveAs(filePath);
-      vars['_lastDownloadPath'] = filePath;
-    });
+  test(`${TC_ID}_${TC_TITLE}`, async ({ page }) => {
 
-    await stepGroups.stepGroup_Login_to_CORR_Portal(page, vars);
-    await correspondentPortalPage.Bid_Requests.click();
-    await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-    await expect(correspondentPortalPage.Heading_Bid_Requests).toBeVisible();
-    vars["Count"] = "1";
-    vars["RowsCountBidList"] = String(await bidRequestPage.LoansErrorsCount.count());
-    while (parseFloat(String(vars["Count"])) <= parseFloat(String(vars["RowsCountBidList"]))) {
-      vars["StatusOfBidRequestID"] = await bidrequestPage.StatusOfBidRequestID.textContent() || '';
-      if (String(vars["StatusOfBidRequestID"]).includes(String("Committed"))) {
-        vars["Count"] = (parseFloat(String(vars["Count"])) + parseFloat(String("1"))).toFixed(0);
-      } else {
-        vars["Loans&Errors"] = await bidRequestPage.LoansErrors.textContent() || '';
-        vars["loans"] = String(vars["Loans&Errors"]).split("/")["1"] || '';
-        vars["Errors"] = String(vars["Loans&Errors"]).split("/")["2"] || '';
-        if (String(vars["loans"]) > String(vars["Errors"])) {
-          await bidrequestPage.BidRequestID.click();
-          break;
-        } else {
-          vars["Count"] = (parseFloat(String(vars["Count"])) + parseFloat(String("1"))).toFixed(0);
+    // ─── TC Start ────────────────────────────────────────────────────────
+    log.tcStart(TC_ID, TC_TITLE);
+
+    try {
+
+      // ── Step 1: Load Credentials and Set Up Download Handler ──────────────
+      log.step('Loading credentials and setting up download handler');
+      try {
+        const credentials = ENV.getCredentials('internal');
+        vars["Username"] = credentials.username;
+        vars["Password"] = credentials.password;
+        log.info(vars["Username"] && vars["Password"] ? 'Credentials loaded successfully' : 'Failed to load credentials');
+        page.on('download', async (download) => {
+          const filePath = path.join('test-results', 'downloads', download.suggestedFilename());
+          await download.saveAs(filePath);
+          vars['_lastDownloadPath'] = filePath;
+        });
+        log.stepPass('Credentials loaded and download handler set up successfully');
+      } catch (e) {
+        await log.stepFail(page, 'Loading credentials or setting up download handler failed');
+        throw e;
+      }
+
+      // ── Step 2: Login to Correspondent Portal ─────────────────────────────
+      log.step('Login to Correspondent Portal');
+      try {
+        await stepGroups.stepGroup_Login_to_CORR_Portal(page, vars);
+        log.stepPass('Login to Correspondent Portal successful');
+      } catch (e) {
+        await log.stepFail(page, 'Login to Correspondent Portal failed');
+        throw e;
+      }
+
+      // ── Step 3: Navigate to Bid Requests ──────────────────────────────────
+      log.step('Navigating to Bid Requests');
+      try {
+        await correspondentPortalPage.Bid_Requests.click();
+        await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+        await expect(correspondentPortalPage.Heading_Bid_Requests).toBeVisible();
+        log.stepPass('Navigated to Bid Requests successfully');
+      } catch (e) {
+        await log.stepFail(page, 'Navigating to Bid Requests failed');
+        throw e;
+      }
+
+      // ── Step 4: Find Bid Request with more Loans than Errors ──────────────
+      log.step('Finding a Bid Request with more loans than errors');
+      try {
+        vars["Count"] = "1";
+        vars["RowsCountBidList"] = String(await bidRequestPage.LoansErrorsCount.count());
+        while (parseFloat(String(vars["Count"])) <= parseFloat(String(vars["RowsCountBidList"]))) {
+          vars["StatusOfBidRequestID"] = await bidrequestPage.StatusOfBidRequestID(vars["Count"]).textContent() || '';
+          if (String(vars["StatusOfBidRequestID"]).includes(String("Committed"))) {
+            vars["Count"] = (parseFloat(String(vars["Count"])) + parseFloat(String("1"))).toFixed(0);
+          } else {
+            vars["Loans&Errors"] = await bidRequestPage.LoansErrors(vars["Count"]).textContent() || '';
+            log.info(`Row: ${vars["Count"]} - Loans & Errors: ${vars["Loans&Errors"]}`);
+            vars["loans"] = String(vars["Loans&Errors"]).split("/")["0"] || '';
+            vars["Errors"] = String(vars["Loans&Errors"]).split("/")["1"] || '';
+            log.info(`Row: ${vars["Count"]} - Loans: ${vars["loans"]}, Errors: ${vars["Errors"]}`);
+            if (String(vars["loans"]) > String(vars["Errors"])) {
+              await bidrequestPage.BidRequestID(vars["Count"]).click();
+              break;
+            } else {
+              vars["Count"] = (parseFloat(String(vars["Count"])) + parseFloat(String("1"))).toFixed(0);
+            }
+          }
         }
+        log.info(`Selected Bid Request ID has ${vars["loans"]} loans and ${vars["Errors"]} errors.`);
+        log.stepPass(`Bid Request found and selected at row: ${vars["Count"]}`);
+      } catch (e) {
+        await log.stepFail(page, `Finding Bid Request with more loans than errors failed at row: ${vars["Count"]}`);
+        throw e;
       }
-    }
-    await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-    await expect(correspondentPortalPage.Heading_Bid_Request_Details).toBeVisible();
-    vars["Rows"] = "1";
-    vars["LoanStatusCountDetails"] = String(await bidRequestPage.LoanstatusCount.count());
-    while (parseFloat(String(vars["Rows"])) <= parseFloat(String(vars["LoanStatusCountDetails"]))) {
-      vars["LoanStatusText"] = await bidRequest2Page.LoanStatusText.textContent() || '';
-      if (String(vars["LoanStatusText"]) === String("Success")) {
-        vars["LoanName"] = await bidRequestPage.Corr_LoanName.textContent() || '';
-        await bidRequestPage.PQ_in_Corr_Loan.click();
-        break;
-      } else {
-        vars["Rows"] = (parseFloat(String(vars["Rows"])) + parseFloat(String("1"))).toFixed(0);
+
+      // ── Step 5: Find a Successful Loan and Download PQ File ───────────────
+      log.step('Finding a successful loan and downloading PQ file');
+      try {
+        await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+        await expect(correspondentPortalPage.Heading_Bid_Request_Details).toBeVisible();
+        vars["Rows"] = "1";
+        vars["LoanStatusCountDetails"] = String(await bidRequestPage.LoanstatusCount.count());
+        log.info(`Total loan status entries: ${vars["LoanStatusCountDetails"]}`);
+        while (parseFloat(String(vars["Rows"])) <= parseFloat(String(vars["LoanStatusCountDetails"]))) {
+          vars["LoanStatusText"] = (await bidRequest2Page.LoanStatusText(vars["Rows"]).textContent() || '').trim();
+          log.info(`Row: ${vars["Rows"]} - Loan Status: ${vars["LoanStatusText"]}`);
+          if (String(vars["LoanStatusText"]) === String("Success")) {
+            log.info(`Successful loan found at row: ${vars["Rows"]} inside if`);
+            vars["LoanName"] = await bidRequestPage.Corr_LoanName.textContent() || '';
+            await bidRequestPage.PQ_in_Corr_Loan.first().click();
+            break;
+          } else {
+            vars["Rows"] = (parseFloat(String(vars["Rows"])) + parseFloat(String("1"))).toFixed(0);
+          }
+        }
+        log.info(`Successful loan found at row: ${vars["Rows"]} - Loan Name: ${vars["LoanName"]}`);
+        await page.waitForTimeout(2000);
+        log.stepPass(`PQ file download initiated for loan: ${vars["LoanName"]}`);
+      } catch (e) {
+        await log.stepFail(page, `Finding successful loan or downloading PQ file failed at row: ${vars["Rows"]}`);
+        throw e;
       }
+
+      // ── Step 6: Verify Downloaded File Name ───────────────────────────────
+      log.step('Verifying downloaded PQ file name');
+      try {
+        // Step 15: Store the recent downloaded file name to variable JsonFile
+        vars["JsonFile"] = vars['_lastDownloadPath'] ? require('path').basename(vars['_lastDownloadPath']) : '';
+
+        // Step 16: Concatenate 'ppe-eligibility-request-' and LoanName and store into FileName
+        vars["FileName"] = String('ppe-eligibility-request-') + String(vars["LoanName"]);
+
+        // Step 17: Verify if JsonFile CONTAINS FileName
+        expect(String(vars["JsonFile"])).toContain(vars["FileName"]);
+        log.stepPass(`Downloaded file name verified - File: ${vars["JsonFile"]} contains: ${vars["FileName"]}`);
+      } catch (e) {
+        await log.stepFail(page, `Verifying downloaded file name failed - File: ${vars["JsonFile"]}, Expected to contain: ${vars["FileName"]}`);
+        throw e;
+      }
+
+      // ── Step 7: Verify Downloaded File Data ───────────────────────────────
+      log.step('Verifying downloaded PQ file data');
+      try {
+        // Step 18: Get the file path of most recently downloaded file and store in JsonFilePath
+        vars["JsonFilePath"] = vars['_lastDownloadPath'] || '';
+
+        // Step 19: Fetch data from json file and store in DataFromJsonFile
+        vars["DataFromJsonFile"] = fileHelper.readJsonValue(vars["JsonFilePath"], "");
+        log.info(`DataFromJsonFile: ${vars["DataFromJsonFile"]}`);
+        // Step 20: Verify if DataFromJsonFile CONTAINS LoanName
+        expect(String(vars["DataFromJsonFile"])).toContain(vars["LoanName"]);
+        log.stepPass(`Downloaded file data verified - Data contains loan name: ${vars["LoanName"]}`);
+      } catch (e) {
+        await log.stepFail(page, `Verifying downloaded file data failed - JsonFilePath: ${vars["JsonFilePath"]}, LoanName: ${vars["LoanName"]}`);
+        throw e;
+      }
+
+      // ─── TC End: PASS ─────────────────────────────────────────────────────
+      log.tcEnd('PASS');
+
+    } catch (e) {
+      // ─── TC End: FAIL ─────────────────────────────────────────────────────
+      await log.captureOnFailure(page, TC_ID, e);
+      log.tcEnd('FAIL');
+      throw e;
     }
-    // [DISABLED] Wait until all files are download in all browsers
-    // await page.waitForTimeout(3000); // Wait for download to complete
-    // Wait for download - handled by Playwright download events
-    await page.waitForTimeout(2000);
-    vars[""] = vars['_lastDownloadPath'] ? require('path').basename(vars['_lastDownloadPath']) : '';
-    vars["LoanName"] = String('') + String('');
-    expect(String(vars["JsonFile"])).toBe(vars["FileName"]);
-    vars["JsonFilePath"] = vars['_lastDownloadPath'] || '';
-    vars[""] = fileHelper.readJsonValue('', "");
-    expect(String(vars["DataFromJsonFile"])).toBe(vars["LoanName"]);
+
   });
 });

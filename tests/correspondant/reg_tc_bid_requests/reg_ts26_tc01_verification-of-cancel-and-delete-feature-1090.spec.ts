@@ -63,6 +63,15 @@ test.describe('REG_TC_Bid_Requests', () => {
           const bidMappingID = profile.data[0]['BidMappingID'];
           vars["BidMappingID"] = bidMappingID;
         }
+        const profileName2 = 'Administration_Bulk Batch Timing';
+        const profile2 = testDataManager.getProfileByName(profileName2);
+        if (profile2 && profile2.data) {
+          const TimeInterval = profile2.data[0]['Time Interval'] || '';
+          vars["Time_Interval"] = TimeInterval;
+          const NoOfBatches = profile2.data[0]['NO of Batches'] || '';
+          vars["NO of Batches"] = NoOfBatches;
+          //log.info(`[${profileName2}] Loaded Time Interval: "${vars["Time_Interval"]}", NO of Batches: "${vars["NO of Batches"]}"`);
+        }
         log.stepPass('Credentials and test data loaded successfully');
       } catch (e) {
         await log.stepFail(page, 'Loading credentials and test data failed');

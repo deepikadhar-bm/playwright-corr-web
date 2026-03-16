@@ -20,22 +20,29 @@ export async function runPrereq_1389(page: Page, vars: Record<string, string>): 
   const TC_ID = 'PREREQ-1389';
   const TC_TITLE = 'Create a new Bid Request and submit for pricing to get the Price Offered status.';
   log.tcStart(TC_ID, TC_TITLE);
-  const crederntials = ENV.getCredentials('internal'); // 2
+  const credentials = ENV.getCredentials('internal'); // 2
 
   try {
-    vars["Username"] = crederntials.username;// 3
-    vars["Password"] = crederntials.password;// 4
-    // console.log("Test Data: ", testData);
-    console.log("Credentials: ", crederntials.username, crederntials.password);
-    console.log("Credentials:==> ", vars["Username"], vars["Password"]);
-    const profileName = 'Bid Requests';       // TDP sheet name
-    const profile = testDataManager.getProfileByName(profileName);
-    if (profile && profile.data) {
-      const value = profile.data[0]['Company Name'];  // row 0, column name
+    vars["Username"] = credentials.username;// 3
+    vars["Password"] = credentials.password;// 4
+    // log.info("Test Data: ", testData);
+    const profileName1 = 'Bid Requests';       // TDP sheet name
+    const profile1 = testDataManager.getProfileByName(profileName1);
+    if (profile1 && profile1.data) {
+      const value = profile1.data[0]['Company Name'];  // row 0, column name
       vars["CompanyName"] = value;
-      const bidMappingID = profile.data[0]['BidMappingID'];
+      const bidMappingID = profile1.data[0]['BidMappingID'];
       vars["BidMappingID"] = bidMappingID;                  // store in vars
     }
+    const profileName2 = 'Administration_Bulk Batch Timing';       // TDP sheet name
+    const profile2 = testDataManager.getProfileByName(profileName2);
+    if (profile2 && profile2.data) {
+      const NOofBatches = profile2.data[0]['NO of Batches'];  // row 0, column name
+      vars["NOOfBatches"] = NOofBatches;
+      const TimeInterval = profile2.data[0]['Time Interval'];
+      vars["TimeInterval"] = TimeInterval;                  // store in vars
+    }
+
     await runPrereq_1381(page, vars);
 
     const bidRequestDetailsPage = new BidRequestDetailsPage(page);
@@ -114,7 +121,7 @@ export async function runPrereq_1389(page: Page, vars: Record<string, string>): 
       //   page.once('response', response => {
       //   // Filter only your app's domain
       //   if (response.url().includes('lpcorrtest.com')) {
-      //     console.log(`[${response.request().method()}] ${response.url()} - Status: ${response.status()}`);
+      //     log.info(`[${response.request().method()}] ${response.url()} - Status: ${response.status()}`);
       //   }
       // });
 
@@ -124,7 +131,7 @@ export async function runPrereq_1389(page: Page, vars: Record<string, string>): 
       await page.waitForTimeout(5000);
 
       const currentUrl = page.url();
-      console.log('Current URL:', currentUrl);
+      log.info(`Current URL: ${currentUrl}`);
       log.stepPass('Bid Request file uploaded successfully');
     } catch (e) {
       await log.stepFail(page, 'Bid Request file upload failed');
@@ -137,7 +144,7 @@ export async function runPrereq_1389(page: Page, vars: Record<string, string>): 
       await bidRequestDetailsPage.Request_Id_From_Details.waitFor({ state: 'visible', timeout: 20000 });
       vars["RequestIDDetails"] = await bidRequestDetailsPage.Request_Id_From_Details.textContent() || '';
       vars["RequestIDDetails"] = String(vars["RequestIDDetails"]).trim();
-      console.log("Extracted Request ID: " + vars["RequestIDDetails"]);
+      log.info("Extracted Request ID: " + vars["RequestIDDetails"]);
       await expect(bidRequestDetailsPage.Statusbid_request_details).toContainText("Ready for Pricing");
       log.stepPass('Request ID extracted: ' + vars["RequestIDDetails"] + ' — Status is Ready for Pricing');
     } catch (e) {
@@ -176,7 +183,7 @@ export async function runPrereq_1389(page: Page, vars: Record<string, string>): 
         minute: '2-digit',
         hour12: true
       });
-      console.log("Current EST Time after submission: " + vars["CurrentEstTime"]);
+      log.info("Current EST Time after submission: " + vars["CurrentEstTime"]);
       await spinnerPage.Spinner.waitFor({ state: 'hidden' });
       log.stepPass('Bid Request submitted for Pricing successfully');
     } catch (e) {
@@ -197,16 +204,16 @@ export async function runPrereq_1389(page: Page, vars: Record<string, string>): 
         await bidRequestsPage.Search_by_Bid_Request_ID_Field.fill(vars["RequestIDDetails"]);
         await spinnerPage.Spinner.waitFor({ state: 'hidden' });
         vars["index"] = (parseInt(String(vars["index"])) + 1).toString();
-        console.log("Current Attempt: " + vars["index"]);
+        log.info("Current Attempt: " + vars["index"]);
       }
-      console.log("Price Offered status is visible after " + vars["index"] + " attempts.");
+      log.info("Price Offered status is visible after " + vars["index"] + " attempts.");
       vars["CurrentEstTime"] = new Date().toLocaleString('en-US', {
         timeZone: 'America/New_York',
         hour: '2-digit',
         minute: '2-digit',
         hour12: true
       });
-      console.log("Current EST Time: " + vars["CurrentEstTime"]);
+      log.info("Current EST Time: " + vars["CurrentEstTime"]);
       log.stepPass('Price Offered status confirmed for Request ID: ' + vars["RequestIDDetails"]);
     } catch (e) {
       await log.stepFail(page, 'Price Offered status not achieved');
