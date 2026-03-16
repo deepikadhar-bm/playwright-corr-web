@@ -763,13 +763,18 @@ export class AddonHelpers {
   }
 
   //39.verifying the mathematic operation
-  MathematicalOperation(a: string | number, operator: string, b: string | number, varName: string): void {
+ MathematicalOperation(a: string | number, operator: string, b: string | number, varName: string): void {
     const METHOD = 'MathematicalOperation';
     try {
-      const numA = parseFloat(String(a));
-      const numB = parseFloat(String(b));
-      if (isNaN(numA)) throw new Error(`"${a}" is not a valid number`);
-      if (isNaN(numB)) throw new Error(`"${b}" is not a valid number`);
+      // Strip currency symbols, commas and whitespace before parsing
+      const clean = (val: string | number): number => {
+        const cleaned = String(val).replace(/[$,\s%]/g, '').trim();
+        const num = parseFloat(cleaned);
+        if (isNaN(num)) throw new Error(`"${val}" is not a valid number (cleaned: "${cleaned}")`);
+        return num;
+      };
+      const numA = clean(a);
+      const numB = clean(b);
       const ops: Record<string, () => number> = {
         '+': () => numA + numB,
         '-': () => numA - numB,
@@ -1038,18 +1043,39 @@ export class AddonHelpers {
         let passed = false;
  
         switch (state) {
-          case 'enabled':       passed = await el.isEnabled();   break;
-          case 'disabled':      passed = await el.isDisabled();  break;
-          case 'visible':       passed = await el.isVisible();   break;
-          case 'hidden':        passed = await el.isHidden();    break;
-          case 'present':       passed = (await el.count()) > 0; break;
-          case 'notPresent':    passed = (await el.count()) === 0; break;
-          case 'clickable':     passed = await el.isEnabled() && await el.isVisible(); break;
-          case 'notClickable':  passed = await el.isDisabled() || await el.isHidden(); break;
+          case 'enabled':
+            passed = await el.isEnabled();
+            if (!passed) throw new Error(`Element [${i}] is DISABLED but expected to be ENABLED`);
+            break;
+          case 'disabled':
+            passed = await el.isDisabled();
+            if (!passed) throw new Error(`Element [${i}] is ENABLED but expected to be DISABLED`);
+            break;
+          case 'visible':
+            passed = await el.isVisible();
+            if (!passed) throw new Error(`Element [${i}] is HIDDEN but expected to be VISIBLE`);
+            break;
+          case 'hidden':
+            passed = await el.isHidden();
+            if (!passed) throw new Error(`Element [${i}] is VISIBLE but expected to be HIDDEN`);
+            break;
+          case 'present':
+            passed = (await el.count()) > 0;
+            if (!passed) throw new Error(`Element [${i}] is NOT PRESENT in the DOM`);
+            break;
+          case 'notPresent':
+            passed = (await el.count()) === 0;
+            if (!passed) throw new Error(`Element [${i}] is PRESENT in the DOM but expected NOT PRESENT`);
+            break;
+          case 'clickable':
+            passed = await el.isEnabled() && await el.isVisible();
+            if (!passed) throw new Error(`Element [${i}] is NOT CLICKABLE — must be both enabled and visible`);
+            break;
+          case 'notClickable':
+            passed = await el.isDisabled() || await el.isHidden();
+            if (!passed) throw new Error(`Element [${i}] is CLICKABLE but expected NOT CLICKABLE`);
+            break;
         }
- 
-        if (!passed)
-          throw new Error(`Element [${i}] is NOT ${state}`);
       }
  
       log.pass(`[${METHOD}] All ${elements.length} element(s) are ${state}`);
