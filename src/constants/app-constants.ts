@@ -50,5 +50,11 @@ export const APP_CONSTANTS = {
  REF_SEC_PRICE:'referenceSecurityPrice":',
  REF_SEC_MONTH:'"referenceSecurityMonth":',
  INVALID_SEARCH_INPUT:"ABCD1234",
- NO_RESULT_TEXT:"No result"
+ NO_RESULT_TEXT:"No result",
+ COMMITMENT_IN_PROGRESS:"Commitment in progress",
+ COMMITMENT_ID_LENGTH:"8",
+ LOANS_FAILED_TO_ADD:"Loans failed to be added to commitment",
+ DUPLICATE_LOAN:"is a Duplicate loan. It is already committed",
+ LOANS_ADDED_SUCCESSFULLY:"Loans added successfully -",
+ DATE_TIME_FORMAT_COMMIT:"M/d/yy h:mm a"
 };
