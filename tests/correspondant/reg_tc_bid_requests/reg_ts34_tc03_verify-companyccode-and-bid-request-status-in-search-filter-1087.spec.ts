@@ -46,6 +46,7 @@ test.describe('REG_TC_Bid_Requests', () => {
         log.stepPass('Credentials loaded successfully');
       } catch (e) {
         await log.stepFail(page, 'Loading credentials failed');
+        
         throw e;
       }
 
