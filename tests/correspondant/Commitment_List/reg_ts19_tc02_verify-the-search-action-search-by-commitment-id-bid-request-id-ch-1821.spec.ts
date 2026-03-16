@@ -1,6 +1,4 @@
-// [POM-APPLIED]
 import { test, expect } from '@playwright/test';
-import path from 'path';
 import * as stepGroups from '../../../src/helpers/step-groups';
 import { CommitmentDetailsPage } from '../../../src/pages/correspondant/commitment-details';
 import { CommitmentListPage } from '../../../src/pages/correspondant/commitment-list';
@@ -8,111 +6,183 @@ import { CorrespondentPortalPage } from '../../../src/pages/correspondant/corres
 import { PriceOfferedPage } from '../../../src/pages/correspondant/price-offered';
 import { SpinnerPage } from '../../../src/pages/correspondant/spinner';
 import { AddonHelpers } from '@helpers/AddonHelpers';
+import { Logger as log } from '@helpers/log-helper';
+import { ENV } from '@config/environments';
+import { APP_CONSTANTS as appconstants } from '../../../src/constants/app-constants';
+
+
+const TC_ID    = 'REG_TS19_TC02';
+const TC_TITLE = 'Verify the search action, Search by Commitment ID, Bid Request ID, Chase Loan Number and the Correspondent Loan Number for 3 digit input';
 
 test.describe('Commitment List - TS_1', () => {
+
   let vars: Record<string, string> = {};
   let commitmentDetailsPage: CommitmentDetailsPage;
   let commitmentListPage: CommitmentListPage;
   let correspondentPortalPage: CorrespondentPortalPage;
   let priceOfferedPage: PriceOfferedPage;
   let spinnerPage: SpinnerPage;
-   let Methods: AddonHelpers;
+  let Methods: AddonHelpers;
+  const credentials = ENV.getCredentials('internal');
 
   test.beforeEach(async ({ page }) => {
     vars = {};
-    commitmentDetailsPage = new CommitmentDetailsPage(page);
-    commitmentListPage = new CommitmentListPage(page);
+    vars['Username'] = credentials.username;
+    vars['Password'] = credentials.password;
+    commitmentDetailsPage   = new CommitmentDetailsPage(page);
+    commitmentListPage      = new CommitmentListPage(page);
     correspondentPortalPage = new CorrespondentPortalPage(page);
-    priceOfferedPage = new PriceOfferedPage(page);
-    spinnerPage = new SpinnerPage(page);
-    Methods = new AddonHelpers(page, vars);
+    priceOfferedPage        = new PriceOfferedPage(page);
+    spinnerPage             = new SpinnerPage(page);
+    Methods                 = new AddonHelpers(page, vars);
   });
 
-  test('REG_TS19_TC02_Verify the search action, Search by commitment ID, Bid request ID, Chase loan number and the Correspondent loan number for 3digit input', async ({ page }) => {
-    await stepGroups.stepGroup_Login_to_CORR_Portal(page, vars);
-    await correspondentPortalPage.Commitments_Side_Menu.click();
-    await commitmentListPage.Committed_List_Dropdown.click();
-    await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-    await commitmentListPage.First_Commitment_IDCommitment_List.first().click();
-    await priceOfferedPage.Commit_IDCommitment_List.waitFor({ state: 'visible' });
-    vars["CommitmentID"] = await priceOfferedPage.Commit_IDCommitment_List.textContent() || '';
-    // vars["CommitmentID"] = String(vars["CommitmentID"]).substring(0, 3);
-    Methods.splitRangeOfCharacters(vars["CommitmentID"] , 0, 3, "CommitmentID" );
-    vars["BidRequestId"] = await priceOfferedPage.BidRequestIDTextDetails.textContent() || '';
-    // vars["BidRequestId"] = String(vars["BidRequestId"]).substring(0, 3);
-    Methods.splitRangeOfCharacters(vars["BidRequestId"] , 0, 3, "BidRequestId" );
-    vars["ChaseLoanNumber"] = await commitmentDetailsPage.Chase_Loan_NumberCommitments_Details.first().textContent() || '';
-    // vars["ChaseLoanNumber"] = String(vars["ChaseLoanNumber"]).substring(0, 3);
-    Methods.splitRangeOfCharacters(vars["ChaseLoanNumber"] , 0, 3, "ChaseLoanNumber" );
-    vars["CorrespondentLoanNumber"] = await commitmentListPage.Corr_Loan_NumCommitments_Details.first().textContent() || '';
-    // vars["CorrespondentLoanNumber"] = String(vars["CorrespondentLoanNumber"]).substring(0, 3);
-    // Methods.trimtestdata(vars["CorrespondentLoanNumber"],"CorrespondentLoanNumber")
-    Methods.splitRangeOfCharacters(vars["CorrespondentLoanNumber"] , 0, 3, "CorrespondentLoanNumber" );
-    await priceOfferedPage.Back_To_Commitment_List.click();
-    await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-    await priceOfferedPage.Search_Dropdown.click();
-    await priceOfferedPage.Search_Dropdown.type(vars["CommitmentID"]);
-    await priceOfferedPage.Commitment_Id_DropdownCommitment_List_Page.click();
-    await commitmentListPage.Commit_IDCommitment_List_Screen.first().waitFor({ state: 'visible' });
-    await page.waitForTimeout(6000);
-    await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-    // for (let i = 0; i < await commitmentListPage.Commit_IDCommitment_List_Screen.count(); i++) {
-    //   await expect(commitmentListPage.Commit_IDCommitment_List_Screen.nth(i)).toContainText(String(vars["CommitmentID"]));
-    // }
-    await Methods.verifyMultipleElementsHavePartialText(commitmentListPage.Commit_IDCommitment_List_Screen, vars["CommitmentID"]);
-    
-    await commitmentListPage.Search_Cancel_Button.click();
-    await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-    await priceOfferedPage.Search_Dropdown.click();
-    await priceOfferedPage.Search_Dropdown.type(vars["BidRequestId"]);
-    await priceOfferedPage.Bid_Request_ID_DropdownCommitment_List_Page.click();
-    await commitmentListPage.First_Bid_Req_IDCommitment_List.first().waitFor({ state: 'visible' });
-    // for (let i = 0; i < await commitmentListPage.First_Bid_Req_IDCommitment_List.count(); i++) {
-    //   await expect(commitmentListPage.First_Bid_Req_IDCommitment_List.nth(i)).toContainText(String(vars["BidRequestId"]));
-    // }
-    await page.waitForTimeout(6000);
-    await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-    await Methods.verifyMultipleElementsHavePartialText(commitmentListPage.First_Bid_Req_IDCommitment_List, vars["BidRequestId"]);
-    await commitmentListPage.Search_Cancel_Button.click();
-    await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-    await priceOfferedPage.Search_Dropdown.click();
-    await priceOfferedPage.Search_Dropdown.type(vars["ChaseLoanNumber"]);
-    await commitmentListPage.Chase_Loan_Number_DropdownCommitment_List_Page.click();
-    await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-    console.log("loop to verify chase loan number");
-    vars["ChaseLoanNumbersCount"] = String(await commitmentListPage.First_Bid_Req_IDCommitment_List.count());
-    vars["count"] = "1";
-    while (parseFloat(String(vars["count"])) <= parseFloat(String(vars["ChaseLoanNumbersCount"]))) {
-      vars["CommitID"] = await commitmentListPage.Individual_Commitment_IDList_Screen(vars["count"]).textContent() || '';
-      Methods.trimtestdata(vars["CommitID"], "CommitID" );
-      await commitmentListPage.Individual_Commitment_IDList_Screen(vars["count"]).click();
-      await commitmentListPage.Required_Chase_Loan_Num(vars["CommitID"], vars["ChaseLoanNumber"]).first().waitFor({ state: 'visible' });
-      await Methods.verifyElementContainsTextIgnoreCase(commitmentListPage.Required_Chase_Loan_Num(vars["CommitID"], vars["ChaseLoanNumber"]).first() ,vars["ChaseLoanNumber"]);
-      await priceOfferedPage.Back_To_Commitment_List.click();
-      await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-      vars["count"] = (parseFloat(String(vars["count"])) + parseFloat(String("1"))).toFixed(0);
-    }
-    await commitmentListPage.Search_Cancel_Button.click();
-    console.log("loop to verify corr loan number");
-    await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-    await priceOfferedPage.Search_Dropdown.click();
-    await priceOfferedPage.Search_Dropdown.type(vars["CorrespondentLoanNumber"]);
-    console.log("corr loan:",vars["CorrespondentLoanNumber"]);
-    await commitmentListPage.Correspondent_Loan_Num_DropdownCommitment_List_Page.click();
-    await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-    vars["CorrespondentLoanNumberCount"] = String(await commitmentListPage.First_Bid_Req_IDCommitment_List.count());
-    vars["count"] = "1";
-    while (parseFloat(String(vars["count"])) <= parseFloat(String(vars["CorrespondentLoanNumberCount"]))) {
-      vars["CommitID"] = await commitmentListPage.Individual_Commitment_IDList_Screen(vars["count"]).textContent() || '';
-      // vars["CommitID"] = String(vars["CommitID"]).trim();
-      Methods.trimtestdata(vars["CommitID"], "CommitID" );
-      await commitmentListPage.Individual_Commitment_IDList_Screen(vars["count"]).click();
-      await commitmentListPage.Req_CarrLoan_Num(vars["CommitID"], vars["CorrespondentLoanNumber"]).first().waitFor({ state: 'visible' });
-      // expect((await commitmentListPage.Req_CarrLoan_Num.textContent() || '').toLowerCase()).toContain(String('').toLowerCase());
-      await Methods.verifyElementContainsTextIgnoreCase(commitmentListPage.Req_CarrLoan_Num(vars["CommitID"], vars["CorrespondentLoanNumber"]).first() ,vars["CorrespondentLoanNumber"])
-      await priceOfferedPage.Back_To_Commitment_List.click();
-      await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-      vars["count"] = (parseFloat(String(vars["count"])) + parseFloat(String("1"))).toFixed(0);
+  test(`${TC_ID} - ${TC_TITLE}`, async ({ page }) => {
+    log.tcStart(TC_ID, TC_TITLE);
+
+    try {
+
+      log.step('Login to CORR portal');
+      try {
+        await stepGroups.stepGroup_Login_to_CORR_Portal(page, vars);
+        log.stepPass('Login successful');
+      } catch (e) {
+        await log.stepFail(page, 'Login failed');
+        throw e;
+      }
+
+      log.step('Navigate to Commitment List and open first commitment');
+      try {
+        await correspondentPortalPage.Commitments_Side_Menu.click();
+        await commitmentListPage.Committed_List_Dropdown.click();
+        await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+        await commitmentListPage.First_Commitment_IDCommitment_List.first().click();
+        await priceOfferedPage.Commit_IDCommitment_List.waitFor({ state: 'visible' });
+        log.stepPass('Navigated to Commitment List and opened first commitment');
+      } catch (e) {
+        await log.stepFail(page, 'Failed to navigate to Commitment List');
+        throw e;
+      }
+
+      log.step('Capture first 3 characters of Commitment ID, Bid Request ID, Chase Loan Number and Correspondent Loan Number');
+      try {
+        vars['CommitmentID'] = await priceOfferedPage.Commit_IDCommitment_List.textContent() || '';
+        Methods.splitRangeOfCharacters(vars['CommitmentID'], 0, 3, 'CommitmentID');
+
+        vars['BidRequestId'] = await priceOfferedPage.BidRequestIDTextDetails.textContent() || '';
+        Methods.splitRangeOfCharacters(vars['BidRequestId'], 0, 3, 'BidRequestId');
+
+        vars['ChaseLoanNumber'] = await commitmentDetailsPage.Chase_Loan_NumberCommitments_Details.first().textContent() || '';
+        Methods.splitRangeOfCharacters(vars['ChaseLoanNumber'], 0, 3, 'ChaseLoanNumber');
+
+        vars['CorrespondentLoanNumber'] = await commitmentListPage.Corr_Loan_NumCommitments_Details.first().textContent() || '';
+        Methods.splitRangeOfCharacters(vars['CorrespondentLoanNumber'], 0, 3, 'CorrespondentLoanNumber');
+
+        log.info('Commitment ID (3 chars): ' + vars['CommitmentID']);
+        log.info('Bid Request ID (3 chars): ' + vars['BidRequestId']);
+        log.info('Chase Loan Number (3 chars): ' + vars['ChaseLoanNumber']);
+        log.info('Correspondent Loan Number (3 chars): ' + vars['CorrespondentLoanNumber']);
+        log.stepPass('First 3 characters captured for all search fields');
+      } catch (e) {
+        await log.stepFail(page, 'Failed to capture search field values from commitment details');
+        throw e;
+      }
+
+      log.step('Search by Commitment ID and verify results');
+      try {
+        await priceOfferedPage.Back_To_Commitment_List.click();
+        await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+        await priceOfferedPage.Search_Dropdown.click();
+        await priceOfferedPage.Search_Dropdown.type(vars['CommitmentID']);
+        await priceOfferedPage.Commitment_Id_DropdownCommitment_List_Page.click();
+        await commitmentListPage.Commit_IDCommitment_List_Screen.first().waitFor({ state: 'visible' });
+        await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+        await Methods.verifyMultipleElementsHavePartialText(commitmentListPage.Commit_IDCommitment_List_Screen, vars['CommitmentID']);
+        log.stepPass('Commitment ID search verified for input: ' + vars['CommitmentID']);
+      } catch (e) {
+        await log.stepFail(page, 'Commitment ID search verification failed for input: ' + vars['CommitmentID']);
+        throw e;
+      }
+
+      log.step('Search by Bid Request ID and verify results');
+      try {
+        await commitmentListPage.Search_Cancel_Button.click();
+        await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+        await priceOfferedPage.Search_Dropdown.click();
+        await priceOfferedPage.Search_Dropdown.type(vars['BidRequestId']);
+        await priceOfferedPage.Bid_Request_ID_DropdownCommitment_List_Page.click();
+        await commitmentListPage.First_Bid_Req_IDCommitment_List.first().waitFor({ state: 'visible' });
+        await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+        await Methods.verifyMultipleElementsHavePartialText(commitmentListPage.First_Bid_Req_IDCommitment_List, vars['BidRequestId']);
+        log.stepPass('Bid Request ID search verified for input: ' + vars['BidRequestId']);
+      } catch (e) {
+        await log.stepFail(page, 'Bid Request ID search verification failed for input: ' + vars['BidRequestId']);
+        throw e;
+      }
+
+      log.step('Search by Chase Loan Number and verify results across all commitments');
+      try {
+        await commitmentListPage.Search_Cancel_Button.click();
+        await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+        await priceOfferedPage.Search_Dropdown.click();
+        await priceOfferedPage.Search_Dropdown.type(vars['ChaseLoanNumber']);
+        await commitmentListPage.Chase_Loan_Number_DropdownCommitment_List_Page.click();
+        await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+        vars['ChaseLoanNumbersCount'] = String(await commitmentListPage.First_Bid_Req_IDCommitment_List.count());
+        log.info('Chase Loan Number search results count: ' + vars['ChaseLoanNumbersCount']);
+        vars['count'] = appconstants.ONE;
+        while (parseFloat(vars['count']) <= parseFloat(vars['ChaseLoanNumbersCount'])) {
+          vars['CommitID'] = await commitmentListPage.Individual_Commitment_IDList_Screen(vars['count']).textContent() || '';
+          Methods.trimtestdata(vars['CommitID'], 'CommitID');
+          await commitmentListPage.Individual_Commitment_IDList_Screen(vars['count']).click();
+          await commitmentListPage.Required_Chase_Loan_Num(vars['CommitID'], vars['ChaseLoanNumber']).first().waitFor({ state: 'visible' });
+          await Methods.verifyElementContainsTextIgnoreCase(commitmentListPage.Required_Chase_Loan_Num(vars['CommitID'], vars['ChaseLoanNumber']).first(), vars['ChaseLoanNumber']);
+          log.info('Chase Loan Number verified for CommitID: ' + vars['CommitID']);
+          await priceOfferedPage.Back_To_Commitment_List.click();
+          await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+          Methods.MathematicalOperation(vars['count'], '+', '1', 'count');
+        }
+        log.stepPass('Chase Loan Number search verified across ' + vars['ChaseLoanNumbersCount'] + ' commitment(s) for input: ' + vars['ChaseLoanNumber']);
+      } catch (e) {
+        await log.stepFail(page, 'Chase Loan Number search verification failed for input: ' + vars['ChaseLoanNumber']);
+        throw e;
+      }
+
+      log.step('Search by Correspondent Loan Number and verify results across all commitments');
+      try {
+        await commitmentListPage.Search_Cancel_Button.click();
+        await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+        await priceOfferedPage.Search_Dropdown.click();
+        await priceOfferedPage.Search_Dropdown.type(vars['CorrespondentLoanNumber']);
+        log.info('Correspondent Loan Number search input: ' + vars['CorrespondentLoanNumber']);
+        await commitmentListPage.Correspondent_Loan_Num_DropdownCommitment_List_Page.click();
+        await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+        vars['CorrespondentLoanNumberCount'] = String(await commitmentListPage.First_Bid_Req_IDCommitment_List.count());
+        log.info('Correspondent Loan Number search results count: ' + vars['CorrespondentLoanNumberCount']);
+        vars['count'] = appconstants.ONE;
+        while (parseFloat(vars['count']) <= parseFloat(vars['CorrespondentLoanNumberCount'])) {
+          vars['CommitID'] = await commitmentListPage.Individual_Commitment_IDList_Screen(vars['count']).textContent() || '';
+          Methods.trimtestdata(vars['CommitID'], 'CommitID');
+          await commitmentListPage.Individual_Commitment_IDList_Screen(vars['count']).click();
+          await commitmentListPage.Req_CarrLoan_Num(vars['CommitID'], vars['CorrespondentLoanNumber']).first().waitFor({ state: 'visible' });
+          await Methods.verifyElementContainsTextIgnoreCase(commitmentListPage.Req_CarrLoan_Num(vars['CommitID'], vars['CorrespondentLoanNumber']).first(), vars['CorrespondentLoanNumber']);
+          log.info('Correspondent Loan Number verified for CommitID: ' + vars['CommitID']);
+          await priceOfferedPage.Back_To_Commitment_List.click();
+          await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+          Methods.MathematicalOperation(vars['count'], '+', '1', 'count');
+        }
+        log.stepPass('Correspondent Loan Number search verified across ' + vars['CorrespondentLoanNumberCount'] + ' commitment(s) for input: ' + vars['CorrespondentLoanNumber']);
+      } catch (e) {
+        await log.stepFail(page, 'Correspondent Loan Number search verification failed for input: ' + vars['CorrespondentLoanNumber']);
+        throw e;
+      }
+
+      log.tcEnd('PASS');
+
+    } catch (e) {
+      await log.captureOnFailure(page, TC_ID, e);
+      log.tcEnd('FAIL');
+      throw e;
     }
   });
 });

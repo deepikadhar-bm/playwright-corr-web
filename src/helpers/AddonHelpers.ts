@@ -23,19 +23,13 @@ import {
   isAfter,
   parseISO,
 } from 'date-fns';
+import { Logger as log } from '../helpers/log-helper';
 
-// ─── Console Logger ───────────────────────────────────────────────────────────
-
-function pass(method: string, detail: string): void {
-  console.log(`\x1b[32m[PASS]\x1b[0m ${method} » ${detail}`);
-}
-
-function fail(method: string, detail: string, error: unknown): never {
-  const msg = error instanceof Error ? error.message : String(error);
-  console.error(`\x1b[31m[FAIL]\x1b[0m ${method} » ${detail} | Error: ${msg}`);
-  throw error instanceof Error ? error : new Error(msg);
-}
-
+// ─────────────────────────────────────────────────────────────────────────────
+// Logger usage:
+//   log.pass(`[METHOD] detail`)  → green [PASS]  – verify* methods on success
+//   log.fail(`[METHOD] detail`)  → red   [FAIL]  – verify* methods on failure
+//   log.info(`[METHOD] detail`)  → white [INFO]  – all other helpers
 // ─────────────────────────────────────────────────────────────────────────────
 
 export class AddonHelpers {
@@ -100,9 +94,9 @@ export class AddonHelpers {
           throw new Error(`Element [${i}] → Expected: "${expectedText}" | Got: "${actual}"`);
       }
 
-      pass(METHOD, `All ${elements.length} element(s) have exact text: "${expectedText}"`);
+      log.pass(`[${METHOD}] All ${elements.length} element(s) have exact text: "${expectedText}"`);
     } catch (e) {
-      fail(METHOD, `Expected text "${expectedText}"`, e);
+      log.fail(`[${METHOD}] Expected text "${expectedText}" | Error: ${e instanceof Error ? e.message : String(e)}`); throw (e instanceof Error ? e : new Error(String(e)));
     }
   }
   // ==========================================================================
@@ -129,8 +123,8 @@ export class AddonHelpers {
       if (order === 'descending' && numbers[i] > numbers[i - 1])
         throw new Error(`Order broken at [${i}]: ${numbers[i - 1]} < ${numbers[i]}`);
     }
-    pass(METHOD, `${numbers.length} values in ${order} order: [${numbers.join(', ')}]`);
-  } catch (e) { fail(METHOD, `Numeric ${order} order`, e); }
+    log.pass(`[${METHOD}] ${numbers.length} values in ${order} order: [${numbers.join(', ')}]`);
+  } catch (e) { log.fail(`[${METHOD}] Numeric ${order} order | Error: ${e instanceof Error ? e.message : String(e)}`); throw (e instanceof Error ? e : new Error(String(e))); }
 }
   // ==========================================================================
   // 3. Verify string ascending/descending order
@@ -151,8 +145,8 @@ export class AddonHelpers {
         if (order === 'descending' && cmp < 0)
           throw new Error(`Order broken at [${i}]: "${texts[i - 1]}" < "${texts[i]}"`);
       }
-      pass(METHOD, `${texts.length} strings in ${order} order`);
-    } catch (e) { fail(METHOD, `String ${order} order`, e); }
+      log.pass(`[${METHOD}] ${texts.length} strings in ${order} order`);
+    } catch (e) { log.fail(`[${METHOD}] String ${order} order | Error: ${e instanceof Error ? e.message : String(e)}`); throw (e instanceof Error ? e : new Error(String(e))); }
   }
 
   // ==========================================================================
@@ -167,8 +161,8 @@ export class AddonHelpers {
       const parsed = parse(dateString, inputFormat, new Date());
       const stored = format(addDays(parsed, daysToAdd), outputFormat);
       this.vars[varName] = stored;
-      pass(METHOD, `"${dateString}" + ${daysToAdd} days = "${stored}" → vars['${varName}']`);
-    } catch (e) { fail(METHOD, `Add ${daysToAdd} days to "${dateString}"`, e); }
+      log.info(`[${METHOD}] "${dateString}" + ${daysToAdd} days = "${stored}" → vars['${varName}']`);
+    } catch (e) { log.error(`[${METHOD}] Add ${daysToAdd} days to "${dateString}" | Error: ${e instanceof Error ? e.message : String(e)}`); throw (e instanceof Error ? e : new Error(String(e))); }
   }
 
   // ==========================================================================
@@ -182,8 +176,8 @@ export class AddonHelpers {
       const actual = (await this.buildLocator(strategyOrLocator, value).textContent() ?? '').trim();
       if (!actual.toLowerCase().includes(testData.toLowerCase()))
         throw new Error(`"${actual}" does not contain "${testData}"`);
-      pass(METHOD, `"${actual}" contains "${testData}" (case-insensitive)`);
-    } catch (e) { fail(METHOD, `Does not contain "${testData}"`, e); }
+      log.pass(`[${METHOD}] "${actual}" contains "${testData}" (case-insensitive)`);
+    } catch (e) { log.fail(`[${METHOD}] Does not contain "${testData}" | Error: ${e instanceof Error ? e.message : String(e)}`); throw (e instanceof Error ? e : new Error(String(e))); }
   }
 
   // 6. Verify attribute contains (case-insensitive)
@@ -195,8 +189,8 @@ export class AddonHelpers {
       const attrValue = (await this.buildLocator(strategyOrLocator, value).getAttribute(attributeName) ?? '');
       if (!attrValue.toLowerCase().includes(testData.toLowerCase()))
         throw new Error(`"${attributeName}"="${attrValue}" does not contain "${testData}"`);
-      pass(METHOD, `"${attributeName}"="${attrValue}" contains "${testData}" (case-insensitive)`);
-    } catch (e) { fail(METHOD, `attr "${attributeName}" does not contain "${testData}"`, e); }
+      log.pass(`[${METHOD}] "${attributeName}"="${attrValue}" contains "${testData}" (case-insensitive)`);
+    } catch (e) { log.fail(`[${METHOD}] attr "${attributeName}" does not contain "${testData}" | Error: ${e instanceof Error ? e.message : String(e)}`); throw (e instanceof Error ? e : new Error(String(e))); }
   }
 
   // ==========================================================================
@@ -210,8 +204,8 @@ export class AddonHelpers {
       const inputValue = await this.buildLocator(strategyOrLocator, value).inputValue();
       if (!inputValue.toLowerCase().includes(testData.toLowerCase()))
         throw new Error(`"${inputValue}" does not contain "${testData}"`);
-      pass(METHOD, `Input value "${inputValue}" contains "${testData}" (case-insensitive)`);
-    } catch (e) { fail(METHOD, `Input value does not contain "${testData}"`, e); }
+      log.pass(`[${METHOD}] Input value "${inputValue}" contains "${testData}" (case-insensitive)`);
+    } catch (e) { log.fail(`[${METHOD}] Input value does not contain "${testData}" | Error: ${e instanceof Error ? e.message : String(e)}`); throw (e instanceof Error ? e : new Error(String(e))); }
   }
 
   // ==========================================================================
@@ -233,8 +227,8 @@ export class AddonHelpers {
         if (mode === 'not contains' && selectedText.includes(expectedText))
           throw new Error(`Dropdown [${i}] "${selectedText}" unexpectedly contains "${expectedText}"`);
       }
-      pass(METHOD, `All ${elements.length} dropdown(s) ${mode} "${expectedText}"`);
-    } catch (e) { fail(METHOD, `Dropdown check`, e); }
+      log.pass(`[${METHOD}] All ${elements.length} dropdown(s) ${mode} "${expectedText}"`);
+    } catch (e) { log.fail(`[${METHOD}] Dropdown check | Error: ${e instanceof Error ? e.message : String(e)}`); throw (e instanceof Error ? e : new Error(String(e))); }
   }
 
   // ==========================================================================
@@ -252,8 +246,8 @@ export class AddonHelpers {
       if (isNaN(parsedDate.getTime())) throw new Error(`Cannot parse date: "${dateString}"`);
       const dayName = format(parsedDate, 'EEEE');
       this.vars[varName!] = dayName;
-      pass(METHOD, `Day of "${dateString}" is "${dayName}" → vars['${varName}']`);
-    } catch (e) { fail(METHOD, `Get day from "${dateString}"`, e); }
+      log.info(`[${METHOD}] Day of "${dateString}" is "${dayName}" → vars['${varName}']`);
+    } catch (e) { log.error(`[${METHOD}] Get day from "${dateString}" | Error: ${e instanceof Error ? e.message : String(e)}`); throw (e instanceof Error ? e : new Error(String(e))); }
   }
 
   // ==========================================================================
@@ -275,8 +269,8 @@ export class AddonHelpers {
         case '>=': passed = isEqual(d1, d2) || isAfter(d1, d2); break;
       }
       if (!passed) throw new Error(`"${date1}" ${operator} "${date2}" is false`);
-      pass(METHOD, `"${date1}" ${operator} "${date2}" → PASSED`);
-    } catch (e) { fail(METHOD, `Date comparison "${date1}" ${operator} "${date2}"`, e); }
+      log.pass(`[${METHOD}] "${date1}" ${operator} "${date2}" → PASSED`);
+    } catch (e) { log.fail(`[${METHOD}] Date comparison "${date1}" ${operator} "${date2}" | Error: ${e instanceof Error ? e.message : String(e)}`); throw (e instanceof Error ? e : new Error(String(e))); }
   }
 
   // ==========================================================================
@@ -296,8 +290,8 @@ export class AddonHelpers {
       const areEqual = JSON.stringify(v1) === JSON.stringify(v2);
       if (operator === 'EQUAL' && !areEqual) throw new Error(`"${testData1}" EQUAL "${testData2}" failed`);
       if (operator === 'NOT_EQUAL' && areEqual) throw new Error(`"${testData1}" NOT_EQUAL "${testData2}" failed`);
-      pass(METHOD, `[${dataType}] "${testData1}" ${operator} "${testData2}" → PASSED`);
-    } catch (e) { fail(METHOD, `[${dataType}] "${testData1}" ${operator} "${testData2}"`, e); }
+      log.pass(`[${METHOD}] [${dataType}] "${testData1}" ${operator} "${testData2}" → PASSED`);
+    } catch (e) { log.fail(`[${METHOD}] [${dataType}] "${testData1}" ${operator} "${testData2}" | Error: ${e instanceof Error ? e.message : String(e)}`); throw (e instanceof Error ? e : new Error(String(e))); }
   }
 
   // ==========================================================================
@@ -316,8 +310,8 @@ export class AddonHelpers {
       const areEqual = JSON.stringify(v1) === JSON.stringify(v2);
       if (operator === 'EQUAL' && !areEqual) throw new Error(`"${testData1}" EQUAL "${testData2}" failed`);
       if (operator === 'NOT_EQUAL' && areEqual) throw new Error(`"${testData1}" NOT_EQUAL "${testData2}" failed`);
-      pass(METHOD, `[${dataType}] "${testData1}" ${operator} "${testData2}" → PASSED`);
-    } catch (e) { fail(METHOD, `[${dataType}] "${testData1}" ${operator} "${testData2}"`, e); }
+      log.pass(`[${METHOD}] [${dataType}] "${testData1}" ${operator} "${testData2}" → PASSED`);
+    } catch (e) { log.fail(`[${METHOD}] [${dataType}] "${testData1}" ${operator} "${testData2}" | Error: ${e instanceof Error ? e.message : String(e)}`); throw (e instanceof Error ? e : new Error(String(e))); }
   }
 
   // ==========================================================================
@@ -333,8 +327,8 @@ export class AddonHelpers {
       const result = source.substring(idx + referenceText.length, idx + referenceText.length + length);
       if (result.length < length) throw new Error(`Extracted "${result}" length ${result.length} < ${length}`);
       this.vars[varName] = result;
-      pass(METHOD, `Extracted "${result}" → vars['${varName}']`);
-    } catch (e) { fail(METHOD, `Extract after "${referenceText}" length ${length}`, e); }
+      log.info(`[${METHOD}] Extracted "${result}" → vars['${varName}']`);
+    } catch (e) { log.error(`[${METHOD}] Extract after "${referenceText}" length ${length} | Error: ${e instanceof Error ? e.message : String(e)}`); throw (e instanceof Error ? e : new Error(String(e))); }
   }
 
   // ==========================================================================
@@ -347,8 +341,8 @@ export class AddonHelpers {
       const reformatted = format(parsed, dateFormat);
       if (reformatted !== dateValue)
         throw new Error(`"${dateValue}" re-formatted to "${reformatted}" — mismatch`);
-      pass(METHOD, `"${dateValue}" matches format "${dateFormat}"`);
-    } catch (e) { fail(METHOD, `"${dateValue}" format "${dateFormat}"`, e); }
+      log.pass(`[${METHOD}] "${dateValue}" matches format "${dateFormat}"`);
+    } catch (e) { log.fail(`[${METHOD}] "${dateValue}" format "${dateFormat}" | Error: ${e instanceof Error ? e.message : String(e)}`); throw (e instanceof Error ? e : new Error(String(e))); }
   }
 
   // ==========================================================================
@@ -366,8 +360,8 @@ export class AddonHelpers {
         throw new Error(`"${selectedText}" does not contain "${expectedText}"`);
       if (mode === 'not contains' && selectedText.includes(expectedText))
         throw new Error(`"${selectedText}" unexpectedly contains "${expectedText}"`);
-      pass(METHOD, `"${locator}" selected "${selectedText}" ${mode} "${expectedText}"`);
-    } catch (e) { fail(METHOD, `Dropdown "${locator}"`, e); }
+      log.pass(`[${METHOD}] "${locator}" selected "${selectedText}" ${mode} "${expectedText}"`);
+    } catch (e) { log.fail(`[${METHOD}] Dropdown "${locator}" | Error: ${e instanceof Error ? e.message : String(e)}`); throw (e instanceof Error ? e : new Error(String(e))); }
   }
 
   // ==========================================================================
@@ -385,8 +379,8 @@ export class AddonHelpers {
         if (attrVal !== expectedText)
           throw new Error(`Element [${i}] "${attributeName}"="${attrVal}" ≠ "${expectedText}"`);
       }
-      pass(METHOD, `All ${elements.length} element(s) "${attributeName}" = "${expectedText}"`);
-    } catch (e) { fail(METHOD, `Attribute same-text "${attributeName}"`, e); }
+      log.pass(`[${METHOD}] All ${elements.length} element(s) "${attributeName}" = "${expectedText}"`);
+    } catch (e) { log.fail(`[${METHOD}] Attribute same-text "${attributeName}" | Error: ${e instanceof Error ? e.message : String(e)}`); throw (e instanceof Error ? e : new Error(String(e))); }
   }
 
   // ==========================================================================
@@ -412,8 +406,8 @@ export class AddonHelpers {
           throw new Error(`Element text "${elText.trim()}" does not contain "${text}"`);
         }
       }
-      pass(METHOD, `All ${elements.length} element(s) partially match: "${text}"`);
-    } catch (e) { fail(METHOD, `verifyMultipleElementsHavePartialText`, e); }
+      log.pass(`[${METHOD}] All ${elements.length} element(s) partially match: "${text}"`);
+    } catch (e) { log.fail(`[${METHOD}] verifyMultipleElementsHavePartialText | Error: ${e instanceof Error ? e.message : String(e)}`); throw (e instanceof Error ? e : new Error(String(e))); }
   }
   // ==========================================================================
   // 18. Verify multiple elements attribute partial text
@@ -430,8 +424,8 @@ export class AddonHelpers {
         if (!attrVal.includes(expectedText))
           throw new Error(`Element [${i}] "${attributeName}"="${attrVal}" does not contain "${expectedText}"`);
       }
-      pass(METHOD, `All ${elements.length} element(s) "${attributeName}" contains "${expectedText}"`);
-    } catch (e) { fail(METHOD, `Attr partial text "${attributeName}"`, e); }
+      log.pass(`[${METHOD}] All ${elements.length} element(s) "${attributeName}" contains "${expectedText}"`);
+    } catch (e) { log.fail(`[${METHOD}] Attr partial text "${attributeName}" | Error: ${e instanceof Error ? e.message : String(e)}`); throw (e instanceof Error ? e : new Error(String(e))); }
   }
 
   // ==========================================================================
@@ -449,8 +443,8 @@ export class AddonHelpers {
         if (state === 'checked' && !isChecked) throw new Error(`Element [${i}] is NOT checked`);
         if (state === 'unchecked' && isChecked) throw new Error(`Element [${i}] IS checked`);
       }
-      pass(METHOD, `All ${elements.length} element(s) are ${state}`);
-    } catch (e) { fail(METHOD, `Checked state [${state}]`, e); }
+      log.pass(`[${METHOD}] All ${elements.length} element(s) are ${state}`);
+    } catch (e) { log.fail(`[${METHOD}] Checked state [${state}] | Error: ${e instanceof Error ? e.message : String(e)}`); throw (e instanceof Error ? e : new Error(String(e))); }
   }
 
   // ==========================================================================
@@ -465,8 +459,8 @@ export class AddonHelpers {
         throw new Error(`Invalid positions start=${start} end=${end} for length ${sourceString.length}`);
       const result = sourceString.substring(0, start) + charToInsert + sourceString.substring(end);
       this.vars[varName] = result;
-      pass(METHOD, `"${sourceString}"[${start}:${end}] → "${result}" → vars['${varName}']`);
-    } catch (e) { fail(METHOD, `Replace [${start}:${end}] in "${sourceString}"`, e); }
+      log.info(`[${METHOD}] "${sourceString}"[${start}:${end}] → "${result}" → vars['${varName}']`);
+    } catch (e) { log.error(`[${METHOD}] Replace [${start}:${end}] in "${sourceString}" | Error: ${e instanceof Error ? e.message : String(e)}`); throw (e instanceof Error ? e : new Error(String(e))); }
   }
 
   // ==========================================================================
@@ -480,8 +474,8 @@ export class AddonHelpers {
       if (!string3.includes(string1)) throw new Error(`"${string1}" not found in "${string3}"`);
       const result = string3.split(string1).join(string2);
       this.vars[varName] = result;
-      pass(METHOD, `"${string1}" → "${string2}" = "${result}" → vars['${varName}']`);
-    } catch (e) { fail(METHOD, `Replace all "${string1}" in "${string3}"`, e); }
+      log.info(`[${METHOD}] "${string1}" → "${string2}" = "${result}" → vars['${varName}']`);
+    } catch (e) { log.error(`[${METHOD}] Replace all "${string1}" in "${string3}" | Error: ${e instanceof Error ? e.message : String(e)}`); throw (e instanceof Error ? e : new Error(String(e))); }
   }
 
   // ==========================================================================
@@ -496,8 +490,8 @@ export class AddonHelpers {
         throw new Error(`Position ${startPosition} out of range for "${sourceString}"`);
       const result = sourceString.substring(0, startPosition) + charToAdd + sourceString.substring(startPosition);
       this.vars[varName] = result;
-      pass(METHOD, `"${charToAdd}" at pos ${startPosition} → "${result}" → vars['${varName}']`);
-    } catch (e) { fail(METHOD, `Add "${charToAdd}" at pos ${startPosition}`, e); }
+      log.info(`[${METHOD}] "${charToAdd}" at pos ${startPosition} → "${result}" → vars['${varName}']`);
+    } catch (e) { log.error(`[${METHOD}] Add "${charToAdd}" at pos ${startPosition} | Error: ${e instanceof Error ? e.message : String(e)}`); throw (e instanceof Error ? e : new Error(String(e))); }
   }
 
   // ==========================================================================
@@ -513,8 +507,8 @@ export class AddonHelpers {
       const insertAt = sourceString.length - endPosition;
       const result = sourceString.substring(0, insertAt) + charToAdd + sourceString.substring(insertAt);
       this.vars[varName] = result;
-      pass(METHOD, `"${charToAdd}" at end-offset ${endPosition} → "${result}" → vars['${varName}']`);
-    } catch (e) { fail(METHOD, `Add "${charToAdd}" at end-pos ${endPosition}`, e); }
+      log.info(`[${METHOD}] "${charToAdd}" at end-offset ${endPosition} → "${result}" → vars['${varName}']`);
+    } catch (e) { log.error(`[${METHOD}] Add "${charToAdd}" at end-pos ${endPosition} | Error: ${e instanceof Error ? e.message : String(e)}`); throw (e instanceof Error ? e : new Error(String(e))); }
   }
 
   // ==========================================================================
@@ -528,8 +522,8 @@ export class AddonHelpers {
       if (!string3.includes(string1)) throw new Error(`"${string1}" not found in "${string3}"`);
       const result = string3.replace(string1, string2);
       this.vars[varName] = result;
-      pass(METHOD, `First "${string1}" → "${string2}" = "${result}" → vars['${varName}']`);
-    } catch (e) { fail(METHOD, `Replace first "${string1}" in "${string3}"`, e); }
+      log.info(`[${METHOD}] First "${string1}" → "${string2}" = "${result}" → vars['${varName}']`);
+    } catch (e) { log.error(`[${METHOD}] Replace first "${string1}" in "${string3}" | Error: ${e instanceof Error ? e.message : String(e)}`); throw (e instanceof Error ? e : new Error(String(e))); }
   }
 
   // ==========================================================================
@@ -545,8 +539,8 @@ export class AddonHelpers {
       const texts: string[] = [];
       for (const el of elements) texts.push((await el.textContent() ?? '').trim());
       this.vars[varName] = JSON.stringify(texts);
-      pass(METHOD, `Fetched ${texts.length} text(s) → vars['${varName}']`);
-    } catch (e) { fail(METHOD, `Fetch texts`, e); }
+      log.info(`[${METHOD}] Fetched ${texts.length} text(s) → vars['${varName}']`);
+    } catch (e) { log.error(`[${METHOD}] Fetch texts | Error: ${e instanceof Error ? e.message : String(e)}`); throw (e instanceof Error ? e : new Error(String(e))); }
   }
 
   // ==========================================================================
@@ -562,8 +556,8 @@ export class AddonHelpers {
       const values: string[] = [];
       for (const el of elements) values.push(await el.getAttribute(attributeName) ?? '');
       this.vars[varName] = JSON.stringify(values);
-      pass(METHOD, `Fetched ${values.length} "${attributeName}" → vars['${varName}']`);
-    } catch (e) { fail(METHOD, `Fetch "${attributeName}"`, e); }
+      log.info(`[${METHOD}] Fetched ${values.length} "${attributeName}" → vars['${varName}']`);
+    } catch (e) { log.error(`[${METHOD}] Fetch "${attributeName}" | Error: ${e instanceof Error ? e.message : String(e)}`); throw (e instanceof Error ? e : new Error(String(e))); }
   }
 
   // ==========================================================================
@@ -574,8 +568,8 @@ export class AddonHelpers {
     try {
       const result = testData1 + testData2;
       this.vars[varName] = result;
-      pass(METHOD, `"${testData1}" + "${testData2}" = "${result}" → vars['${varName}']`);
-    } catch (e) { fail(METHOD, `Concatenate "${testData1}" + "${testData2}"`, e); }
+      log.info(`[${METHOD}] "${testData1}" + "${testData2}" = "${result}" → vars['${varName}']`);
+    } catch (e) { log.error(`[${METHOD}] Concatenate "${testData1}" + "${testData2}" | Error: ${e instanceof Error ? e.message : String(e)}`); throw (e instanceof Error ? e : new Error(String(e))); }
   }
 
   // ==========================================================================
@@ -588,8 +582,8 @@ export class AddonHelpers {
     try {
       const converted = format(parse(dateString, inputFormat, new Date()), outputFormat);
       this.vars[varName] = converted;
-      pass(METHOD, `"${dateString}" (${inputFormat}) → "${converted}" (${outputFormat}) → vars['${varName}']`);
-    } catch (e) { fail(METHOD, `Convert "${dateString}" from "${inputFormat}" to "${outputFormat}"`, e); }
+      log.info(`[${METHOD}] "${dateString}" (${inputFormat}) → "${converted}" (${outputFormat}) → vars['${varName}']`);
+    } catch (e) { log.error(`[${METHOD}] Convert "${dateString}" from "${inputFormat}" to "${outputFormat}" | Error: ${e instanceof Error ? e.message : String(e)}`); throw (e instanceof Error ? e : new Error(String(e))); }
   }
 
   // ==========================================================================
@@ -605,8 +599,8 @@ export class AddonHelpers {
       await el.fill(testData);
       const actual = await el.inputValue();
       if (actual !== testData) throw new Error(`After fill got "${actual}", expected "${testData}"`);
-      pass(METHOD, `Filled with "${testData}"`);
-    } catch (e) { fail(METHOD, `Clear and enter "${testData}"`, e); }
+      log.info(`[${METHOD}] Filled with "${testData}"`);
+    } catch (e) { log.error(`[${METHOD}] Clear and enter "${testData}" | Error: ${e instanceof Error ? e.message : String(e)}`); throw (e instanceof Error ? e : new Error(String(e))); }
   }
 
   // ==========================================================================
@@ -621,8 +615,8 @@ export class AddonHelpers {
       const parsed = parse(inputDatetime, inputFormat, new Date());
       const stored = format(subMinutes(parsed, minutes), outputFormat);
       this.vars[varName] = stored;
-      pass(METHOD, `"${inputDatetime}" - ${minutes} min = "${stored}" → vars['${varName}']`);
-    } catch (e) { fail(METHOD, `Subtract ${minutes} min from "${inputDatetime}"`, e); }
+      log.info(`[${METHOD}] "${inputDatetime}" - ${minutes} min = "${stored}" → vars['${varName}']`);
+    } catch (e) { log.error(`[${METHOD}] Subtract ${minutes} min from "${inputDatetime}" | Error: ${e instanceof Error ? e.message : String(e)}`); throw (e instanceof Error ? e : new Error(String(e))); }
   }
 
   // ==========================================================================
@@ -633,8 +627,8 @@ export class AddonHelpers {
     try {
       const count = String(sourceString.length);
       this.vars[varName] = count;
-      pass(METHOD, `Length of "${sourceString}" is ${count} → vars['${varName}']`);
-    } catch (e) { fail(METHOD, `Count chars in "${sourceString}"`, e); }
+      log.info(`[${METHOD}] Length of "${sourceString}" is ${count} → vars['${varName}']`);
+    } catch (e) { log.error(`[${METHOD}] Count chars in "${sourceString}" | Error: ${e instanceof Error ? e.message : String(e)}`); throw (e instanceof Error ? e : new Error(String(e))); }
   }
   // 32. Split string by special character → store specific position in var
   // ==========================================================================
@@ -645,12 +639,12 @@ export class AddonHelpers {
       const parts = sourceString.split(delimiter).map(v => v.trim()).filter(v => v !== '');
       const value = parts[pos];
       if (value === undefined) {
-        fail(METHOD, `Position ${pos} does not exist in "${sourceString}" split by "${delimiter}"`, new Error(`Invalid position ${pos}`));
+        log.error(`[${METHOD}] Position ${pos} does not exist in "${sourceString}" split by "${delimiter}" | Error: Invalid position ${pos}`); throw new Error(`Invalid position ${pos}`);
         return;
       }
       this.vars[varName] = value;
-      console.log(METHOD, `Split "${sourceString}" by "${delimiter}" → position[${pos}] = "${value}" → vars['${varName}']`);
-    } catch (e) { console.error(METHOD, `Split "${sourceString}" by "${delimiter}"`, e); }
+      log.info(`[${METHOD}] Split "${sourceString}" by "${delimiter}" → position[${pos}] = "${value}" → vars['${varName}']`);
+    } catch (e) { log.error(`[${METHOD}] Split "${sourceString}" by "${delimiter}" | Error: ${e instanceof Error ? e.message : String(e)}`); throw (e instanceof Error ? e : new Error(String(e))); }
   }
   // ==========================================================================
   // 32. Concatenate with special char → store in vars
@@ -662,8 +656,8 @@ export class AddonHelpers {
     try {
       const result = string1 + specialChar + string2;
       this.vars[varName] = result;
-      pass(METHOD, `"${string1}" + "${specialChar}" + "${string2}" = "${result}" → vars['${varName}']`);
-    } catch (e) { fail(METHOD, `Concatenate with "${specialChar}"`, e); }
+      log.info(`[${METHOD}] "${string1}" + "${specialChar}" + "${string2}" = "${result}" → vars['${varName}']`);
+    } catch (e) { log.error(`[${METHOD}] Concatenate with "${specialChar}" | Error: ${e instanceof Error ? e.message : String(e)}`); throw (e instanceof Error ? e : new Error(String(e))); }
   }
 
   // ==========================================================================
@@ -674,8 +668,8 @@ export class AddonHelpers {
     try {
       const result = `${string1} ${string2}`;
       this.vars[varName] = result;
-      pass(METHOD, `"${string1}" + " " + "${string2}" = "${result}" → vars['${varName}']`);
-    } catch (e) { fail(METHOD, `Concatenate with space`, e); }
+      log.info(`[${METHOD}] "${string1}" + " " + "${string2}" = "${result}" → vars['${varName}']`);
+    } catch (e) { log.error(`[${METHOD}] Concatenate with space | Error: ${e instanceof Error ? e.message : String(e)}`); throw (e instanceof Error ? e : new Error(String(e))); }
   }
 
   // ==========================================================================
@@ -686,8 +680,8 @@ export class AddonHelpers {
     try {
       const result = testData.replace(/\s+/g, ''); // removes ALL whitespace including between words
       this.vars[varName] = result;
-      console.log(METHOD, `Trimmed "${testData}" → "${result}" → vars['${varName}']`);
-    } catch (e) { console.error(METHOD, `Trim "${testData}"`, e); }
+      log.info(`[${METHOD}] Trimmed "${testData}" → "${result}" → vars['${varName}']`);
+    } catch (e) { log.error(`[${METHOD}] Trim "${testData}" | Error: ${e instanceof Error ? e.message : String(e)}`); throw (e instanceof Error ? e : new Error(String(e))); }
   }
   // ==========================================================================
   // 35. Remove special char → store in vars
@@ -698,8 +692,8 @@ export class AddonHelpers {
       const escaped = specialChar.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
       const result = sourceString.replace(new RegExp(escaped, 'g'), '');
       this.vars[varName] = result;
-      pass(METHOD, `Removed "${specialChar}" from "${sourceString}" → "${result}" → vars['${varName}']`);
-    } catch (e) { fail(METHOD, `Remove "${specialChar}" from "${sourceString}"`, e); }
+      log.info(`[${METHOD}] Removed "${specialChar}" from "${sourceString}" → "${result}" → vars['${varName}']`);
+    } catch (e) { log.error(`[${METHOD}] Remove "${specialChar}" from "${sourceString}" | Error: ${e instanceof Error ? e.message : String(e)}`); throw (e instanceof Error ? e : new Error(String(e))); }
   }
   removeMultipleSpecialChars(specialChars: string[], sourceString: string, varName: string): void {
     const METHOD = 'removeMultipleSpecialChars';
@@ -710,9 +704,9 @@ export class AddonHelpers {
         result = result.replace(new RegExp(escaped, 'g'), '');
       }
       this.vars[varName] = result;
-      pass(METHOD, `Removed [${specialChars.map(c => `"${c}"`).join(', ')}] from "${sourceString}" → "${result}" → vars['${varName}']`);
+      log.info(`[${METHOD}] Removed [${specialChars.map(c => '"' + c + '"').join(', ')}] from "${sourceString}" → "${result}" → vars['${varName}']`);
     }
-    catch (e) { fail(METHOD, `Remove multiple chars from "${sourceString}"`, e); }
+    catch (e) { log.error(`[${METHOD}] Remove multiple chars from "${sourceString}" | Error: ${e instanceof Error ? e.message : String(e)}`); throw (e instanceof Error ? e : new Error(String(e))); }
   }
   // ==========================================================================
   // 36. Verify testdata 1 with testdata2
@@ -735,22 +729,24 @@ export class AddonHelpers {
       if (!check) throw new Error(`Invalid condition "${condition}"`);
       if (!check.result) throw new Error(check.fail);
 
-      pass(METHOD, check.pass);
-    } catch (e) { fail(METHOD, `verifyString | "${testData}" ${condition} "${testData1}"`, e); }
+      log.pass(`[${METHOD}] ${check.pass}`);
+    } catch (e) { log.fail(`[${METHOD}] verifyString | "${testData}" ${condition} "${testData1}" | Error: ${e instanceof Error ? e.message : String(e)}`); throw (e instanceof Error ? e : new Error(String(e))); }
   }
 
   // ==========================================================================
   // 37. Get character by index → store in vars
   // ==========================================================================
-  getCharByIndex(sourceString: string, index: number, varName: string): void {
+   getCharByIndex(sourceString: string, index: number | string, varName: string): void {
     const METHOD = 'getCharByIndex';
     try {
-      if (index < 0 || index >= sourceString.length)
-        throw new Error(`Index ${index} out of bounds (0 to ${sourceString.length - 1})`);
-      const char = sourceString[index];
+      const idx = typeof index === 'string' ? parseInt(index, 10) : index;
+      if (isNaN(idx)) throw new Error(`Index "${index}" is not a valid number`);
+      if (idx < 0 || idx >= sourceString.length)
+        throw new Error(`Index ${idx} out of bounds (0 to ${sourceString.length - 1})`);
+      const char = sourceString.substring(idx, idx + 1);
       this.vars[varName] = char;
-      pass(METHOD, `Char at [${index}] in "${sourceString}" is "${char}" → vars['${varName}']`);
-    } catch (e) { fail(METHOD, `Get char at index ${index} from "${sourceString}"`, e); }
+      log.info(`[${METHOD}] Char at index [${idx}] in "${sourceString}" is "${char}" → vars['${varName}']`);
+    } catch (e) { log.error(`[${METHOD}] Get char at index ${index} from "${sourceString}" | Error: ${e instanceof Error ? e.message : String(e)}`); throw (e instanceof Error ? e : new Error(String(e))); }
   }
 
   // ==========================================================================
@@ -762,8 +758,8 @@ export class AddonHelpers {
       const tzDate = new Date(new Date().toLocaleString('en-US', { timeZone }));
       const result = format(tzDate, timestampFormat);
       this.vars[varName] = result;
-      pass(METHOD, `Current "${timeZone}" timestamp "${result}" (${timestampFormat}) → vars['${varName}']`);
-    } catch (e) { fail(METHOD, `Get current timestamp [${timeZone}] with format "${timestampFormat}"`, e); }
+      log.info(`[${METHOD}] Current "${timeZone}" timestamp "${result}" (${timestampFormat}) → vars['${varName}']`);
+    } catch (e) { log.error(`[${METHOD}] Get current timestamp [${timeZone}] with format "${timestampFormat}" | Error: ${e instanceof Error ? e.message : String(e)}`); throw (e instanceof Error ? e : new Error(String(e))); }
   }
 
   //39.verifying the mathematic operation
@@ -783,11 +779,8 @@ export class AddonHelpers {
       if (!ops[operator]) throw new Error(`Invalid operator: "${operator}"`);
       const result = ops[operator]();
       this.vars[varName] = String(result);
-      console.log(`[${METHOD}] ${numA} ${operator} ${numB} = ${result} → vars['${varName}']`);
-    } catch (e) {
-      console.error(`[${METHOD}] ${a} ${operator} ${b} → vars['${varName}'] | Error: ${(e as Error).message}`);
-      throw e;
-    }
+      log.info(`[${METHOD}] ${numA} ${operator} ${numB} = ${result} → vars['${varName}']`);
+    } catch (e) { log.error(`[${METHOD}] ${a} ${operator} ${b} | Error: ${e instanceof Error ? e.message : String(e)}`); throw (e instanceof Error ? e : new Error(String(e))); }
   }
   //verifying the comparison
   verifyComparison(value1: string, operator: '>' | '<' | '>=' | '<=' | '==' | '!=', value2: string): void {
@@ -806,15 +799,15 @@ export class AddonHelpers {
         '!=': a != b,
       };
       if (!ops[operator]) throw new Error(`"${value1}" ${operator} "${value2}" → FAILED`);
-      pass(METHOD, `${a} ${operator} ${b} → PASSED`);
-    } catch (e) { fail(METHOD, `${value1} ${operator} ${value2}`, e); }
+      log.pass(`[${METHOD}] ${a} ${operator} ${b} → PASSED`);
+    } catch (e) { log.fail(`[${METHOD}] ${value1} ${operator} ${value2} | Error: ${e instanceof Error ? e.message : String(e)}`); throw (e instanceof Error ? e : new Error(String(e))); }
   }
   //Trim the string and store in vars
   trimtestdata(value: string, varName: string): void {
-  const trimmed = value.trim();
-  this.vars[varName] = trimmed;
-  console.log(`trimtestdata | Trimmed value stored in '${varName}': '${trimmed}'`);
-}
+    const trimmed = value.trim();
+    this.vars[varName] = trimmed;
+    log.info(`[trimtestdata] Trimmed value stored in '${varName}': '${trimmed}'`);
+  }
   // 33. Get month name by month number → store in vars
   // ==========================================================================
   getMonthNameByNumber(monthNumber: string, varName: string): void {
@@ -826,13 +819,13 @@ export class AddonHelpers {
       ];
       const index = parseInt(monthNumber, 10) - 1;
       if (index < 0 || index > 11) {
-        fail(METHOD, `Invalid month number "${monthNumber}". Must be between 1 and 12.`, new Error(`Invalid month number: ${monthNumber}`));
+        log.error(`[${METHOD}] Invalid month number "${monthNumber}". Must be between 1 and 12. | Error: Invalid month number: ${monthNumber}`); throw new Error(`Invalid month number: ${monthNumber}`);
         return;
       }
       const monthName = monthNames[index];
       this.vars[varName] = monthName;
-      pass(METHOD, `Month number "${monthNumber}" → "${monthName}" → vars['${varName}']`);
-    } catch (e) { fail(METHOD, `Get month name for month number "${monthNumber}"`, e); }
+      log.info(`[${METHOD}] Month number "${monthNumber}" → "${monthName}" → vars['${varName}']`);
+    } catch (e) { log.error(`[${METHOD}] Get month name for month number "${monthNumber}" | Error: ${e instanceof Error ? e.message : String(e)}`); throw (e instanceof Error ? e : new Error(String(e))); }
   }
   // 34. Remove characters from first and last position → store in vars
   // ==========================================================================
@@ -843,63 +836,57 @@ export class AddonHelpers {
       const last = parseInt(lastCount, 10) || 0;
       const result = sourceString.substring(first, last === 0 ? undefined : sourceString.length - last);
       this.vars[varName] = result;
-      console.log(`${METHOD} | Removed ${first} from start and ${last} from end of '${sourceString}' = '${result}' | stored in '${varName}'`);
-    } catch (e) {
-      console.error(`${METHOD} | Failed to remove characters from '${sourceString}': ${(e as Error).message}`);
-      throw e;
-    }
+      log.info(`[${METHOD}] Removed ${first} from start and ${last} from end of '${sourceString}' = '${result}' → vars['${varName}']`);
+    } catch (e) { log.error(`[${METHOD}] Remove characters from "${sourceString}" | Error: ${e instanceof Error ? e.message : String(e)}`); throw (e instanceof Error ? e : new Error(String(e))); }
   }
   //verifying the element contains text with ignore case
   async verifyElementContainsTextIgnoreCase(element: Locator, expectedText: string): Promise<void> {
+    const METHOD = 'verifyElementContainsTextIgnoreCase';
     const actualText = await element.textContent() || '';
     const actual = actualText.trim().toLowerCase();
     const expected = expectedText.trim().toLowerCase();
-
     if (actual.includes(expected)) {
+      log.pass(`[${METHOD}] Element contains "${expectedText}" (case-insensitive)`);
     } else {
-      throw new Error(`[FAIL] Expected element to contain "${expectedText}" (case-insensitive), but got "${actualText.trim()}"`);
+      log.fail(`[${METHOD}] Expected to contain "${expectedText}" (case-insensitive) | Error: Got: "${actualText.trim()}"`); throw new Error(`Got: "${actualText.trim()}"`);
     }
   }
   //verifying testdata with ignore case
- async verifyTestdataIgnoreCase(
-  textData1: string,
-  matchType: 'equals' | 'contains',
-  textData2: string
-): Promise<void> {
-  const METHOD = 'verifyTestdataIgnoreCase';
-  const actual = textData1.trim().toLowerCase();
-  const expected = textData2.trim().toLowerCase();
+  async verifyTestdataIgnoreCase(
+    textData1: string,
+    matchType: 'equals' | 'contains',
+    textData2: string
+  ): Promise<void> {
+    const METHOD = 'verifyTestdataIgnoreCase';
+    const actual = textData1.trim().toLowerCase();
+    const expected = textData2.trim().toLowerCase();
 
-  if (!expected) {
-    const error = new Error(`Expected value is empty or blank for comparison with "${textData1}"`);
-    fail(METHOD, `"${textData1}" ${matchType} "${textData2}" (case-insensitive)`, error);
+    if (!expected) {
+      log.fail(`[${METHOD}] Expected value is empty or blank for comparison with "${textData1}" | Error: Empty expected value`); throw new Error(`Empty expected value`);
+    }
+
+    const isMatch = matchType === 'equals'
+      ? actual === expected
+      : actual.includes(expected);
+
+    if (isMatch) {
+      log.pass(`[${METHOD}] "${textData1}" ${matchType} "${textData2}" (case-insensitive)`);
+    } else {
+      log.fail(`[${METHOD}] "${textData1}" ${matchType} "${textData2}" (case-insensitive) | Error: Expected "${textData1}" to ${matchType} "${textData2}" (case-insensitive)`); throw new Error(`Expected "${textData1}" to ${matchType} "${textData2}" (case-insensitive)`);
+    }
   }
-
-  const isMatch = matchType === 'equals'
-    ? actual === expected
-    : actual.includes(expected);
-
-  if (isMatch) {
-    pass(METHOD, `"${textData1}" ${matchType} "${textData2}" (case-insensitive)`);
-  } else {
-    const error = new Error(`Expected "${textData1}" to ${matchType} "${textData2}" (case-insensitive)`);
-    fail(METHOD, `"${textData1}" ${matchType} "${textData2}" (case-insensitive)`, error);
-  }
-}
   //count the substrings
   countCharacter(text: string, character: string, varName: string): void {
     const METHOD = 'countCharacter';
     try {
       if (!text) throw new Error(`Input text is null or undefined`);
       if (!character) throw new Error(`Character to count is null or undefined`);
-
       const count = text.split(character).length - 1;
       this.vars[varName] = String(count);
-
-      pass(METHOD, `Count of "${character}" in "${text}" = ${count} → vars['${varName}']`);
-    } catch (e) { fail(METHOD, `Count "${character}" in "${text}"`, e); }
+      log.info(`[${METHOD}] Count of "${character}" in "${text}" = ${count} → vars['${varName}']`);
+    } catch (e) { log.error(`[${METHOD}] Count "${character}" in "${text}" | Error: ${e instanceof Error ? e.message : String(e)}`); throw (e instanceof Error ? e : new Error(String(e))); }
   }
-  //spliting the string with foirst and last positions
+  //spliting the string with first and last positions
   splitRangeOfCharacters(source: string, start: number, end: number, varName: string): void {
     const METHOD = 'splitRangeOfCharacters';
     try {
@@ -907,10 +894,10 @@ export class AddonHelpers {
       if (start < 0 || end > source.length || start >= end) throw new Error(`Invalid range [${start}:${end}] for string of length ${source.length}`);
       const result = source.substring(start, end);
       this.vars[varName] = result;
-      pass(METHOD, `Split range [${start}:${end}] from "${source}" = "${result}" → vars['${varName}']`);
-    } catch (e) { fail(METHOD, `Split range [${start}:${end}] from "${source}"`, e); }
+      log.info(`[${METHOD}] Split range [${start}:${end}] from "${source}" = "${result}" → vars['${varName}']`);
+    } catch (e) { log.error(`[${METHOD}] Split range [${start}:${end}] from "${source}" | Error: ${e instanceof Error ? e.message : String(e)}`); throw (e instanceof Error ? e : new Error(String(e))); }
   }
-//subtract the days from give date
+  //subtract the days from given date
   subtractDaysFromDate(inputDate: string, daysToSubtract: number, inputFormat: string, outputFormat: string, varName: string): void {
     const METHOD = 'subtractDaysFromDate';
     try {
@@ -919,13 +906,10 @@ export class AddonHelpers {
       parsed.setDate(parsed.getDate() - daysToSubtract);
       const result = format(parsed, outputFormat);
       this.vars[varName] = result;
-      console.log(`[${METHOD}] ${inputDate} - ${daysToSubtract} day(s) = ${result} → vars['${varName}']`);
-    } catch (e) {
-      console.error(`[${METHOD}] Failed to subtract ${daysToSubtract} day(s) from "${inputDate}" | Error: ${(e as Error).message}`);
-      throw e;
-    }
+      log.info(`[${METHOD}] ${inputDate} - ${daysToSubtract} day(s) = ${result} → vars['${varName}']`);
+    } catch (e) { log.error(`[${METHOD}] Subtract ${daysToSubtract} day(s) from "${inputDate}" | Error: ${e instanceof Error ? e.message : String(e)}`); throw (e instanceof Error ? e : new Error(String(e))); }
   }
-  //verification of ascending or descending order of based on date formate
+  //verification of ascending or descending order based on date format
   async verifyDateOrder(
     locator: Locator,
     order: 'ascending' | 'descending',
@@ -935,7 +919,6 @@ export class AddonHelpers {
     try {
       const elements = await locator.all();
       if (elements.length === 0) throw new Error(`No elements found`);
-
       const dates: Date[] = [];
       for (const el of elements) {
         const text = (await el.textContent() ?? '').trim();
@@ -943,68 +926,57 @@ export class AddonHelpers {
         if (isNaN(parsed.getTime())) throw new Error(`Cannot parse "${text}" as date with format "${dateFormat}"`);
         dates.push(parsed);
       }
-
       for (let i = 1; i < dates.length; i++) {
         if (order === 'ascending' && dates[i] < dates[i - 1])
           throw new Error(`Order broken at [${i}]: "${format(dates[i - 1], dateFormat)}" > "${format(dates[i], dateFormat)}"`);
         if (order === 'descending' && dates[i] > dates[i - 1])
           throw new Error(`Order broken at [${i}]: "${format(dates[i - 1], dateFormat)}" < "${format(dates[i], dateFormat)}"`);
       }
-
-      pass(METHOD, `${dates.length} dates in ${order} order with format "${dateFormat}"`);
-    } catch (e) { fail(METHOD, `Date ${order} order`, e); }
+      log.pass(`[${METHOD}] ${dates.length} dates in ${order} order with format "${dateFormat}"`);
+    } catch (e) { log.fail(`[${METHOD}] Date ${order} order | Error: ${e instanceof Error ? e.message : String(e)}`); throw (e instanceof Error ? e : new Error(String(e))); }
   }
   splitStringByRegConditionWithPosition(sourceString: string, delimiter: string, position: string | number, varName: string): void {
-    const METHOD = 'splitStringByPosition';
+    const METHOD = 'splitStringByRegConditionWithPosition';
     try {
       if (!sourceString) throw new Error(`Source string is empty or undefined`);
       if (!delimiter) throw new Error(`Delimiter is empty or undefined`);
-
       const parts = sourceString.split(delimiter);
       const pos = typeof position === 'string' ? parseInt(position, 10) : position;
-
       if (isNaN(pos)) throw new Error(`Position "${position}" is not a valid number`);
-
       const index = pos - 1;
       if (index < 0 || index >= parts.length)
         throw new Error(`Position ${pos} out of range. "${sourceString}" split by "${delimiter}" has ${parts.length} part(s) [1 to ${parts.length}]`);
-
       const result = parts[index];
       this.vars[varName] = result;
-      console.log(`[${METHOD}] Split "${sourceString}" by "${delimiter}" → position[${pos}] = "${result}" → vars['${varName}']`);
-    } catch (e) {
-      console.error(`[${METHOD}] Split "${sourceString}" by "${delimiter}" at position ${position}: ${e instanceof Error ? e.message : e}`);
-    }
+      log.info(`[${METHOD}] Split "${sourceString}" by "${delimiter}" → position[${pos}] = "${result}" → vars['${varName}']`);
+    } catch (e) { log.error(`[${METHOD}] Split "${sourceString}" by "${delimiter}" at position ${position} | Error: ${e instanceof Error ? e.message : String(e)}`); throw (e instanceof Error ? e : new Error(String(e))); }
   }
   getMonthFromDate(dateText: string): string {
-  const METHOD = 'getMonthFromDate';
-  try {
-    const uploadedDate = new Date(dateText.trim());
-    if (isNaN(uploadedDate.getTime())) {
-      throw new Error(`Invalid date format: ${dateText}`);
+    const METHOD = 'getMonthFromDate';
+    try {
+      const uploadedDate = new Date(dateText.trim());
+      if (isNaN(uploadedDate.getTime())) throw new Error(`Invalid date format: ${dateText}`);
+      const month = String(uploadedDate.getMonth() + 1).padStart(2, '0');
+      log.info(`[${METHOD}] Extracted month "${month}" from date "${dateText}"`);
+      return month;
+    } catch (e) {
+      log.error(`[${METHOD}] Get month from date "${dateText}" | Error: ${e instanceof Error ? e.message : String(e)}`); throw (e instanceof Error ? e : new Error(String(e)));
     }
-    const month = String(uploadedDate.getMonth() + 1).padStart(2, '0');
-    pass(METHOD, `Extracted month "${month}" from date "${dateText}"`);
-    return month;
-  } catch (e) {
-    fail(METHOD, `Get month from date "${dateText}"`, e);
   }
-}
-
-verifyDateStringMonthMatchesExpectedMonth(
-  uploadedDateText: string,
-  expectedMonth: string
-): void {
-  const METHOD = 'verifyDateStringMonthMatchesExpectedMonth';
-  try {
-    const uploadedMonth = this.getMonthFromDate(uploadedDateText.trim());
-    if (uploadedMonth !== expectedMonth)
-      throw new Error(`Month extracted from date "${uploadedDateText}" is "${uploadedMonth}" but expected "${expectedMonth}"`);
-    pass(METHOD, `Month "${uploadedMonth}" extracted from "${uploadedDateText}" matches expected month "${expectedMonth}"`);
-  } catch (e) { fail(METHOD, `Verify month from date "${uploadedDateText}" matches expected month "${expectedMonth}"`, e); }
-}
-//perform arithmetic operation and store the results with decimal
-performArithmetic(
+  verifyDateStringMonthMatchesExpectedMonth(
+    uploadedDateText: string,
+    expectedMonth: string
+  ): void {
+    const METHOD = 'verifyDateStringMonthMatchesExpectedMonth';
+    try {
+      const uploadedMonth = this.getMonthFromDate(uploadedDateText.trim());
+      if (uploadedMonth !== expectedMonth)
+        throw new Error(`Month extracted from date "${uploadedDateText}" is "${uploadedMonth}" but expected "${expectedMonth}"`);
+      log.pass(`[${METHOD}] Month "${uploadedMonth}" extracted from "${uploadedDateText}" matches expected month "${expectedMonth}"`);
+    } catch (e) { log.fail(`[${METHOD}] Verify month from date "${uploadedDateText}" matches expected month "${expectedMonth}" | Error: ${e instanceof Error ? e.message : String(e)}`); throw (e instanceof Error ? e : new Error(String(e))); }
+  }
+  //perform arithmetic operation and store the results with decimal
+  performArithmetic(
     value1: string,
     operation: 'ADDITION' | 'SUBTRACTION' | 'MULTIPLICATION' | 'DIVISION',
     value2: string,
@@ -1015,49 +987,72 @@ performArithmetic(
     try {
       const clean = (val: string): string =>
         String(val)
-          .replace(/\(.*?\)/g, '')   // remove (13.01%) style suffix
-          .replace(/[^\d.\-]/g, '')  // keep only digits, dot and minus
+          .replace(/\(.*?\)/g, '')
+          .replace(/[^\d.\-]/g, '')
           .trim();
-
       const cleaned1 = clean(value1);
       const cleaned2 = clean(value2);
-
       const num1 = parseFloat(cleaned1);
       const num2 = parseFloat(cleaned2);
-
       if (isNaN(num1)) throw new Error(`value1 is not a valid number: '${value1}' → cleaned: '${cleaned1}'`);
       if (isNaN(num2)) throw new Error(`value2 is not a valid number: '${value2}' → cleaned: '${cleaned2}'`);
       if (operation === 'DIVISION' && num2 === 0) throw new Error(`Division by zero is not allowed`);
-
       let result: number;
       switch (operation) {
         case 'ADDITION':       result = num1 + num2; break;
         case 'SUBTRACTION':    result = num1 - num2; break;
         case 'MULTIPLICATION': result = num1 * num2; break;
         case 'DIVISION':       result = num1 / num2; break;
-        default: throw new Error(`Unsupported operation: '${operation}'. Use ADDITION, SUBTRACTION, MULTIPLICATION or DIVISION`);
+        default: throw new Error(`Unsupported operation: '${operation}'`);
       }
-
       this.vars[varName] = result.toFixed(decimalPlaces);
-      console.log(`${METHOD} | '${value1}' ${operation} '${value2}' = ${this.vars[varName]} | stored in '${varName}'`);
-    } catch (e) {
-      console.error(`${METHOD} | Failed: ${(e as Error).message}`);
-      throw e;
-    }
+      log.info(`[${METHOD}] '${value1}' ${operation} '${value2}' = ${this.vars[varName]} → vars['${varName}']`);
+    } catch (e) { log.error(`[${METHOD}] performArithmetic '${value1}' ${operation} '${value2}' | Error: ${e instanceof Error ? e.message : String(e)}`); throw (e instanceof Error ? e : new Error(String(e))); }
   }
-
   //Get last no.of character by index
-   getLastCharacters(value: string, Index: string, varName: string): void {
+  getLastCharacters(value: string, Index: string, varName: string): void {
     const METHOD = 'getLastCharacters';
     try {
       const n = parseInt(String(Index));
       if (isNaN(n) || n < 0) throw new Error(`count is not a valid number: '${Index}'`);
       const result = String(value).slice(-n);
       this.vars[varName] = result;
-      console.log(`${METHOD} | Last ${n} character(s) of '${value}' = '${result}' | stored in '${varName}'`);
-    } catch (e) {
-      console.error(`${METHOD} | Failed: ${(e as Error).message}`);
-      throw e;
-    }
+      log.info(`[${METHOD}] Last ${n} character(s) of '${value}' = '${result}' → vars['${varName}']`);
+    } catch (e) { log.error(`[${METHOD}] getLastCharacters '${value}' count '${Index}' | Error: ${e instanceof Error ? e.message : String(e)}`); throw (e instanceof Error ? e : new Error(String(e))); }
+  }
+   // 19b. Verify multiple elements have the same DOM state
+  //      state: 'enabled' | 'disabled' | 'visible' | 'hidden' |
+  //             'present' | 'notPresent' | 'clickable' | 'notClickable'
+  // ==========================================================================
+  async verifyMultipleElementsState(
+    locator: Locator,
+    state: 'enabled' | 'disabled' | 'visible' | 'hidden' | 'present' | 'notPresent' | 'clickable' | 'notClickable'
+  ): Promise<void> {
+    const METHOD = 'verifyMultipleElementsState';
+    try {
+      const elements = await locator.all();
+      if (elements.length === 0) throw new Error(`No elements found`);
+ 
+      for (let i = 0; i < elements.length; i++) {
+        const el = elements[i];
+        let passed = false;
+ 
+        switch (state) {
+          case 'enabled':       passed = await el.isEnabled();   break;
+          case 'disabled':      passed = await el.isDisabled();  break;
+          case 'visible':       passed = await el.isVisible();   break;
+          case 'hidden':        passed = await el.isHidden();    break;
+          case 'present':       passed = (await el.count()) > 0; break;
+          case 'notPresent':    passed = (await el.count()) === 0; break;
+          case 'clickable':     passed = await el.isEnabled() && await el.isVisible(); break;
+          case 'notClickable':  passed = await el.isDisabled() || await el.isHidden(); break;
+        }
+ 
+        if (!passed)
+          throw new Error(`Element [${i}] is NOT ${state}`);
+      }
+ 
+      log.pass(`[${METHOD}] All ${elements.length} element(s) are ${state}`);
+    } catch (e) { log.fail(`[${METHOD}] State [${state}] | Error: ${e instanceof Error ? e.message : String(e)}`); throw (e instanceof Error ? e : new Error(String(e))); }
   }
 }
