@@ -4733,37 +4733,30 @@ export async function stepGroup_Commit_All_Loans_Standard(page: import('@playwri
  */
 export async function stepGroup_Verifying_and_Removing_If_the_Last_Digits_are_Zeroes(
   page: import('@playwright/test').Page,
-  vars: Record<string, string>
+  vars: Record<string, string>,
 ) {
-  vars["RefSecDigitsCount"] = String(String(vars["RuntimeValue"]).length);
-  vars["RefSecDigitsCount"] =
-    (parseFloat(String(vars["RefSecDigitsCount"])) - 1).toFixed(0);
-
-  vars["RefSecLastCharacter"] =
-    String(vars["RuntimeValue"]).charAt(
-      parseInt(String(vars["RefSecDigitsCount"]))
-    );
-
-  if (String(vars["RefSecLastCharacter"]) === "0") {
-    while (String(vars["RefSecLastCharacter"]) !== ".") {
-      vars["RefSecLastCharacter"] =
-        String(vars["RuntimeValue"]).charAt(
-          parseInt(String(vars["RefSecDigitsCount"]))
-        );
-
-      if (String(vars["RefSecLastCharacter"]) === "0") {
-        vars["RuntimeValue"] =
-          String(vars["RuntimeValue"]).substring(
-            0,
-            String(vars["RuntimeValue"]).length - 1
-          );
+  const Methods = new AddonHelpers(page, vars);
+ 
+  // Get last index (length - 1) and read the character at that position
+  Methods.storeCharacterCount(vars['RuntimeValue'], 'RefSecDigitsCount');
+  Methods.MathematicalOperation(vars['RefSecDigitsCount'], '-', '1', 'RefSecDigitsCount');
+  Methods.getCharByIndex(vars['RuntimeValue'], vars['RefSecDigitsCount'], 'RefSecLastCharacter');
+ 
+  // If the last character is '0', keep trimming until we hit a non-zero or reach '.'
+  if (String(vars['RefSecLastCharacter']) === appconstants.ZERO) {
+    while (String(vars['RefSecLastCharacter']) !== '.') {
+      Methods.getCharByIndex(vars['RuntimeValue'], vars['RefSecDigitsCount'], 'RefSecLastCharacter');
+ 
+      if (String(vars['RefSecLastCharacter']) === appconstants.ZERO) {
+        // Remove the trailing zero from the end
+        Methods.removeCharactersFromPosition(vars['RuntimeValue'], '0', '1', 'RuntimeValue');
+        // Move index back by one for next iteration
+        Methods.MathematicalOperation(vars['RefSecDigitsCount'], '-', '1', 'RefSecDigitsCount');
       } else {
-        expect(String(vars["RefSecLastCharacter"])).not.toBe("0");
+        // Reached a non-zero character — stop trimming
+        Methods.verifyString(vars['RefSecLastCharacter'], 'notContains', appconstants.ZERO);
         break;
       }
-
-      vars["RefSecDigitsCount"] =
-        (parseFloat(String(vars["RefSecDigitsCount"])) - 1).toFixed(0);
     }
   }
 }
@@ -5097,9 +5090,10 @@ export async function stepGroup_Verifying_Header_Names_From_UI_to_ExcelCommitmen
   Methods.removeSpecialChar(".", vars["HeaderNamesLockedLoansExcel"], "HeaderNamesLockedLoansExcel");
 
   vars["CountofHeaderNamesUI"] = String(await commitmentListPage.Headers_Names_UICommitment_List.count());
-  vars["count"] = "1";
+  vars["count"] = appconstants.ONE;
 
   while (parseFloat(vars["count"]) <= parseFloat(vars["CountofHeaderNamesUI"])) {
+    log.info("Iteration:"+vars['count']);
     vars["IndividualHeaderNameLockedLoansUI"] = await commitmentListPage.Individual_Header_Names_UICommitment_List(vars["count"]).textContent() || '';
 
     if (vars["IndividualHeaderNameLockedLoansUI"].includes(".")) {
@@ -5112,10 +5106,11 @@ export async function stepGroup_Verifying_Header_Names_From_UI_to_ExcelCommitmen
 
     Methods.trimWhitespace(vars["IndividualHeaderNameLockedLoansExcel"], "IndividualHeaderNameLockedLoansExcel");
 
-    if (vars["IndividualHeaderNameLockedLoansUI"] === "LoanAmount") {
-      expect(vars["IndividualHeaderNameLockedLoansExcel"]).toBe("LoanAmt");
+    if (vars["IndividualHeaderNameLockedLoansUI"] ===  appconstants.HEADER_NAME_UI_LOANAMOUNT) {
+      expect(Methods.verifyString(vars['IndividualHeaderNameLockedLoansExcel'], 'equals', appconstants.LOANAMOUNT_HEADER_EXCEL));
     } else {
-      expect(vars["IndividualHeaderNameLockedLoansUI"]).toContain(vars["IndividualHeaderNameLockedLoansExcel"]);
+      expect(Methods.verifyString(vars['IndividualHeaderNameLockedLoansUI'], 'contains', vars['IndividualHeaderNameLockedLoansExcel']));
+    
 
     }
 
@@ -5131,19 +5126,21 @@ export async function stepGroup_Verifying_Locked_Loans_Data_UI_to_Excel_Commitme
   const CorrPortalElem = new CorrPortalPage(page);
   const Methods = new AddonHelpers(page, vars);
   vars["TotalRowsCountUILockedLoans"] = String(await CorrPortalElem.Locked_Loans_Rows_Count_Commitment_List.count());
-  vars["count"] = "1";
+  vars["count"] = appconstants.ONE;
   while (parseFloat(String(vars["count"])) <= parseFloat(String(vars["TotalRowsCountUILockedLoans"]))) {
+     log.info("Row No:"+vars["count"]);
     await CorrPortalElem.BidRequestIDText_Details.click();
     vars["EntireRowDataLockedLoansExcel"] = excelHelper.readEntireRow(vars["FilePathTotalLoans"], 1, vars["count"], "EntireRowDataLockedLoansExcel");
     vars["ColumnCountUILockedLoans"] = String(await CorrPortalElem.Column_Count_UI_Locked_Loans(vars["count"]).count());
-    vars["Count"] = "1";
+    vars["Count"] = appconstants.ONE;
     while (parseFloat(String(vars["Count"])) <= parseFloat(String(vars["ColumnCountUILockedLoans"]))) {
+       log.info("Iteration:"+vars['Count']);
       vars["IndividualCellDataLockedLoansUI"] = await CorrPortalElem.Individual_Cell_Data_UI_Locked_Loans(vars["count"], vars["Count"]).textContent() || '';
-      if (String(vars["IndividualCellDataLockedLoansUI"]).includes(String("$"))) {
+      if (String(vars["IndividualCellDataLockedLoansUI"]).includes(appconstants.DOLLAR_SYMBOL)) {
         Methods.removeMultipleSpecialChars(['$', ',', ' '], vars["IndividualCellDataLockedLoansUI"], "IndividualCellDataLockedLoansUI");
-      } else if (String(vars["IndividualCellDataLockedLoansUI"]).includes(String("| PQ | PS"))) {
+      } else if (String(vars["IndividualCellDataLockedLoansUI"]).includes(appconstants.PQ_PR)) {
         Methods.removeCharactersFromPosition(vars["IndividualCellDataLockedLoansUI"], "0", "10", "IndividualCellDataLockedLoansUI");
-      } else if (String(vars["IndividualCellDataLockedLoansUI"]).includes(String("%"))) {
+      } else if (String(vars["IndividualCellDataLockedLoansUI"]).includes(appconstants.PERCENTAGE_SYMBOL)) {
         Methods.removeSpecialChar("%", vars["IndividualCellDataLockedLoansUI"], "IndividualCellDataLockedLoansUI");
       }
       Methods.trimtestdata(vars["IndividualCellDataLockedLoansUI"], "IndividualCellDataLockedLoansUI");
@@ -5156,7 +5153,8 @@ export async function stepGroup_Verifying_Locked_Loans_Data_UI_to_Excel_Commitme
       // // TODO: No template - Unknown step
       // [DISABLED] Verify if IndividualCellDataAllLoansUI == IndividualRowDataExcelAllLoans
       // expect(String(vars["IndividualCellDataAllLoansUI"])).toBe(vars["IndividualRowDataExcelAllLoans"]);
-      expect(String(vars["IndividualCellDataLockedLoansUI"])).toContain(vars["IndividualRowDataLockedLoansExcel"]);
+      // expect(String(vars["IndividualCellDataLockedLoansUI"])).toContain(vars["IndividualRowDataLockedLoansExcel"]);
+      expect(Methods.verifyString(vars['IndividualCellDataLockedLoansUI'], 'contains', vars['IndividualRowDataLockedLoansExcel']));
 
       // vars["Count"] = (parseFloat(String("1")) + parseFloat(String(vars["Count"]))).toFixed(0);
       Methods.MathematicalOperation(vars["Count"], "+", "1", "Count");
