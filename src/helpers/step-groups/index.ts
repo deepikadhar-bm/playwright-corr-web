@@ -4701,8 +4701,8 @@ export async function stepGroup_Commit_All_Loans_Chase_Direct(page: import('@pla
   await CorrPortalElem.BidReqId_Chase_Direct.click();
   await CorrPortalElem.Select_all_for_Checkbox.check();
   await CorrPortalElem.Get_Price_Button.click();
-  await CorrPortalElem.Uncommit_Selected_Button.waitFor({ state: 'visible' });
-  await CorrPortalElem.Uncommit_Selected_Button.click();
+  await CorrPortalElem.Commit_Selected_Button.waitFor({ state: 'visible' });
+  await CorrPortalElem.Commit_Selected_Button.click();
   await CorrPortalElem.Yes_Commit_Button_Popup.click();
   await CorrPortalElem.Yes_Commit_Button_Popup.waitFor({ state: 'hidden' });
   await CorrPortalElem.Okay_Button_Popup.waitFor({ state: 'visible' });
@@ -4798,14 +4798,15 @@ export async function stepGroup_Uncommits_the_Committed_Loans_Two_Exe_Type(page:
   await CorrPortalElem.Committed_List_Dropdown.click();
   await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
   await CorrPortalElem.Search_In_Committed_Page.click();
-  await CorrPortalElem.Search_In_Committed_Page.fill("87Y58FDC37EC");
+  await CorrPortalElem.Search_In_Committed_Page.type(vars["BidReqIdPriceOffered"]);
   await CorrPortalElem.Bid_Request_ID_Dropdown_Commitment_List_Page.click();
   await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
   await CorrPortalElem.Commitment_ID_Standard.click();
   await CorrPortalElem.Total_Committed_Loans_Tab.waitFor({ state: 'visible' });
   while (await CorrPortalElem.Select_all_for_Checkbox.isVisible()) {
     await CorrPortalElem.Select_all_for_Checkbox.click();
-    await CorrPortalElem.Commit_Selected_Button.click();
+    await expect(CorrPortalElem.Uncommit_Selected_Button).toBeEnabled();
+    await CorrPortalElem.Uncommit_Selected_Button.click();
     await CorrPortalElem.Yes_Uncommit_Button.click();
     await CorrPortalElem.Okay_Button.waitFor({ state: 'visible' });
     await CorrPortalElem.Okay_Button.click();
@@ -4818,8 +4819,13 @@ export async function stepGroup_Uncommits_the_Committed_Loans_Two_Exe_Type(page:
   await CorrPortalElem.Total_Committed_Loans_Tab.waitFor({ state: 'visible' });
   while (await CorrPortalElem.Select_all_for_Checkbox.isVisible()) {
     await CorrPortalElem.Select_all_for_Checkbox.click();
-    await CorrPortalElem.Commit_Selected_Button.click();
+    await expect(CorrPortalElem.Uncommit_Selected_Button).toBeEnabled();
+    await CorrPortalElem.Uncommit_Selected_Button.click();
     await CorrPortalElem.Yes_Uncommit_Button.click();
+    await CorrPortalElem.Okay_Button.waitFor({ state: 'visible' });
+    await CorrPortalElem.Okay_Button.click();
+    await CorrPortalElem.Total_Committed_Loans_Tab.waitFor({ state: 'visible' });
+    await CorrPortalElem.Total_Committed_Loans_Tab.click();
   }
 }
 
