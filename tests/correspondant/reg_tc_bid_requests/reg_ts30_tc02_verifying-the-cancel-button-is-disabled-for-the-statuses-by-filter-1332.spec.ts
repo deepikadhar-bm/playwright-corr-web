@@ -49,9 +49,9 @@ test.describe('REG_TC_Bid_Requests', () => {
         const crederntials = ENV.getCredentials('internal');
         vars["Username"] = crederntials.username;
         vars["Password"] = crederntials.password;
-        // console.log("Test Data: ", testData);
-        console.log("Credentials: ", crederntials.username, crederntials.password);
-        console.log("Credentials:==> ", vars["Username"], vars["Password"]);
+        // log.info("Test Data: ", testData);
+        log.info(`Credentials: ${crederntials.username}, ${crederntials.password}`);
+        log.info(`Credentials:==> ${vars["Username"]}, ${vars["Password"]}`);
         log.stepPass('Credentials loaded successfully');
       } catch (e) {
         await log.stepFail(page, 'Loading credentials failed');
