@@ -1,4 +1,3 @@
-
 # Playwright
 node_modules/
 /test-results/
@@ -9,3 +8,4 @@ node_modules/
 /logs/
 /downloads/
 /reports/html-reports-zip/
+/uploads/

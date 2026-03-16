@@ -335,5 +335,28 @@ export class Logger {
     }
   }
 
-
+static pass(message: string): void {
+    Logger.persist({
+      timestamp: Logger.ts(),
+      level: 'PASS',
+      // tcId: Logger.currentTcId ?? undefined,
+      step: Logger.stepCounter,
+      message: `✔ ${message}`,
+    });
+  }
+ 
+  /**
+   * Log a red [FAIL] — use only in verify* methods on failure.
+   * Does NOT throw — caller is responsible for throwing the error.
+   * @param message  e.g. `[verifyNumericOrder] Order broken at [2]: 5 > 3`
+   */
+  static fail(message: string): void {
+    Logger.persist({
+      timestamp: Logger.ts(),
+      level: 'FAIL',
+      // tcId: Logger.currentTcId ?? undefined,
+      step: Logger.stepCounter,
+      message: `✘ ${message}`,
+    });
+  }
 }
