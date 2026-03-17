@@ -463,8 +463,8 @@ Individual_PQ_Button(RowsCount:string): Locator {
     return this.page.locator("(//tbody)[2]//tr");
   }
 
-  get Searched_Data_in_List(): Locator {
-    return this.page.locator("(//div[@class=\"dropdown-overflow\"])[2]/button[@role=\"option\"]//div/span[@title=\"$|CreatedBidMap|\"]");
+  Searched_Data_in_List(CreatedBidMap: string): Locator {
+    return this.page.locator(`(//div[@class="dropdown-overflow"])[2]/button[@role="option"]//div/span[@title="${CreatedBidMap}"]`);
   }
 
   get Selection_Dropdown_In_Resubmit_Popup(): Locator {
