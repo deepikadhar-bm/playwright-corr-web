@@ -67,9 +67,6 @@ export class P24UnitDropdownPage {
     return this.page.locator("//div[@class=\"gap-2 header-grid-layout unidentified-header\"]");
   }
 
-  // get_Header_Mapping(DeleteHeaderMapping:string): Locator {
-  //   return this.page.locator(`//div[@class=\"gap-2 header-grid-layout unidentified-header\"]/../..[${DeleteHeaderMapping}]`);
-  // }
   get_Header_Mapping(headerName: string) {
   return this.page.locator(`//div[@class="gap-2 header-grid-layout"]/div[contains(text(),"${headerName}")]`);
 }
