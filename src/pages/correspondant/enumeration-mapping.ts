@@ -47,9 +47,9 @@ export class EnumerationMappingPage {
     return this.page.locator("(//div[@class=\"col-2\"]//div[text()=\"$|SecondBidSampleName|\"])[1]/../..//input[@type=\"checkbox\"]");
   }
 
-  get Bid_Sample_Name_Field_Enumeration_Mapping(): Locator {
-    return this.page.locator("(//div[@class=\"my-2\" and text()=\"$|ChaseName|\"]/../..//div)[3]");
-  }
+  get_Bid_Sample_Name_Field_Enumeration_Mapping(ChaseName: string): Locator {
+  return this.page.locator(`(//div[@class="my-2" and text()="${ChaseName}"]/../..//div)[3]`);
+}
 
   get Bid_Tape_Value_On_Enumeration_Mapping(): Locator {
     return this.page.locator("//div[normalize-space(text())='$|BidTapeValue|']");

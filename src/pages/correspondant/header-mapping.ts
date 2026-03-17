@@ -47,9 +47,9 @@ export class HeaderMappingPage {
     return this.page.locator("//div[@class=\"flex-grow-1\" and text()=\"$|SecondCheckedBidName|\"]");
   }
 
-  get Correspondent_Bid_sample_name(): Locator {
-    return this.page.locator("(//fieldset//div[@class=\"gap-2 header-grid-layout\"]//select)[$|count|]/../../..//div[@class=\"flex-grow-1\"]");
-  }
+  get_Correspondent_Bid_sample_name(count: string): Locator {
+  return this.page.locator(`(//fieldset//div[@class="gap-2 header-grid-layout"]//select)[${count}]/../../..//div[@class="flex-grow-1"]`);
+}
 
   get Custom_Header(): Locator {
     return this.page.locator("//div[@class=\"gap-2 header-grid-layout custom-header\"]//div[@class=\"flex-grow-1\"]");
@@ -146,7 +146,7 @@ export class HeaderMappingPage {
     return this.page.locator("(//div[contains(@class,\"gap-2 header-grid-layout\")]//select)[$|count|]");
   }
 
- get_Individual_Mapped_Chase_Name(count: number): Locator {
+ get_Individual_Mapped_Chase_Name(count: string): Locator {
   return this.page.locator(`(//fieldset//div[@class="gap-2 header-grid-layout"]//select)[${count}]`);
 }
 
