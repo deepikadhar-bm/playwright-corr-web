@@ -2022,7 +2022,7 @@ export class CorrPortalPage {
 
   get When_Bid_Field_in_Add_Conditions(): Locator {
     return this.page.locator("//label[text()[normalize-space() = \"When Bid Field\"]]/following-sibling::div[contains(@class, 'd-flex')]//div[text()[normalize-space() = \"Select\"]]");
-  }
+  }//label[contains(text(),' When Bid Field ')]/parent::div/descendant::button[@id='singleSelectDropDownWithSearch']/div[contains(text(),' Select ')]
 
   get Yes_Commit_Button(): Locator {
     return this.page.locator("//span[text()[normalize-space() = \"Yes, Commit\"]]");
