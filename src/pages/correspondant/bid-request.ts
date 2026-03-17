@@ -359,8 +359,8 @@ export class BidRequestPage {
     return this.page.locator("(//div[@aria-label=\"Pagination Controls\"]//span)[2]");
   }
 
-  get New_Company_In_Dropdown(): Locator {
-    return this.page.locator("(//div[@class=\"dropdown-overflow\"]//span[not(contains(text(),\"@|Company name 1|\") or contains(text(),\"@|Company name 2|\"))])[1]");
+  New_Company_In_Dropdown(CompanyName1 : string, CompanyName2 : string): Locator {
+    return this.page.locator(`(//div[@class=\"dropdown-overflow\"]//span[not(contains(text(),\"${CompanyName1}\") or contains(text(),\"${CompanyName2}\"))])[1]`);
   }
 
   get No_result_Bid_requests(): Locator {
