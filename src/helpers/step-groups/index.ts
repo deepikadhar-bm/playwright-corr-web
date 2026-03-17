@@ -4996,11 +4996,12 @@ export async function stepGroup_Navigating_to_Customer_Permission_Page_and_disab
  */
 export async function stepGroup_Storing_Open_Auth_Limit_and_AuthLimit_Price_Offered(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
+  const Methods =new AddonHelpers(page, vars);
   vars["OpenAuthLimit"] = await CorrPortalElem.Open_Auth_Limit_All_Loans.textContent() || '';
-  vars["OpenAuthLimitStandard"] = String('').split("(")["0"] || '';
-  vars["OpenAuthLimitPercentageStandard"] = String('').split("(")["1"] || '';
-  vars["OpenAuthLimitPercentageStandard"] = String(vars["OpenAuthLimitPercentageStandard"]).replace(/\)%/g, '');
-  vars["AuthLimitStandard"] = await CorrPortalElem.Auth_Limit_All_Loans.textContent() || '';
+  Methods.splitBySpecialChar(vars['OpenAuthLimit'], '(', '0', 'OpenAuthLimitBeforeCommit');
+  Methods.splitBySpecialChar(vars['OpenAuthLimit'], '(', '1', 'OpenAuthLimitPercentageBeforeCommit');
+  Methods.removeMultipleSpecialChars([')', '%'], vars['OpenAuthLimitPercentageBeforeCommit'], 'OpenAuthLimitPercentageBeforeCommit');
+  vars["AuthLimitBeforeCommit"] = await CorrPortalElem.Auth_Limit_All_Loans.textContent() || '';
 }
 
 /**

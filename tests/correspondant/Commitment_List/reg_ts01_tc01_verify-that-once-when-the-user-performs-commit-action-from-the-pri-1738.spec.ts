@@ -63,9 +63,9 @@ test.describe('Commitment List - TS_2', () => {
       log.step('Committing selected loan from Price Offered');
       try {
         await priceOfferedPage.BidRequestIDPrice_Offered_New(vars['BidReqId']).click();
-        await priceOfferedPage.Check_Bid_Loan_NumChase_Exe.first().waitFor({ state: 'visible' });
-        await priceOfferedPage.Check_Bid_Loan_NumChase_Exe.first().check();
-        await expect(priceOfferedPage.Check_Bid_Loan_NumChase_Exe.first()).toBeChecked();
+        await priceOfferedPage.Check_the_Loan_Num.first().waitFor({ state: 'visible' });
+        await priceOfferedPage.Check_the_Loan_Num.first().check();
+        await expect(priceOfferedPage.Check_the_Loan_Num.first()).toBeChecked();
         vars['CommittedCorrLoan'] = await priceOfferedPage.Checked_Corr_Loan.textContent() || '';
         await priceOfferedPage.Get_Price_Button.waitFor({ state: 'visible' });
         await expect(priceOfferedPage.Get_Price_Button).toBeEnabled();

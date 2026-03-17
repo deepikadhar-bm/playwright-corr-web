@@ -22,8 +22,8 @@ export class CommitmentListPage {
     return this.page.locator("(//li[contains(@class,\"text-primary\")]//span)[2]");
   }
 
-  get BidReqId2Commitment_List_Screen(): Locator {
-    return this.page.locator("//td[@data-title=\"Company\"]//div[normalize-space(text())=\"$|CompanyName|\"] //ancestor::tr //td[@data-title=\"Bid Request ID\"] //div[not(contains(normalize-space(text()),\"$|BidReqId1|\"))]");
+  BidReqId2Commitment_List_Screen(CompanyName:string,BidReqId1:string): Locator {
+    return this.page.locator(`//td[@data-title=\"Company\"]//div[normalize-space(text())=\"${CompanyName}\"] //ancestor::tr //td[@data-title=\"Bid Request ID\"] //div[not(contains(normalize-space(text()),\"${BidReqId1}\"))]`);
   }
 
   get CaseSensitiveXpath(): Locator {
@@ -117,8 +117,8 @@ Column_Count_UICommitted_Loans1(count: string): Locator {
     return this.page.locator("(//div[text()=\"Commit. #\"]//following-sibling::h5)[last()]");
   }
 
-  get Commit_OrderPrice_Offered(): Locator {
-    return this.page.locator("//button[text()=\"$|CommittedCorrLoan|\"]//ancestor::tr//div[@class=\"commit-order\"]");
+  Commit_OrderPrice_Offered(CommittedCorrLoan:string): Locator {
+    return this.page.locator(`//button[text()=\"${CommittedCorrLoan}\"]//ancestor::tr//div[@class=\"commit-order\"]`);
   }
 
   get Commit_TimeCommitment_Screen(): Locator {
@@ -133,16 +133,16 @@ Column_Count_UICommitted_Loans1(count: string): Locator {
     return this.page.locator(`//td[@data-title=\"Bid Request ID\"]//div[normalize-space(text())=\"${BidReqId}\"]//ancestor::tr//td[@data-title=\"Comm. ID\"]//a[normalize-space(text())=\"${CommitmentIDPriceOffered}\"]`);
   }
 
-  get Commitment_ID_DropdownChase(): Locator {
-    return this.page.locator("//div[normalize-space(text())=\"$|CommitIDChase|\"]\n");
+  Commitment_ID_DropdownChase(CommitIDChase:string): Locator {
+    return this.page.locator(`//div[normalize-space(text())=\"${CommitIDChase}\"]\n`);
   }
 
-  get Commitment_ID_DropdownStandard(): Locator {
-    return this.page.locator("//div[normalize-space(text())=\"$|CommitIDStandard|\"]");
+  Commitment_ID_DropdownStandard(CommitIDStandard:string): Locator {
+    return this.page.locator(`//div[normalize-space(text())=\"${CommitIDStandard}\"]`);
   }
 
-  get Commitment_IdAdd_To_Commit_Dropdown(): Locator {
-    return this.page.locator("//div[normalize-space(text())=\"$|CommitmentID|\"]");
+  Commitment_IdAdd_To_Commit_Dropdown(CommitmentID:string): Locator {
+    return this.page.locator(`//div[normalize-space(text())=\"${CommitmentID}\"]`);
   }
 
   get Commitment_IDChase_Direct(): Locator {
@@ -193,8 +193,8 @@ Column_Count_UICommitted_Loans1(count: string): Locator {
     return this.page.locator("//div[contains(text(),\"Commitment Order\")]");
   }
 
-  get Commitment_OrderAdd_To_Commit_Dropdown(): Locator {
-    return this.page.locator("//div[normalize-space(text())=\"$|CommitmentID|\"]//preceding-sibling::div[contains(text(),\"Commitment Order\")]");
+  Commitment_OrderAdd_To_Commit_Dropdown(CommitmentID:string): Locator {
+    return this.page.locator(`//div[normalize-space(text())="${CommitmentID}"]//preceding-sibling::div[contains(text(),"Commitment Order")]`);
   }
 
   get Commitment_OrderCommitment_List_Details(): Locator {

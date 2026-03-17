@@ -56,5 +56,6 @@ export const APP_CONSTANTS = {
  LOANS_FAILED_TO_ADD:"Loans failed to be added to commitment",
  DUPLICATE_LOAN:"is a Duplicate loan. It is already committed",
  LOANS_ADDED_SUCCESSFULLY:"Loans added successfully -",
- DATE_TIME_FORMAT_COMMIT:"M/d/yy h:mm a"
+ DATE_TIME_FORMAT_COMMIT:"M/d/yy h:mm a",
+ FILTER_COMPANY_NAME_AMERICA:"American",
 };

@@ -643,8 +643,8 @@ Column_Data_UI_DetainsScreen(IndividualHeaderUI:string): Locator {
     return this.page.locator("//div[@class=\"modal-body\"]/div\n\n");
   }
 
-  get CommitedOrderStandard(): Locator {
-    return this.page.locator("//button[text()=\"$|CommittedLoanNumStandard|\"]//ancestor::tr/td//div[contains(@class,\"commit-order\")]");
+  CommitedOrderStandard(CommittedLoanNumStandard:string): Locator {
+    return this.page.locator(`//button[text()=\"${CommittedLoanNumStandard}\"]//ancestor::tr/td//div[contains(@class,\"commit-order\")]`);
   }
 
   get CommitID(): Locator {
@@ -2099,7 +2099,10 @@ Last_Nameprice_offered_screen_table(count1:string): Locator {
   get Select_Company_Search_Field(): Locator {
     return this.page.locator("(//div[normalize-space(text())=\"Select Company/CCode\"]//following::input[@aria-label=\"Search items\"])[1]");
   }
-
+   get Select_Company(): Locator {
+    return this.page.locator("//label[contains(@class,'dropdown')]//input[@type='checkbox']");
+  }
+//label[contains(@class,"dropdown")]//input[@type='checkbox']
   get Select_Current_Date_Filters_Price_Offered(): Locator {
     return this.page.locator("//div[@class=\"ngb-dp-month\"]//div[@aria-label=\"$|CurrentDate|\"]");
   }
