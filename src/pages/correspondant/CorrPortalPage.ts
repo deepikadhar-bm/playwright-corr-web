@@ -1780,8 +1780,8 @@ export class CorrPortalPage {
     return this.page.locator("//label[text()=\"Select Company/s\"]/..//div[@class=\"pill rounded-pill relative\"]");
   }
 
-  get Selected_Company_Name_Customer_Permissions(): Locator {
-    return this.page.locator("//td[@data-title=\"Company Name\" and text()=\" @|CompanyName(CustomerPermissions)| \"]");
+  Selected_Company_Name_Customer_Permissions(CompanyName_CustomerPermissions: string): Locator {
+    return this.page.locator(`//td[@data-title="Company Name" and text()=" ${CompanyName_CustomerPermissions} "]`);
   }
 
   get Set_page_size_to_50_Dropdown(): Locator {

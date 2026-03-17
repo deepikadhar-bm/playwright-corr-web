@@ -509,10 +509,10 @@ export async function stepGroup_Navigation_and_Verification_of_Customer_Permissi
   await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
   await CorrPortalElem.CustomerPermission_Menu.click();
   await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
-  await expect(page.getByText("Customer Permission")).toBeVisible();
-  vars["CompanyName"] = await CorrPortalElem.Selected_Company_Name_Customer_Permissions.textContent() || '';
+  await expect((page.getByText("Customer Permission")).first()).toBeVisible();
+  vars["CompanyName"] = await CorrPortalElem.Selected_Company_Name_Customer_Permissions(vars["CompanyName_CustomerPermissions"]).textContent() || '';
   vars["Companyname"] = String(vars["CompanyName"]).trim();
-  await expect(CorrPortalElem.Selected_Company_Name_Customer_Permissions).toContainText(vars["Companyname"]);
+  await expect(CorrPortalElem.Selected_Company_Name_Customer_Permissions(vars["CompanyName_CustomerPermissions"])).toContainText(vars["Companyname"]);
 }
 
 /**
@@ -2469,14 +2469,44 @@ export async function stepGroup_New_Export_List_Advance_Search(page: import('@pl
  */
 export async function stepGroup_Create_Bid_MapsCompanies_verification(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
-  await page.waitForLoadState('networkidle');
+  await page.waitForLoadState('load');
   await CorrPortalElem.Administration_Menu.click();
   await CorrPortalElem.Bid_Maps_Menu.click();
   await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
   await CorrPortalElem.Add_New_Mapping_Button.click();
   await expect(page.getByText("Create New Map")).toBeVisible();
-  vars["Create Bid Map"] = new Date().toLocaleDateString('en-US') /* format: dd/MM/yyyy:HH:mm:ss */;
-  await CorrPortalElem.Map_Name_Field_in_Bid_Maps.fill("Automation_Testsigma_" + vars["Create New Map"]);
+  
+  //vars["Create Bid Map"] = new Date().toLocaleDateString('en-US') /* format: dd/MM/yyyy:HH:mm:ss */;
+  vars["CreateNewMap"] = (() => {
+  const d = new Date();
+  const parts = new Intl.DateTimeFormat('en-GB', {
+    timeZone: "Asia/Kolkata",
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: false
+  }).formatToParts(d);
+
+  const p = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
+
+  const day    = p.day    || '00';
+  const month  = p.month  || '00';
+  const year   = p.year   || '0000';
+  const hour   = p.hour   || '00';
+  const minute = p.minute || '00';
+  const second = p.second || '00';
+
+  // Indian format: dd/MM/yyyy_HH:mm:ss (no spaces)
+  return `${day}/${month}/${year}_${hour}:${minute}:${second}`;
+})();
+
+vars["CreateNewMap"] = "Automation_Testsigma_" + vars["CreateNewMap"];
+log.info(`NewMapName To be entered: ${vars["CreateNewMap"]}`);
+  //vars["CreateNewMap"] = "Testsigma_" + vars["CreateNewMap"];
+  await CorrPortalElem.Map_Name_Field_in_Bid_Maps.fill(vars["CreateNewMap"]);
   vars["CreatedBidMap"] = await CorrPortalElem.Map_Name_Field_in_Bid_Maps.inputValue() || '';
   await expect(CorrPortalElem.Compare_Button).toBeVisible();
   await CorrPortalElem.Compare_Button.click();

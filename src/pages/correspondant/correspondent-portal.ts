@@ -918,8 +918,8 @@ export class CorrespondentPortalPage {
     return this.page.locator("(//i[@class=\"fas fa-pencil-alt\"])[3]");
   }
 
-  get Edit_Permission_Button(): Locator {
-    return this.page.locator("//td[@data-title=\"Company Name\" and text()=\" @|CompanyName(CustomerPermissions)| \"]/..//button");
+  Edit_Permission_Button(CompanyName_CustomerPermissions: string): Locator {
+    return this.page.locator(`//td[@data-title="Company Name" and text()=" ${CompanyName_CustomerPermissions} "]/..//button`);
   }
 
   get Edit_Batch_Time(): Locator {
