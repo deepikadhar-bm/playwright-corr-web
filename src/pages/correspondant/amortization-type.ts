@@ -11,10 +11,6 @@ export class AmortizationTypePage {
     return this.page.locator("(//select[@id=\"id\"])[13]");
   }
 
-  // get_All_Header_Checkbox_In_Bid_Map(Count:string): Locator {
-  //   return this.page.locator("(//input[@type=\"checkbox\"])[$|Count|]");
-  // }
-
   get_All_Header_Checkbox_In_Bid_Map(count: string): Locator {
   return this.page.locator(`(//input[@type="checkbox"])[${count}]`);
 }

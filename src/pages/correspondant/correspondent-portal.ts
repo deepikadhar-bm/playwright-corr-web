@@ -1289,9 +1289,6 @@ get Header_Mapping_Dropdown_New(): Locator {
     return this.page.locator("(//select[@class='form-select'])[2]");
   }
 
-  // get_Inserted_Header_Data(CustomHeader:string): Locator {
-  //   return this.page.locator("(//div[contains(@class,'gap-2 header-grid-layout')][contains(.,'${Custom Header})])[1]");
-  // }
   get_Inserted_Header_Data(customHeader: string): Locator {
   return this.page.locator(`(//div[contains(@class,'gap-2 header-grid-layout')][contains(.,'${customHeader}')])[1]`);
 }

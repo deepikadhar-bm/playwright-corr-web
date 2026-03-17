@@ -884,7 +884,6 @@ export async function stepGroup_Add_Rule_For_Add_Condition_In_Rules_and_Actions(
   // await CorrPortalElem.Operation_Dropdown.last().selectOption({ value: vars["Operation1"] });
   await CorrPortalElem.Bid_Enumeration_Tape_Value_in_Rule.click();
   await CorrPortalElem.Search_Field_in_Bid_Enumerated_Tape_Value.click();
-  await page.pause();
   await CorrPortalElem.Bid_Enumerated_Search_Field.fill(vars["BidEnumeratedTapeValue"]);
   await expect(CorrPortalElem.Search_Field_in_Bid_Enumerated_Tape_Value).toHaveValue(vars["BidEnumeratedTapeValue"]);
   await CorrPortalElem.Select_Button.click();
