@@ -1,92 +1,156 @@
-// [POM-APPLIED]
 import { test, expect } from '@playwright/test';
-import path from 'path';
 import * as stepGroups from '../../../src/helpers/step-groups';
 import { BidRequestPage } from '../../../src/pages/correspondant/bid-request';
 import { BidRequestsPage } from '../../../src/pages/correspondant/bid-requests';
 import { CorrespondentPortalPage } from '../../../src/pages/correspondant/correspondent-portal';
 import { PriceOfferedPage } from '../../../src/pages/correspondant/price-offered';
 import { SpinnerPage } from '../../../src/pages/correspondant/spinner';
+import { AddonHelpers } from '@helpers/AddonHelpers';
+import { Logger as log } from '@helpers/log-helper';
+import { ENV } from '@config/environments';
+import { testDataManager } from 'testdata/TestDataManager';
+import { APP_CONSTANTS as appconstants } from '../../../src/constants/app-constants';
+
+
+const TC_ID    = 'REG_TS22_TC03.2';
+const TC_TITLE = 'Perform commit action and verify that the status is updated to committed when all the loans from the bid is committed (Two Execution Type)';
 
 test.describe('Unassigned', () => {
+
   let vars: Record<string, string> = {};
   let bidRequestPage: BidRequestPage;
   let bidRequestsPage: BidRequestsPage;
   let correspondentPortalPage: CorrespondentPortalPage;
   let priceOfferedPage: PriceOfferedPage;
   let spinnerPage: SpinnerPage;
+  let Methods: AddonHelpers;
+  const credentials = ENV.getCredentials('internal');
+  const profileName = 'Price Offered';
+  const profile     = testDataManager.getProfileByName(profileName);
+
 
   test.beforeEach(async ({ page }) => {
     vars = {};
-    bidRequestPage = new BidRequestPage(page);
-    bidRequestsPage = new BidRequestsPage(page);
+    vars['Username'] = credentials.username;
+    vars['Password'] = credentials.password;
+    bidRequestPage          = new BidRequestPage(page);
+    bidRequestsPage         = new BidRequestsPage(page);
     correspondentPortalPage = new CorrespondentPortalPage(page);
-    priceOfferedPage = new PriceOfferedPage(page);
-    spinnerPage = new SpinnerPage(page);
+    priceOfferedPage        = new PriceOfferedPage(page);
+    spinnerPage             = new SpinnerPage(page);
+    Methods                 = new AddonHelpers(page, vars);
   });
 
-  test('REG_TS22_TC03.2_Perform commit action and verify that the status is updated to committed when all the loans from the bid is committed(Two Execution Type)', async ({ page }) => {
-    const testData: Record<string, string> = {
-  "RequestIDfrom22-1.2": "874KBED58307",
-  "CompanyNameInFilters": "Fre",
-  "RequestIdfor22-2.1": "87BQ7DB5C69B",
-  "RequestIDCreated3rdScenario": "87YK9A2E0311",
-  "BidMappingID": "Deepika Aug1",
-  "RequestIdfor22-2.2": "87TS8C74F49F",
-  "RequestIDfrom13-1": "87RS88D43BB6",
-  "RequestIDfrom13-2": "578FE9EDEC6C",
-  "RequestIDfrom10-2": "872V960789CD",
-  "RequestIDfrom11-1": "87ZB36778D61",
-  "EditedChaseUsersTime": "3",
-  "RequestIDCreated1stScenario": "87P80EB790BD",
-  "RequestIDfrom10-3": "874WDCCDC3CE",
-  "RequestIDfrom22-3.1": "877V3BF90360",
-  "Expected Product(price offered)": "FN30",
-  "RequestIDfrom22-1.1": "877V3BF90360",
-  "RequestIDCreated2ndScenario": "87462B751677",
-  "Expected Coupon(price offered)": "3.5",
-  "Static Last Name(Pop Up Verfication)": "LN_Deepika_JULY_16_13",
-  "RequestIDfrom24-1": "87E42DCFAFE8",
-  "Company Name": "Freedom - A4187",
-  "RequestIDfrom29-1": "57EFC2170915",
-  "RequestIDfrom28-1": "87E15439E568",
-  "NO of Batches": "5",
-  "RequestIDfrom27-1": "87DEF1EBA5BD",
-  "RequestIDFrom28-2": "878S25D7D52F",
-  "StatusInFilters": "Price",
-  "RequestIDCreated4rthScenario": "87145580866E"
-}; // Profile: "Price Offered", row: 0
+  test(`${TC_ID} - ${TC_TITLE}`, async ({ page }) => {
+    log.tcStart(TC_ID, TC_TITLE);
 
-    await stepGroups.stepGroup_Login_to_CORR_Portal(page, vars);
-    vars["BidReqIdPriceOffered"] = testData["RequestIDfrom22-1.2"];
-    await stepGroups.stepGroup_Uncommits_the_Committed_Loans_Two_Exe_Type(page, vars);
-    await correspondentPortalPage.Commitments_Side_Menu.click();
-    await correspondentPortalPage.Price_Offered_List_Dropdown.click();
-    await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-    await bidRequestsPage.Search_by_Bid_Request_ID_Field.fill(vars["BidReqIdPriceOffered"]);
-    await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-    await stepGroups.stepGroup_Commit_All_Loans_Chase_Direct(page, vars);
-    vars["ExecutionTypePriceOfferedDetails"] = await priceOfferedPage.Execution_TypeDetails.textContent() || '';
-    vars["ExecutionTypePriceOfferedDetails"] = String(vars["ExecutionTypePriceOfferedDetails"]).trim();
-    await priceOfferedPage.BackTo_PriceofferedPage.click();
-    await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-    vars["BidStatusChasePriceOffered"] = await priceOfferedPage.Bid_Status_Chase_DirectPrice_Offered_Page.textContent() || '';
-    vars["BidStatusChasePriceOffered"] = String(vars["BidStatusChasePriceOffered"]).trim();
-    expect(String(vars["BidStatusChasePriceOffered"])).toBe("Committed");
-    vars["BidStatusStandardPriceOffered"] = await priceOfferedPage.Bid_Status_StandardPrice_Offered_Page.textContent() || '';
-    vars["BidStatusStandardPriceOffered"] = String(vars["BidStatusStandardPriceOffered"]).trim();
-    expect(String(vars["BidStatusStandardPriceOffered"])).toBe("Price Offered");
-    await correspondentPortalPage.Bid_Requests.click();
-    await bidRequestsPage.Search_by_Bid_Request_ID_Field.fill(vars["BidReqIdPriceOffered"]);
-    await page.keyboard.press('Enter');
-    await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-    await bidRequestPage.Bid_Status_BidRequestsPage.waitFor({ state: 'visible' });
-    vars["StatusBidReqPage"] = await bidRequestPage.Bid_Status_BidRequestsPage.textContent() || '';
-    vars["StatusBidReqPage"] = String(vars["StatusBidReqPage"]).trim();
-    expect(String(vars["StatusBidReqPage"])).toBe("Committed");
-    await bidRequestPage.Required_Bid_Req_IDBid_Req_Page.click();
-    await bidRequestPage.Bid_StatusBid_Req_Details.waitFor({ state: 'visible' });
-    vars["StatusBidReqDetails"] = await bidRequestPage.Bid_StatusBid_Req_Details.textContent() || '';
-    expect(String(vars["StatusBidReqDetails"])).toBe("Committed");
+    try {
+
+      log.step('Login to CORR portal');
+      try {
+        await stepGroups.stepGroup_Login_to_CORR_Portal(page, vars);
+        log.stepPass('Login successful');
+      } catch (e) {
+        await log.stepFail(page, 'Login failed');
+        throw e;
+      }
+
+      log.step('Uncommit existing committed loans for the bid request');
+      try {
+        if (profile && profile.data) {
+          vars['BidReqIdPriceOffered'] = profile.data[0]['RequestIDfrom22-1.2'];
+          log.info('Bid Request ID: ' + vars['BidReqIdPriceOffered']);
+        }
+        await stepGroups.stepGroup_Uncommits_the_Committed_Loans_Two_Exe_Type(page, vars);
+        log.stepPass('Uncommit step completed for Bid Request ID: ' + vars['BidReqIdPriceOffered']);
+      } catch (e) {
+        await log.stepFail(page, 'Failed to uncommit committed loans for Bid Request ID: ' + vars['BidReqIdPriceOffered']);
+        throw e;
+      }
+
+      log.step('Navigate to Price Offered list and search by Bid Request ID');
+      try {
+        await correspondentPortalPage.Commitments_Side_Menu.click();
+        await correspondentPortalPage.Price_Offered_List_Dropdown.click();
+        await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+        await bidRequestsPage.Search_by_Bid_Request_ID_Field.fill(vars['BidReqIdPriceOffered']);
+        await page.keyboard.press('Enter');
+        await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+        log.stepPass('Navigated to Price Offered list. Bid Request ID: ' + vars['BidReqIdPriceOffered']);
+      } catch (e) {
+        await log.stepFail(page, 'Failed to navigate to Price Offered list');
+        throw e;
+      }
+
+      log.step('Commit all Chase Direct loans and capture execution type');
+      try {
+        await stepGroups.stepGroup_Commit_All_Loans_Chase_Direct(page, vars);
+        vars['ExecutionTypePriceOfferedDetails'] = await priceOfferedPage.Execution_TypeDetails.textContent() || '';
+        Methods.trimtestdata(vars['ExecutionTypePriceOfferedDetails'], 'ExecutionTypePriceOfferedDetails');
+        log.info('Execution type: ' + vars['ExecutionTypePriceOfferedDetails']);
+        await priceOfferedPage.BackTo_PriceofferedPage.click();
+        await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+        log.stepPass('All Chase Direct loans committed. Execution type: ' + vars['ExecutionTypePriceOfferedDetails']);
+      } catch (e) {
+        await log.stepFail(page, 'Failed to commit Chase Direct loans');
+        throw e;
+      }
+
+      log.step('Verify committed status on Price Offered list page for both execution types');
+      try {
+        vars['BidStatusChasePriceOffered'] = await priceOfferedPage.Bid_Status_Chase_DirectPrice_Offered_Page.textContent() || '';
+        Methods.trimtestdata(vars['BidStatusChasePriceOffered'], 'BidStatusChasePriceOffered');
+        log.info('Chase Direct status: ' + vars['BidStatusChasePriceOffered']);
+        expect(Methods.verifyString(vars['BidStatusChasePriceOffered'], 'equals', appconstants.COMMITTED));
+
+        vars['BidStatusStandardPriceOffered'] = await priceOfferedPage.Bid_Status_StandardPrice_Offered_Page.textContent() || '';
+        Methods.trimtestdata(vars['BidStatusStandardPriceOffered'], 'BidStatusStandardPriceOffered');
+        log.info('Standard status: ' + vars['BidStatusStandardPriceOffered']);
+        expect(Methods.verifyString(vars['BidStatusStandardPriceOffered'], 'equals', appconstants.PRICEOFFERED));
+
+        log.stepPass('Price Offered page status verified. Chase Direct: ' + vars['BidStatusChasePriceOffered'] + ' | Standard: ' + vars['BidStatusStandardPriceOffered']);
+      } catch (e) {
+        await log.stepFail(page, 'Price Offered status verification failed. Chase Direct: ' + vars['BidStatusChasePriceOffered'] + ' | Standard: ' + vars['BidStatusStandardPriceOffered']);
+        throw e;
+      }
+
+      log.step('Verify committed status on Bid Requests list page');
+      try {
+        await correspondentPortalPage.Bid_Requests.click();
+        await bidRequestsPage.Search_by_Bid_Request_ID_Field.fill(vars['BidReqIdPriceOffered']);
+        await page.keyboard.press('Enter');
+        await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+        await bidRequestPage.Bid_Status_BidRequestsPage(vars["BidReqIdPriceOffered"]).waitFor({ state: 'visible' });
+        vars['StatusBidReqPage'] = await bidRequestPage.Bid_Status_BidRequestsPage(vars["BidReqIdPriceOffered"]).textContent() || '';
+        Methods.trimtestdata(vars['StatusBidReqPage'], 'StatusBidReqPage');
+        log.info('Bid Request list status: ' + vars['StatusBidReqPage']);
+        expect(Methods.verifyString(vars['StatusBidReqPage'], 'equals', appconstants.COMMITTED));
+        log.stepPass('Bid Requests list status verified: ' + vars['StatusBidReqPage']);
+      } catch (e) {
+        await log.stepFail(page, 'Bid Requests list status verification failed. Status: ' + vars['StatusBidReqPage']);
+        throw e;
+      }
+
+      log.step('Verify committed status on Bid Request details page');
+      try {
+        await bidRequestPage.Required_Bid_Req_IDBid_Req_Page(vars["BidReqIdPriceOffered"]).click();
+        await bidRequestPage.Bid_StatusBid_Req_Details.waitFor({ state: 'visible' });
+        vars['StatusBidReqDetails'] = await bidRequestPage.Bid_StatusBid_Req_Details.textContent() || '';
+        Methods.trimtestdata(vars['StatusBidReqDetails'], 'StatusBidReqDetails');
+        log.info('Bid Request details status: ' + vars['StatusBidReqDetails']);
+        expect(Methods.verifyString(vars['StatusBidReqDetails'], 'equals', appconstants.COMMITTED));
+        log.stepPass('Bid Request details status verified: ' + vars['StatusBidReqDetails']);
+      } catch (e) {
+        await log.stepFail(page, 'Bid Request details status verification failed. Status: ' + vars['StatusBidReqDetails']);
+        throw e;
+      }
+
+      log.tcEnd('PASS');
+
+    } catch (e) {
+      await log.captureOnFailure(page, TC_ID, e);
+      log.tcEnd('FAIL');
+      throw e;
+    }
   });
 });

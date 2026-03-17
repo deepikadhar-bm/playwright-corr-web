@@ -34,13 +34,20 @@ export async function runPrereq_1389(page: Page, vars: Record<string, string>): 
       const bidMappingID = profile1.data[0]['BidMappingID'];
       vars["BidMappingID"] = bidMappingID;                  // store in vars
     }
-    const profileName2 = 'Administration_Bulk Batch Timing';       // TDP sheet name
-    const profile2 = testDataManager.getProfileByName(profileName2);
+    // const profileName2 = 'Administration_Bulk Batch Timing';       // TDP sheet name
+    // const profile2 = testDataManager.getProfileByName(profileName2);
+    // if (profile2 && profile2.data) {
+    //   const NOofBatches = profile2.data[0]['NO of Batches'];  // row 0, column name
+    //   vars["NOOfBatches"] = NOofBatches;
+    //   const TimeInterval = profile2.data[0]['Time Interval'];
+    //   vars["TimeInterval"] = TimeInterval;                  // store in vars
+    // }
+    const profile2 = testDataManager.getProfileByName("Administration_Bulk Batch Timing");
     if (profile2 && profile2.data) {
-      const NOofBatches = profile2.data[0]['NO of Batches'];  // row 0, column name
-      vars["NOOfBatches"] = NOofBatches;
-      const TimeInterval = profile2.data[0]['Time Interval'];
-      vars["TimeInterval"] = TimeInterval;                  // store in vars
+      const TimeInterval = profile2.data[0]['Time Interval'];  // row 0, column name
+      vars["Time Interval"] = TimeInterval;
+      const NoOfBatches = profile2.data[0]['NO of Batches'];
+      vars["NO of Batches"] = NoOfBatches;                  // store in vars
     }
 
     await runPrereq_1381(page, vars);
@@ -108,7 +115,7 @@ export async function runPrereq_1389(page: Page, vars: Record<string, string>): 
       await stepGroups.stepGroup_Uploading_Bid_Request_By_Selecting_both_standard_and_chase_t(page, vars);
       await correspondentPortalPage.Pricing_Return_Time.selectOption({ index: parseInt("2") });
       vars["ExtractedPrincingReturnTime"] = await correspondentPortalPage.Pricing_Return_Time.evaluate(el => { const s = el as HTMLSelectElement; return s.options[s.selectedIndex]?.text || ''; });
-      await correspondentPortalPage.Upload_File.setInputFiles([path.resolve(__dirname, '..', '..', '..', 'uploads', 'Bid_file_success_error_newly_updated (10).xlsx')]);
+      await correspondentPortalPage.Upload_File.setInputFiles([path.resolve(__dirname, '..', '..', '..', 'uploads', 'Bid_file_success_error_newly_updated (12).xlsx')]);
       await expect(correspondentPortalPage.UploadBid_Button).toBeVisible();
       await expect(correspondentPortalPage.UploadBid_Button).toBeEnabled();
       await correspondentPortalPage.UploadBid_Button.click();
