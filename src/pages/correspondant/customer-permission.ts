@@ -15,12 +15,12 @@ export class CustomerPermissionPage {
     return this.page.locator("(//td[@data-title=\"Chase Direct\"]//div)[1]");
   }
 
-  get Chasedirect_Execution_PermissionAllowed(): Locator {
-    return this.page.locator("//td[@data-title=\"Company Name\" and text()=\" @|CompanyName(CustomerPermissions)| \"]/ancestor::tr//td[@data-title=\"Chase Direct\"]//div[@class=\"text-success\"]");
+  Chasedirect_Execution_PermissionAllowed(CompanyName_CustomerPermissions: string): Locator {
+    return this.page.locator(`//td[@data-title="Company Name" and text()=" ${CompanyName_CustomerPermissions} "]/ancestor::tr//td[@data-title="Chase Direct"]//div[@class="text-success"]`);
   }
 
-  get Chasedirect_Execution_PermissionDisabled(): Locator {
-    return this.page.locator("//td[@data-title=\"Company Name\" and text()=\" @|CompanyName(CustomerPermissions)| \"]/ancestor::tr//td[@data-title=\"Chase Direct\"]//div[@class=\"text-danger\"]");
+  Chasedirect_Execution_PermissionDisabled(CompanyName_CustomerPermissions: string): Locator {
+    return this.page.locator(`//td[@data-title="Company Name" and text()=" ${CompanyName_CustomerPermissions} "]/ancestor::tr//td[@data-title="Chase Direct"]//div[@class="text-danger"]`);
   }
 
   get Company_1_Chase_State(): Locator {
@@ -108,12 +108,12 @@ export class CustomerPermissionPage {
     return this.page.locator("//span[@class=\"more-clients\"][2]");
   }
 
-  get Standard_Execution_PermissionAllowed(): Locator {
-    return this.page.locator("//td[@data-title=\"Company Name\" and text()=\" @|CompanyName(CustomerPermissions)| \"]/ancestor::tr//td[@data-title=\"Standard\"]//div[@class=\"text-success\"]");
+  Standard_Execution_PermissionAllowed(CompanyName_CustomerPermissions: string): Locator {
+    return this.page.locator(`//td[@data-title="Company Name" and text()=" ${CompanyName_CustomerPermissions} "]/ancestor::tr//td[@data-title="Standard"]//div[@class="text-success"]`);
   }
 
-  get Standard_Execution_PermissionDisabled(): Locator {
-    return this.page.locator("//td[@data-title=\"Company Name\" and text()=\" @|CompanyName(CustomerPermissions)| \"]/ancestor::tr//td[@data-title=\"Standard\"]//div[@class=\"text-danger\"]");
+  Standard_Execution_PermissionDisabled(CompanyName_CustomerPermissions: string): Locator {
+    return this.page.locator(`//td[@data-title="Company Name" and text()=" ${CompanyName_CustomerPermissions} "]/ancestor::tr//td[@data-title="Standard"]//div[@class="text-danger"]`);
   }
 
   get Standard_State_First_Record(): Locator {
