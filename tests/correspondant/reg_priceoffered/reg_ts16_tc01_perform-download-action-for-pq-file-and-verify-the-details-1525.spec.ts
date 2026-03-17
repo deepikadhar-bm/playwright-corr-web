@@ -11,6 +11,8 @@ import { AddonHelpers } from '@helpers/AddonHelpers';
 import { Logger as log } from '@helpers/log-helper';
 import { ENV } from '@config/environments';
 import { APP_CONSTANTS as appconstants } from '../../../src/constants/app-constants';
+import * as fileHelper from '../../../src/helpers/file-helpers';
+
 
 
 const TC_ID    = 'REG_TS16_TC01';
@@ -97,7 +99,7 @@ test.describe('REG_PriceOffered', () => {
         Methods.concatenateWithSpecialChar(vars['TimeStamp1'], download1.suggestedFilename(), '_','SavedFileName1');
         vars['FilePathAllLoans'] = path.join(vars['DownloadDir'], vars['SavedFileName1']);
         await download1.saveAs(vars['FilePathAllLoans']);
-        vars['FileTextAllLoans'] = fs.readFileSync(vars['FilePathAllLoans'], 'utf-8');
+        vars['FileTextAllLoans'] = fileHelper.readJsonValue(vars['FilePathAllLoans'], '');
         expect(Methods.verifyString(vars['SavedFileName1'], 'contains', vars['ExpectedFileName1']));
         expect(Methods.verifyString(vars['FileTextAllLoans'], 'contains', vars['SourceLoanExpected']));
         expect(Methods.verifyString(vars['FileTextAllLoans'], 'contains', vars['CorrLoanExpected']));
@@ -134,7 +136,7 @@ test.describe('REG_PriceOffered', () => {
         Methods.concatenateWithSpecialChar(vars['TimeStamp2'],  download2.suggestedFilename(),'_', 'SavedFileName2');
         vars['FilePathLockedLoans'] = path.join(vars['DownloadDir'], vars['SavedFileName2']);
         await download2.saveAs(vars['FilePathLockedLoans']);
-        vars['FileTextLockedLoans'] = fs.readFileSync(vars['FilePathLockedLoans'], 'utf-8');
+        vars['FileTextLockedLoans'] = fileHelper.readJsonValue(vars['FilePathLockedLoans'], '');
         expect(Methods.verifyString(vars['SavedFileName2'], 'contains', vars['ExpectedFileName2']));
         expect(Methods.verifyString(vars['FileTextLockedLoans'], 'contains', vars['SourceLoanExpected']));
         expect(Methods.verifyString(vars['FileTextLockedLoans'], 'contains', vars['LockedCorrLoanExpected']));

@@ -18,6 +18,7 @@ import {
   format,
   addDays,
   subMinutes,
+  addMinutes,
   isEqual,
   isBefore,
   isAfter,
@@ -103,29 +104,29 @@ export class AddonHelpers {
   // 2. Verify numeric ascending/descending order
   // ==========================================================================
   async verifyNumericOrder(
-  strategyOrLocator: string | Locator, value: string | undefined, order: 'ascending' | 'descending'
-): Promise<void> {
-  const METHOD = 'verifyNumericOrder';
-  try {
-    const elements = await this.buildLocator(strategyOrLocator, value).all();
-    if (elements.length === 0) throw new Error(`No elements found`);
-    const numbers: number[] = [];
-    for (const el of elements) {
-      const raw = (await el.textContent() ?? '').trim();
-      const cleaned = raw.replace(/[^0-9.\-]/g, '').trim();
-      const num = parseFloat(cleaned);
-      if (isNaN(num)) throw new Error(`Cannot parse "${raw}" as a number`);
-      numbers.push(num);
-    }
-    for (let i = 1; i < numbers.length; i++) {
-      if (order === 'ascending' && numbers[i] < numbers[i - 1])
-        throw new Error(`Order broken at [${i}]: ${numbers[i - 1]} > ${numbers[i]}`);
-      if (order === 'descending' && numbers[i] > numbers[i - 1])
-        throw new Error(`Order broken at [${i}]: ${numbers[i - 1]} < ${numbers[i]}`);
-    }
-    log.pass(`[${METHOD}] ${numbers.length} values in ${order} order: [${numbers.join(', ')}]`);
-  } catch (e) { log.fail(`[${METHOD}] Numeric ${order} order | Error: ${e instanceof Error ? e.message : String(e)}`); throw (e instanceof Error ? e : new Error(String(e))); }
-}
+    strategyOrLocator: string | Locator, value: string | undefined, order: 'ascending' | 'descending'
+  ): Promise<void> {
+    const METHOD = 'verifyNumericOrder';
+    try {
+      const elements = await this.buildLocator(strategyOrLocator, value).all();
+      if (elements.length === 0) throw new Error(`No elements found`);
+      const numbers: number[] = [];
+      for (const el of elements) {
+        const raw = (await el.textContent() ?? '').trim();
+        const cleaned = raw.replace(/[^0-9.\-]/g, '').trim();
+        const num = parseFloat(cleaned);
+        if (isNaN(num)) throw new Error(`Cannot parse "${raw}" as a number`);
+        numbers.push(num);
+      }
+      for (let i = 1; i < numbers.length; i++) {
+        if (order === 'ascending' && numbers[i] < numbers[i - 1])
+          throw new Error(`Order broken at [${i}]: ${numbers[i - 1]} > ${numbers[i]}`);
+        if (order === 'descending' && numbers[i] > numbers[i - 1])
+          throw new Error(`Order broken at [${i}]: ${numbers[i - 1]} < ${numbers[i]}`);
+      }
+      log.pass(`[${METHOD}] ${numbers.length} values in ${order} order: [${numbers.join(', ')}]`);
+    } catch (e) { log.fail(`[${METHOD}] Numeric ${order} order | Error: ${e instanceof Error ? e.message : String(e)}`); throw (e instanceof Error ? e : new Error(String(e))); }
+  }
   // ==========================================================================
   // 3. Verify string ascending/descending order
   // ==========================================================================
@@ -602,7 +603,24 @@ export class AddonHelpers {
       log.info(`[${METHOD}] Filled with "${testData}"`);
     } catch (e) { log.error(`[${METHOD}] Clear and enter "${testData}" | Error: ${e instanceof Error ? e.message : String(e)}`); throw (e instanceof Error ? e : new Error(String(e))); }
   }
-
+  // 30b. Add minutes to datetime → store in vars
+  // Supports any format: date+time, time-only, custom separators
+  // Examples:
+  //   addMinutesToDatetime('10:30 AM', 'h:mm a', 1, 'h:mm a', 'Result') → '10:31 AM'
+  //   addMinutesToDatetime('3/17/25 10:30 AM', 'M/d/yy h:mm a', 5, 'M/d/yy h:mm a', 'Result')
+  // ==========================================================================
+  addMinutesToDatetime(
+    inputDatetime: string, inputFormat: string, minutes: number,
+    outputFormat: string, varName: string
+  ): void {
+    const METHOD = 'addMinutesToDatetime';
+    try {
+      const parsed = parse(inputDatetime, inputFormat, new Date());
+      const stored = format(addMinutes(parsed, minutes), outputFormat);
+      this.vars[varName] = stored;
+      log.info(`[${METHOD}] "${inputDatetime}" + ${minutes} min = "${stored}" → vars['${varName}']`);
+    } catch (e) { log.error(`[${METHOD}] Add ${minutes} min to "${inputDatetime}" | Error: ${e instanceof Error ? e.message : String(e)}`); throw (e instanceof Error ? e : new Error(String(e))); }
+  }
   // ==========================================================================
   // 30. Subtract minutes from datetime → store in vars
   // ==========================================================================
@@ -736,7 +754,7 @@ export class AddonHelpers {
   // ==========================================================================
   // 37. Get character by index → store in vars
   // ==========================================================================
-   getCharByIndex(sourceString: string, index: number | string, varName: string): void {
+  getCharByIndex(sourceString: string, index: number | string, varName: string): void {
     const METHOD = 'getCharByIndex';
     try {
       const idx = typeof index === 'string' ? parseInt(index, 10) : index;
@@ -763,7 +781,7 @@ export class AddonHelpers {
   }
 
   //39.verifying the mathematic operation
- MathematicalOperation(a: string | number, operator: string, b: string | number, varName: string): void {
+  MathematicalOperation(a: string | number, operator: string, b: string | number, varName: string): void {
     const METHOD = 'MathematicalOperation';
     try {
       // Strip currency symbols, commas and whitespace before parsing
@@ -1004,10 +1022,10 @@ export class AddonHelpers {
       if (operation === 'DIVISION' && num2 === 0) throw new Error(`Division by zero is not allowed`);
       let result: number;
       switch (operation) {
-        case 'ADDITION':       result = num1 + num2; break;
-        case 'SUBTRACTION':    result = num1 - num2; break;
+        case 'ADDITION': result = num1 + num2; break;
+        case 'SUBTRACTION': result = num1 - num2; break;
         case 'MULTIPLICATION': result = num1 * num2; break;
-        case 'DIVISION':       result = num1 / num2; break;
+        case 'DIVISION': result = num1 / num2; break;
         default: throw new Error(`Unsupported operation: '${operation}'`);
       }
       this.vars[varName] = result.toFixed(decimalPlaces);
@@ -1025,7 +1043,7 @@ export class AddonHelpers {
       log.info(`[${METHOD}] Last ${n} character(s) of '${value}' = '${result}' → vars['${varName}']`);
     } catch (e) { log.error(`[${METHOD}] getLastCharacters '${value}' count '${Index}' | Error: ${e instanceof Error ? e.message : String(e)}`); throw (e instanceof Error ? e : new Error(String(e))); }
   }
-   // 19b. Verify multiple elements have the same DOM state
+  // 19b. Verify multiple elements have the same DOM state
   //      state: 'enabled' | 'disabled' | 'visible' | 'hidden' |
   //             'present' | 'notPresent' | 'clickable' | 'notClickable'
   // ==========================================================================
@@ -1037,11 +1055,11 @@ export class AddonHelpers {
     try {
       const elements = await locator.all();
       if (elements.length === 0) throw new Error(`No elements found`);
- 
+
       for (let i = 0; i < elements.length; i++) {
         const el = elements[i];
         let passed = false;
- 
+
         switch (state) {
           case 'enabled':
             passed = await el.isEnabled();
@@ -1077,7 +1095,7 @@ export class AddonHelpers {
             break;
         }
       }
- 
+
       log.pass(`[${METHOD}] All ${elements.length} element(s) are ${state}`);
     } catch (e) { log.fail(`[${METHOD}] State [${state}] | Error: ${e instanceof Error ? e.message : String(e)}`); throw (e instanceof Error ? e : new Error(String(e))); }
   }
