@@ -15,6 +15,7 @@ import { testDataManager } from 'testdata/TestDataManager';
 import { AddonHelpers } from '../../../src/helpers/AddonHelpers';
 import { uploadFile } from '../../../src/helpers/file-helpers';
 import { Logger as log } from '../../../src/helpers/log-helper';
+import { ENV } from '@config/environments'
 
 const TC_ID = "REG_TS01_TC01";
 const TC_TITLE = "Verify that the user can select the required clients/execution type and upload a file with the necessary headers for map creation."
@@ -32,6 +33,7 @@ test.describe('REG_Bid Maps', () => {
   let statusInactivePage: StatusInactivePage;
   let thisActionWillSaveTheChangesAndMoveToNextPagePage: ThisActionWillSaveTheChangesAndMoveToNextPagePage;
   let helpers: AddonHelpers;
+  const credentials = ENV.getCredentials('internal');
 
   test.beforeEach(async ({ page }) => {
     vars = {};
@@ -54,9 +56,11 @@ test.describe('REG_Bid Maps', () => {
     log.tcStart(TC_ID, TC_TITLE);
 
     try {
-      if (profile && profile.data){
+      if (profile && profile.data) {
         const uploadText = profile.data[0]['Upload File Text Verification'];
         vars["Upload File Text Verification"] = uploadText;
+        vars["Username"] = credentials.username;
+        vars["Password"] = credentials.password;
       }
 
       log.step("Step 1: Login to CORR Portal and verify dashboard");
@@ -113,7 +117,7 @@ test.describe('REG_Bid Maps', () => {
 
       log.step("Step 5: Verify upload file field and upload Bid Maps file");
       try {
-        await expect(correspondentPortalPage.Upload_File).toHaveValue('');                           
+        await expect(correspondentPortalPage.Upload_File).toHaveValue('');
         await expect(page.getByText(vars["Upload File Text Verification"])).toBeVisible();
         await uploadFile(page, correspondentPortalPage.Upload_File, "Bid_Maps_File.xlsx");
         log.stepPass("Step 5 passed: File uploaded successfully");
@@ -121,7 +125,7 @@ test.describe('REG_Bid Maps', () => {
         log.stepFail(page, "Step 5 failed: Failed to upload file");
         throw error;
       }
-      
+
       log.step("Step 6: Map headers and proceed to next page");
       try {
         await mapHeadersButtonPage.Map_Headers_Button.click();
