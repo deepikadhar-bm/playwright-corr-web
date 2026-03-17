@@ -48,6 +48,14 @@ const credentials = ENV.getCredentials('internal'); // 2
       const bidMappingID = profile.data[0]['BidMappingID'];
       vars["BidMappingID"] = bidMappingID;                  // store in vars
     }
+
+    const profile2 = testDataManager.getProfileByName("Administration_Bulk Batch Timing");
+    if (profile2 && profile2.data) {
+      const TimeInterval = profile2.data[0]['Time Interval'];  // row 0, column name
+      vars["Time Interval"] = TimeInterval;
+      const NoOfBatches = profile2.data[0]['NO of Batches'];
+      vars["NO of Batches"] = NoOfBatches;                  // store in vars
+    }
     // ── Step 1: Login ─────────────────────────────────────────────
     log.step('Login to Correspondent Portal');
     try {

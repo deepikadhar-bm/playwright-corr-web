@@ -176,7 +176,7 @@ export async function stepGroup_Creation_Of_Bid_Map_Upto_Header_Mapping(page: im
   await expect(CorrPortalElem.Upload_File).toHaveValue('');
   await expect(page.getByText("Drag and drop files here or click to browse. Allowed formats: .xls,.xlsx,.csv,.txt")).toBeVisible();
   // await CorrPortalElem.Upload_File.setInputFiles(path.resolve(__dirname, '../../../uploads', "DeepikaAugBidQA_(3)_(1)_(1)_(2).xlsx"));
-  await uploadFile(page, correspondentPortalPage.Upload_File, "DeepikaAugBidQA_(3)_(1)_(1)_(2) (1).xlsx");
+  await uploadFile(page, correspondentPortalPage.Upload_File, "BidMAP_Happy_Flow_1.xlsx");
   await CorrPortalElem.Map_Headers_Button.click();
   await CorrPortalElem.Save_and_Move_to_Next_Page.waitFor({ state: 'visible' });
   await expect(CorrPortalElem.This_action_will_save_the_changes_and_Move_to_Next_Page).toBeVisible();
@@ -489,7 +489,7 @@ export async function stepGroup_Verification_for_the_Header_Mapping(page: import
   vars["BidSampleFieldName"] = String(await CorrPortalElem.Bid_Sample_Field_Name_in_Header_Mapping.count());
   vars["Count"] = "2";
   while (parseFloat(String(vars["Count"])) <= parseFloat(String(vars["BidSampleFieldName"]))) {
-    await expect(CorrPortalElem.Show_All_Headers_in_Header_Mappings).toBeVisible();
+    await expect(CorrPortalElem.Show_All_Headers_in_Header_Mappings.nth(Number(vars["Count"]) - 2)).toBeVisible();
     vars["Count"] = (parseFloat(String("1")) + parseFloat(String(vars["Count"]))).toFixed(0);
   }
 }
@@ -863,7 +863,7 @@ export async function stepGroup_Add_Rule_For_Add_Condition_In_Rules_and_Actions(
   const CorrPortalElem = new CorrPortalPage(page);
   const testData: Record<string, string> = {}; // TODO: Load from test data profile
   await CorrPortalElem.Add_Rule_Button.click();
-  await CorrPortalElem.Rule_Name_Field.fill(testData["Rule Name"]);
+  await CorrPortalElem.Rule_Name_Field.pressSequentially(vars["Rule Name"]);
   vars["Rule Name"] = await CorrPortalElem.Rule_Name_Field.inputValue() || '';
   await expect(CorrPortalElem.Rule_Name_Field).toHaveValue(vars["Rule Name"]);
   await CorrPortalElem.Select_Category_Dropdown.click();
@@ -874,18 +874,22 @@ export async function stepGroup_Add_Rule_For_Add_Condition_In_Rules_and_Actions(
   await CorrPortalElem.When_Bid_Field_in_Add_Conditions.click();
   await CorrPortalElem.When_Bid_Field.click();
   await expect(CorrPortalElem.When_Bid_Field).toBeVisible();
-  await CorrPortalElem.Search_Field.fill(testData["BidField"]);
+  // await CorrPortalElem.Search_Field.fill(vars["BidField"]);
+  await CorrPortalElem.When_Bid_Field.pressSequentially(vars["BidField"]);
   vars["BidField"] = await CorrPortalElem.Search_Field.inputValue() || '';
-  await CorrPortalElem.FICO_Score.click();
-  await CorrPortalElem.Operation_Dropdown.selectOption({ label: "LESS" });
+  // await CorrPortalElem.FICO_Score.click();
+  await CorrPortalElem.Select_Button.waitFor({ state: "visible" })
+  await CorrPortalElem.Select_Button.click();
+  await CorrPortalElem.Operation_Dropdown.last().selectOption({ value: "LESS" });
+  // await CorrPortalElem.Operation_Dropdown.last().selectOption({ value: vars["Operation1"] });
   await CorrPortalElem.Bid_Enumeration_Tape_Value_in_Rule.click();
   await CorrPortalElem.Search_Field_in_Bid_Enumerated_Tape_Value.click();
-  await CorrPortalElem.Search_Field.fill(testData["BidEnumeratedTapeValue"]);
-  await expect(CorrPortalElem.Search_Field_in_Bid_Enumerated_Tape_Value).toHaveValue(testData["BidEnumeratedTapeValue"]);
+  await CorrPortalElem.Bid_Enumerated_Search_Field.fill(vars["BidEnumeratedTapeValue"]);
+  await expect(CorrPortalElem.Search_Field_in_Bid_Enumerated_Tape_Value).toHaveValue(vars["BidEnumeratedTapeValue"]);
   await CorrPortalElem.Select_Button.click();
   vars["RuleBidField"] = vars["BidField"];
-  vars["RuleCondition"] = await CorrPortalElem.Operation_Dropdown.inputValue() || '';
-  vars["RuleBidTapeValue"] = testData["BidEnumeratedTapeValue"];
+  vars["RuleCondition"] = await CorrPortalElem.Operation_Dropdown.last().inputValue() || '';
+  vars["RuleBidTapeValue"] = vars["BidEnumeratedTapeValue"];
 }
 
 /**
@@ -4731,8 +4735,8 @@ export async function stepGroup_Commit_All_Loans_Chase_Direct(page: import('@pla
   await CorrPortalElem.BidReqId_Chase_Direct.click();
   await CorrPortalElem.Select_all_for_Checkbox.check();
   await CorrPortalElem.Get_Price_Button.click();
-  await CorrPortalElem.Uncommit_Selected_Button.waitFor({ state: 'visible' });
-  await CorrPortalElem.Uncommit_Selected_Button.click();
+  await CorrPortalElem.Commit_Selected_Button.waitFor({ state: 'visible' });
+  await CorrPortalElem.Commit_Selected_Button.click();
   await CorrPortalElem.Yes_Commit_Button_Popup.click();
   await CorrPortalElem.Yes_Commit_Button_Popup.waitFor({ state: 'hidden' });
   await CorrPortalElem.Okay_Button_Popup.waitFor({ state: 'visible' });
@@ -4828,14 +4832,15 @@ export async function stepGroup_Uncommits_the_Committed_Loans_Two_Exe_Type(page:
   await CorrPortalElem.Committed_List_Dropdown.click();
   await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
   await CorrPortalElem.Search_In_Committed_Page.click();
-  await CorrPortalElem.Search_In_Committed_Page.fill("87Y58FDC37EC");
+  await CorrPortalElem.Search_In_Committed_Page.type(vars["BidReqIdPriceOffered"]);
   await CorrPortalElem.Bid_Request_ID_Dropdown_Commitment_List_Page.click();
   await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
   await CorrPortalElem.Commitment_ID_Standard.click();
   await CorrPortalElem.Total_Committed_Loans_Tab.waitFor({ state: 'visible' });
   while (await CorrPortalElem.Select_all_for_Checkbox.isVisible()) {
     await CorrPortalElem.Select_all_for_Checkbox.click();
-    await CorrPortalElem.Commit_Selected_Button.click();
+    await expect(CorrPortalElem.Uncommit_Selected_Button).toBeEnabled();
+    await CorrPortalElem.Uncommit_Selected_Button.click();
     await CorrPortalElem.Yes_Uncommit_Button.click();
     await CorrPortalElem.Okay_Button.waitFor({ state: 'visible' });
     await CorrPortalElem.Okay_Button.click();
@@ -4848,8 +4853,13 @@ export async function stepGroup_Uncommits_the_Committed_Loans_Two_Exe_Type(page:
   await CorrPortalElem.Total_Committed_Loans_Tab.waitFor({ state: 'visible' });
   while (await CorrPortalElem.Select_all_for_Checkbox.isVisible()) {
     await CorrPortalElem.Select_all_for_Checkbox.click();
-    await CorrPortalElem.Commit_Selected_Button.click();
+    await expect(CorrPortalElem.Uncommit_Selected_Button).toBeEnabled();
+    await CorrPortalElem.Uncommit_Selected_Button.click();
     await CorrPortalElem.Yes_Uncommit_Button.click();
+    await CorrPortalElem.Okay_Button.waitFor({ state: 'visible' });
+    await CorrPortalElem.Okay_Button.click();
+    await CorrPortalElem.Total_Committed_Loans_Tab.waitFor({ state: 'visible' });
+    await CorrPortalElem.Total_Committed_Loans_Tab.click();
   }
 }
 
