@@ -51,11 +51,7 @@ export async function stepGroup_Rename_File(page: import('@playwright/test').Pag
   const newPage = await page.context().newPage();
   try {
     await page.goto("https://imgtool.net/en/filerename/");
-
-    await page.waitForLoadState('networkidle');
     await CorrPortalElem.File_Input.setInputFiles(path.resolve(__dirname, 'test-data', "DeepikaAugBidQA.xlsx"));
-
-    await page.waitForLoadState('networkidle');
     await CorrPortalElem.Username_Field.scrollIntoViewIfNeeded();
     await CorrPortalElem.Username_Field.waitFor({ state: 'visible' });
     await CorrPortalElem.Start_task_Button.click();
@@ -125,7 +121,68 @@ export async function stepGroup_Rename_File(page: import('@playwright/test').Pag
 //   await CorrPortalElem.Header_Mapping.waitFor({ state: 'visible' });
 // }
 
-export async function stepGroup_Creation_Of_Bid_Map_Upto_Header_Mapping(page: import('@playwright/test').Page, vars: Record<string, string>) {
+// export async function stepGroup_Creation_Of_Bid_Map_Upto_Header_Mapping(page: import('@playwright/test').Page, vars: Record<string, string>,) {
+//   const CorrPortalElem = new CorrPortalPage(page);
+//   const Helpers = new AddonHelpers(page, vars);
+//   const correspondentPortalPage = new CorrespondentPortalPage(page);
+//   const CorrespondentPortal4Elem = new CorrespondentPortal4Page(page);
+//   await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
+//   // [DISABLED] Verify that the element Dashboard is displayed and With Scrollable FALSE
+//   // await expect(CorrPortalElem.Dashboard).toBeVisible();
+//   await stepGroup_Navigation_to_Customer_Permission(page, vars);
+//   await CorrPortalElem.Administration_Menu.click();
+//   await CorrPortalElem.Bid_Maps_Menu.click();
+//   await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
+//   await expect(CorrPortalElem.Mappings).toBeVisible();
+//   await CorrPortalElem.Add_New_Mapping_Button.click();
+//   await expect(CorrPortalElem.Create_New_Map).toBeVisible();
+//   vars["Current Date"] = (() => {
+//     const d = new Date();
+//     const opts: Intl.DateTimeFormatOptions = { timeZone: "Asia/Kolkata" };
+//     const fmt = "MM/dd/yyyy";
+//     // Map Java date format to Intl parts
+//     const parts = new Intl.DateTimeFormat('en-US', { ...opts, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }).formatToParts(d);
+//     const p = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
+//     return fmt.replace('yyyy', p.year || '').replace('yy', (p.year || '').slice(-2)).replace('MM', p.month || '').replace('dd', p.day || '').replace('HH', String(d.getHours()).padStart(2, '0')).replace('hh', p.hour || '').replace('mm', p.minute || '').replace('ss', p.second || '').replace('a', p.dayPeriod || '').replace(/M(?!M)/g, String(parseInt(p.month || '0'))).replace(/d(?!d)/g, String(parseInt(p.day || '0'))).replace(/h(?!h)/g, String(parseInt(p.hour || '0')));
+
+//   })();
+//   vars["CreateNewMap"] = (() => {
+//     const d = new Date();
+//     const opts: Intl.DateTimeFormatOptions = { timeZone: "America/New_York" };
+//     const fmt = "MM/dd/yyyy/HH:mm:ss";
+//     const parts = new Intl.DateTimeFormat('en-US', { ...opts, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false }).formatToParts(d);
+//     const p = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
+//     return fmt.replace('yyyy', p.year || '').replace('MM', p.month || '').replace('dd', p.day || '').replace('HH', p.hour || '').replace('mm', p.minute || '').replace('ss', p.second || '');
+//   })();
+//   vars["CreateNewMap"] = "Testsigma_" + vars["CreateNewMap"];
+//   Helpers.getCurrentTimestamp("MM/dd/yyyy/HH:mm:ss", "Current Date", "Asia/Kolkata");
+//   Helpers.concatenate("Testsigma_", vars["Current Date"], "CreateNewMap"); /* format: MM/dd/yyyy/HH:mm:ss */;
+//   await CorrPortalElem.Create_New_Map_Field.fill(vars["CreateNewMap"]);
+//   vars["BidMap"] = await CorrPortalElem.Create_New_Map_Field.inputValue() || '';
+//   await CorrPortalElem.Compare_Button.click();
+//   await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
+//   await expect(CorrPortalElem.Bid_Maps_Name(vars["CreateNewMap"])).toContainText(vars["CreateNewMap"]);
+//   // [DISABLED] Verify that the current page displays text Create New Map
+//   // await expect(page.getByText(vars["Create New Map"])).toBeVisible();
+//   await CorrPortalElem.Select_Companys_Dropdown.click();
+//   await CorrespondentPortal4Elem.Search_Text_Field.fill(vars["Companyname"]);
+//   //await CorrPortalElem.Search_Text_Field.click();
+//   await CorrPortalElem.Required_Company_s_Name_Value(vars["Companyname"]).first().click();
+//   await CorrPortalElem.Apply_Selected.click();
+//   await expect(CorrPortalElem.Upload_File).toHaveValue('');
+//   await expect(page.getByText("Drag and drop files here or click to browse. Allowed formats: .xls,.xlsx,.csv,.txt")).toBeVisible();
+//   // await CorrPortalElem.Upload_File.setInputFiles(path.resolve(__dirname, '../../../uploads', "DeepikaAugBidQA_(3)_(1)_(1)_(2).xlsx"));
+//   await uploadFile(page, correspondentPortalPage.Upload_File, "BidMAP_Happy_Flow_1.xlsx");
+//   await CorrPortalElem.Map_Headers_Button.click();
+//   await CorrPortalElem.Save_and_Move_to_Next_Page.waitFor({ state: 'visible' });
+//   await expect(CorrPortalElem.This_action_will_save_the_changes_and_Move_to_Next_Page).toBeVisible();
+//   await CorrPortalElem.Proceed_with_Saving_Button.click();
+//   await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
+//   await expect(page.getByText(vars["CreateNewMap"])).toBeVisible();
+//   await CorrPortalElem.Header_Mapping.waitFor({ state: 'visible' });
+// }
+
+export async function stepGroup_Creation_Of_Bid_Map_Upto_Header_Mapping(page: import('@playwright/test').Page, vars: Record<string, string>,fileName: string) {
   const CorrPortalElem = new CorrPortalPage(page);
   const Helpers = new AddonHelpers(page, vars);
   const correspondentPortalPage = new CorrespondentPortalPage(page);
@@ -176,7 +233,8 @@ export async function stepGroup_Creation_Of_Bid_Map_Upto_Header_Mapping(page: im
   await expect(CorrPortalElem.Upload_File).toHaveValue('');
   await expect(page.getByText("Drag and drop files here or click to browse. Allowed formats: .xls,.xlsx,.csv,.txt")).toBeVisible();
   // await CorrPortalElem.Upload_File.setInputFiles(path.resolve(__dirname, '../../../uploads', "DeepikaAugBidQA_(3)_(1)_(1)_(2).xlsx"));
-  await uploadFile(page, correspondentPortalPage.Upload_File, "BidMAP_Happy_Flow_1.xlsx");
+  // await uploadFile(page, correspondentPortalPage.Upload_File, "BidMAP_Happy_Flow_1.xlsx");
+  await uploadFile(page, correspondentPortalPage.Upload_File, fileName);
   await CorrPortalElem.Map_Headers_Button.click();
   await CorrPortalElem.Save_and_Move_to_Next_Page.waitFor({ state: 'visible' });
   await expect(CorrPortalElem.This_action_will_save_the_changes_and_Move_to_Next_Page).toBeVisible();
@@ -1003,9 +1061,11 @@ export async function stepGroup_Add_Actions_in_Rules_and_Actions(page: import('@
   await CorrPortalElem.Chase_Value.selectOption({ value: "false" });
   // await CorrPortalElem.Value_for_chase.click();
   vars["ChaseFiledNameonAddActions"] = await CorrPortalElem.Add_Actions_Chase_Field_Name.evaluate(el => { const s = el as HTMLSelectElement; return s.options[s.selectedIndex]?.text || ''; });
+  console.log("The vars[ChaseFiledNameonAddActions]:",vars["ChaseFiledNameonAddActions"])
   // [DISABLED] Store the value displayed in the text box Action Chase Field Name 1 field into a variable ChaseFiledNameonAddActions
   // vars["ChaseFiledNameonAddActions"] = await CorrPortalElem.Action_Chase_Field_Name_1.inputValue() || '';
   vars["ChasevalueOnAddActions"] = await CorrPortalElem.Add_Actions_Chase_Value.evaluate(el => { const s = el as HTMLSelectElement; return s.options[s.selectedIndex]?.text || ''; });
+  console.log("The vars[ChasevalueOnAddActions]:",vars["ChasevalueOnAddActions"])
 }
 
 /**
@@ -1039,10 +1099,25 @@ export async function stepGroup_Editing_of_Add_Conditions_and_Add_Actions(page: 
 export async function stepGroup_Add_Field_in_Enumeration_Mapping(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
   await CorrPortalElem.Add_Field_Button1.click();
-  await CorrPortalElem.Bid_Tape_Value.fill(Array.from({ length: 7 }, () => "abc".charAt(Math.floor(Math.random() * 3))).join(''));
-  vars["BidTapeValue"] = await CorrPortalElem.Bid_Tape_Value.inputValue() || '';
-  await expect(CorrPortalElem.Bid_Tape_Value).toHaveValue(vars["BidTapeValue"]);
+  await CorrPortalElem.Bid_Tape_Add_Field.fill(Array.from({ length: 7 }, () => "abc".charAt(Math.floor(Math.random() * 3))).join(''));
+  vars["BidTapeValue"] = await CorrPortalElem.Bid_Tape_Add_Field.inputValue() || '';
+  await expect(CorrPortalElem.Bid_Tape_Add_Field).toHaveValue(vars["BidTapeValue"]);
 }
+
+/**
+ * Step Group: Adding Field In Enumeration Mapping
+ * ID: 1006
+ * Steps: 5
+ */
+export async function stepGroup_Adding_Field_In_Enumeration_Mapping(page: import('@playwright/test').Page, vars: Record<string, string>) {
+  const CorrPortalElem = new CorrPortalPage(page);
+  await CorrPortalElem.Add_Field_Button1.click();
+  await CorrPortalElem.Bid_Tape_Add_Field.fill(Array.from({ length: 7 }, () => "abc".charAt(Math.floor(Math.random() * 3))).join(''));
+  vars["AddedBidTapeValue[EnumerationMapping]"] = await CorrPortalElem.Bid_Tape_Add_Field.inputValue() || '';
+  await CorrPortalElem.New_Field_Chase_Dropdown2.click();
+  await CorrPortalElem.New_Field_Chase_Dropdown2.selectOption({ index: parseInt("2") });
+}
+
 
 /**
  * Step Group: Deleting the Header Mapping
@@ -1086,15 +1161,19 @@ export async function stepGroup_Import_Rule_In_Rules_and_Actions(page: import('@
  */
 export async function stepGroup_Delete_In_Enumeration_Mapping(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
-  vars["BidTapeValueforBeforeDeleted"] = await CorrPortalElem.Bid_Tape_Value.inputValue() || '';
+  // vars["BidTapeValueforBeforeDeleted"] = await CorrPortalElem.Bid_Tape_Value.inputValue() || '';
+  vars["BidTapeValueforBeforeDeleted"] = (await CorrPortalElem.Bid_Tape_Value.innerText()).trim();
   await CorrPortalElem.Delete_In_EnumerationMapping.click();
   await expect(CorrPortalElem.Delete_Enumeration_Pair).toBeVisible();
   await CorrPortalElem.Yes_Go_ahead_Button.click();
   await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
-  vars["Bid Tape Value for After Deleted"] = await CorrPortalElem.Bid_Tape_Value.inputValue() || '';
+  // vars["Bid Tape Value for After Deleted"] = await CorrPortalElem.Bid_Tape_Value.inputValue() || '';
+  vars["Bid Tape Value for After Deleted"] = (await CorrPortalElem.Bid_Tape_Value.innerText()).trim();
+
   // [DISABLED] Verify that the element Delete_In_EnumerationMapping is not displayed and With Scrollable FALSE
   // await expect(CorrPortalElem.Delete_In_EnumerationMapping).toBeVisible();
-  expect(String(vars["BidTapeValueforBeforeDeleted"])).toBe(vars["Bid Tape Value for After Deleted"]);
+  // expect(String(vars["BidTapeValueforBeforeDeleted"])).toBe(vars["Bid Tape Value for After Deleted"]);
+  expect(String(vars["BidTapeValueforBeforeDeleted"])).not.toBe(vars["Bid Tape Value for After Deleted"]);
 }
 
 /**
@@ -1125,7 +1204,6 @@ export async function stepGroup_Deleting_the_UnMapped_fields_in_Header_Mapping(p
     await CorrPortalElem.Delete_button_in_Header_Mapping.click();
     await expect(CorrPortalElem.Delete).toBeVisible();
     await CorrPortalElem.Yes_Proceed_Button.click();
-    await page.waitForLoadState('networkidle');
   }
 }
 
@@ -1208,20 +1286,6 @@ export async function stepGroup_Deleting_In_Rules_and_Actions(page: import('@pla
 }
 
 /**
- * Step Group: Adding Field In Enumeration Mapping
- * ID: 1006
- * Steps: 5
- */
-export async function stepGroup_Adding_Field_In_Enumeration_Mapping(page: import('@playwright/test').Page, vars: Record<string, string>) {
-  const CorrPortalElem = new CorrPortalPage(page);
-  await CorrPortalElem.Add_Field_Button1.click();
-  await CorrPortalElem.Bid_Tape_Value.fill(Array.from({ length: 7 }, () => "abc".charAt(Math.floor(Math.random() * 3))).join(''));
-  vars["AddedBidTapeValue[EnumerationMapping]"] = await CorrPortalElem.Bid_Tape_Value.inputValue() || '';
-  await CorrPortalElem.New_Field_Chase_Dropdown2.click();
-  await CorrPortalElem.New_Field_Chase_Dropdown2.selectOption({ index: parseInt("2") });
-}
-
-/**
  * Step Group: Edition In Enumeration Mapping
  * ID: 1007
  * Steps: 8
@@ -1276,7 +1340,10 @@ export async function stepGroup_Delete_a_Header_In_Header_Mapping(page: import('
  * Steps: 23
  */
 export async function stepGroup_Creating_New_BidMap_Upto_Upload_File(page: import('@playwright/test').Page, vars: Record<string, string>) {
+  let correspondentPortalPage: CorrespondentPortalPage;
   const CorrPortalElem = new CorrPortalPage(page);
+  correspondentPortalPage = new CorrespondentPortalPage(page);
+  const Helpers = new AddonHelpers(page, vars);
   await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
   await expect(CorrPortalElem.Mappings).toBeVisible();
   // [DISABLED] Navigation to Customer Permission
@@ -1287,28 +1354,32 @@ export async function stepGroup_Creating_New_BidMap_Upto_Upload_File(page: impor
   await expect(CorrPortalElem.Mappings).toBeVisible();
   await CorrPortalElem.Add_New_Mapping_Button.click();
   await expect(CorrPortalElem.Create_New_Map).toBeVisible();
-  vars["Current Date"] = (() => {
-    const d = new Date();
-    const opts: Intl.DateTimeFormatOptions = { timeZone: "Asia/Kolkata" };
-    const fmt = "MM/dd/yyyy";
-    // Map Java date format to Intl parts
-    const parts = new Intl.DateTimeFormat('en-US', { ...opts, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }).formatToParts(d);
-    const p = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
-    return fmt.replace('yyyy', p.year || '').replace('yy', (p.year || '').slice(-2)).replace('MM', p.month || '').replace('dd', p.day || '').replace('HH', String(d.getHours()).padStart(2, '0')).replace('hh', p.hour || '').replace('mm', p.minute || '').replace('ss', p.second || '').replace('a', p.dayPeriod || '').replace(/M(?!M)/g, String(parseInt(p.month || '0'))).replace(/d(?!d)/g, String(parseInt(p.day || '0'))).replace(/h(?!h)/g, String(parseInt(p.hour || '0')));
-  })();
-  vars["Create New Map"] = new Date().toLocaleDateString('en-US') /* format: MM/dd/yyyy/HH:mm:ss */;
-  vars["Create New Map"] = "Testsigma_" + vars["Create New Map"];
-  await CorrPortalElem.Create_New_Map_Field.fill(vars["Create New Map"]);
+  // vars["Current Date"] = (() => {
+  //   const d = new Date();
+  //   const opts: Intl.DateTimeFormatOptions = { timeZone: "Asia/Kolkata" };
+  //   const fmt = "MM/dd/yyyy";
+  //   // Map Java date format to Intl parts
+  //   const parts = new Intl.DateTimeFormat('en-US', { ...opts, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }).formatToParts(d);
+  //   const p = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
+  //   return fmt.replace('yyyy', p.year || '').replace('yy', (p.year || '').slice(-2)).replace('MM', p.month || '').replace('dd', p.day || '').replace('HH', String(d.getHours()).padStart(2, '0')).replace('hh', p.hour || '').replace('mm', p.minute || '').replace('ss', p.second || '').replace('a', p.dayPeriod || '').replace(/M(?!M)/g, String(parseInt(p.month || '0'))).replace(/d(?!d)/g, String(parseInt(p.day || '0'))).replace(/h(?!h)/g, String(parseInt(p.hour || '0')));
+  // })();
+  // vars["Create New Map"] = new Date().toLocaleDateString('en-US') /* format: MM/dd/yyyy/HH:mm:ss */;
+  // vars["Create New Map"] = "Testsigma_" + vars["Create New Map"];
+  vars["CreateNewMap"] = "Testsigma_" + vars["CreateNewMap"];
+  Helpers.getCurrentTimestamp("MM/dd/yyyy/HH:mm:ss", "Current Date", "Asia/Kolkata");
+  Helpers.concatenate("Testsigma_", vars["Current Date"], "CreateNewMap"); /* format: MM/dd/yyyy/HH:mm:ss */;
+  await CorrPortalElem.Create_New_Map_Field.fill(vars["CreateNewMap"]);
   vars["BidMap"] = await CorrPortalElem.Create_New_Map_Field.inputValue() || '';
   await CorrPortalElem.Compare_Button.click();
   await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
-  await expect(CorrPortalElem.Bid_Maps_Name).toContainText(vars["Create New Map"]);
+  await expect(CorrPortalElem.Bid_Maps_Name(vars["CreateNewMap"])).toContainText(vars["CreateNewMap"]);
   await CorrPortalElem.Select_Companys_Dropdown.click();
-  await CorrPortalElem.Required_Company_s_Name_Value.click();
+  await CorrPortalElem.Required_Company_s_Name_Value(vars["Companyname"]).click();
   await CorrPortalElem.Apply_Selected.click();
   await expect(CorrPortalElem.Upload_File).toHaveValue('');
   await expect(page.getByText("Drag and drop files here or click to browse. Allowed formats: .xls,.xlsx,.csv,.txt")).toBeVisible();
-  await CorrPortalElem.Upload_File.setInputFiles(path.resolve(__dirname, 'test-data', "DeepikaAugBidQA.xlsx"));
+  // await CorrPortalElem.Upload_File.setInputFiles(path.resolve(__dirname, 'test-data', "DeepikaAugBidQA.xlsx"));
+  await uploadFile(page, correspondentPortalPage.Upload_File, "DeepikaAugBidQA_(3)_(1)_(1)_(2).xlsx");
 }
 
 /**
@@ -1789,15 +1860,15 @@ export async function stepGroup_Verification_of_Column_Headers_Count_and_Column_
  */
 export async function stepGroup_Creating_New_Header_In_Header_Mapping_Screen(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
-  const testData: Record<string, string> = {}; // TODO: Load from test data profile
+  // const testData: Record<string, string> = {}; // TODO: Load from test data profile
   await expect(CorrPortalElem.Rules_and_Actions_Step_4_of_4).toBeVisible();
   await CorrPortalElem.Add_New_Header_Button.click();
   await expect(CorrPortalElem.Add_Header).toBeVisible();
-  await CorrPortalElem.Custom_Header_Field.fill(testData["Custom Header"]);
+  await CorrPortalElem.Custom_Header_Field.fill(vars["CustomHeader"]);
   vars["customheadername"] = await CorrPortalElem.Custom_Header_Field.inputValue() || '';
   await expect(CorrPortalElem.Custom_Header_Field).toHaveValue(vars["customheadername"]);
   await CorrPortalElem.Chase_Field_Name.click();
-  await CorrPortalElem.Chase_Field_Name.selectOption({ label: testData["Chase_Field_Name"] });
+  await CorrPortalElem.Chase_Field_Name.selectOption({ label: vars["Chase_Field_Name"] });
   vars["clmfieldname"] = await CorrPortalElem.Chase_Field_Name.evaluate(el => { const s = el as HTMLSelectElement; return s.options[s.selectedIndex]?.text || ''; });
   await CorrPortalElem.Insert_Header_Button.click();
   await expect(CorrPortalElem.New_Header_Mapping).toBeVisible();
@@ -1878,27 +1949,10 @@ export async function stepGroup_Fetching_Enum_from_Header_Mapping_and_verifying_
  * Steps: 22
  */
 export async function stepGroup_Adding_Rules_In_Rules_and_Actions_Screen(page: import('@playwright/test').Page, vars: Record<string, string>) {
-  const profileName = "Bid_Maps";
-  const profile = testDataManager.getProfileByName(profileName);
   const CorrPortalElem = new CorrPortalPage(page);
-  if (profile && profile.data) {
-    const ruleName = profile.data[0]['Rule Name'];
-    const conditionBidField = profile.data[0]['Condition Bid Field'];
-    const bidEnumeratedTapeValue = profile.data[0]['BidEnumeratedTapeValue']
-    const operation1 = profile.data[0]['Operation1']
-    vars["Rule Name"] = ruleName;
-    vars["Condition Bid Field"] = conditionBidField;
-    vars["BidEnumeratedTapeValue"] = bidEnumeratedTapeValue;
-    console.log("the bid enumerated tape value is :", vars["BidEnumeratedTapeValue"])
-    vars["Operation1"] = operation1;
-    console.log("the operation is :", vars["Operation1"])
-    vars["Username"] = credentials.username;
-    vars["Password"] = credentials.password;
-  }
-
   // const testData: Record<string, string> = {}; // TODO: Load from test data profile
   await CorrPortalElem.Add_Rule_Button.click();
-  await CorrPortalElem.Rule_Name_Field.fill(vars["Rule Name"]);
+  await CorrPortalElem.Rule_Name_Field.pressSequentially(vars["Rule Name"]);
   vars["Rule Name"] = await CorrPortalElem.Rule_Name_Field.inputValue() || '';
   await expect(CorrPortalElem.Rule_Name_Field).toHaveValue(vars["Rule Name"]);
   await CorrPortalElem.Select_Category_Dropdown.click();
@@ -1909,14 +1963,12 @@ export async function stepGroup_Adding_Rules_In_Rules_and_Actions_Screen(page: i
   await CorrPortalElem.When_Bid_Field_in_Add_Conditions.click();
   await CorrPortalElem.Search_Field.waitFor({ state: "visible" })
   await CorrPortalElem.Search_Field.fill(vars["Condition Bid Field"]);
-  await page.pause();
   vars["BidField"] = await CorrPortalElem.Search_Field.inputValue() || '';
   await CorrPortalElem.Select_Button.waitFor({ state: "visible" })
   await CorrPortalElem.Select_Button.click();
   expect(String(vars["BidField"])).toBe(vars["Condition Bid Field"]);
   // await CorrPortalElem.Operation_Dropdown.last().selectOption({ label: vars["Operation1"] });
   await CorrPortalElem.Operation_Dropdown.last().selectOption({ value: vars["Operation1"] });
-  console.log("Operation selected:", vars["Operation1"]);
   await CorrPortalElem.Bid_Enumeration_Tape_Value_in_Rule.click();
   await CorrPortalElem.Search_Field_in_Bid_Enumerated_Tape_Value.click();
   await CorrPortalElem.Bid_Enumerated_Search_Field.fill(vars["BidEnumeratedTapeValue"]);
@@ -1926,6 +1978,40 @@ export async function stepGroup_Adding_Rules_In_Rules_and_Actions_Screen(page: i
   vars["RuleCondition"] = await CorrPortalElem.Operation_Dropdown.inputValue() || '';
   vars["RuleBidTapeValue"] = vars["BidEnumeratedTapeValue"];
 }
+
+/**
+ * Step Group: Adding Rules In Rules and Actions Screen [Duplicated Rule].
+ * ID: 1126
+ * Steps: 21
+ */
+export async function stepGroup_Adding_Rules_In_Rules_and_Actions_Screen_Duplicated_Rule(page: import('@playwright/test').Page, vars: Record<string, string>) {
+  const CorrPortalElem = new CorrPortalPage(page);
+  // const testData: Record<string, string> = {}; // TODO: Load from test data profile
+  await CorrPortalElem.Rule_Name_Input_Field_Duplicated.clear();
+  await CorrPortalElem.Rule_Name_Input_Field_Duplicated.pressSequentially(vars["Duplicated Rule Name"]);
+  await expect(CorrPortalElem.Rule_Name_Input_Field_Duplicated).not.toHaveValue('');
+  await CorrPortalElem.Select_Category_Dropdown_Duplicated.click();
+  vars["CategoryName"] = await CorrPortalElem.Select_Category_On_Rules_and_Actions.textContent() || '';
+  await CorrPortalElem.Select_Category.check();
+  await CorrPortalElem.Apply_Selected_1_button_in_Rule.last().click();
+  await CorrPortalElem.Duplicated_BidField_Value.click();
+  await CorrPortalElem.Duplicated_Bidfield_Search_Field.fill(vars["BidFields"]);
+  // [DISABLED] Store the value displayed in the text box Search_Field field into a variable BidField
+  // vars["BidField"] = await CorrPortalElem.Search_Field.inputValue() || '';
+  await CorrPortalElem.Select_text_Duplicated_Bid_field.click();
+  // [DISABLED] Verify if BidField == Condition Bid Field
+  // expect(String(vars["BidField"])).toBe(testData["Condition Bid Field"]);
+  await CorrPortalElem.Operations_Dropdown_2.selectOption({ value: vars["Operation2"] });
+  await CorrPortalElem.Duplicated_Rule_Enum_Value.click();
+  await CorrPortalElem.Duplicated_enum_search_field.fill(vars["Bid Enumerated Tape Value"]);
+  await expect(CorrPortalElem.Duplicated_enum_search_field).toHaveValue(vars["Bid Enumerated Tape Value"]);
+  await CorrPortalElem.Select_text_Duplicated_Enum.click();
+  await expect(CorrPortalElem.Duplicated_Rule_Enum_Value).toContainText(vars["Bid Enumerated Tape Value"]);
+  vars["RuleBidField"] = vars["BidField"];
+  vars["RuleCondition"] = await CorrPortalElem.Operations_Dropdown_2.inputValue() || '';
+  vars["RuleBidTapeValue"] = vars["Bid Enumerated Tape Value"];
+}
+
 
 /**
  * Step Group: Reading Column Data from XLS
@@ -2046,17 +2132,35 @@ export async function stepGroup_Creating_New_Bid_Mapping_For_search_action_based
  */
 export async function stepGroup_Verification_Of_Duplicated_Rule_Values(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
-  await expect(CorrPortalElem.Rule_Name_Input_Field_Duplicated).toHaveValue(vars["Rule Name"]);
+  await expect(CorrPortalElem.Rule_Name_Input_Field_Duplicated).toBeVisible();
+  await expect(CorrPortalElem.Rule_Name_Input_Field_Duplicated.last()).toHaveValue(vars["Rule Name"]);
   await CorrPortalElem.Select_Category_Dropdown_Duplicated.click();
-  await expect(CorrPortalElem.Category_In_Dropdown).toBeVisible();
-  await CorrPortalElem.Apply_Selected_1_button_in_Rule.scrollIntoViewIfNeeded();
-  await CorrPortalElem.Apply_Selected_1_button_in_Rule.click();
+  await expect(CorrPortalElem.get_Category_In_Dropdown(vars["CategoryName"]).last()).toBeVisible();
+  await CorrPortalElem.Apply_Selected_1_button_in_Rule.last().scrollIntoViewIfNeeded();
+  await CorrPortalElem.Apply_Selected_1_button_in_Rule.last().click();
   await expect(CorrPortalElem.Duplicated_BidField_Value).toContainText(vars["RuleBidField"]);
   await expect(CorrPortalElem.Operations_Dropdown_2).toHaveValue(vars["RuleCondition"]);
   await expect(CorrPortalElem.Condition_BidTape_2).toContainText(vars["RuleBidTapeValue"]);
-  await expect(CorrPortalElem.Action_Chase_Field_Name_2).toHaveValue(vars["ActionChaseFieldName"]);
-  await expect(CorrPortalElem.Action_Chase_Value_2).toHaveValue(vars["ActionChaseValue"]);
+  await expect(CorrPortalElem.Action_Chase_Field_Name_2).toContainText(vars["ChaseFiledNameonAddActions"]);
+  await expect(CorrPortalElem.Action_Chase_Value_2).toContainText(vars["ChasevalueOnAddActions"]);
 }
+
+export async function stepGroup_Verification_Of_Duplicated_Rule_Values_with_Duplicated_Rule_Name(page: import('@playwright/test').Page, vars: Record<string, string>) {
+  const CorrPortalElem = new CorrPortalPage(page);
+  await expect(CorrPortalElem.Rule_Name_Input_Field_Duplicated).toBeVisible();
+  await expect(CorrPortalElem.Rule_Name_Input_Field_Duplicated.last()).toHaveValue(vars["Duplicated Rule Name"]);
+  await CorrPortalElem.Select_Category_Dropdown_Duplicated.click();
+  await expect(CorrPortalElem.get_Category_In_Dropdown(vars["CategoryName"]).last()).toBeVisible();
+  await CorrPortalElem.Apply_Selected_1_button_in_Rule.last().scrollIntoViewIfNeeded();
+  await page.pause();
+  await CorrPortalElem.Apply_Selected_1_button_in_Rule.last().click();
+  await expect(CorrPortalElem.Duplicated_BidField_Value).toContainText(vars["BidFields"]);
+  await expect(CorrPortalElem.Operations_Dropdown_2).toHaveValue(vars["RuleCondition"]);
+  await expect(CorrPortalElem.Condition_BidTape_2).toContainText(vars["RuleBidTapeValue"]);
+  await expect(CorrPortalElem.Action_Chase_Field_Name_2).toContainText(vars["ActionChaseFieldName"]);
+  await expect(CorrPortalElem.Action_Chase_Value_2).toContainText(vars["ActionChaseValue"]);
+}
+
 
 /**
  * Step Group: Fetching the data based on Enum value in Header Mapping and fetching both Chase Value and Bid Sample Field Name
@@ -2121,39 +2225,6 @@ export async function stepGroup_Add_Actions_in_Rules_and_ActionsDuplicated_Rule(
   await CorrPortalElem.Action_Chase_Value_2.selectOption({ index: parseInt("1") });
   vars["ActionChaseFieldName"] = await CorrPortalElem.Action_Chase_Field_Name_2.evaluate(el => { const s = el as HTMLSelectElement; return s.options[s.selectedIndex]?.text || ''; });
   vars["ActionChaseValue"] = await CorrPortalElem.Action_Chase_Value_2.evaluate(el => { const s = el as HTMLSelectElement; return s.options[s.selectedIndex]?.text || ''; });
-}
-
-/**
- * Step Group: Adding Rules In Rules and Actions Screen [Duplicated Rule].
- * ID: 1126
- * Steps: 21
- */
-export async function stepGroup_Adding_Rules_In_Rules_and_Actions_Screen_Duplicated_Rule(page: import('@playwright/test').Page, vars: Record<string, string>) {
-  const CorrPortalElem = new CorrPortalPage(page);
-  const testData: Record<string, string> = {}; // TODO: Load from test data profile
-  await CorrPortalElem.Rule_Name_Input_Field_Duplicated.clear();
-  await CorrPortalElem.Rule_Name_Input_Field_Duplicated.fill(testData["Duplicated Rule Name"]);
-  await expect(CorrPortalElem.Rule_Name_Input_Field_Duplicated).not.toHaveValue('');
-  await CorrPortalElem.Select_Category_Dropdown_Duplicated.click();
-  vars["CategoryName"] = await CorrPortalElem.Select_Category_On_Rules_and_Actions.textContent() || '';
-  await CorrPortalElem.Select_Category.check();
-  await CorrPortalElem.Apply_Selected_1_button_in_Rule.click();
-  await CorrPortalElem.Duplicated_BidField_Value.click();
-  await CorrPortalElem.Duplicated_Bidfield_Search_Field.fill(testData["BidFields"]);
-  // [DISABLED] Store the value displayed in the text box Search_Field field into a variable BidField
-  // vars["BidField"] = await CorrPortalElem.Search_Field.inputValue() || '';
-  await CorrPortalElem.Select_text_Duplicated_Bid_field.click();
-  // [DISABLED] Verify if BidField == Condition Bid Field
-  // expect(String(vars["BidField"])).toBe(testData["Condition Bid Field"]);
-  await CorrPortalElem.Operations_Dropdown_2.selectOption({ label: testData["Operation2"] });
-  await CorrPortalElem.Duplicated_Rule_Enum_Value.click();
-  await CorrPortalElem.Duplicated_enum_search_field.fill(testData["Bid Enumerated Tape Value"]);
-  await expect(CorrPortalElem.Duplicated_enum_search_field).toHaveValue(testData["Bid Enumerated Tape Value"]);
-  await CorrPortalElem.Select_text_Duplicated_Enum.click();
-  await expect(CorrPortalElem.Duplicated_Rule_Enum_Value).toContainText(testData["Bid Enumerated Tape Value"]);
-  vars["RuleBidField"] = vars["BidField"];
-  vars["RuleCondition"] = await CorrPortalElem.Operations_Dropdown_2.inputValue() || '';
-  vars["RuleBidTapeValue"] = testData["Bid Enumerated Tape Value"];
 }
 
 /**

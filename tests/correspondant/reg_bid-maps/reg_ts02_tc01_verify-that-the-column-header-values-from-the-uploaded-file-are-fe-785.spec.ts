@@ -14,6 +14,15 @@ import { ProceedWithSavingButtonPage } from '../../../src/pages/correspondant/pr
 import { SpinnerPage } from '../../../src/pages/correspondant/spinner';
 import { StatusInactivePage } from '../../../src/pages/correspondant/status-inactive-';
 import { ThisActionWillSaveTheChangesAndMoveToNextPagePage } from '../../../src/pages/correspondant/this-action-will-save-the-changes-and-move-to-next-page';
+import { testDataManager } from 'testdata/TestDataManager';
+import { ENV } from '@config/environments'
+import { AddonHelpers } from '../../../src/helpers/AddonHelpers';
+import { uploadFile } from '../../../src/helpers/file-helpers';
+import { getRowDataWithCommaSeperator } from '../../../src/helpers/excel-helpers';
+import { Logger as log } from '../../../src/helpers/log-helper';
+
+const TC_ID = "REG_TS02_TC01";
+const TC_TITLE = "Verify that the column header values from the uploaded file are fetched and displayed as bid sample field names in the header mapping screen."
 
 test.describe('REG_Bid Maps', () => {
   let vars: Record<string, string> = {};
@@ -29,6 +38,8 @@ test.describe('REG_Bid Maps', () => {
   let spinnerPage: SpinnerPage;
   let statusInactivePage: StatusInactivePage;
   let thisActionWillSaveTheChangesAndMoveToNextPagePage: ThisActionWillSaveTheChangesAndMoveToNextPagePage;
+  let Helpers: AddonHelpers;
+  const credentials = ENV.getCredentials('internal');
 
   test.beforeEach(async ({ page }) => {
     vars = {};
@@ -44,160 +55,167 @@ test.describe('REG_Bid Maps', () => {
     spinnerPage = new SpinnerPage(page);
     statusInactivePage = new StatusInactivePage(page);
     thisActionWillSaveTheChangesAndMoveToNextPagePage = new ThisActionWillSaveTheChangesAndMoveToNextPagePage(page);
+    Helpers = new AddonHelpers(page, vars);
   });
 
-  test('REG_TS02_TC01_Verify that the column header values from the uploaded file are fetched and displayed as bid sample field names in the header mapping screen.', async ({ page }) => {
-    const testData: Record<string, string> = {
-  "Upload File Text Verification": "Drag and drop files here or click to browse. Allowed formats: .xls,.xlsx,.csv,.txt",
-  "UniqueColHeader/Enum": "TsSearchUniqueColHeaderEnum",
-  "Save and Move to Next Page": "Save and Move to Next Page",
-  "CSS Attribute": "2px solid rgb(227, 82, 5)",
-  "Used Headers": "Show Used Headers",
-  "2-4 Unit": "2-4 Unit",
-  "Search Map Input": "Deepika Aug1",
-  "Chase_Field_Name1": "Mortgage Type",
-  "Rule Name": "Rule 1",
-  "Unidentified Headers": "Show Unidentified Headers",
-  "Operations": "GREATER",
-  "BidFields.": "DTI",
-  "Search Fields": "hii",
-  "Operator 2 Symbol": ">",
-  "Time Interval": "05",
-  "Unidentified Enumerations": "Show Unidentified Enumerations",
-  "Show All Enumerations": "Show All Enumerations",
-  "Unidentfied and Save Message": "You have unidentified fields.  This action will save the changes and Move to Next Page.",
-  "BidField": "FICO Score",
-  "Search_Map": "Deepika Aug",
-  "CustomHeader": "Header 02",
-  "New Rule Name": "New Rule",
-  "Assigned Companies1": "Wik1C BeuLD MoJbr CoEmy LLpoJ",
-  "Unique Chase Value1": "AndoverBirchDrive1",
-  "Company name 2": "Wik1C BeuLD MoJbr CoEmy LLpoJ  - A2964",
-  "Bid Field": "Base Loan Amount",
-  "Chase  Values": "False",
-  "ChaseValue": "Attached",
-  "Unused Enumerations": "Show Unused Enumerations",
-  "Reason For Cancellation": "To Be Cancelled",
-  "Reason For Deletion": "To Be Deleted",
-  "ChaseValues.": "False",
-  "Chase_Field_Name": "Mortgage Limit",
-  "Header Mapping": "Show All Headers",
-  "Chase Field Name": "Amortization Type",
-  "ChaseFieldName": "Appraised Value",
-  "UniqueBidEnumTapeValue": "852345",
-  "BidEnumeratedTapeValue": "800",
-  "Chase Fields Name": "Amortization Type, Appraised Value, Attachment Type, Aus List, Borrower First Name, Borrower Last Name, Buy Down, CLTV, City, DTI, Fico, First Time Home Buyer, First Time Homebuyer Credit Fee Waiver, Impound Types, Income Ami Ratio, Ineligible, Interest Only, LTV, Loan Amount, Loan Number, Loan Purpose, Loan Term, Monthly Income, Mortgage Limit, Mortgage Types, Note Rate, Number Of Unit, Occupancy Type, Product Name, Property Type, Property Valuation Type, Purchase Price, State, Street, Subordinate Loan Amount, TPO, Total Loan Amount, Unpaid Principal Balance, Zip",
-  "Unique Chase Field Name": "Street",
-  "Chase Value": "Fixed rate",
-  "Search_Input": "TS_SEARCHMAP21",
-  "Unused Headers": "Show Unused Headers",
-  "Bid Enumerated Tape Value": "80",
-  "Search Field Company Name": "Wik1C",
-  "Create Map": "Testsigma_04/03/2025/",
-  "Custom Header": "Header01",
-  "Investment (NOO)": "Investment (NOO)",
-  "PropertyValuation": "1004Desktop",
-  "ImportRuleName": "TEst",
-  "Action Save message": "This action will save the changes and Move to Next Page",
-  "SearchFields": "Hii",
-  "Start Time in Minutes": "31",
-  "Execution Type1": "STANDARD",
-  "BidEnumeratedTapeValue - Block 2": "Fixed",
-  "Execution Type": "CHASE_DIRECT",
-  "UniqueColumnHeaderSearch": "TsSearchUniqueColumnHeader",
-  "Start Time in Hour": "8",
-  "UniqueWhenBidFieldSearch": "TsSearchWhenBidField",
-  "WhenBidFieldName - Block 2": "Amortization Type",
-  "EmptyChaseFieldName": "Select",
-  "WhenBidFieldValue-3": "Appraised Value",
-  "Unique Chase Value": "AndoverBirchDrive",
-  "BidFields": "CLTV",
-  "Loan Purpose": "Refinance (R&T)",
-  "Advanced Search": "Fico",
-  "ChaseFieldNames": "Aus List",
-  "NO of Batches": "05",
-  "CompanyName3": "American Pacific  - A4257",
-  "Operator": "LESS_OR_EQUAL",
-  "SelectingChaseFieldName": "7",
-  "UpdatedBidEnumeratedTapeValue": "SAIKAT_18_FEB_002",
-  "Search Input": "Test",
-  "Company name 1": "Freedom",
-  "Operator 3": "CONTAINS",
-  "Expected Company Name": "Freedom",
-  "Operation2": "GREATER",
-  "Operation1": "LESS",
-  "Operator - Block 2": "GREATER",
-  "Bid Tape Value": "Fixed",
-  "Search Field": "free",
-  "Created Map Id": "Testsigma_05/07/2025/20:55:58",
-  "Rule Name(Updated)": "UP Rule 1",
-  "Operator 1 Symbol": "<",
-  "UniqueChaseValueSearch": "TsSearchChaseValue",
-  "Import Rule": "Testsigma_02/23/2026/01:02:39",
-  "Duplicated Rule Name": "Rule 2",
-  "Condition Bid Field": "FICO Score",
-  "BidEnumeraedTapeValue - 3": "425000",
-  "Chasevalues": "Variable rate",
-  "DeleteId": "Testsigma_05/05/2025/16:23:13",
-  "UpdatedWhenBidFieldName": "Correspondent Loan Number",
-  "Unidentified fields Message": "You have unidentified fields do you want to proceed further.",
-  "UniqueBidEnumTapeSearch": "TsSearchBidEnumTape",
-  "Unidentified Fields Error Message": "You have unidentified fields.",
-  "UniqueRuleNameSearch": "TsSearchUniqueRuleName"
-}; // Profile: "Bid_Maps", row: 0
+  const profileName = "Bid_Maps";
+  const profile = testDataManager.getProfileByName(profileName);
 
-    await stepGroups.stepGroup_Login_to_CORR_Portal(page, vars);
-    await stepGroups.stepGroup_Smart_Mapper_from_Off_to_On(page, vars);
-    await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-    await stepGroups.stepGroup_Navigation_to_Customer_Permission(page, vars);
-    await correspondentPortalPage.Administration_Menu.click();
-    await correspondentPortalPage.Bid_Maps_Menu.click();
-    await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-    await expect(headingMappingsPage.Mappings).toBeVisible();
-    await correspondentPortalPage.Add_New_Mapping_Button.click();
-    await expect(headingCreateNewMapPage.Create_New_Map).toBeVisible();
-    vars["Create New Map"] = new Date().toLocaleDateString('en-US') /* format: dd/MM/yyyy/HH:mm:ss */;
-    vars["Create New Map"] = "Testsigma_" + vars["Create New Map"];
-    await correspondentPortalPage.Create_New_Map_Field.fill(vars["Create New Map"]);
-    await correspondentPortalPage.Create_Button.click();
-    await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-    await expect(p2142530YrFreddieMacFixedDropdownPage.Bid_Maps_Name).toContainText(vars["Create New Map"]);
-    await correspondentPortalPage.Select_Companys_Dropdown.click();
-    await statusInactivePage.Second_Selected_Company_Checkbox.click();
-    await correspondentPortalPage.Apply_Selected.click();
-    await expect(correspondentPortalPage.Upload_File).toHaveValue('');
-    await expect(page.getByText(testData["Upload File Text Verification"])).toBeVisible();
-    await stepGroups.stepGroup_Rename_File(page, vars);
-    await page.waitForLoadState('networkidle');
-    await correspondentPortalPage.Upload_File.setInputFiles(path.resolve(__dirname, 'test-data', "Bid Maps File QA_-_Bidmap_1(xlsx).xlsx"));
-    await mapHeadersButtonPage.Map_Headers_Button.click();
-    await correspondentPortalPage.Heading_Save_and_Move_to_Next_Page1.waitFor({ state: 'visible' });
-    await expect(thisActionWillSaveTheChangesAndMoveToNextPagePage.This_action_will_save_the_changes_and_Move_to_Next_Page).toBeVisible();
-    await proceedWithSavingButtonPage.Proceed_with_Saving_Button.click();
-    await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-    await expect(page.getByText(vars["Create New Map"])).toBeVisible();
-    await headerMappingPage.Header_Mapping.waitFor({ state: 'visible' });
-    await expect(correspondentPortalPage.Rules_and_Actions_Step_4_of_4).toBeVisible();
-    vars["BidSampleFieldNameCount"] = String(await p24UnitDropdownPage.Bid_Sample_Field_Name_in_Header_Mapping.count());
-    vars["count"] = "1";
-    vars["Columncount"] = "0";
-    vars["MappedHeaderCount"] = "0";
-    vars["UnmappedHeaderCount"] = "0";
-    while (parseFloat(String(vars["count"])) <= parseFloat(String(vars["BidSampleFieldNameCount"]))) {
-      await page.reload();
-      await page.waitForLoadState('networkidle');
-      await enumerationMappingButtonPage.Enumeration_Mapping_Button.waitFor({ state: 'visible' });
-      vars["Header From UI"] = await correspondentPortalPage.Headers_From_UI.textContent() || '';
-      vars["MappedDataValue"] = await correspondentPortalPage.Chase_Field_Name_Drowpdown.evaluate(el => { const s = el as HTMLSelectElement; return s.options[s.selectedIndex]?.text || ''; });
-      if (String(vars["MappedDataValue"]) === String("Select")) {
-        vars["UnmappedHeaderCount"] = (parseFloat(String("1")) + parseFloat(String(vars["UnmappedHeaderCount"]))).toFixed(0);
-      } else {
-        vars["MappedHeaderCount"] = (parseFloat(String("1")) + parseFloat(String(vars["MappedHeaderCount"]))).toFixed(0);
-        if (true) /* Verify if Chase Fields Name contains with MappedDataValue */ {
+  test(`${TC_ID} - ${TC_TITLE}`, async ({ page }) => {
+    log.tcStart(TC_ID, TC_TITLE);
+
+    try {
+
+      log.step("Step 1: Prepare test data");
+      try {
+        if (profile && profile.data) {
+          const companyName1 = profile.data[0]["Company name 1"];
+          vars["Company name 1"] = companyName1;
+          const uploadText = profile.data[0]['Upload File Text Verification'];
+          vars["Upload File Text Verification"] = uploadText;
+          vars["Username"] = credentials.username;
+          vars["Password"] = credentials.password;
+
+          log.info(`Company name: ${vars["Company name 1"]}`);
+          log.info(`Upload text: ${vars["Upload File Text Verification"]}`);
         }
+        log.stepPass("Step 1 passed: Test data prepared");
+      } catch (error) {
+        log.stepFail(page, "Step 1 failed");
+        throw error;
       }
-      expect(String(vars["Total Headers From Xls"])).toBe(vars["Header From UI"]);
-      vars["count"] = (parseFloat(String("1")) + parseFloat(String(vars["count"]))).toFixed(0);
+
+      log.step("Step 2: Login and enable Smart Mapper");
+      try {
+        await stepGroups.stepGroup_Login_to_CORR_Portal(page, vars);
+        await stepGroups.stepGroup_Smart_Mapper_from_Off_to_On(page, vars);
+        await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+
+        log.stepPass("Step 2 passed");
+      } catch (error) {
+        log.stepFail(page, "Step 2 failed");
+        throw error;
+      }
+
+      log.step("Step 3: Navigate to Bid Maps and create new map");
+      try {
+        await stepGroups.stepGroup_Navigation_to_Customer_Permission(page, vars);
+        await correspondentPortalPage.Administration_Menu.click();
+        await correspondentPortalPage.Bid_Maps_Menu.click();
+        await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+
+        await expect(headingMappingsPage.Mappings).toBeVisible();
+
+        await correspondentPortalPage.Add_New_Mapping_Button.click();
+        await expect(headingCreateNewMapPage.Create_New_Map).toBeVisible();
+
+        Helpers.getCurrentTimestamp("dd/MM/yyyy/HH:mm:ss", "Current Date", "Asia/Kolkata");
+        Helpers.concatenate("Testsigma_", vars["Current Date"], "CreateNewMap");
+
+        log.info(`Generated Map Name: ${vars["CreateNewMap"]}`);
+
+        await correspondentPortalPage.Create_New_Map_Field.fill(vars["CreateNewMap"]);
+        await correspondentPortalPage.Create_Button.click();
+        await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+
+        await expect(p2142530YrFreddieMacFixedDropdownPage.Bid_Maps_Name).toContainText(vars["CreateNewMap"]);
+
+        log.stepPass("Step 3 passed");
+      } catch (error) {
+        log.stepFail(page, "Step 3 failed");
+        throw error;
+      }
+
+      log.step("Step 4: Select company and upload file");
+      try {
+        await correspondentPortalPage.Select_Companys_Dropdown.click();
+        await statusInactivePage.Second_Selected_Company_Checkbox(vars["Company name 1"]).click();
+        await correspondentPortalPage.Apply_Selected.click();
+
+        await expect(correspondentPortalPage.Upload_File).toHaveValue('');
+        await expect(page.getByText(vars["Upload File Text Verification"])).toBeVisible();
+
+        await uploadFile(page, correspondentPortalPage.Upload_File, "Bid_Maps_File_QA_-_Bidmap_1(xlsx).xlsx");
+
+        log.stepPass("Step 4 passed");
+      } catch (error) {
+        log.stepFail(page, "Step 4 failed");
+        throw error;
+      }
+
+      log.step("Step 5: Map headers and navigate");
+      try {
+        await mapHeadersButtonPage.Map_Headers_Button.click();
+        await correspondentPortalPage.Heading_Save_and_Move_to_Next_Page1.waitFor({ state: 'visible' });
+
+        await expect(thisActionWillSaveTheChangesAndMoveToNextPagePage.This_action_will_save_the_changes_and_Move_to_Next_Page).toBeVisible();
+
+        await proceedWithSavingButtonPage.Proceed_with_Saving_Button.click();
+        await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+
+        await expect(page.getByText(vars["CreateNewMap"])).toBeVisible();
+        await headerMappingPage.Header_Mapping.waitFor({ state: 'visible' });
+        await expect(correspondentPortalPage.Rules_and_Actions_Step_4_of_4).toBeVisible();
+
+        log.stepPass("Step 5 passed");
+      } catch (error) {
+        log.stepFail(page, "Step 5 failed");
+        throw error;
+      }
+
+      log.step("Step 6: Validate headers with loop");
+      try {
+        vars["Total Headers From Xls"] = getRowDataWithCommaSeperator(
+          path.resolve(process.cwd(), 'uploads/Bid_Maps_File_QA_-_Bidmap_1(xlsx).xlsx'), 0
+        );
+
+        vars["BidSampleFieldNameCount"] = String(await p24UnitDropdownPage.Bid_Sample_Field_Name_in_Header_Mapping.count());
+        vars["count"] = "1";
+        vars["MappedHeaderCount"] = "0";
+        vars["UnmappedHeaderCount"] = "0";
+
+        log.info(`Total Headers From XLS: ${vars["Total Headers From Xls"]}`);
+        log.info(`UI Count: ${vars["BidSampleFieldNameCount"]}`);
+        log.info(`Initial Mapped Count: ${vars["MappedHeaderCount"]}`);
+        log.info(`Initial Unmapped Count: ${vars["UnmappedHeaderCount"]}`);
+
+        while (parseFloat(String(vars["count"])) <= parseFloat(String(vars["BidSampleFieldNameCount"]))) {
+          await enumerationMappingButtonPage.Enumeration_Mapping_Button.waitFor({ state: 'visible' });
+
+          vars["Header From UI"] = (await correspondentPortalPage.get_Headers_From_UI(parseInt(vars["count"])).textContent())?.trim() || '';
+          vars["MappedDataValue"] = await correspondentPortalPage.get_Chase_Field_Name_Drowpdown(parseInt(vars["count"])).evaluate(el => {
+            const s = el as HTMLSelectElement;
+            return s.options[s.selectedIndex]?.text || '';
+          });
+
+          if (String(vars["MappedDataValue"]) === String("Select")) {
+            vars["UnmappedHeaderCount"] = (parseFloat(String("1")) + parseFloat(String(vars["UnmappedHeaderCount"]))).toFixed(0);
+          } else {
+            vars["MappedHeaderCount"] = (parseFloat(String("1")) + parseFloat(String(vars["MappedHeaderCount"]))).toFixed(0);
+            if (true) /* Verify if Chase Fields Name contains with MappedDataValue */ {
+            }
+          }
+
+          expect(String(vars["Total Headers From Xls"])).toContain(vars["Header From UI"]);
+
+          vars["count"] = (parseFloat(String("1")) + parseFloat(String(vars["count"]))).toFixed(0);
+        }
+
+        log.info(`Final Mapped Count: ${vars["MappedHeaderCount"]}`);
+        log.info(`Final Unmapped Count: ${vars["UnmappedHeaderCount"]}`);
+
+        log.stepPass("Step 6 passed");
+      } catch (error) {
+        log.stepFail(page, "Step 6 failed");
+        throw error;
+      }
+
+      log.tcEnd('PASS');
+
+    } catch (error) {
+      log.captureOnFailure(page, TC_ID, error);
+      log.tcEnd('FAIL');
+      throw error;
     }
   });
 });

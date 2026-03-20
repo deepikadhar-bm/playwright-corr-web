@@ -7,8 +7,8 @@ import { Page, Locator } from '@playwright/test';
 export class EnumertionPage {
   constructor(private page: Page) {}
 
-  get Bid_Sample_Name_1(): Locator {
-    return this.page.locator("(//div[@class=\"col-2\"]//div[text()=\"$|FirstBidSampleName|\"])[1]/../..//input[@type=\"checkbox\"]");
+  get_Bid_Sample_Name_1(FirstBidSampleName:string): Locator {
+    return this.page.locator(`(//div[@class=\"col-2\"]//div[text()=\"${FirstBidSampleName}\"])[1]/../..//input[@type=\"checkbox\"]`);
   }
 
 }
