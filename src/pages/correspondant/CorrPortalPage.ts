@@ -1728,8 +1728,8 @@ export class CorrPortalPage {
     return this.page.locator("//div//div[@id=\"companySelect\"]//div//button[@id=\"multiSelectDropDown\"]");
   }
 
-  get Select_Current_Date_Filters_Price_Offered(): Locator {
-    return this.page.locator("//div[@class=\"ngb-dp-month\"]//div[@aria-label=\"$|CurrentDate|\"]");
+  Select_Current_Date_Filters_Price_Offered(CurrentDate:string): Locator {
+    return this.page.locator(`//div[@class=\"ngb-dp-month\"]//div[@aria-label=\"${CurrentDate}\"]`);
   }
 
   get Select_Date_Range_Dropdown(): Locator {
@@ -1788,8 +1788,8 @@ export class CorrPortalPage {
     return this.page.locator("//label[text()=\"Select Company/s\"]/..//div[@class=\"pill rounded-pill relative\"]");
   }
 
-  get Selected_Company_Name_Customer_Permissions(): Locator {
-    return this.page.locator("//td[@data-title=\"Company Name\" and text()=\" @|CompanyName(CustomerPermissions)| \"]");
+  Selected_Company_Name_Customer_Permissions(CompanyName_CustomerPermissions: string): Locator {
+    return this.page.locator(`//td[@data-title="Company Name" and text()=" ${CompanyName_CustomerPermissions} "]`);
   }
 
   get Set_page_size_to_50_Dropdown(): Locator {

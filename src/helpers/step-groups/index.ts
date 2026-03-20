@@ -567,10 +567,10 @@ export async function stepGroup_Navigation_and_Verification_of_Customer_Permissi
   await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
   await CorrPortalElem.CustomerPermission_Menu.click();
   await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
-  await expect(page.getByText("Customer Permission")).toBeVisible();
-  vars["CompanyName"] = await CorrPortalElem.Selected_Company_Name_Customer_Permissions.textContent() || '';
+  await expect((page.getByText("Customer Permission")).first()).toBeVisible();
+  vars["CompanyName"] = await CorrPortalElem.Selected_Company_Name_Customer_Permissions(vars["CompanyName_CustomerPermissions"]).textContent() || '';
   vars["Companyname"] = String(vars["CompanyName"]).trim();
-  await expect(CorrPortalElem.Selected_Company_Name_Customer_Permissions).toContainText(vars["Companyname"]);
+  await expect(CorrPortalElem.Selected_Company_Name_Customer_Permissions(vars["CompanyName_CustomerPermissions"])).toContainText(vars["Companyname"]);
 }
 
 /**
@@ -2540,14 +2540,44 @@ export async function stepGroup_New_Export_List_Advance_Search(page: import('@pl
  */
 export async function stepGroup_Create_Bid_MapsCompanies_verification(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
-  await page.waitForLoadState('networkidle');
+  await page.waitForLoadState('load');
   await CorrPortalElem.Administration_Menu.click();
   await CorrPortalElem.Bid_Maps_Menu.click();
   await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
   await CorrPortalElem.Add_New_Mapping_Button.click();
   await expect(page.getByText("Create New Map")).toBeVisible();
-  vars["Create Bid Map"] = new Date().toLocaleDateString('en-US') /* format: dd/MM/yyyy:HH:mm:ss */;
-  await CorrPortalElem.Map_Name_Field_in_Bid_Maps.fill("Automation_Testsigma_" + vars["Create New Map"]);
+  
+  //vars["Create Bid Map"] = new Date().toLocaleDateString('en-US') /* format: dd/MM/yyyy:HH:mm:ss */;
+  vars["CreateNewMap"] = (() => {
+  const d = new Date();
+  const parts = new Intl.DateTimeFormat('en-GB', {
+    timeZone: "Asia/Kolkata",
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: false
+  }).formatToParts(d);
+
+  const p = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
+
+  const day    = p.day    || '00';
+  const month  = p.month  || '00';
+  const year   = p.year   || '0000';
+  const hour   = p.hour   || '00';
+  const minute = p.minute || '00';
+  const second = p.second || '00';
+
+  // Indian format: dd/MM/yyyy_HH:mm:ss (no spaces)
+  return `${day}/${month}/${year}_${hour}:${minute}:${second}`;
+})();
+
+vars["CreateNewMap"] = "Automation_Testsigma_" + vars["CreateNewMap"];
+log.info(`NewMapName To be entered: ${vars["CreateNewMap"]}`);
+  //vars["CreateNewMap"] = "Testsigma_" + vars["CreateNewMap"];
+  await CorrPortalElem.Map_Name_Field_in_Bid_Maps.fill(vars["CreateNewMap"]);
   vars["CreatedBidMap"] = await CorrPortalElem.Map_Name_Field_in_Bid_Maps.inputValue() || '';
   await expect(CorrPortalElem.Compare_Button).toBeVisible();
   await CorrPortalElem.Compare_Button.click();
@@ -4157,29 +4187,38 @@ export async function stepGroup_Verifying_the_Mapping_of_ChaseField_and_ChaseVal
  */
 export async function stepGroup_Deleting_Early_Config_Report_If_Present(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
+  const Methods = new AddonHelpers(page, vars);
+
   await expect(CorrPortalElem.Administration_Menu).toBeVisible();
   await CorrPortalElem.Administration_Menu.click();
   await CorrPortalElem.General_Settings.click();
   await CorrPortalElem.Early_Close_Config.click();
   await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
   await expect(CorrPortalElem.Add_New_Config_Button).toBeVisible();
-  if (true) /* Verify that the element Early Close Config Rows displays tex */ {
+  vars['EarlyCloseConfigRowsText'] = await CorrPortalElem.Early_Close_Config_Rows.first().textContent() || '';
+  if (vars['EarlyCloseConfigRowsText'].includes(appconstants.NO_RESULT_TEXT)) {
+    log.info('Early Close Config shows No results - nothing to delete');
   } else {
-    if (true) /* Element Early Close Config Rows is visible */ {
-      vars["TotalRowsInEarlyCloseConfig"] = String(await CorrPortalElem.Early_Close_Config_Rows.count());
-      vars["count"] = "1";
-      while (parseFloat(String(vars["count"])) <= parseFloat(String(vars["TotalRowsInEarlyCloseConfig"]))) {
-        await CorrPortalElem.Delete_Option_Field.hover();
-        await expect(CorrPortalElem.Delete_Option_Field).toBeVisible();
-        await CorrPortalElem.Delete_Option_Field.click();
+    const isRowsVisible = await CorrPortalElem.Early_Close_Config_Rows.first().isVisible();
+    if (isRowsVisible) {
+      vars['TotalRowsInEarlyCloseConfig'] = String(await CorrPortalElem.Early_Close_Config_Rows.count());
+      log.info('TotalRowsInEarlyCloseConfig: ' + vars['TotalRowsInEarlyCloseConfig']);
+      vars['count'] = appconstants.ONE;
+      while (parseFloat(String(vars['count'])) <= parseFloat(String(vars['TotalRowsInEarlyCloseConfig']))) {
+        log.info('Deleting Early Close Config row: ' + vars['count']);
+        await CorrPortalElem.Delete_Option_Field.first().hover();
+        await expect(CorrPortalElem.Delete_Option_Field.first()).toBeVisible();
+        await CorrPortalElem.Delete_Option_Field.first().click();
         await CorrPortalElem.Yes_Delete_ButtonEarly_config.click();
         await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
-        vars["count"] = (parseFloat(String("1")) + parseFloat(String(vars["count"]))).toFixed(0);
+        Methods.MathematicalOperation(vars['count'], '+', 1, 'count');
       }
+      log.info('All Early Close Config rows deleted successfully');
+    } else {
+      log.info('Early Close Config rows exist but are not visible - skipping deletion');
     }
   }
 }
-
 /**
  * Step Group: Storing BidSample and BidTape Values from Enum Page with Mapping and writing into TDP
  * ID: 1364
@@ -4945,33 +4984,35 @@ export async function stepGroup_Navigating_To_Early_Close_Config(page: import('@
  */
 export async function stepGroup_Add_Early_Config_With_Current_Est_Time(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
+  const Methods = new AddonHelpers(page, vars);
+
   await CorrPortalElem.Administration_Menu.click();
   await CorrPortalElem.GeneralSettings_Menu.click();
   await CorrPortalElem.Early_Close_Config.click();
   await CorrPortalElem.Add_New_Config_Button.click();
   await CorrPortalElem.Toggle_Date_Picker_Button.click();
-  vars["CurrentDate"] = new Date().toLocaleDateString('en-US') /* format: d-M-yyyy */;
-  await CorrPortalElem.Select_Current_Date_Filters_Price_Offered.click();
-  vars["CurrentEstTime"] = (() => {
-    const d = new Date();
-    const opts: Intl.DateTimeFormatOptions = { timeZone: "UTC-04:00" };
-    const fmt = "hh:mma";
-    // Map Java date format to Intl parts
-    const parts = new Intl.DateTimeFormat('en-US', { ...opts, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }).formatToParts(d);
-    const p = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
-    return fmt.replace('yyyy', p.year || '').replace('yy', (p.year || '').slice(-2)).replace('MM', p.month || '').replace('dd', p.day || '').replace('HH', String(d.getHours()).padStart(2, '0')).replace('hh', p.hour || '').replace('mm', p.minute || '').replace('ss', p.second || '').replace('a', p.dayPeriod || '').replace(/M(?!M)/g, String(parseInt(p.month || '0'))).replace(/d(?!d)/g, String(parseInt(p.day || '0'))).replace(/h(?!h)/g, String(parseInt(p.hour || '0')));
-  })();
-  vars["CurrentEstTime"] = (() => {
-    const d = new Date('2000-01-01 ' + String(vars["CurrentEstTime"]));
-    d.setMinutes(d.getMinutes() + parseInt(String("3")));
-    return d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true }); // Format: hh:mma
-  })();
-  vars["TimeStandard"] = String(vars["CurrentEstTime"]).slice(-2);
-  vars["CurrentEstTime"] = String(vars["CurrentEstTime"]).substring(0, String(vars["CurrentEstTime"]).length - 2);
-  await CorrPortalElem.CommitCutOffTime.fill(vars["CurrentEstTime"]);
+
+  Methods.getCurrentTimestamp(appconstants. DATE_FORMAT, 'CurrentDate', appconstants.UTC);
+  log.info('CurrentDate: ' + vars['CurrentDate']);
+
+  await CorrPortalElem.Select_Current_Date_Filters_Price_Offered(vars["CurrentDate"]).click();
+
+  Methods.getCurrentTimestamp(appconstants.TIME_FORMAT_HHMMA, 'CurrentEstTime', appconstants.America_New_York);
+  log.info('CurrentEstTime before adding minutes: ' + vars['CurrentEstTime']);
+
+  Methods.addMinutesToDatetime(vars['CurrentEstTime'], appconstants.TIME_FORMAT_HHMMA, 3, appconstants.TIME_FORMAT_HHMMA, 'CurrentEstTime');
+  log.info('CurrentEstTime after adding 3 minutes: ' + vars['CurrentEstTime']);
+
+  Methods.getLastCharacters(vars['CurrentEstTime'],'2','TimeStandard');
+  log.info('TimeStandard: ' + vars['TimeStandard']);
+
+  Methods.removeCharactersFromPosition(vars['CurrentEstTime'],'0','2','CurrentEstTime');
+  log.info('CurrentEstTime (time only): ' + vars['CurrentEstTime']);
+
+  await CorrPortalElem.CommitCutOffTime.type(vars['CurrentEstTime']);
   await CorrPortalElem.Time_Standard_Dropdown.click();
-  await CorrPortalElem.Time_Standard_Dropdown.selectOption({ label: vars["TimeStandard"] });
-  await CorrPortalElem.Save_Config_Button.waitFor({ state: 'visible' });
+  await CorrPortalElem.Time_Standard_Dropdown.selectOption({ label: vars['TimeStandard'] });
+  await expect(CorrPortalElem.Save_Config_Button).toBeEnabled();
   await CorrPortalElem.Save_Config_Button.click();
 }
 
@@ -5037,11 +5078,12 @@ export async function stepGroup_Navigating_to_Customer_Permission_Page_and_disab
  */
 export async function stepGroup_Storing_Open_Auth_Limit_and_AuthLimit_Price_Offered(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
+  const Methods =new AddonHelpers(page, vars);
   vars["OpenAuthLimit"] = await CorrPortalElem.Open_Auth_Limit_All_Loans.textContent() || '';
-  vars["OpenAuthLimitStandard"] = String('').split("(")["0"] || '';
-  vars["OpenAuthLimitPercentageStandard"] = String('').split("(")["1"] || '';
-  vars["OpenAuthLimitPercentageStandard"] = String(vars["OpenAuthLimitPercentageStandard"]).replace(/\)%/g, '');
-  vars["AuthLimitStandard"] = await CorrPortalElem.Auth_Limit_All_Loans.textContent() || '';
+  Methods.splitBySpecialChar(vars['OpenAuthLimit'], '(', '0', 'OpenAuthLimitBeforeCommit');
+  Methods.splitBySpecialChar(vars['OpenAuthLimit'], '(', '1', 'OpenAuthLimitPercentageBeforeCommit');
+  Methods.removeMultipleSpecialChars([')', '%'], vars['OpenAuthLimitPercentageBeforeCommit'], 'OpenAuthLimitPercentageBeforeCommit');
+  vars["AuthLimitBeforeCommit"] = await CorrPortalElem.Auth_Limit_All_Loans.textContent() || '';
 }
 
 /**
@@ -5120,7 +5162,7 @@ export async function stepGroup_Updating_the_Loan_Numbers_in_a_file(page: import
 }
 
 /**
- * Step Group: Storing Required Loan Number Details
+ * Step Group: Storing Required Loan Number Details  with Before Commit runtime variables
  * ID: 1831
  * Steps: 10
  */
@@ -5139,11 +5181,49 @@ export async function stepGroup_Storing_Required_Loan_Number_Details(page: impor
 }
 
 /**
- * Step Group: Verifying Loan Details
+ * Step Group: Verifying Loan Details with Before Commit runtime variables
  * ID: 1832
  * Steps: 10
  */
 export async function stepGroup_Verifying_Loan_Details(page: import('@playwright/test').Page, vars: Record<string, string>) {
+  const CorrPortalElem = new CorrPortalPage(page);
+  await expect(CorrPortalElem.Last_Name_Commitment_List(vars["CommittedCorrLoan"])).toContainText(vars["LastNameBeforeCommit"]);
+  await expect(CorrPortalElem.Committed_Loan_Amount_Price_Offered(vars["CommittedCorrLoan"])).toContainText(vars["LoanAmountBeforeCommit"]);
+  await expect(CorrPortalElem.Interest_Rate_Commitment_List(vars["CommittedCorrLoan"])).toContainText(vars["InterestRateBeforeCommit"]);
+  await expect(CorrPortalElem.Reference_Security_Commitment_List(vars["CommittedCorrLoan"])).toContainText(vars["RefSecProdBeforeCommit"]);
+  await expect(CorrPortalElem.Reference_Security_Price_Commitment_List(vars["CommittedCorrLoan"])).toContainText(vars["RefSecPriceBeforeCommit"]);
+  await expect(CorrPortalElem.Gross_Price_Commitment_List(vars["CommittedCorrLoan"])).toContainText(vars["GrossPriceBeforeCommit"]);
+  await expect(CorrPortalElem.Hedge_Ratio_Commitment_List(vars["CommittedCorrLoan"])).toContainText(vars["HedgeRatioBeforeCommit"]);
+  await expect(CorrPortalElem.Curr_Market_Value_Commitment_List(vars["CommittedCorrLoan"])).toContainText(vars["CurrMarketValueBeforeCommit"]);
+  await expect(CorrPortalElem.Mark_Adj_Commitment_List(vars["CommittedCorrLoan"])).toContainText(vars["MarkAdjBeforeCommit"]);
+  await expect(CorrPortalElem.Curr_Gross_Commitment_List(vars["CommittedCorrLoan"])).toContainText(vars["CurrGrossBeforeCommit"]);
+}
+/**
+ * Step Group: Storing Required Loan Number Details  with Committed runtime variables
+ * ID: 1831
+ * Steps: 10
+ */
+export async function stepGroup_Storing_Required_Loan_Number_Details2(page: import('@playwright/test').Page, vars: Record<string, string>) {
+  const CorrPortalElem = new CorrPortalPage(page);
+  vars["CommittedLastNameTotalLoans"] = await CorrPortalElem.Last_Name_Commitment_List(vars["CommittedCorrLoan"]).textContent() || '';
+  vars["CommittedLoanAmountTotalLoans"] = await CorrPortalElem.Committed_Loan_Amount_Price_Offered(vars["CommittedCorrLoan"]).textContent() || '';
+  vars["CommittedIntRateTotalLoans"] = await CorrPortalElem.Interest_Rate_Commitment_List(vars["CommittedCorrLoan"]).textContent() || '';
+  vars["CommittedRefSecProdTotalLoans"] = await CorrPortalElem.Reference_Security_Commitment_List(vars["CommittedCorrLoan"]).textContent() || '';
+  vars["CommittedRefSecPriceTotalLoans"] = await CorrPortalElem.Reference_Security_Price_Commitment_List(vars["CommittedCorrLoan"]).textContent() || '';
+  vars["CommittedGrossPriceTotalLoans"] = await CorrPortalElem.Gross_Price_Commitment_List(vars["CommittedCorrLoan"]).textContent() || '';
+  vars["CommittedHedgeRatioTotalLoans"] = await CorrPortalElem.Hedge_Ratio_Commitment_List(vars["CommittedCorrLoan"]).textContent() || '';
+  vars["CommittedCurrMarketValueTotalLoans"] = await CorrPortalElem.Curr_Market_Value_Commitment_List(vars["CommittedCorrLoan"]).textContent() || '';
+  vars["CommittedMarkAdjTotalLoans"] = await CorrPortalElem.Mark_Adj_Commitment_List(vars["CommittedCorrLoan"]).textContent() || '';
+  vars["CommittedCurrGrossTotalLoans"] = await CorrPortalElem.Curr_Gross_Commitment_List(vars["CommittedCorrLoan"]).textContent() || '';
+}
+
+/**
+ * Step Group: Verifying Loan Details  with  Committed runtime variables
+ * ID: 
+ * Steps: 10
+ */
+
+export async function stepGroup_Verifying_Loan_Details2(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
   await expect(CorrPortalElem.Last_Name_Commitment_List(vars["CommittedCorrLoan"])).toContainText(vars["CommittedLastNameTotalLoans"]);
   await expect(CorrPortalElem.Committed_Loan_Amount_Price_Offered(vars["CommittedCorrLoan"])).toContainText(vars["CommittedLoanAmountTotalLoans"]);
@@ -5156,7 +5236,6 @@ export async function stepGroup_Verifying_Loan_Details(page: import('@playwright
   await expect(CorrPortalElem.Mark_Adj_Commitment_List(vars["CommittedCorrLoan"])).toContainText(vars["CommittedMarkAdjTotalLoans"]);
   await expect(CorrPortalElem.Curr_Gross_Commitment_List(vars["CommittedCorrLoan"])).toContainText(vars["CommittedCurrGrossTotalLoans"]);
 }
-
 /**
  * Step Group: Verifying Header Names From UI to Excel(Commitment List)
  * ID: 1835
@@ -6334,23 +6413,26 @@ export async function stepGroup_Verification_of_Data_from_Excel_to_UI_Excluding_
  * Steps: 6
  */
 export async function stepGroup_Adjust_Time_by_adding_and_subtracting_one_min_from_Last_Comm(page: import('@playwright/test').Page, vars: Record<string, string>) {
-  vars["LastBidCommitTimeAfterUnCommitPlus1"] = (() => {
-    const d = new Date('2000-01-01 ' + String(vars["LastBidCommitTimeAfterUncommit"]));
-    d.setMinutes(d.getMinutes() + parseInt(String("1")));
-    return d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true }); // Format: h:mm a
-  })();
-  vars[""] = (() => {
-    const d = new Date('2000-01-01 ' + String(''));
-    d.setMinutes(d.getMinutes() - parseInt(String('')));
-    return d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
-  })();
-  if (String(vars["BidCommitTimeFirstLoan"]) === String(vars["LastBidCommitTimeAfterUncommit"])) {
-  } else if (String(vars["BidCommitTimeFirstLoan"]) === String(vars["LastBidCommitTimeAfterUnCommitPlus1"])) {
+  const Methods = new AddonHelpers(page, vars);
+
+  Methods.addMinutesToDatetime(vars['LastBidCommitTimeAfterUncommit'], appconstants.TIME_FORMAT_HHMMA, 1, appconstants.TIME_FORMAT_HHMMA, 'LastBidCommitTimeAfterUnCommitPlus1');
+  log.info('LastBidCommitTimeAfterUnCommitPlus1: ' + vars['LastBidCommitTimeAfterUnCommitPlus1']);
+
+  Methods.subtractMinutesFromDatetime(vars['LastBidCommitTimeAfterUncommit'], appconstants.TIME_FORMAT_HHMMA, 1, appconstants.TIME_FORMAT_HHMMA, 'LastBidCommitTimeAfterUnCommitMinus1');
+  log.info('LastBidCommitTimeAfterUnCommitMinus1: ' + vars['LastBidCommitTimeAfterUnCommitMinus1']);
+
+  log.info('BidCommitTimeFirstLoan: ' + vars['BidCommitTimeFirstLoan']);
+  log.info('LastBidCommitTimeAfterUncommit: ' + vars['LastBidCommitTimeAfterUncommit']);
+
+  if (String(vars['BidCommitTimeFirstLoan']) === String(vars['LastBidCommitTimeAfterUncommit'])) {
+    log.info('Commit time matched exactly: ' + vars['LastBidCommitTimeAfterUncommit']);
+  } else if (String(vars['BidCommitTimeFirstLoan']) === String(vars['LastBidCommitTimeAfterUnCommitPlus1'])) {
+    log.info('Commit time matched at +1 min: ' + vars['LastBidCommitTimeAfterUnCommitPlus1']);
   } else {
-    expect(String(vars["BidCommitTimeFirstLoan"])).toBe(vars["LastBidCommitTimeAfterUnCommitMinus1"]);
+    log.info('Commit time matched at -1 min: ' + vars['LastBidCommitTimeAfterUnCommitMinus1']);
+    expect(Methods.verifyString(vars['BidCommitTimeFirstLoan'], 'equals', vars['LastBidCommitTimeAfterUnCommitMinus1']));
   }
 }
-
 /**
  * Step Group: Modifying batches with 5 min prior
  * ID: 2343

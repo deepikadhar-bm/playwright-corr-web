@@ -11,6 +11,8 @@ import { testDataManager } from 'testdata/TestDataManager';
 import { APP_CONSTANTS as appconstants } from '../../../src/constants/app-constants';
 import { test, expect } from '@playwright/test';
 
+const TC_ID = 'PREREQ_1669(REG_TS25_TC01)';
+const TC_TITLE = 'Pre-requisite setup for REG_TS25_TC01 - Expire and restore bid to Price Offered';
 
 //REG_TS25_TC01
 export async function runPrereq_1669(page: Page, vars: Record<string, string>): Promise<void> {
@@ -27,7 +29,7 @@ export async function runPrereq_1669(page: Page, vars: Record<string, string>): 
   vars['Password'] = credentials.password;
   const Methods = new AddonHelpers(page, vars);
 
-  log.tcStart('prereq-1669', 'Pre-requisite setup for REG_TS25_TC01 - Expire and restore bid to Price Offered');
+  log.tcStart(TC_ID, TC_TITLE);
   if (profile && profile.data) {
     vars['BidReqIdPriceOffered'] = profile.data[0]['RequestIDfrom24-1'];
     log.info('BidReqIdPriceOffered: ' + vars['BidReqIdPriceOffered']);
@@ -48,6 +50,7 @@ export async function runPrereq_1669(page: Page, vars: Record<string, string>): 
       await correspondentPortalPage.Price_Offered_List_Dropdown.click();
       await bidRequestsPage.Search_by_Bid_Request_ID_Field.click();
       await bidRequestsPage.Search_by_Bid_Request_ID_Field.fill(vars['BidReqIdPriceOffered']);
+      await page.keyboard.press('Enter');
       await priceOfferedPage.Bid_Req_IdPrice_Offered_Page(vars['BidReqIdPriceOffered']).waitFor({ state: 'visible' });
       vars['BidStatusPriceOffered'] = await priceOfferedPage.Bid_Status_Price_OfferedExe_Type1(vars['BidReqIdPriceOffered']).textContent() || '';
       Methods.trimtestdata(vars['BidStatusPriceOffered'], 'BidStatusPriceOffered');
