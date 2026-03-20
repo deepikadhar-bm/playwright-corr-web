@@ -15,8 +15,8 @@ export class CommitmentDetailsPage {
     return this.page.locator("//td[@data-title=\"Chase Loan#\"]");
   }
 
-  get Checked_Loan_Numbercommitments_new(): Locator {
-    return this.page.locator("//button[contains(text(),\"$|CommittedCorrLoan|\")]/../../following-sibling::td[@data-title=\"Loan Amount\"]");
+Checked_Loan_Numbercommitments_new(CommittedCorrLoan:string): Locator {
+    return this.page.locator(`//button[contains(text(),\"${CommittedCorrLoan}\")]/../../following-sibling::td[@data-title=\"Loan Amount\"]`);
   }
 
   get Company_Name_Details_Commitments(): Locator {

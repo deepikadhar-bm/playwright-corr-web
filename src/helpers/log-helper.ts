@@ -2,7 +2,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { Page } from '@playwright/test';
 
-type LogLevel = 'TC_START' | 'TC_END' | 'STEP' | 'PASS' | 'FAIL' | 'INFO' | 'WARN' | 'ERROR' | 'DEBUG';
+type LogLevel = 'TC_START' | 'TC_END' | 'STEP' | 'PASS' | 'FAIL' | 'INFO' | 'WARN' | 'ERROR' | 'DEBUG' |'AF_TS';
 
 interface LogEntry {
   timestamp: string;
@@ -82,6 +82,7 @@ export class Logger {
     WARN:     Logger.C.yellow + Logger.C.bold,
     ERROR:    Logger.C.red    + Logger.C.bold,
     DEBUG:    Logger.C.gray,
+    AF_TS:    Logger.C.blue   + Logger.C.bold,
   };
 
   // ─── Helpers ───────────────────────────────────────────────────────────────
@@ -358,5 +359,28 @@ static pass(message: string): void {
       step: Logger.stepCounter,
       message: `✘ ${message}`,
     });
+  }
+ // ─── After Test Steps ──────────────────────────────────────────────────────
+
+  /**
+   * Log the START of after-test cleanup steps (call at the top of afterEach).
+   * @param tcId      e.g. 'TC-001' or 'reg_ts01_tc01'
+   * @param testFailed  whether the test failed — drives whether cleanup runs
+   */
+  static afterTestSteps(tcId: string, testFailed: boolean): void {
+    const sep = '─'.repeat(72);
+    const status = testFailed
+      ? `${Logger.C.red}${Logger.C.bold}FAILED — running cleanup steps${Logger.C.reset}`
+      : `${Logger.C.green}${Logger.C.bold}PASSED — skipping cleanup steps${Logger.C.reset}`;
+
+    console.log(`\n${Logger.C.cyan}${sep}${Logger.C.reset}`);
+    Logger.persist({
+      timestamp: Logger.ts(),
+      level: 'AF_TS',   // ← reuses existing LogLevel — TC_START is the closest lifecycle marker
+      tcId,
+      message: `AFTER TEST STEPS  ►  ${tcId} | testFailed: ${testFailed}`,
+    });
+    console.log(`${Logger.C.cyan}After Test Steps — ${status}${Logger.C.reset}`);
+    console.log(`${Logger.C.cyan}${sep}${Logger.C.reset}\n`);
   }
 }
