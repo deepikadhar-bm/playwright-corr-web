@@ -215,8 +215,8 @@ export class StatusInactivePage {
     return this.page.locator("(//div[text()=\"Property Valuation Type\"]/../..//select[@id=\"id\"])[1]");
   }
 
-  get Required_Company_In_List(): Locator {
-    return this.page.locator("//button[@class='dropdown-item d-flex'][contains(.,'@|Company name 1|')]");
+  Required_Company_In_List(CompanyName1: string): Locator {
+    return this.page.locator(`//button[@class='dropdown-item d-flex'][contains(.,'${CompanyName1}')]`);
   }
 
   get Second_Add_Conditions_Last_Field_Delete_Button(): Locator {
@@ -231,8 +231,8 @@ export class StatusInactivePage {
     return this.page.locator("//input[@type=\"checkbox\"]/../../..//label[@class=\"custom-checkbox dropdown-item bg-gray-100 d-flex\"]");
   }
 
-  get Select_Company_Name(): Locator {
-    return this.page.locator("//span[@class='pl-2'][contains(.,'@|Company name 2|')]");
+  Select_Company_Name(CompanyName2: string): Locator {
+    return this.page.locator(`//span[@class='pl-2'][contains(.,'${CompanyName2}')]`);
   }
 
   get Select_Companys_In_BidMaps(): Locator {

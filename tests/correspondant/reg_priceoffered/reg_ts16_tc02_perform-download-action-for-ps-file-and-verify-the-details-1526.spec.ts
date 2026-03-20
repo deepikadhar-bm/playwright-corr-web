@@ -72,7 +72,7 @@ test.describe('REG_PriceOffered', () => {
         vars['BidReqIDUI']    = (await priceOfferedPage.BidRequestIDTextDetails.textContent())?.trim() || '';
         vars['CorrLoanNumUI'] = (await priceOfferedDetailsPage.First_Loan_NumberCommited_or_Uncommitted.textContent())?.trim() || '';
         vars['RefSecProdUI']  = (await priceOfferedPage.Ref_Sec_Prod.first().textContent())?.trim() || '';
-        Methods.concatenateWithSpecialChar(appconstants.SOURCE_LOAN_NUMBER, vars['BidReqIDUI'], '', 'SourceLoanExpected');
+        Methods.concatenateWithSpecialChar(appconstants.SOURCE_LOAN_NUMBER, vars['BidReqIDUI'], '"', 'SourceLoanExpected');
         Methods.concatenateWithSpecialChar(appconstants.CORR_LOAN_NUMBER, vars['CorrLoanNumUI'], '"', 'CorrLoanNumUI1');
         Methods.concatenateWithSpecialChar(appconstants.REF_SEC_NAME, vars['RefSecProdUI'], '"', 'RefSecProdUI');
         Methods.concatenateWithSpecialChar(appconstants.PRICING_RESPONSE, vars['CorrLoanNumUI'], '-', 'ExpectedFileName1');

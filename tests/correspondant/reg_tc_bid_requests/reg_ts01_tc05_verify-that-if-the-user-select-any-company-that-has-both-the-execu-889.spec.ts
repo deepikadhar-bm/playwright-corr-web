@@ -13,6 +13,13 @@ import { StandardPage } from '../../../src/pages/correspondant/standard';
 import { StatusInactivePage } from '../../../src/pages/correspondant/status-inactive-';
 import { UpdatePermissionsButtonPage } from '../../../src/pages/correspondant/update-permissions-button';
 import { UploadNewBidRequestButtonPage } from '../../../src/pages/correspondant/upload-new-bid-request-button';
+import { ENV } from '@config/environments';
+import { Logger as log } from '../../../src/helpers/log-helper';
+import { testDataManager } from 'testdata/TestDataManager';
+import { CorrPortalPage } from '@pages/correspondant/CorrPortalPage';
+
+const TC_ID = 'REG_TS01_TC05';
+const TC_TITLE = 'Verify that if the user select any company that has both the execution type, then he should be able to Select the valiues from both the standard and chase exe type.';
 
 test.describe('REG_TC_Bid_Requests', () => {
   let vars: Record<string, string> = {};
@@ -43,112 +50,170 @@ test.describe('REG_TC_Bid_Requests', () => {
     uploadNewBidRequestButtonPage = new UploadNewBidRequestButtonPage(page);
   });
 
-  test('REG_TS01_TC05_Verify that if the user select any company that has both the execution type, then he should be able to Select the valiues from both the standard and chase exe type.', async ({ page }) => {
-    const testData: Record<string, string> = {
-  "CompanyName(CustomerPermissions)": "Freedom - A4187",
-  "Execution Type Header": "Exe.Type",
-  "Resubmit Pricing Error Standard1": "( nmlsId = 2767 )",
-  "Company Name.": "Wik1C BeuLD MoJbr CoEmy LLpoJ  - A2964",
-  "BidMappingID": "Deepika Aug1",
-  "Geo Coding Reducer flow(Errors Column)": "Geo Coding error",
-  "Bid Valid File(Error Description)": "No Errors",
-  "Company Name New": "American Pacific  - A4257",
-  "Email Success Message": "Email sent successfuly",
-  "Loan Field Validation(Number)": "Deepika_June_invaliddatafield",
-  "Bid Valid File(Loan Status)": "Success",
-  "Bid Request ID Header": "BidRequestID",
-  "Resubmit Pricing Error Chase Direct": "Execution type 'Chase Direct' not permitted for client",
-  "Geo Coding happy flow(Error Description)": "No Errors",
-  "Bid Enum Check(Loan Status)": "Error",
-  "Pos Check(Errors Column)": "No eligibility results",
-  "Eligibility Check(LoanStatus)": "Error",
-  "Geo Coding Reducer flow(Error Description))": "Geocode unknown",
-  "Selected Company Count": "2",
-  "Geo Coding happy flow(Loan Status)": "Success",
-  "Geo Coding happy flow (Errors Column)": "No errors",
-  "Resubmit Pricing Error Standard": "Execution type 'Standard' not permitted for client",
-  "MissingHeaders_ErrorMessage1": "Bid tape is missing values for following headers: Loan Purpose.",
-  "Price Offered": "Price Offered",
-  "Geo Coding Failed flow(Errors))": "Geo Coding error",
-  "Ccode for freedom": "A4187",
-  "MissingHeaders_ErrorMessage2": "Please verify the correct Map ID is selected or tape is formatted correctly.",
-  "Geo Coding Reducer flow(Loan Status)": "Success",
-  "Eligibility Check(Error Description)": "Minimum loan amount $5,000",
-  "Stored_Text1": "10:10 AM",
-  "Status Name": "Committed",
-  "Bid Valid File(Error Column)": "No errors",
-  "CompanyName3": "American Pacific - A4257",
-  "Assigned Companies1": "Wik1C BeuLD MoJbr CoEmy LLpoJ",
-  "SpecialCharacter_ErrorHeader": "EXTRA_SPACE_FOUND",
-  "Geo Coding Failed flow(Loan Status)": "Error",
-  "Pos Check(Loan Status)": "Error",
-  "Loan Field Validation(Status)": "Error",
-  "Eligibility Check(Error Column)": "Minimum Loan Amount $5,000",
-  "Loan Field Validation(Error description)": "Loan value cannot be blank or zero for 'loan purpose'",
-  "Last One Month": "Last One Month",
-  "Resubmit Pricing Error Standard and Chase": "Execution type 'Standard' not permitted for client",
-  "Reason For Cancellation": "To be Cancelled",
-  "Reason For Deletion": "To be deleted",
-  "Loan Field Validation(Error)": "Invalid Loan Data",
-  "DeletingMessage for File": "You have selected to delete this file. Do you want to proceed?",
-  "Resubmit Pricing Error Standard and Chase1": "( nmlsId = 2767 )",
-  "Creating Batch Success Message": "Batch timing has been created successfull",
-  "Bid Enum Check(Errors Column)": "Secondary Residence, Investment (NOO)]. Path: search.criteria.propertyUse is missing value",
-  "Status Count 1": "3",
-  "Display_Text1": "Delete Batch Time",
-  "New Company Name": "Home Sweet Mortgage",
-  "CCode Header": "Ccode",
-  "FileRow": "4",
-  "SpecialCharacter_ErrorMessage": "Found extra space(s) in row 3 for 'Correspondent Loan Number'. Please modify and retry upload.",
-  "Display_Text2": "Delete Batch",
-  "Email Message Verification": "Do you want to resend Bid Offer email?",
-  "BidMappingIDNew": "Default Map Internal",
-  "Geo Coding Failed flow(Error Description)": "Geocode unknown, no eligibility results: cannot find zip detail information for : 09999",
-  "Pos Check(Error Description)": "Not approved for [nonagency], no eligibility results",
-  "MissingHeaders_ErrorHeader": "Missing Headers",
-  "Search Field Company Name": "Wik1C",
-  "DuplicateLoans_HeaderMessage": "Duplicate Loans",
-  "Company Name": "Freedom - A4187",
-  "Stored_Text": "09:19 AM",
-  "Resubmit Pricing Error Chase Direct1": "( nmlsId = 2767 )",
-  "DuplicateLoans_ErrorMessage": "Duplicate loan numbers contained in this file: Deepika_June_02_02, Deepika_June_02_04. Please remove these from the file and retry upload.",
-  "Missing Headers(Error Message)": "Bid tape is missing values for following headers: Loan Purpose. Please verify the correct Map ID is selected or tape is formatted correctly.",
-  "Bid Enum Check(Error Description)": "enum field occupancy type is missing value or value is not in valid list [primary residence, secondary residence, investment (noo)]. path: search.criteria.propertyuse is missing value"
-}; // Profile: "Bid Requests", row: 0
+  test(`${TC_ID}_${TC_TITLE}`, async ({ page }) => {
 
-    await stepGroups.stepGroup_Login_to_CORR_Portal(page, vars);
-    await stepGroups.stepGroup_Navigation_and_Verification_of_Customer_Permission_in_Bid_Re(page, vars);
-    await customerPermissionPage.Search_Filter_Input.fill(testData["CompanyName(CustomerPermissions)"]);
-    await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-    await correspondentPortalPage.Edit_Permission_Button.click();
-    await expect(page.getByText("Edit Permissions")).toBeVisible();
-    await expect(correspondentPortalPage.close_pop_up_bid_request_details).toBeVisible();
-    await statusInactivePage.TodayOnly_Radio_Button.check();
-    await correspondentPortalPage.On_Radio_ChaseDirectEdit_Permissions_Popup.check();
-    if (true) /* Element UpdatePermissions_Button is enabled */ {
-      await updatePermissionsButtonPage.UpdatePermissions_Button.click();
-    } else {
-      await editPermissionsPage.Close_pop_up.click();
+    // ─── TC Start ────────────────────────────────────────────────────────
+    log.tcStart(TC_ID, TC_TITLE);
+
+    try {
+
+      // ── Step 1: Load Credentials and Test Data ────────────────────────────
+      log.step('Loading credentials and test data');
+      try {
+        const credentials = ENV.getCredentials('internal');
+        vars["Username"] = credentials.username;
+        vars["Password"] = credentials.password;
+        const profileName = 'Bid Requests'; // TDP sheet name
+        const profile = testDataManager.getProfileByName(profileName);
+        if (profile && profile.data) {
+          const CompanyNameCustomerPermissions = profile.data[0]['CompanyName_CustomerPermissions'];
+          vars["CompanyName_CustomerPermissions"] = CompanyNameCustomerPermissions;
+        }
+        log.stepPass(`Credentials and test data loaded successfully - Company: ${vars["CompanyName_CustomerPermissions"]}`);
+      } catch (e) {
+        await log.stepFail(page, 'Loading credentials and test data failed');
+        throw e;
+      }
+
+      // ── Step 2: Login to Correspondent Portal ─────────────────────────────
+      log.step('Login to Correspondent Portal');
+      try {
+        await stepGroups.stepGroup_Login_to_CORR_Portal(page, vars);
+        log.stepPass('Login to Correspondent Portal successful');
+      } catch (e) {
+        await log.stepFail(page, 'Login to Correspondent Portal failed');
+        throw e;
+      }
+
+      // ── Step 3: Navigate to Customer Permission ───────────────────────────
+      log.step('Navigating to Customer Permission');
+      try {
+        // await stepGroups.stepGroup_Navigation_and_Verification_of_Customer_Permission_in_Bid_Re(page, vars);
+        const CorrPortalElem = new CorrPortalPage(page);
+        await expect(CorrPortalElem.BidRequests_Menu).toBeVisible();
+        await CorrPortalElem.BidRequests_Menu.click();
+        await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
+        await CorrPortalElem.Administration_Menu.click();
+        await CorrPortalElem.GeneralSettings_Menu.click();
+        await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
+        await CorrPortalElem.CustomerPermission_Menu.click();
+        await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
+        await expect((page.getByText("Customer Permission")).first()).toBeVisible();
+        log.stepPass('Navigated to Customer Permission successfully');
+      } catch (e) {
+        await log.stepFail(page, 'Navigating to Customer Permission failed');
+        throw e;
+      }
+
+      // ── Step 4: Search for Company and Open Edit Permissions ──────────────
+      log.step('Searching for company and opening Edit Permissions popup');
+      try {
+        //await customerPermissionPage.Search_Filter_Input.fill(vars["CompanyName_CustomerPermissions)"]);
+        await customerPermissionPage.Search_Filter_Input.fill(vars["CompanyName_CustomerPermissions"]);
+        await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+        //await correspondentPortalPage.Edit_Permission_Button(vars["CompanyName_CustomerPermissions)"]).click();
+        await correspondentPortalPage.Edit_Permission_Button(vars["CompanyName_CustomerPermissions"]).click();
+        await expect(page.getByText("Edit Permissions")).toBeVisible();
+        await expect(correspondentPortalPage.close_pop_up_bid_request_details).toBeVisible();
+        log.stepPass(`Company searched and Edit Permissions popup opened - Company: ${vars["CompanyName_CustomerPermissions)"]}`);
+      } catch (e) {
+        await log.stepFail(page, 'Searching for company or opening Edit Permissions popup failed');
+        throw e;
+      }
+
+      // ── Step 5: Set Standard Flow ON and Chase Direct ON ──────────────────
+      log.step('Setting Standard Flow ON and Chase Direct ON');
+      try {
+        await statusInactivePage.TodayOnly_Radio_Button.check();
+        await correspondentPortalPage.On_Radio_ChaseDirectEdit_Permissions_Popup.check();
+        log.stepPass('Standard Flow set to ON and Chase Direct set to ON successfully');
+      } catch (e) {
+        await log.stepFail(page, 'Setting Standard Flow ON or Chase Direct ON failed');
+        throw e;
+      }
+
+      // ── Step 6: Update or Close Permissions Popup ─────────────────────────
+      log.step('Updating or closing permissions popup');
+      try {
+        if (await updatePermissionsButtonPage.UpdatePermissions_Button.isEnabled()) {
+          await updatePermissionsButtonPage.UpdatePermissions_Button.click();
+          log.info('Update Permissions button was enabled — clicked successfully');
+        } else {
+          await editPermissionsPage.Close_pop_up.click();
+          log.info('Update Permissions button was disabled — closed popup instead');
+        }
+        log.stepPass('Permissions popup handled successfully');
+      } catch (e) {
+        await log.stepFail(page, 'Updating or closing permissions popup failed');
+        throw e;
+      }
+
+      // ── Step 7: Verify Customer Permission Status ─────────────────────────
+      log.step('Verifying customer permission status for Standard and Chase Direct');
+      try {
+        await expect(statusInactivePage.Standard_Execution_TypeCustomerPermission).toContainText("Allowed");
+        await expect(correspondentPortalPage.Chase_Direct_in_Customer_Permission).toContainText("Allowed");
+        log.stepPass('Customer permission verified - Standard: Allowed, Chase Direct: Allowed');
+      } catch (e) {
+        await log.stepFail(page, 'Verifying customer permission status failed');
+        throw e;
+      }
+
+      // ── Step 8: Navigate to Upload New Bid Request ────────────────────────
+      log.step('Navigating to Upload New Bid Request');
+      try {
+        await correspondentPortalPage.Bid_Requests.click();
+        await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+        await expect((page.getByText("Bid Requests")).first()).toBeVisible();
+        await uploadNewBidRequestButtonPage.Upload_New_Bid_Request_Button.click();
+        await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+        log.stepPass('Navigated to Upload New Bid Request successfully');
+      } catch (e) {
+        await log.stepFail(page, 'Navigating to Upload New Bid Request failed');
+        throw e;
+      }
+
+      // ── Step 9: Select Company in Bid Request ─────────────────────────────
+      log.step('Selecting company in Upload Bid Request screen');
+      try {
+        await selectDropdownPage.Select_Company_In_BidRequest.click();
+        await expect(bidRequestPage.Bid_Mapping_IdSearch_Input_box).toBeVisible();
+        await bidRequestPage.Bid_Mapping_IdSearch_Input_box.fill(vars["CompanyName_CustomerPermissions"]);
+        //const correspondentPortalPage = new CorrespondentPortalPage(page);
+        await correspondentPortalPage.SelectCompany_Value.click();
+        await expect(bidRequestPage.Selected_Company_Value_Upload_Bid_Request_Screen).toBeVisible();
+        log.stepPass(`Company selected in Upload Bid Request screen - Company: ${vars["CompanyName_CustomerPermissions"]}`);
+      } catch (e) {
+        await log.stepFail(page, 'Selecting company in Upload Bid Request screen failed');
+        throw e;
+      }
+
+      // ── Step 10: Verify both Standard and Chase Direct execution types ─────
+      log.step('Verifying both Standard and Chase Direct execution types are selectable');
+      try {
+        await expect(standardPage.Standard_Execution_Checkbox).toBeEnabled();
+        await p3715DropdownPage.StandardExecution_Dropdown.selectOption({ label: "3" });
+        // [DISABLED] Verify that the element Execution Type and Lock Term Dropdown. is displayed and With Scrollable FALSE
+        // await expect(p3715DropdownPage.StandardExecution_Dropdown).toBeVisible();
+        await expect(correspondentPortalPage.Chase_Direct_Checkbox).toBeVisible();
+        await correspondentPortalPage.Chase_Direct_Checkbox.check();
+        await bidRequestPage.Chase_Direct_DropdownUpload_Bidrequest.selectOption({ label: "3" });
+        await expect(bidRequestPage.Chase_Direct_DropdownUpload_Bidrequest).toBeVisible();
+        log.stepPass('Both Standard and Chase Direct execution types verified and selectable successfully');
+      } catch (e) {
+        await log.stepFail(page, 'Verifying Standard or Chase Direct execution types failed');
+        throw e;
+      }
+
+      // ─── TC End: PASS ─────────────────────────────────────────────────────
+      log.tcEnd('PASS');
+
+    } catch (e) {
+      // ─── TC End: FAIL ─────────────────────────────────────────────────────
+      await log.captureOnFailure(page, TC_ID, e);
+      log.tcEnd('FAIL');
+      throw e;
     }
-    await expect(statusInactivePage.Standard_Execution_TypeCustomerPermission).toContainText("Allowed");
-    await expect(correspondentPortalPage.Chase_Direct_in_Customer_Permission).toContainText("Allowed");
-    await correspondentPortalPage.Bid_Requests.click();
-    await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-    await expect(page.getByText("Bid Requests")).toBeVisible();
-    await uploadNewBidRequestButtonPage.Upload_New_Bid_Request_Button.click();
-    await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-    await selectDropdownPage.Select_Company_In_BidRequest.click();
-    await expect(bidRequestPage.Bid_Mapping_IdSearch_Input_box).toBeVisible();
-    await bidRequestPage.Bid_Mapping_IdSearch_Input_box.fill(testData["CompanyName(CustomerPermissions)"]);
-    await correspondentPortalPage.SelectCompany_Value.click();
-    await expect(bidRequestPage.Selected_Company_Value_Upload_Bid_Request_Screen).toBeVisible();
-    await expect(standardPage.Standard_Execution_Checkbox).toBeEnabled();
-    await p3715DropdownPage.StandardExecution_Dropdown.selectOption({ label: "3" });
-    // [DISABLED] Verify that the element Execution Type and Lock Term Dropdown. is displayed and With Scrollable FALSE
-    // await expect(p3715DropdownPage.StandardExecution_Dropdown).toBeVisible();
-    await expect(correspondentPortalPage.Chase_Direct_Checkbox).toBeVisible();
-    await correspondentPortalPage.Chase_Direct_Checkbox.check();
-    await bidRequestPage.Chase_Direct_DropdownUpload_Bidrequest.selectOption({ label: "3" });
-    await expect(bidRequestPage.Chase_Direct_DropdownUpload_Bidrequest).toBeVisible();
+
   });
 });
