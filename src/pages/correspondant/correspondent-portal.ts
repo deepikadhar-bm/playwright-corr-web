@@ -7,8 +7,8 @@ import { Page, Locator } from '@playwright/test';
 export class CorrespondentPortalPage {
   constructor(private page: Page) { }
 
-  get Chases_Values_1(): Locator {
-    return this.page.locator("(//div[@class=\"mb-2\"]//..//select[@class=\"form-select\"])[$|count|]");
+  get_Chases_Values_1(count: string): Locator {
+    return this.page.locator(`(//div[@class="mb-2"]//..//select[@class="form-select"])[${count}]`);
   }
 
   get Bellow_Dropdown_Fourth_Company(): Locator {
@@ -254,7 +254,7 @@ export class CorrespondentPortalPage {
   get Apply_Selected_for_Bid_Maps(): Locator {
     // return this.page.locator(`//span[@class=\"counter bg-white text-primary mx-2 text-center fw-semibold small\"]`);
     return this.page.locator(`//button[@aria-label='Apply selected items']//span[@class="counter bg-white text-primary mx-2 text-center fw-semibold small"]`);
-    
+
   }
 
   get Apply_Selected2(): Locator {
@@ -494,8 +494,8 @@ export class CorrespondentPortalPage {
     return this.page.locator("//div[contains(@class, 'd-flex') and contains(@class, 'small')]/following-sibling::div[contains(@class, 'd-flex')]//select[contains(@class, 'form-select')]");
   }
 
-  get Chase_Field_Name_Drowpdown(): Locator {
-    return this.page.locator("(//div[@class='parent']//fieldset//select[@class='form-select'])[$|count|]");
+  get_Chase_Field_Name_Drowpdown(count:number): Locator {
+    return this.page.locator(`(//div[@class='parent']//fieldset//select[@class='form-select'])[${count}]`);
   }
 
   get Chase_Field_Value_Input_Box(): Locator {
@@ -1162,7 +1162,7 @@ export class CorrespondentPortalPage {
   get Header_Counts(): Locator {
     return this.page.locator("//div[@class='parent']//fieldset");
   }
-get Header_Mapping_Dropdown_New(): Locator {
+  get Header_Mapping_Dropdown_New(): Locator {
     return this.page.locator("//*[@aria-label=\"Header Status Dropdown\"]//select");
   }
   get Header_Mapping_Dropdown(): Locator {
@@ -1205,9 +1205,10 @@ get Header_Mapping_Dropdown_New(): Locator {
     return this.page.locator("//div[@class='parent']//fieldset[1]/parent::div");
   }
 
-  get Headers_From_UI(): Locator {
-    return this.page.locator("(//input[@type=\"checkbox\"]/../..//div[@class=\"flex-grow-1\"])[$|count|]");
+  get_Headers_From_UI(index: number): Locator {
+    return this.page.locator(`(//input[@type="checkbox"]/../..//div[@class="flex-grow-1"])[${index}]`);
   }
+
 
   get Headers_from_UI_Count(): Locator {
     return this.page.locator("(//input[@type=\"checkbox\"]/../..//div[@class=\"flex-grow-1\"])");
@@ -1290,8 +1291,8 @@ get Header_Mapping_Dropdown_New(): Locator {
   }
 
   get_Inserted_Header_Data(customHeader: string): Locator {
-  return this.page.locator(`(//div[contains(@class,'gap-2 header-grid-layout')][contains(.,'${customHeader}')])[1]`);
-}
+    return this.page.locator(`(//div[contains(@class,'gap-2 header-grid-layout')][contains(.,'${customHeader}')])[1]`);
+  }
 
   get Internal_User_Minutes_Input(): Locator {
     return this.page.locator("//input[@aria-label=\"Internal User Minutes\"]");
@@ -1394,7 +1395,7 @@ get Header_Mapping_Dropdown_New(): Locator {
   }
 
   get New_Field_Chase_Dropdown(): Locator {
-    return this.page.locator("/html/body/app-root/div/div/div/div/div/div/div/app-mapping-wizard-container/main/app-enumeration-mapping-container/section[2]/app-enumeration-mapping/fieldset/div/div/div[1]/div/div[5]/div/div/div/app-single-select-dropdown/select");
+    return this.page.locator(`//div[@class="my-2" and contains(text(),'Loan Purpose')]/../..//div[@class="mb-2"]//select`);
   }
 
   get No_Result_Data_on_Bid_Request(): Locator {
@@ -2106,7 +2107,7 @@ get Header_Mapping_Dropdown_New(): Locator {
     return this.page.locator("//span[text()[normalize-space() = \"Upload Bid\"]]");
   }
 
-   Uploaded_Dates(count : number): Locator {
+  Uploaded_Dates(count: number): Locator {
     return this.page.locator(`(//td[@data-title="Uploaded"])[${count}]`);
   }
 
