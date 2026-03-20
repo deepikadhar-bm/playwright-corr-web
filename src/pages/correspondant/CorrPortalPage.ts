@@ -301,14 +301,10 @@ export class CorrPortalPage {
     return this.page.locator("//div[text()=\"Status\"]/..//h5");
   }
 
-  // get Bid_Tape_Value(): Locator {
-  //   return this.page.locator("//input[@type=\"text\" and contains(@class, 'input-field-edit')]");
-  // }
-
-  get Bid_Tape_Add_Field(): Locator{
+  get Bid_Tape_Add_Field(): Locator {
     return this.page.locator("//input[@type=\"text\" and contains(@class, 'input-field-edit')]");
   }
-  
+
   get Bid_Tape_Value(): Locator {
     return this.page.locator(`(//div[contains(@class,"input-field-name text")])[1]`);
   }
@@ -1358,7 +1354,7 @@ export class CorrPortalPage {
 
   get New_Field_Chase_Dropdown2(): Locator {
     return this.page.locator("(//input[@class=\"input-field-edit\"]/../../../../..//select[@class=\"form-select\"])[2]");
-  }//(//div[@class="field-block mb-2"]//input/../../../../..//select)[last()]
+  }
 
   get New_Header_Mapping(): Locator {
     return this.page.locator("//div[contains(@class, 'header-grid-layout') and contains(@class, 'custom-header')]");
@@ -1728,7 +1724,7 @@ export class CorrPortalPage {
     return this.page.locator("//div//div[@id=\"companySelect\"]//div//button[@id=\"multiSelectDropDown\"]");
   }
 
-  Select_Current_Date_Filters_Price_Offered(CurrentDate:string): Locator {
+  Select_Current_Date_Filters_Price_Offered(CurrentDate: string): Locator {
     return this.page.locator(`//div[@class=\"ngb-dp-month\"]//div[@aria-label=\"${CurrentDate}\"]`);
   }
 

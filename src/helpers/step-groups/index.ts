@@ -1061,11 +1061,9 @@ export async function stepGroup_Add_Actions_in_Rules_and_Actions(page: import('@
   await CorrPortalElem.Chase_Value.selectOption({ value: "false" });
   // await CorrPortalElem.Value_for_chase.click();
   vars["ChaseFiledNameonAddActions"] = await CorrPortalElem.Add_Actions_Chase_Field_Name.evaluate(el => { const s = el as HTMLSelectElement; return s.options[s.selectedIndex]?.text || ''; });
-  console.log("The vars[ChaseFiledNameonAddActions]:",vars["ChaseFiledNameonAddActions"])
   // [DISABLED] Store the value displayed in the text box Action Chase Field Name 1 field into a variable ChaseFiledNameonAddActions
   // vars["ChaseFiledNameonAddActions"] = await CorrPortalElem.Action_Chase_Field_Name_1.inputValue() || '';
   vars["ChasevalueOnAddActions"] = await CorrPortalElem.Add_Actions_Chase_Value.evaluate(el => { const s = el as HTMLSelectElement; return s.options[s.selectedIndex]?.text || ''; });
-  console.log("The vars[ChasevalueOnAddActions]:",vars["ChasevalueOnAddActions"])
 }
 
 /**
