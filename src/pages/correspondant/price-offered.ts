@@ -830,24 +830,24 @@ Column_Data_UI_DetainsScreen(IndividualHeaderUI:string): Locator {
     return this.page.locator("//span[@aria-label=\"Committed loan\"]");
   }
 
-  get Committed_Mar_AdjPrice_Offered(): Locator {
-    return this.page.locator("//button[text()=\"${CommittedCorrLoan}\"]//ancestor::tr//td[@data-title=\"Mark Adj\"]");
+   Committed_Mar_AdjPrice_Offered(CommittedCorrLoan:string): Locator {
+    return this.page.locator(`//button[text()=\"${CommittedCorrLoan}\"]//ancestor::tr//td[@data-title=\"Mark Adj\"]`);
   }
 
-  get Committed_Reference_Security_PricePrice_Offered(): Locator {
-    return this.page.locator("//button[text()=\"$|CommittedCorrLoan|\"]//ancestor::tr//td[@data-title=\"Ref Sec Price\"]  ");
+  Committed_Reference_Security_PricePrice_Offered(CommittedCorrLoan:string): Locator {
+    return this.page.locator(`//button[text()=\"${CommittedCorrLoan}\"]//ancestor::tr//td[@data-title=\"Ref Sec Price\"]  `);
   }
 
-  get Committed_Reference_SecurityPrice_Offered(): Locator {
-    return this.page.locator("//button[text()=\"$|CommittedCorrLoan|\"]//ancestor::tr//td[@data-title=\"Ref Sec Prod.\"]");
+  Committed_Reference_SecurityPrice_Offered(CommittedCorrLoan:string): Locator {
+    return this.page.locator(`//button[text()=\"${CommittedCorrLoan}\"]//ancestor::tr//td[@data-title=\"Ref Sec Prod.\"]`);
   }
 
-  get Committed_StatusPrice_Offered_List(): Locator {
-    return this.page.locator("//a[contains(text(),\"$|BidReqIdPriceOffered|\")]//ancestor::tr//td[@data-title=\"Status\"]//span[text()[normalize-space() = \"Committed\"]]");
+  Committed_StatusPrice_Offered_List(BidReqIdPriceOffered:string): Locator {
+    return this.page.locator(`//a[contains(text(),\"${BidReqIdPriceOffered}\")]//ancestor::tr//td[@data-title=\"Status\"]//span[text()[normalize-space() = \"Committed\"]]`);
   }
 
-  get CommittedLoan_Locked_Icon(): Locator {
-    return this.page.locator("(//span[@aria-label=\"Committed loan\"])[$|count|]");
+  CommittedLoan_Locked_Icon(count:string): Locator {
+    return this.page.locator(`(//span[@aria-label=\"Committed loan\"])[${count}]`);
   }
 
   get CommittedLoansCount(): Locator {

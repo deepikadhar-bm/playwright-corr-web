@@ -1720,8 +1720,8 @@ export class CorrPortalPage {
     return this.page.locator("//div//div[@id=\"companySelect\"]//div//button[@id=\"multiSelectDropDown\"]");
   }
 
-  get Select_Current_Date_Filters_Price_Offered(): Locator {
-    return this.page.locator("//div[@class=\"ngb-dp-month\"]//div[@aria-label=\"$|CurrentDate|\"]");
+  Select_Current_Date_Filters_Price_Offered(CurrentDate:string): Locator {
+    return this.page.locator(`//div[@class=\"ngb-dp-month\"]//div[@aria-label=\"${CurrentDate}\"]`);
   }
 
   get Select_Date_Range_Dropdown(): Locator {

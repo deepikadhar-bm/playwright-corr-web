@@ -46,12 +46,12 @@ export class CommitmentListPage {
     return this.page.locator("(//li[contains(@class,\"text-primary\")]//span)[3]");
   }
 
-  get Check_Duplicate_Loan_Num(): Locator {
-    return this.page.locator("//button[text()=\"$|CommittedCorrLoan|\"]/ancestor::tr//input[@type=\"checkbox\"]");
+  Check_Duplicate_Loan_Num(CommittedCorrLoan:string): Locator {
+    return this.page.locator(`//button[text()=\"${CommittedCorrLoan}\"]/ancestor::tr//input[@type=\"checkbox\"]`);
   }
 
-  get Check_Req_Loan_Num(): Locator {
-    return this.page.locator("//button[text()=\"$|UncommittedLoanNum|\"]//ancestor::tr//input[@type=\"checkbox\"]");
+  Check_Req_Loan_Num(UncommittedLoanNum:string): Locator {
+    return this.page.locator(`//button[text()=\"${UncommittedLoanNum}\"]//ancestor::tr//input[@type=\"checkbox\"]`);
   }
 
   get Check_the_Req_Company_Name(): Locator {
@@ -257,8 +257,8 @@ Column_Count_UICommitted_Loans1(count: string): Locator {
     return this.page.locator("//button[text()=\"@|Corr Loan Num|\"]//ancestor::tr//span[contains(@class,\"fa fas fa-lock lock-icon\")]");
   }
 
-  Committed_Loan_NumCommitment_List(CommitID:string,CommittedCorrLoan:string): Locator {
-    return this.page.locator(`//div[text()=\"Commit. ID\"]//following-sibling::h5[text()=\"${CommitID}\"]//ancestor::div[contains(@class,\"accordion-item\")]//div[@class=\"accordion-body\"]//tbody//button[\"${CommittedCorrLoan}\"]`);
+   Committed_Loan_NumCommitment_List(CommitID:string,CommittedCorrLoan:string): Locator {
+    return this.page.locator(`//div[text()=\"Commit. ID\"]//following-sibling::h5[text()=\"${CommitID}\"]//ancestor::div[contains(@class,\"accordion-item\")]//div[@class=\"accordion-body\"]//tbody//button[text()=\"${CommittedCorrLoan}\"]`);
   }
 
   get Committed_Loan_NumStandard_Commitment_List(): Locator {
@@ -313,12 +313,12 @@ Column_Count_UICommitted_Loans1(count: string): Locator {
     return this.page.locator("//td[@data-title=\"Creation Date\"]");
   }
 
-  get Curr_Market_ValueCommitment_List(): Locator {
-    return this.page.locator("//button[text()=\"$|CommittedCorrLoan|\"]//ancestor::tr//td[@data-title=\"Curr Market Value\"]");
+  Curr_Market_ValueCommitment_List(CommittedCorrLoan:string): Locator {
+    return this.page.locator(`//button[text()=\"${CommittedCorrLoan}\"]//ancestor::tr//td[@data-title=\"Curr Market Value\"]`);
   }
 
-  get Current_Gross_Price(): Locator {
-    return this.page.locator("(//td[@data-title=\"Curr Gross\"])[$|RowCount|]");
+  Current_Gross_Price(RowCount:string): Locator {
+    return this.page.locator(`(//td[@data-title=\"Curr Gross\"])[${RowCount}]`);
   }
 
   get Current_Market_ValueCommitment_List(): Locator {
@@ -397,8 +397,8 @@ Column_Count_UICommitted_Loans1(count: string): Locator {
     return this.page.locator("//tr[@role=\"row\"]//button[2]");
   }
 
-  get Fresh_Loan_NumChase_Direct(): Locator {
-    return this.page.locator("//button[text()=\"$|CommittedCorrLoan|\"]/ancestor::tr//input[@type=\"checkbox\"]");
+  Fresh_Loan_NumChase_Direct(CommittedCorrLoan:string): Locator {
+    return this.page.locator(`//button[text()=\"${CommittedCorrLoan}\"]/ancestor::tr//input[@type=\"checkbox\"]`);
   }
 
   get Fresh_Loan_Num1Standard_Commitment_List(): Locator {
@@ -409,8 +409,8 @@ Column_Count_UICommitted_Loans1(count: string): Locator {
     return this.page.locator("(//input//ancestor::tr//button[contains(@class,\"btn bg-transparent text-primary\")][1])[2]");
   }
 
-  get Gross_PriceCommitment_List(): Locator {
-    return this.page.locator("//button[text()=\"$|CommittedCorrLoan|\"]//ancestor::tr//td[@data-title=\"Gross Price\"]");
+  Gross_PriceCommitment_List(CommittedCorrLoan:string): Locator {
+    return this.page.locator(`//button[text()=\"${CommittedCorrLoan}\"]//ancestor::tr//td[@data-title=\"Gross Price\"]`);
   }
 
   get Headers_Names_UICommitment_List(): Locator {
@@ -521,8 +521,8 @@ Column_Count_UICommitted_Loans1(count: string): Locator {
     return this.page.locator("//div[contains(text(),\"Last Name\")]//following::span[contains(@class,\"fas small px-1 fa-sort-down\")]");
   }
 
-  get Last_NameCommitment_List(): Locator {
-    return this.page.locator("//button[text()=\"$|CommittedCorrLoan|\"]//ancestor::tr//td[@data-title=\"Last Name\"]");
+  Last_NameCommitment_List(CommittedCorrLoan:string): Locator {
+    return this.page.locator(`//button[text()=\"${CommittedCorrLoan}\"]//ancestor::tr//td[@data-title=\"Last Name\"]`);
   }
 
   get Last_NameHeader_Name(): Locator {
@@ -537,12 +537,12 @@ Column_Count_UICommitted_Loans1(count: string): Locator {
     return this.page.locator("(//div[@class=\"border-bottom p-2\" and contains(text(),\"LMI_TYPE\")]/following-sibling::div)[1]");
   }
 
-  get Loan_AmountCommitment_List(): Locator {
-    return this.page.locator("//button[text()=\"$|CommittedCorrLoan|\"]//ancestor::tr//td[@data-title=\"Loan Amount\"]");
+  Loan_AmountCommitment_List(CommittedCorrLoan:string): Locator {
+    return this.page.locator(`//button[text()=\"${CommittedCorrLoan}\"]//ancestor::tr//td[@data-title=\"Loan Amount\"]`);
   }
 
-  get Loan_AmountFresh_Committed_Loan(): Locator {
-    return this.page.locator("//button[text()=\"$|FreshLoanNumStandard|\"]//ancestor::tr//div[contains(@aria-label,\"Loan amount:\")]");
+  Loan_AmountFresh_Committed_Loan(FreshLoanNumStandard:string): Locator {
+    return this.page.locator(`//button[text()=\"${FreshLoanNumStandard}\"]//ancestor::tr//div[contains(@aria-label,\"Loan amount:\")]`);
   }
 
   get Loan_AmountHeader_Name(): Locator {

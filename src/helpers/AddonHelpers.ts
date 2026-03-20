@@ -1099,4 +1099,29 @@ export class AddonHelpers {
       log.pass(`[${METHOD}] All ${elements.length} element(s) are ${state}`);
     } catch (e) { log.fail(`[${METHOD}] State [${state}] | Error: ${e instanceof Error ? e.message : String(e)}`); throw (e instanceof Error ? e : new Error(String(e))); }
   }
+  /**
+ * Splits the given string by whitespace and stores the value
+ * at the specified position into the target runtime variable.
+ *
+ * @param value       - The string to split
+ * @param position    - The index (as string) of the part to extract (0-based)
+ * @param targetVar   - The runtime variable key to store the result in
+ *
+ * Usage:
+ *   Methods.splitByWhiteSpace(vars['LastCommittedBid'], '0', 'LastCommittedBidDate');
+ *   Methods.splitByWhiteSpace(vars['LastCommittedBid'], '1', 'LastCommittedBidTime');
+ *   Methods.splitByWhiteSpace(vars['LastCommittedBid'], '2', 'LastCommittedBidPeriod');
+ */
+  splitByWhiteSpace(value: string, position: string, targetVar: string): void {
+  try {
+    const parts = String(value).split(' ');
+    const index = parseInt(position, 10);
+    const result = parts[index] !== undefined ? parts[index] : '';
+    this.vars[targetVar] = result;
+    log.info(`splitByWhiteSpace | Input: "${value}" | Position: ${position} | Result: "${result}" | StoredIn: ${targetVar}`);
+  } catch (e) {
+    log.error(`splitByWhiteSpace failed | Input: "${value}" | Position: ${position} | Error: ${e}`);
+    throw e;
+  }
+}
 }

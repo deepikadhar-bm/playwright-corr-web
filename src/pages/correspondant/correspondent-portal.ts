@@ -602,12 +602,12 @@ export class CorrespondentPortalPage {
     return this.page.locator("//label[contains(text(),\"Commit Correction Cut-off\")]//following::input[contains(@id,\"CorrectionCutOfHours\")]");
   }
 
-  get Commitment_OrderCommitment_List(): Locator {
-    return this.page.locator("//div[text()=\"$|CommitID|\"]//preceding-sibling::div[contains(text(),\"Commitment Order\")]");
+  Commitment_OrderCommitment_List(CommitID:string): Locator {
+    return this.page.locator(`//div[text()=\"${CommitID}\"]//preceding-sibling::div[contains(text(),\"Commitment Order\")]`);
   }
 
-  get Commitment_OrderCommitment_List_2(): Locator {
-    return this.page.locator("//div[text()=\"$|CommitID|\"]//preceding-sibling::div[contains(text(),\"Commitment Order\")]");
+  Commitment_OrderCommitment_List_2(CommitID:string): Locator {
+    return this.page.locator(`//div[text()=\"${CommitID}\"]//preceding-sibling::div[contains(text(),\"Commitment Order\")]`);
   }
 
   get Commitment_Rows_Count(): Locator {
@@ -690,8 +690,8 @@ export class CorrespondentPortalPage {
     return this.page.locator("//i[contains(@class, 'fa-lg') and contains(@class, 'color-primary') and contains(@class, 'fa-times')]");
   }
 
-  get Curr_GrossCommitment_List(): Locator {
-    return this.page.locator("//button[text()=\"$|CommittedCorrLoan|\"]//ancestor::tr//td[@data-title=\"Curr Gross\"]");
+  Curr_GrossCommitment_List(CommittedCorrLoan:string): Locator {
+    return this.page.locator(`//button[text()=\"${CommittedCorrLoan}\"]//ancestor::tr//td[@data-title=\"Curr Gross\"]`);
   }
 
   get Current_Date_From_Calendar(): Locator {
@@ -702,8 +702,8 @@ export class CorrespondentPortalPage {
     return this.page.locator("//input[@placeholder=\"Select Date\"]");
   }
 
-  get Current_Month_Requested_DateIndividual(): Locator {
-    return this.page.locator("(//div[contains(@aria-label,\"Requested Date:\")])[$|count1|]");
+  Current_Month_Requested_DateIndividual(count1:string): Locator {
+    return this.page.locator(`(//div[contains(@aria-label,\"Requested Date:\")])[${count1}]`);
   }
 
   get Custom_Header_Field(): Locator {
