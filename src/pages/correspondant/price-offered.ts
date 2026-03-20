@@ -2332,8 +2332,8 @@ Select_Loan_which_is_committed_in_Standard(CommittedLoanNumber:string): Locator 
     return this.page.locator("(//input[contains(@aria-label, \"Select loan\") and @type=\"checkbox\"])");
   }
 
-  get Uncommitted_Loan_Num(): Locator {
-    return this.page.locator("//button[text()=\"$|UncommittedLoanNum|\"]");
+  Uncommitted_Loan_Num(UncommittedLoanNum:string): Locator {
+    return this.page.locator(`//button[text()=\"${UncommittedLoanNum}\"]`);
   }
 
   get Uncommitted_Loan_NumStandard(): Locator {

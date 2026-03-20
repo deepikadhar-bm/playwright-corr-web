@@ -1124,4 +1124,47 @@ export class AddonHelpers {
     throw e;
   }
 }
+// ─── Random Generators ─────────────────────────────────────────────────────
+
+  /**
+   * Generates a random number with the specified number of digits
+   * and stores it in the target runtime variable.
+   *
+   * @param digits    - Number of digits in the generated number (as string)
+   * @param targetVar - The runtime variable key to store the result in
+   *
+   * Usage:
+   *   Methods.generateRandomNumber('3', 'RandomNum');  // → e.g. "472"
+   *   Methods.generateRandomNumber('6', 'RandomNum');  // → e.g. "839201"
+   */
+  generateRandomNumber(digits: string, targetVar: string): void {
+    const length = parseInt(digits, 10);
+    const min = Math.pow(10, length - 1);
+    const max = Math.pow(10, length) - 1;
+    const result = String(Math.floor(Math.random() * (max - min + 1)) + min);
+    this.vars[targetVar] = result;
+    log.info(`generateRandomNumber | Digits: ${digits} | Result: "${result}" | StoredIn: ${targetVar}`);
+  }
+
+  /**
+   * Generates a random alphanumeric string with the specified length
+   * and stores it in the target runtime variable.
+   *
+   * @param length    - Length of the generated string (as string)
+   * @param targetVar - The runtime variable key to store the result in
+   *
+   * Usage:
+   *   Methods.generateRandomString('4', 'RandomStr');  // → e.g. "A3KP"
+   *   Methods.generateRandomString('8', 'RandomStr');  // → e.g. "B7XQ2MNT"
+   */
+  generateRandomString(length: string, targetVar: string): void {
+    const len = parseInt(length, 10);
+    const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+    let result = '';
+    for (let i = 0; i < len; i++) {
+      result += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    this.vars[targetVar] = result;
+    log.info(`generateRandomString | Length: ${length} | Result: "${result}" | StoredIn: ${targetVar}`);
+  }
 }
