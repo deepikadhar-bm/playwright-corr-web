@@ -1063,3 +1063,168 @@ export function readCellByColAndRowIndex(
 
   return String(cellValue).trim();
 }
+/**
+ * Writes a value to a cell identified by sheet index, row index, and column index.
+ * All indices are 0-based.
+ *
+ * @param filePath    - Path to the Excel file
+ * @param sheetIndex  - 0-based sheet index (0 = first sheet)
+ * @param rowIndex    - 0-based row index (0 = header row, 1 = first data row)
+ * @param colIndex    - 0-based column index (0 = column A, 1 = column B, ...)
+ * @param value       - Value to write into the cell
+ * @param cellType    - Optional: 'a' alphanumeric | 's' string | 'n' number | 'b' boolean | 'd' date
+ *
+ * Usage:
+ *   excelHelper.writeCellByColAndRowIndex(filePath, 0, 1, 0, 'TestSigma_001', 'a');
+ *   // → writes 'TestSigma_001' to sheet 0, row 1 (first data row), column A
+ *
+ *   excelHelper.writeCellByColAndRowIndex(filePath, 0, 2, 3, 'PASS');
+ *   // → writes 'PASS' to sheet 0, row 2, column D
+ */
+// export function writeCellByColAndRowIndex(
+//   filePath: string,
+//   sheetIndex: string | number,
+//   rowIndex: string | number,
+//   colIndex: string | number,
+//   value: CellValue,
+//   cellType?: ExcelCellType
+// ): void {
+//   const resolved = path.resolve(filePath);
+
+//   if (!fs.existsSync(resolved)) {
+//     throw new Error(`Excel file not found: ${resolved}`);
+//   }
+
+//   const sheetIdx = typeof sheetIndex === 'string' ? parseInt(sheetIndex, 10) : sheetIndex;
+//   const rowIdx   = typeof rowIndex   === 'string' ? parseInt(rowIndex,   10) : rowIndex;
+//   const colIdx   = typeof colIndex   === 'string' ? parseInt(colIndex,   10) : colIndex;
+
+//   if (isNaN(sheetIdx)) throw new Error(`Sheet index "${sheetIndex}" is not valid`);
+//   if (isNaN(rowIdx))   throw new Error(`Row index "${rowIndex}" is not valid`);
+//   if (isNaN(colIdx))   throw new Error(`Column index "${colIndex}" is not valid`);
+
+//   const lockFile = resolved + '.lock';
+
+//   const waitForFileStable = (filePath: string, timeout = 10000) => {
+//     const start = Date.now();
+//     let lastSize = -1;
+//     while (Date.now() - start < timeout) {
+//       if (fs.existsSync(filePath)) {
+//         const { size } = fs.statSync(filePath);
+//         if (size > 0 && size === lastSize) return;
+//         lastSize = size;
+//       }
+//     }
+//     throw new Error(`File not stable within timeout: ${filePath}`);
+//   };
+
+//   const retry = <T>(fn: () => T, retries = 3, delay = 200): T => {
+//     let lastError: any;
+//     for (let i = 0; i < retries; i++) {
+//       try {
+//         return fn();
+//       } catch (err) {
+//         lastError = err;
+//         const start = Date.now();
+//         while (Date.now() - start < delay) {}
+//       }
+//     }
+//     throw lastError;
+//   };
+
+//   const acquireLock = (lockPath: string, timeout = 10000) => {
+//     const start = Date.now();
+//     while (fs.existsSync(lockPath)) {
+//       if (Date.now() - start > timeout) {
+//         throw new Error(`Timeout waiting for file lock: ${lockPath}`);
+//       }
+//     }
+//     fs.writeFileSync(lockPath, 'LOCK');
+//   };
+
+//   const releaseLock = (lockPath: string) => {
+//     if (fs.existsSync(lockPath)) {
+//       fs.unlinkSync(lockPath);
+//     }
+//   };
+
+//   acquireLock(lockFile);
+
+//   try {
+//     waitForFileStable(resolved);
+
+//     const wb = retry(() =>
+//       XLSX.readFile(resolved, { cellDates: true, cellNF: true })
+//     );
+
+//     if (sheetIdx < 0 || sheetIdx >= wb.SheetNames.length) {
+//       throw new Error(
+//         `Sheet index ${sheetIdx} out of range. Total sheets: ${wb.SheetNames.length}`
+//       );
+//     }
+
+//     const sheetName = wb.SheetNames[sheetIdx];
+//     const sheet = wb.Sheets[sheetName];
+
+//     const colLetter = XLSX.utils.encode_col(colIdx);
+//     const cellAddr  = `${colLetter}${rowIdx + 1}`;
+
+//     sheet[cellAddr] = {
+//       v: value,
+//       t: cellType || (typeof value === 'number' ? 'n' : 's')
+//     };
+
+//     retry(() => XLSX.writeFile(wb, resolved));
+
+//   } finally {
+//     releaseLock(lockFile);
+//   }
+// }
+export function writeCellByColAndRowIndex(
+  filePath: string,
+  sheetIndex: string | number,
+  rowIndex: string | number,
+  colIndex: string | number,
+  value: CellValue,
+  cellType?: ExcelCellType
+): void {
+  const resolved = path.resolve(filePath);
+  if (!fs.existsSync(resolved)) {
+    throw new Error(`Excel file not found: ${resolved}`);
+  }
+
+  const sheetIdx = typeof sheetIndex === 'string' ? parseInt(sheetIndex, 10) : sheetIndex;
+  const rowIdx   = typeof rowIndex   === 'string' ? parseInt(rowIndex,   10) : rowIndex;
+  const colIdx   = typeof colIndex   === 'string' ? parseInt(colIndex,   10) : colIndex;
+
+  if (isNaN(sheetIdx)) throw new Error(`Sheet index "${sheetIndex}" is not a valid number`);
+  if (isNaN(rowIdx))   throw new Error(`Row index "${rowIndex}" is not a valid number`);
+  if (isNaN(colIdx))   throw new Error(`Column index "${colIndex}" is not a valid number`);
+
+  const wb = XLSX.readFile(resolved, { cellDates: true, cellNF: true });
+
+  if (sheetIdx < 0 || sheetIdx >= wb.SheetNames.length) {
+    throw new Error(
+      `Sheet index ${sheetIdx} out of range. Available sheets: ${wb.SheetNames.length}`
+    );
+  }
+
+  const sheetName = wb.SheetNames[sheetIdx];
+  const sheet     = wb.Sheets[sheetName];
+
+  const colLetter = XLSX.utils.encode_col(colIdx);
+  const cellAddr  = `${colLetter}${rowIdx + 1}`;
+
+  setCellValue(sheet, cellAddr, value, cellType);
+
+  // Write to a temp file first then rename atomically
+  // explicitly pass bookType: 'xlsx' so XLSX does not try to infer format from '.tmp' extension
+  const tempPath = resolved + '.tmp';
+  XLSX.writeFile(wb, tempPath, { bookType: 'xlsx' });
+  fs.renameSync(tempPath, resolved);
+
+  console.log(
+    `writeCellByColAndRowIndex → sheet[${sheetIdx}]:"${sheetName}" | ` +
+    `row ${rowIdx}, col ${colIdx} (${cellAddr}) | value: "${value}"`
+  );
+}
