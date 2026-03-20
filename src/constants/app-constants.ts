@@ -61,4 +61,6 @@ export const APP_CONSTANTS = {
  DUPLICATE_TEXT_POPUP:'is a Duplicate loan. It is already committed',
  TIME_FORMAT_HHMMA:'hh:mma',
  DATE_FORMAT_MDYY:"M/d/yy",
+ DATE_FORMAT_DDMMYYYY:"dd-MM-yyyy",
+ TIME_FORMAT1_HHMMA:"hh:mm a",
 };

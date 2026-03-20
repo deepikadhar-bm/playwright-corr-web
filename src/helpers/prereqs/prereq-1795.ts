@@ -9,6 +9,7 @@ import { AddonHelpers } from '@helpers/AddonHelpers';
 import { Logger as log } from '@helpers/log-helper';
 import { APP_CONSTANTS as appconstants } from '../../constants/app-constants';
 import { testDataManager } from 'testdata/TestDataManager';
+import { ENV } from '@config/environments';
 
 
 const TC_ID = 'PREREQ_1795(REG_TS08_TC01)';
@@ -22,7 +23,9 @@ export async function runPrereq_1795(page: Page, vars: Record<string, string>): 
   const priceOfferedPage = new PriceOfferedPage(page);
   const spinnerPage = new SpinnerPage(page);
   const Methods = new AddonHelpers(page, vars);
-
+  const credentials = ENV.getCredentials('internal');
+  vars['Username'] = credentials.username;
+  vars['Password'] = credentials.password;
   const profileName = 'CommitmentList';
   const profile = testDataManager.getProfileByName(profileName);
 

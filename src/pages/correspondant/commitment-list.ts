@@ -153,8 +153,8 @@ Column_Count_UICommitted_Loans1(count: string): Locator {
     return this.page.locator(`//td[@data-title="Bid Request ID"]//div[normalize-space(text())="${BidReqId}"]//ancestor::tr//td[@data-title="Comm. ID"]`);
   }
 
-  get Commitment_IDCommitment_List(): Locator {
-    return this.page.locator("//div[contains(text(),\"$|BidReqIdPriceOffered|\")]/ancestor::tr/td[@data-title=\"Comm. ID\"]");
+  Commitment_IDCommitment_List(BidReqIdPriceOffered:string): Locator {
+    return this.page.locator(`//div[contains(text(),\"${BidReqIdPriceOffered}\")]/ancestor::tr/td[@data-title=\"Comm. ID\"]`);
   }
 
   get Commitment_IDLatest(): Locator {
