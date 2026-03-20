@@ -1205,9 +1205,6 @@ export class CorrespondentPortalPage {
     return this.page.locator("//div[@class='parent']//fieldset[1]/parent::div");
   }
 
-  // get_Headers_From_UI(count: string): Locator {
-  //   return this.page.locator("(//input[@type=\"checkbox\"]/../..//div[@class=\"flex-grow-1\"])[$|count|]");
-  // }
   get_Headers_From_UI(index: number): Locator {
     return this.page.locator(`(//input[@type="checkbox"]/../..//div[@class="flex-grow-1"])[${index}]`);
   }
