@@ -953,10 +953,12 @@ export function getRowDataWithCommaSeperator(
       `Row index ${rowIndex} is out of range. Total rows (including header): ${rows.length}`
     );
   }
-
+  
   // Map row values to string and join with commas
   return rows[rowIndex].map(cell => String(cell).trim()).join(", ");
 }
+
+
 export function getAllRowCount(filePath: string, sheetIndex: number = 0): number {
   const wb = loadWorkbook(filePath);
  

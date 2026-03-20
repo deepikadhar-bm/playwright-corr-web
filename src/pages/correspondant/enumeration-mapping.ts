@@ -43,8 +43,8 @@ export class EnumerationMappingPage {
     return this.page.locator("//div[text()=\"$|ColumnHeader|\" and not(@class=\"my-2\")]");
   }
 
-  get Bid_Sample_Name_2(): Locator {
-    return this.page.locator("(//div[@class=\"col-2\"]//div[text()=\"$|SecondBidSampleName|\"])[1]/../..//input[@type=\"checkbox\"]");
+  get_Bid_Sample_Name_2(SecondBidSampleName:string): Locator {
+    return this.page.locator(`(//div[@class=\"col-2\"]//div[text()=\"${SecondBidSampleName}\"])[1]/../..//input[@type=\"checkbox\"]`);
   }
 
   get_Bid_Sample_Name_Field_Enumeration_Mapping(ChaseName: string): Locator {
@@ -141,8 +141,8 @@ export class EnumerationMappingPage {
     return this.page.locator("//select[@title=\"$|deletedEnumerationValue|\"]");
   }
 
-  get Deleted_Field_In_Enumeration(): Locator {
-    return this.page.locator("(//div[@class=\"field-block mb-2\"])//div[text()=\" $|BidTapeValueforBeforeDeleted| \"]");
+  get_Deleted_Field_In_Enumeration(BidTapeValueforBeforeDeleted:string): Locator {
+    return this.page.locator(`(//div[@class=\"field-block mb-2\"])//div[text()=\" ${BidTapeValueforBeforeDeleted} \"]`);
   }
 
   get Disabled_Bid_Tape_Value_Count(): Locator {

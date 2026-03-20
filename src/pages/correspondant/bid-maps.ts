@@ -19,8 +19,8 @@ export class BidMapsPage {
     return this.page.locator("//h6[text()[normalize-space() = \"Column Header\"]]");
   }
 
-  get Edited_Chase_Value_After_Save_new(): Locator {
-    return this.page.locator("(//button[text()=\" Add Field \"]/../div[text()=\"$|EditedChaseFieldName|\"]/../..//select)[2]");
+  get_Edited_Chase_Value_After_Save_new(EditedChaseFieldName:string): Locator {
+    return this.page.locator(`(//button[text()=\" Add Field \"]/../div[text()=\"${EditedChaseFieldName}\"]/../..//select)[2]`);
   }
 
   get Enum_SearchFIlter_Text(): Locator {
