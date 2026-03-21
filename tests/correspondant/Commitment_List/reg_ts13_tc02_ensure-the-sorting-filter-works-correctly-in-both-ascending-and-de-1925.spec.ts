@@ -81,8 +81,8 @@ test.describe('Commitment List - TS_1', () => {
       }
       log.step('Verification of Total committed loans sorting order both ascending and descending');
       try {
-        vars["IndividualHeadersCommitmentList"] = appconstants.IndividualHeadersCommitmentList;
-        vars["HeadersUI1"] = appconstants.HeadersUI1;
+        vars["IndividualHeadersCommitmentList"] = appconstants.INDIVIDUAL_HEADERS_COMMITMENTLIST;
+        vars["HeadersUI1"] = appconstants.HEADERSUI1;
         vars["ColumnHeadersDetailsScreenUI"] = String(await priceOfferedPage.Column_Headers_Details_ScreenUI.count());
         vars["count"] = "1";
         while (parseFloat(vars["count"]) <= parseFloat(vars["ColumnHeadersDetailsScreenUI"])) {

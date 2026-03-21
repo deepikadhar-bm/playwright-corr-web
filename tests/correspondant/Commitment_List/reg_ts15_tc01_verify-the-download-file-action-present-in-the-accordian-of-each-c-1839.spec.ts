@@ -72,7 +72,7 @@ test.describe('Commitment List - TS_1', () => {
           priceOfferedPage.Download_File.first().click()
         ]);
         log.info('File downloaded successfully');
-        Methods.getCurrentTimestamp(appconstants.DATE_TIME_FORMAT_EXCEL_EST, 'CurresntEstDateAndTime', appconstants.America_New_York);
+        Methods.getCurrentTimestamp(appconstants.DATE_TIME_FORMAT_EXCEL_EST, 'CurresntEstDateAndTime', appconstants.AMERICA_NEW_YORK);
         Methods.concatenateWithSpace(vars['CurresntEstDateAndTime'], 'ET', 'ExpectedReportGenTime');
         vars['SavedFileName'] = vars['TimeStamp'] + '_' + download.suggestedFilename();
         vars['FilePathTotalCommittedLoans'] = path.join(vars['DownloadDir'], vars['SavedFileName']);

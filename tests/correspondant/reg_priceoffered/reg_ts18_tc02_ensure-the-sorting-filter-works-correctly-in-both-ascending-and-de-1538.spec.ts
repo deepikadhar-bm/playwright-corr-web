@@ -1,4 +1,3 @@
-// [POM-APPLIED]
 import { test, expect } from '@playwright/test';
 import path from 'path';
 import * as stepGroups from '../../../src/helpers/step-groups';
@@ -74,7 +73,7 @@ test.describe('REG_PriceOffered', () => {
       log.step('Verification of All loans sorting order both ascending and descending');
       try {
         vars["ColumnHeadersDetailsScreenUI"] = String(await priceOfferedPage.Column_Headers_Details_ScreenUI.count());
-        vars["count"] = "1";
+        vars["count"] = appconstants.ONE;
         while (parseFloat(vars["count"]) <= parseFloat(vars["ColumnHeadersDetailsScreenUI"])) {
           vars["IndividualHeaderScreenDetails"] = await priceOfferedPage.Individual_Column_Header_Details_Screen(vars["count"]).textContent() || '';
           Methods.trimtestdata(vars["IndividualHeaderScreenDetails"], "IndividualHeaderScreenDetails");
@@ -86,10 +85,10 @@ test.describe('REG_PriceOffered', () => {
           await expect(correspondentPortalPage.Header_Sort_Down).toBeVisible();
           await priceOfferedPage.Column_Header_Data(vars["IndividualHeaderScreenDetails"]).waitFor({ state: 'visible' });
 
-          if (vars["IndividualHeaderScreenDetails"] === appconstants.LoanAmount) {
+          if (vars["IndividualHeaderScreenDetails"] === appconstants.LOAN_AMOUNT) {
             log.info("Ascending order -" + "if condition is passed:" + vars["IndividualHeaderScreenDetails"]);
             await Methods.verifyNumericOrder(priceOfferedPage.Column_Data_Details_Screen(vars["IndividualHeaderScreenDetails"]), undefined, 'ascending');
-          } else if (vars["IndividualHeaderScreenDetails"] === appconstants.MarkAdj) {
+          } else if (vars["IndividualHeaderScreenDetails"] === appconstants.MARK_ADJ) {
             log.info("Ascending order -" + "else if condition is passed:" + vars["IndividualHeaderScreenDetails"]);
             await Methods.verifyNumericOrder(priceOfferedPage.Column_Data_Details_Screen(vars["IndividualHeaderScreenDetails"]), undefined, 'ascending');
           } else {
@@ -103,10 +102,10 @@ test.describe('REG_PriceOffered', () => {
           await page.waitForTimeout(3000);
           await expect(priceOfferedPage.Header_Sort_Up_Symbol).toBeVisible();
           await priceOfferedPage.Column_Header_Data(vars["IndividualHeaderScreenDetails"]).waitFor({ state: 'visible' });
-          if (vars["IndividualHeaderScreenDetails"] === appconstants.LoanAmount) {
+          if (vars["IndividualHeaderScreenDetails"] === appconstants.LOAN_AMOUNT) {
             log.info("Descending order -" + "if condition is passed:" + vars["IndividualHeaderScreenDetails"]);
             await Methods.verifyNumericOrder(priceOfferedPage.Column_Data_Details_Screen(vars["IndividualHeaderScreenDetails"]), undefined, 'descending');
-          } else if (vars["IndividualHeaderScreenDetails"] === appconstants.MarkAdj) {
+          } else if (vars["IndividualHeaderScreenDetails"] === appconstants.MARK_ADJ) {
             log.info("Descending order -" + "else if condition is passed:" + vars["IndividualHeaderScreenDetails"]);
             await Methods.verifyNumericOrder(priceOfferedPage.Column_Data_Details_Screen(vars["IndividualHeaderScreenDetails"]), undefined, 'descending');
           } else {
@@ -131,7 +130,7 @@ test.describe('REG_PriceOffered', () => {
         await priceOfferedPage.Column_Headers_Details_ScreenUI.first().waitFor({ state: 'visible' });
 
         vars["ColumnHeadersDetailsScreenUI"] = String(await priceOfferedPage.Column_Headers_Details_ScreenUI.count());
-        vars["count"] = "1";
+        vars["count"] = appconstants.ONE;
         while (parseFloat(vars["count"]) <= parseFloat(vars["ColumnHeadersDetailsScreenUI"])) {
           vars["IndividualHeaderScreenDetails"] = await priceOfferedPage.Individual_Column_Header_Details_Screen(vars["count"]).textContent() || '';
           Methods.trimtestdata(vars["IndividualHeaderScreenDetails"], "IndividualHeaderScreenDetails");
@@ -143,10 +142,10 @@ test.describe('REG_PriceOffered', () => {
           await expect(correspondentPortalPage.Header_Sort_Down).toBeVisible();
           await priceOfferedPage.Column_Header_Data(vars["IndividualHeaderScreenDetails"]).waitFor({ state: 'visible' });
 
-          if (vars["IndividualHeaderScreenDetails"] === appconstants.LoanAmount) {
+          if (vars["IndividualHeaderScreenDetails"] === appconstants.LOAN_AMOUNT) {
             log.info("Ascending order -" + "if condition is passed:" + vars["IndividualHeaderScreenDetails"]);
             await Methods.verifyNumericOrder(priceOfferedPage.Column_Data_Details_Screen(vars["IndividualHeaderScreenDetails"]), undefined, 'ascending');
-          } else if (vars["IndividualHeaderScreenDetails"] === appconstants.MarkAdj) {
+          } else if (vars["IndividualHeaderScreenDetails"] === appconstants.MARK_ADJ) {
             log.info("Ascending order -" + "else if condition is passed:" + vars["IndividualHeaderScreenDetails"]);
             await Methods.verifyNumericOrder(priceOfferedPage.Column_Data_Details_Screen(vars["IndividualHeaderScreenDetails"]), undefined, 'ascending');
           } else {
@@ -160,10 +159,10 @@ test.describe('REG_PriceOffered', () => {
           await expect(priceOfferedPage.Header_Sort_Up_Symbol).toBeVisible();
           await priceOfferedPage.Column_Header_Data(vars["IndividualHeaderScreenDetails"]).waitFor({ state: 'visible' });
 
-          if (vars["IndividualHeaderScreenDetails"] === appconstants.LoanAmount) {
+          if (vars["IndividualHeaderScreenDetails"] === appconstants.LOAN_AMOUNT) {
             log.info("Descending order -" + "if condition is passed:" + vars["IndividualHeaderScreenDetails"]);
             await Methods.verifyNumericOrder(priceOfferedPage.Column_Data_Details_Screen(vars["IndividualHeaderScreenDetails"]), undefined, 'descending');
-          } else if (vars["IndividualHeaderScreenDetails"] === appconstants.MarkAdj) {
+          } else if (vars["IndividualHeaderScreenDetails"] === appconstants.MARK_ADJ) {
             log.info("Descending order -" + "else if condition is passed:" + vars["IndividualHeaderScreenDetails"]);
             await Methods.verifyNumericOrder(priceOfferedPage.Column_Data_Details_Screen(vars["IndividualHeaderScreenDetails"]), undefined, 'descending');
           } else {

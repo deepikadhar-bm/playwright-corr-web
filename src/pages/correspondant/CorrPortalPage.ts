@@ -1055,8 +1055,8 @@ export class CorrPortalPage {
     return this.page.locator("//div[contains(@aria-label,\"Sort by\")]");
   }
 
-  get Headers(): Locator {
-    return this.page.locator("(//div[@role=\"button\"])[$|indexExcel|]");
+  Headers(indexExcel:string): Locator {
+    return this.page.locator(`(//div[@role=\"button\"])[${indexExcel}]`);
   }
 
   get Headers_Names_UI_Commitment_List(): Locator {
@@ -1128,8 +1128,8 @@ export class CorrPortalPage {
     return this.page.locator(`(//tr[contains(@class,'row')][${RowCount}]//td[position() >= 2 and position() <= 14])[${ColumnCountUI}]`);
   }
 
-  get Individual_Cell_Value_UI(): Locator {
-    return this.page.locator("(//tbody//tr[$|RowCountUI|]//td)[$|ColumnCountUI|]");
+  Individual_Cell_Value_UI(RowCountUI:string,ColumnCountUI:string): Locator {
+    return this.page.locator(`(//tbody//tr[${RowCountUI}]//td)[${ColumnCountUI}]`);
   }
 
   get Individual_ChaseValue_of_ChaseField(): Locator {
@@ -1180,16 +1180,16 @@ export class CorrPortalPage {
     return this.page.locator(`((//div[contains(@aria-label,\"Sort by\")])[position() <= 13])[${Count}]`);
   }
 
-  get Individual_Loan_Num_Price_Offered(): Locator {
-    return this.page.locator("(//button[contains(@aria-label,\"View loan details\")])[$|count|]");
+  Individual_Loan_Num_Price_Offered(count:string): Locator {
+    return this.page.locator(`(//button[contains(@aria-label,\"View loan details\")])[${count}]`);
   }
 
-  get Individual_Mapped_Chase_Name(): Locator {
-    return this.page.locator("(//fieldset//div[@class=\"gap-2 header-grid-layout\"]//select)[$|count|]");
+   Individual_Mapped_Chase_Name(count:string): Locator {
+    return this.page.locator(`(//fieldset//div[@class=\"gap-2 header-grid-layout\"]//select)[${count}]`);
   }
 
-  get Individual_Mark_Adjust_Value_Fresh_Loans(): Locator {
-    return this.page.locator("(//*[contains(@aria-label,\"Select loan\")]/../..//td[@data-title=\"Mark Adj\"])[$|count|]");
+  Individual_Mark_Adjust_Value_Fresh_Loans(count:string): Locator {
+    return this.page.locator(`(//*[contains(@aria-label,\"Select loan\")]/../..//td[@data-title=\"Mark Adj\"])[${count}]`);
   }
 
   get Individual_Selected_Company(): Locator {
@@ -1683,7 +1683,9 @@ export class CorrPortalPage {
   get Select_All_Loan_Num(): Locator {
     return this.page.locator("//input[contains(@aria-label,\"Select all for\") and @type=\"checkbox\"]");
   }
-
+get Export_Selected_Count(): Locator {
+    return this.page.locator("//button[not(@disabled)]//span[contains(normalize-space(),'Export Selected')]//following-sibling::span");
+  }
   get Select_Bid_Request_Status_Dropdown1(): Locator {
     return this.page.locator("//div[text()[normalize-space() = \"Select Bid Request Status\"]]");
   }

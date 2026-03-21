@@ -11,7 +11,6 @@ import { runPrereq_1394 } from '../../../src/helpers/prereqs/prereq-1394';
 import { AddonHelpers } from '@helpers/AddonHelpers';
 import { Logger as log } from '@helpers/log-helper';
 import { APP_CONSTANTS as appconstants } from '../../../src/constants/app-constants';
-// import { ENV } from '@config/environments';
 
 
 const TC_ID = 'REG_TS17_TC01';
@@ -25,7 +24,6 @@ test.describe('REG_PriceOffered', () => {
   let priceOfferedPage: PriceOfferedPage;
   let spinnerPage: SpinnerPage;
   let Methods: AddonHelpers;
-  // const credentials = ENV.getCredentials('internal');
 
 
   test.beforeEach(async ({ page }) => {
@@ -40,9 +38,6 @@ test.describe('REG_PriceOffered', () => {
   });
 
   test(`${TC_ID} - ${TC_TITLE}`, async ({ page }) => {
-    // vars['Username'] = credentials.username;
-    // vars['Password'] = credentials.password;
-    // await stepGroups.stepGroup_Login_to_CORR_Portal(page, vars);
     vars['DownloadDir'] = path.join(process.cwd(), 'downloads');
     log.tcStart(TC_ID, TC_TITLE);
     try {
@@ -54,7 +49,6 @@ test.describe('REG_PriceOffered', () => {
         await spinnerPage.Spinner.waitFor({ state: 'hidden' });
         vars['BidReqID'] = vars['RequestIDDetails'];
          log.info('BidReqID: ' + vars['BidReqID']);
-         vars['BidReqID'] = "870Q25B27A61";
         await correspondentPortalPage.Search_By_Bid_Request_ID_Input.fill(vars['BidReqID']);
         await page.keyboard.press('Enter');
         await spinnerPage.Spinner.waitFor({ state: 'hidden' });
@@ -81,7 +75,7 @@ test.describe('REG_PriceOffered', () => {
           page.waitForEvent('download'),
           priceOfferedPage.Download_File.click()
         ]);
-        Methods.getCurrentTimestamp(appconstants.DATE_TIME_FORMAT_EXCEL_EST, 'CurrentDateAndTime', appconstants.America_New_York);
+        Methods.getCurrentTimestamp(appconstants.DATE_TIME_FORMAT_EXCEL_EST, 'CurrentDateAndTime', appconstants.AMERICA_NEW_YORK);
         Methods.concatenateWithSpace(vars['CurrentDateAndTime'], 'ET', 'ExpectedReportGenTime');
         log.info('Expected Report Gen Time: ' + vars['ExpectedReportGenTime']);
         vars['DownloadedFileName'] = vars['TimeStamp'] + '_' + download.suggestedFilename();

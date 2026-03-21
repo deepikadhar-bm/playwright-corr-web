@@ -12,7 +12,6 @@ import { testDataManager } from 'testdata/TestDataManager';
 import { APP_CONSTANTS as appconstants } from '../../../src/constants/app-constants';
 
 
-
 const TC_ID    = 'REG_TS22_TC02.1';
 const TC_TITLE = 'Perform commit action and verify that during the commitment progress, the status is updated to commitment in progress -> Verify in both list and detail screen (One Execution Type)';
 
@@ -26,6 +25,7 @@ test.describe('REG_PriceOffered', () => {
   let spinnerPage: SpinnerPage;
   let Methods: AddonHelpers;
   const credentials = ENV.getCredentials('internal');
+
   const profileName = 'Price Offered';
   const profile     = testDataManager.getProfileByName(profileName);
 
@@ -108,7 +108,7 @@ test.describe('REG_PriceOffered', () => {
         vars['BidStatusBidReqPage'] = await newBidRequestPage.Bid_Status_BidRequestsPage(vars['BidReqIdPriceOffered']).textContent() || '';
         newMethods.trimtestdata(vars['BidStatusBidReqPage'], 'BidStatusBidReqPage');
         log.info('Bid status on Bid Requests page: ' + vars['BidStatusBidReqPage']);
-        if (vars['BidStatusBidReqPage'].includes(appconstants.PARTIALLYCOMMITTED)) {
+        if (vars['BidStatusBidReqPage'].includes(appconstants.PARTIALLYCOMMITTED_STATUS)) {
           log.info('Status is Partially Committed — re-searching to wait for status update');
           await newBidRequestsPage.Search_by_Bid_Request_ID_Field.click();
           await newBidRequestsPage.Search_by_Bid_Request_ID_Field.clear();
@@ -120,7 +120,7 @@ test.describe('REG_PriceOffered', () => {
           newMethods.trimtestdata(vars['BidStatusBidReqPage'], 'BidStatusBidReqPage');
           log.info('Bid status after re-search: ' + vars['BidStatusBidReqPage']);
         }
-        expect(newMethods.verifyString(vars['BidStatusBidReqPage'], 'equals', appconstants.COMMITMENT_IN_PROGRESS));
+        expect(newMethods.verifyString(vars['BidStatusBidReqPage'], 'equals', appconstants.COMMITMENT_IN_PROGRESS_STATUS));
         log.stepPass('Bid Request page status verified: ' + vars['BidStatusBidReqPage']);
 
         log.step('Verify Bid Request status is "Commitment in progress" on Price Offered list page');
@@ -133,7 +133,7 @@ test.describe('REG_PriceOffered', () => {
         vars['BidStatusPriceOfferedPage'] = await newPriceOfferedPage.Bid_Status_Price_OfferedExe_Type1(vars['BidReqIdPriceOffered']).textContent() || '';
         newMethods.trimtestdata(vars['BidStatusPriceOfferedPage'], 'BidStatusPriceOfferedPage');
         log.info('Bid status on Price Offered page: ' + vars['BidStatusPriceOfferedPage']);
-        expect(newMethods.verifyString(vars['BidStatusPriceOfferedPage'], 'equals', appconstants.COMMITMENT_IN_PROGRESS));
+        expect(newMethods.verifyString(vars['BidStatusPriceOfferedPage'], 'equals', appconstants.COMMITMENT_IN_PROGRESS_STATUS));
         log.stepPass('Price Offered page status verified: ' + vars['BidStatusPriceOfferedPage']);
 
         await newPage.close();
