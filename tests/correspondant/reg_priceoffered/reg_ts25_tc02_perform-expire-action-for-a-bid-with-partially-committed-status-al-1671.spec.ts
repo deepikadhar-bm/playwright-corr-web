@@ -57,7 +57,7 @@ test.describe('Unassigned', () => {
         await priceOfferedPage.Bid_Req_IdPrice_Offered_Page(vars["BidReqIdPriceOffered"]).waitFor({ state: 'visible' });
         vars['BidStatusPriceOffered'] = await priceOfferedPage.Bid_Status_Price_OfferedExe_Type1(vars["BidReqIdPriceOffered"]).textContent() || '';
         Methods.trimtestdata(vars['BidStatusPriceOffered'], 'BidStatusPriceOffered');
-        Methods.verifyString(vars['BidStatusPriceOffered'], 'equals', appconstants.PARTIALLYCOMMITTED);
+        Methods.verifyString(vars['BidStatusPriceOffered'], 'equals', appconstants.PARTIALLYCOMMITTED_STATUS);
         log.info('BidStatus: ' + vars['BidStatusPriceOffered']);
         log.stepPass('Loan committed and bid status confirmed as Partially Committed');
       } catch (e) {
@@ -116,7 +116,7 @@ test.describe('Unassigned', () => {
         await priceOfferedPage.Bid_Status_Price_OfferedExe_Type1(vars["BidReqIdPriceOffered"]).waitFor({ state: 'visible' });
         vars['BidStatusPriceOffered'] = await priceOfferedPage.Bid_Status_Price_OfferedExe_Type1(vars["BidReqIdPriceOffered"]).textContent() || '';
         Methods.trimtestdata(vars['BidStatusPriceOffered'], 'BidStatusPriceOffered');
-        Methods.verifyString(vars['BidStatusPriceOffered'], 'equals', appconstants.EXPIRED);
+        Methods.verifyString(vars['BidStatusPriceOffered'], 'equals', appconstants.EXPIRED_STATUS);
         log.info('BidStatus after expire: ' + vars['BidStatusPriceOffered']);
         log.stepPass('Bid status confirmed as Expired');
       } catch (e) {
@@ -174,7 +174,7 @@ test.describe('Unassigned', () => {
         vars['BidStatusPriceOffered'] = await priceOfferedPage.Bid_Status_Price_OfferedExe_Type1(vars["BidReqIdPriceOffered"]).textContent() || '';
         Methods.trimtestdata(vars['BidStatusPriceOffered'], 'BidStatusPriceOffered');
         log.info('BidStatus after change: ' + vars['BidStatusPriceOffered']);
-        Methods.verifyString(vars['BidStatusPriceOffered'], 'equals', appconstants.PARTIALLYCOMMITTED);
+        Methods.verifyString(vars['BidStatusPriceOffered'], 'equals', appconstants.PARTIALLYCOMMITTED_STATUS);
         log.stepPass('Bid status successfully restored to Partially Committed');
       } catch (e) {
         log.stepFail(page, 'Failed to verify bid status is back to Partially Committed');

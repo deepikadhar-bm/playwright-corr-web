@@ -7,6 +7,7 @@ import { SpinnerPage } from '../../../src/pages/correspondant/spinner';
 import { AddonHelpers } from '@helpers/AddonHelpers';
 import { Logger as log } from '@helpers/log-helper';
 import { ENV } from '@config/environments'
+import { APP_CONSTANTS as appconstants } from '../../../src/constants/app-constants';
 
 
 const TC_ID = "REG_TS24_TC01";
@@ -23,6 +24,8 @@ test.describe('Commitment List - TS_1', () => {
 
   test.beforeEach(async ({ page }) => {
     vars = {};
+    vars["Username"] = credentials.username;
+    vars["Password"] = credentials.password;
     commitmentListPage = new CommitmentListPage(page);
     correspondentPortalPage = new CorrespondentPortalPage(page);
     priceOfferedPage = new PriceOfferedPage(page);
@@ -31,8 +34,7 @@ test.describe('Commitment List - TS_1', () => {
   });
 
   test(`${TC_ID} - ${TC_TITLE}`, async ({ page }) => {
-    vars["Username"] = credentials.username;
-    vars["Password"] = credentials.password;
+
     log.tcStart(TC_ID, TC_TITLE);
     try {
       log.step('Login to corr application');
@@ -49,9 +51,11 @@ test.describe('Commitment List - TS_1', () => {
         await correspondentPortalPage.Commitments_Side_Menu.click();
         await commitmentListPage.Committed_List_Dropdown.click();
         await commitmentListPage.Closed_List_Tab.waitFor({ state: 'visible' });
-        await commitmentListPage.Closed_List_Tab.scrollIntoViewIfNeeded();
-        await commitmentListPage.Closed_List_Tab.click();
-        await page.waitForLoadState('networkidle');
+        await commitmentListPage.Closed_List_Tab.evaluate((el: HTMLElement) => {
+          el.dispatchEvent(new MouseEvent('mousedown', { bubbles: true }));
+          el.dispatchEvent(new MouseEvent('mouseup', { bubbles: true }));
+          el.click();
+        });
         await spinnerPage.Spinner.waitFor({ state: 'hidden' });
         await commitmentListPage.Commitment_List_Text.waitFor({ state: 'visible' });
         await expect(commitmentListPage.Commitment_List_Text).toBeVisible();
@@ -60,7 +64,7 @@ test.describe('Commitment List - TS_1', () => {
         await correspondentPortalPage.Change_Page_Size_Dropdown.click();
         vars["CountOfSetPageSize"] = String(await commitmentListPage.Set_page_size_to_Dropdown.count());
         await correspondentPortalPage.Change_Page_Size_Dropdown.click();
-        vars["count"] = "1";
+        vars["count"] = appconstants.ONE;
         while (parseFloat(String(vars["count"])) <= parseFloat(String(vars["CountOfSetPageSize"]))) {
           await correspondentPortalPage.Change_Page_Size_Dropdown.click();
           vars["IndividualSetPageSize"] = await commitmentListPage.IndividualSetPageSize(vars["count"]).textContent() || '';

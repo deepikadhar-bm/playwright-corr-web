@@ -5,7 +5,6 @@ import { CorrespondentPortalPage } from '../../../src/pages/correspondant/corres
 import { PriceOfferedPage } from '../../../src/pages/correspondant/price-offered';
 import { SpinnerPage } from '../../../src/pages/correspondant/spinner';
 import { runPrereq_1394 } from '../../../src/helpers/prereqs/prereq-1394';
-import { ENV } from '@config/environments';
 import { testDataManager } from 'testdata/TestDataManager';
 import { AddonHelpers } from '../../../src/helpers/AddonHelpers';
 import { Logger as log } from '../../../src/helpers/log-helper';
@@ -22,7 +21,7 @@ test.describe('Commitment List - TS_2', () => {
   let priceOfferedPage: PriceOfferedPage;
   let spinnerPage: SpinnerPage;
   let Methods: AddonHelpers;
-  const crederntials = ENV.getCredentials('internal');
+
 
   test.beforeEach(async ({ page }) => {
     test.setTimeout(1_200_000);
@@ -41,7 +40,7 @@ test.describe('Commitment List - TS_2', () => {
     try {
       log.step('Navigating to Price Offered list and searching by Bid Request ID');
       try {
-        Methods.getCurrentTimestamp(appconstants.DATE_FORMATE_, 'CurrentEstDate', appconstants.America_New_York);
+        Methods.getCurrentTimestamp(appconstants.DATE_FORMAT_MMDDYYYY, 'CurrentEstDate', appconstants.AMERICA_NEW_YORK);
         vars['DatePriceOfferedScreen'] = vars['CurrentEstDate'];
         await correspondentPortalPage.Commitments_Side_Menu.click();
         await correspondentPortalPage.Price_Offered_List_Dropdown.click();
@@ -74,8 +73,8 @@ test.describe('Commitment List - TS_2', () => {
         await expect(priceOfferedPage.Commit_Selected_1_Dropdown).toBeEnabled();
         await priceOfferedPage.Commit_Selected_1_Dropdown.click();
         await priceOfferedPage.Yes_Commit_ButtonPopup.click();
-        Methods.getCurrentTimestamp(appconstants.DATE_FORMATE_, 'ExpectedCommitDate', appconstants.UTC);
-        Methods.getCurrentTimestamp(appconstants.TIME_FORMATE, 'CommitTimePriceOffered', appconstants.UTC);
+        Methods.getCurrentTimestamp(appconstants.DATE_FORMAT_MMDDYYYY, 'ExpectedCommitDate', appconstants.UTC);
+        Methods.getCurrentTimestamp(appconstants.TIME_FORMAT1_HHMMA, 'CommitTimePriceOffered', appconstants.UTC);
         await priceOfferedPage.Yes_Commit_ButtonPopup.waitFor({ state: 'hidden' });
         await expect(priceOfferedPage.Yes_Commit_ButtonPopup).not.toBeVisible();
         await priceOfferedPage.Okay_ButtonPopup.waitFor({ state: 'visible' });
@@ -103,14 +102,14 @@ test.describe('Commitment List - TS_2', () => {
         vars['CompanyNamePriceOfferedScreen'] = await priceOfferedPage.Company_NamePrice_Offered_Screen(vars['BidReqId']).textContent() || '';
         vars['ExecutionTypePriceOfferedScreen'] = await priceOfferedPage.Execution_TypePrice_Offered_Screen(vars['BidReqId']).textContent() || '';
         vars['StatusPriceOfferedScreen'] = await priceOfferedPage.StatusPrice_Offered_Screen(vars['BidReqId']).textContent() || '';
-        Methods.addDaysToDate(vars['DatePriceOfferedScreen'], appconstants.DATE_FORMATE_, 3, appconstants.DATE_FORMATE_, 'DateAfterAdding3Days');
-        Methods.getDayFromDate(vars['DateAfterAdding3Days'], appconstants.DATE_FORMATE_, 'DayAfter3Days');
+        Methods.addDaysToDate(vars['DatePriceOfferedScreen'], appconstants.DATE_FORMAT_MMDDYYYY, 3, appconstants.DATE_FORMAT_MMDDYYYY, 'DateAfterAdding3Days');
+        Methods.getDayFromDate(vars['DateAfterAdding3Days'], appconstants.DATE_FORMAT_MMDDYYYY, 'DayAfter3Days');
         if (String(vars['DayAfter3Days']) === String(appconstants.SATURDAY)) {
-          Methods.addDaysToDate(vars['DateAfterAdding3Days'], appconstants.DATE_FORMATE_, 2, appconstants.DATE_FORMATE_, 'ExpectedExpirationDate');
+          Methods.addDaysToDate(vars['DateAfterAdding3Days'], appconstants.DATE_FORMAT_MMDDYYYY, 2, appconstants.DATE_FORMAT_MMDDYYYY, 'ExpectedExpirationDate');
         } else if (String(vars['DayAfter3Days']) === String(appconstants.SUNDAY)) {
-          Methods.addDaysToDate(vars['DateAfterAdding3Days'], appconstants.DATE_FORMATE_, 1, appconstants.DATE_FORMATE_, 'ExpectedExpirationDate');
+          Methods.addDaysToDate(vars['DateAfterAdding3Days'], appconstants.DATE_FORMAT_MMDDYYYY, 1, appconstants.DATE_FORMAT_MMDDYYYY, 'ExpectedExpirationDate');
         } else {
-          Methods.addDaysToDate(vars['DateAfterAdding3Days'], appconstants.DATE_FORMATE_, 0, appconstants.DATE_FORMATE_, 'ExpectedExpirationDate');
+          Methods.addDaysToDate(vars['DateAfterAdding3Days'], appconstants.DATE_FORMAT_MMDDYYYY, 0, appconstants.DATE_FORMAT_MMDDYYYY, 'ExpectedExpirationDate');
         }
         log.stepPass('Price Offered data captured. Expected expiration date: ' + vars['ExpectedExpirationDate']);
       } catch (e) {
@@ -167,9 +166,9 @@ test.describe('Commitment List - TS_2', () => {
         expect(Methods.verifyString(vars['LockedLoansCount'], 'equals', vars['CommLoansCommitmentList']));
         expect(Methods.verifyString(vars['ExpectedCommitDate'], 'equals', vars['CommittedDateCommitmentList']));
         expect(Methods.verifyString(vars['ExecutionTypePriceOfferedScreen'], 'equals', vars['ExecutionTypeCommitmentList']));
-        expect(Methods.verifyString(appconstants.ZEROWITHDOLLER, 'equals', vars['AmountDeliveredCommitmentList']));
-        expect(Methods.verifyString(appconstants.ZEROWITHDOLLER, 'equals', vars['AmountFundedCommitmentList']));
-        expect(Methods.verifyString(appconstants.ZEROWITHDOLLER, 'equals', vars['AmountPairedOffCommitmentList']));
+        expect(Methods.verifyString(appconstants.ZERO_WITH_DOLLAR_SYMBOL, 'equals', vars['AmountDeliveredCommitmentList']));
+        expect(Methods.verifyString(appconstants.ZERO_WITH_DOLLAR_SYMBOL, 'equals', vars['AmountFundedCommitmentList']));
+        expect(Methods.verifyString(appconstants.ZERO_WITH_DOLLAR_SYMBOL, 'equals', vars['AmountPairedOffCommitmentList']));
         expect(Methods.verifyString(vars['ExpectedExpirationDate'], 'equals', vars['ExpirationDateCommitmentList']));
         log.stepPass('All commitment data verified successfully');
       } catch (e) {

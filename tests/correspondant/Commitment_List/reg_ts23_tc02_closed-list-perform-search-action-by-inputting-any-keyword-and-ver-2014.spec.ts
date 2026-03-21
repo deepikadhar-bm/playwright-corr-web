@@ -25,6 +25,8 @@ test.describe('Commitment List - TS_1', () => {
 
   test.beforeEach(async ({ page }) => {
     vars = {};
+    vars["Username"] = credentials.username;
+    vars["Password"] = credentials.password;
     commitmentListPage = new CommitmentListPage(page);
     correspondentPortalPage = new CorrespondentPortalPage(page);
     priceOfferedPage = new PriceOfferedPage(page);
@@ -34,8 +36,6 @@ test.describe('Commitment List - TS_1', () => {
 
   test(`${TC_ID} - ${TC_TITLE}`, async ({ page }) => {
     vars['DownloadDir'] = path.join(process.cwd(), 'downloads');
-    vars["Username"] = credentials.username;
-    vars["Password"] = credentials.password;
 
     log.tcStart(TC_ID, TC_TITLE);
     try {
@@ -53,10 +53,12 @@ test.describe('Commitment List - TS_1', () => {
         await correspondentPortalPage.Commitments_Side_Menu.click();
         await commitmentListPage.Committed_List_Dropdown.click();
         await commitmentListPage.Closed_List_Tab.waitFor({ state: 'visible' });
-        await commitmentListPage.Closed_List_Tab.hover();
-        await commitmentListPage.Closed_List_Tab.click();
+        await commitmentListPage.Closed_List_Tab.evaluate((el: HTMLElement) => {
+          el.dispatchEvent(new MouseEvent('mousedown', { bubbles: true }));
+          el.dispatchEvent(new MouseEvent('mouseup', { bubbles: true }));
+          el.click();
+        });
         await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-        await page.waitForLoadState('networkidle');
         await commitmentListPage.Commitment_List_Text.waitFor({ state: 'visible' });
         await expect(commitmentListPage.Commitment_List_Text).toBeVisible();
         await commitmentListPage.Closed_Date.waitFor({ state: 'visible' });

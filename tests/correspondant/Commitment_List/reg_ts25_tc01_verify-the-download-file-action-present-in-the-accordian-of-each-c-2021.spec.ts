@@ -28,6 +28,8 @@ test.describe('Unassigned', () => {
 
   test.beforeEach(async ({ page }) => {
     vars = {};
+    vars["Username"] = credentials.username;
+    vars["Password"] = credentials.password;
     bidRequestsPage = new BidRequestsPage(page);
     commitmentListPage = new CommitmentListPage(page);
     correspondentPortalPage = new CorrespondentPortalPage(page);
@@ -38,8 +40,6 @@ test.describe('Unassigned', () => {
 
   test(`${TC_ID} - ${TC_TITLE}`, async ({ page }) => {
     vars['DownloadDir'] = path.join(process.cwd(), 'downloads');
-    vars["Username"] = credentials.username;
-    vars["Password"] = credentials.password;
     log.tcStart(TC_ID, TC_TITLE);
     try {
       log.step('Login to corr application');
@@ -56,8 +56,11 @@ test.describe('Unassigned', () => {
         await correspondentPortalPage.Commitments_Side_Menu.click();
         await commitmentListPage.Committed_List_Dropdown.click();
         await commitmentListPage.Closed_List_Tab.waitFor({ state: 'visible' });
-        await commitmentListPage.Closed_List_Tab.hover();
-        await commitmentListPage.Closed_List_Tab.click();
+         await commitmentListPage.Closed_List_Tab.evaluate((el: HTMLElement) => {
+          el.dispatchEvent(new MouseEvent('mousedown', { bubbles: true }));
+          el.dispatchEvent(new MouseEvent('mouseup', { bubbles: true }));
+          el.click();
+        });
         await spinnerPage.Spinner.waitFor({ state: 'hidden' });
         await commitmentListPage.Commitment_List_Text.waitFor({ state: 'visible' });
         await expect(commitmentListPage.Commitment_List_Text).toBeVisible();
@@ -174,7 +177,7 @@ test.describe('Unassigned', () => {
       log.step('Splitting and storing all cover letter details into TestDataProfile');
       try {
         const profileName = 'Cover Letter Details Closed List';
-        vars["SplitCount"] = "1";
+        vars["SplitCount"] = appconstants.ONE;
         for (let count = 0; count < 11; count++) {
           Methods.splitStringByRegConditionWithPosition(vars["AllCoverLetterDetailsUI"], ";", vars["SplitCount"], "IndividualCoverLetterDetailsUI");
           Methods.trimtestdata(vars["IndividualCoverLetterDetailsUI"], "IndividualCoverLetterDetailsUI");
