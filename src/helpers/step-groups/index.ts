@@ -182,7 +182,7 @@ export async function stepGroup_Rename_File(page: import('@playwright/test').Pag
 //   await CorrPortalElem.Header_Mapping.waitFor({ state: 'visible' });
 // }
 
-export async function stepGroup_Creation_Of_Bid_Map_Upto_Header_Mapping(page: import('@playwright/test').Page, vars: Record<string, string>,fileName: string) {
+export async function stepGroup_Creation_Of_Bid_Map_Upto_Header_Mapping(page: import('@playwright/test').Page, vars: Record<string, string>, fileName: string) {
   const CorrPortalElem = new CorrPortalPage(page);
   const Helpers = new AddonHelpers(page, vars);
   const correspondentPortalPage = new CorrespondentPortalPage(page);
@@ -2544,36 +2544,36 @@ export async function stepGroup_Create_Bid_MapsCompanies_verification(page: impo
   await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
   await CorrPortalElem.Add_New_Mapping_Button.click();
   await expect(page.getByText("Create New Map")).toBeVisible();
-  
+
   //vars["Create Bid Map"] = new Date().toLocaleDateString('en-US') /* format: dd/MM/yyyy:HH:mm:ss */;
   vars["CreateNewMap"] = (() => {
-  const d = new Date();
-  const parts = new Intl.DateTimeFormat('en-GB', {
-    timeZone: "Asia/Kolkata",
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-    second: '2-digit',
-    hour12: false
-  }).formatToParts(d);
+    const d = new Date();
+    const parts = new Intl.DateTimeFormat('en-GB', {
+      timeZone: "Asia/Kolkata",
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: false
+    }).formatToParts(d);
 
-  const p = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
+    const p = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
 
-  const day    = p.day    || '00';
-  const month  = p.month  || '00';
-  const year   = p.year   || '0000';
-  const hour   = p.hour   || '00';
-  const minute = p.minute || '00';
-  const second = p.second || '00';
+    const day = p.day || '00';
+    const month = p.month || '00';
+    const year = p.year || '0000';
+    const hour = p.hour || '00';
+    const minute = p.minute || '00';
+    const second = p.second || '00';
 
-  // Indian format: dd/MM/yyyy_HH:mm:ss (no spaces)
-  return `${day}/${month}/${year}_${hour}:${minute}:${second}`;
-})();
+    // Indian format: dd/MM/yyyy_HH:mm:ss (no spaces)
+    return `${day}/${month}/${year}_${hour}:${minute}:${second}`;
+  })();
 
-vars["CreateNewMap"] = "Automation_Testsigma_" + vars["CreateNewMap"];
-log.info(`NewMapName To be entered: ${vars["CreateNewMap"]}`);
+  vars["CreateNewMap"] = "Automation_Testsigma_" + vars["CreateNewMap"];
+  log.info(`NewMapName To be entered: ${vars["CreateNewMap"]}`);
   //vars["CreateNewMap"] = "Testsigma_" + vars["CreateNewMap"];
   await CorrPortalElem.Map_Name_Field_in_Bid_Maps.fill(vars["CreateNewMap"]);
   vars["CreatedBidMap"] = await CorrPortalElem.Map_Name_Field_in_Bid_Maps.inputValue() || '';
@@ -4700,7 +4700,7 @@ export async function stepGroup_Verifying_Locked_Loans_Data_from_UI_to_Excel(pag
     vars['ColumnCountUILockedLoans'] = String(await CorrPortalElem.Column_Count_UI_Price_Offered_Details(vars["count"]).count());
     vars['Count'] = appconstants.ONE;
     while (parseFloat(vars['Count']) <= parseFloat(vars['ColumnCountUILockedLoans'])) {
-      vars['IndividualCellDataLockedLoansUI'] = await CorrPortalElem.Individual_Cell_Data_UI(vars["count"],vars["Count"]).textContent() || '';
+      vars['IndividualCellDataLockedLoansUI'] = await CorrPortalElem.Individual_Cell_Data_UI(vars["count"], vars["Count"]).textContent() || '';
       if (vars['IndividualCellDataLockedLoansUI'].includes(appconstants.DOLLAR_SYMBOL)) {
         Methods.removeMultipleSpecialChars(['$', ',', ' '], vars['IndividualCellDataLockedLoansUI'], 'IndividualCellDataLockedLoansUI');
       } else if (vars['IndividualCellDataLockedLoansUI'].includes(appconstants.PQ_PR)) {
@@ -4848,17 +4848,17 @@ export async function stepGroup_Verifying_and_Removing_If_the_Last_Digits_are_Ze
   vars: Record<string, string>,
 ) {
   const Methods = new AddonHelpers(page, vars);
- 
+
   // Get last index (length - 1) and read the character at that position
   Methods.storeCharacterCount(vars['RuntimeValue'], 'RefSecDigitsCount');
   Methods.MathematicalOperation(vars['RefSecDigitsCount'], '-', '1', 'RefSecDigitsCount');
   Methods.getCharByIndex(vars['RuntimeValue'], vars['RefSecDigitsCount'], 'RefSecLastCharacter');
- 
+
   // If the last character is '0', keep trimming until we hit a non-zero or reach '.'
   if (String(vars['RefSecLastCharacter']) === appconstants.ZERO) {
     while (String(vars['RefSecLastCharacter']) !== '.') {
       Methods.getCharByIndex(vars['RuntimeValue'], vars['RefSecDigitsCount'], 'RefSecLastCharacter');
- 
+
       if (String(vars['RefSecLastCharacter']) === appconstants.ZERO) {
         // Remove the trailing zero from the end
         Methods.removeCharactersFromPosition(vars['RuntimeValue'], '0', '1', 'RuntimeValue');
@@ -4990,7 +4990,7 @@ export async function stepGroup_Add_Early_Config_With_Current_Est_Time(page: imp
   await CorrPortalElem.Add_New_Config_Button.click();
   await CorrPortalElem.Toggle_Date_Picker_Button.click();
 
-  Methods.getCurrentTimestamp(appconstants. DATE_FORMAT, 'CurrentDate', appconstants.UTC);
+  Methods.getCurrentTimestamp(appconstants.DATE_FORMAT, 'CurrentDate', appconstants.UTC);
   log.info('CurrentDate: ' + vars['CurrentDate']);
 
   await CorrPortalElem.Select_Current_Date_Filters_Price_Offered(vars["CurrentDate"]).click();
@@ -5001,10 +5001,10 @@ export async function stepGroup_Add_Early_Config_With_Current_Est_Time(page: imp
   Methods.addMinutesToDatetime(vars['CurrentEstTime'], appconstants.TIME_FORMAT_HHMMA, 3, appconstants.TIME_FORMAT_HHMMA, 'CurrentEstTime');
   log.info('CurrentEstTime after adding 3 minutes: ' + vars['CurrentEstTime']);
 
-  Methods.getLastCharacters(vars['CurrentEstTime'],'2','TimeStandard');
+  Methods.getLastCharacters(vars['CurrentEstTime'], '2', 'TimeStandard');
   log.info('TimeStandard: ' + vars['TimeStandard']);
 
-  Methods.removeCharactersFromPosition(vars['CurrentEstTime'],'0','2','CurrentEstTime');
+  Methods.removeCharactersFromPosition(vars['CurrentEstTime'], '0', '2', 'CurrentEstTime');
   log.info('CurrentEstTime (time only): ' + vars['CurrentEstTime']);
 
   await CorrPortalElem.CommitCutOffTime.type(vars['CurrentEstTime']);
@@ -5076,7 +5076,7 @@ export async function stepGroup_Navigating_to_Customer_Permission_Page_and_disab
  */
 export async function stepGroup_Storing_Open_Auth_Limit_and_AuthLimit_Price_Offered(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
-  const Methods =new AddonHelpers(page, vars);
+  const Methods = new AddonHelpers(page, vars);
   vars["OpenAuthLimit"] = await CorrPortalElem.Open_Auth_Limit_All_Loans.textContent() || '';
   Methods.splitBySpecialChar(vars['OpenAuthLimit'], '(', '0', 'OpenAuthLimitBeforeCommit');
   Methods.splitBySpecialChar(vars['OpenAuthLimit'], '(', '1', 'OpenAuthLimitPercentageBeforeCommit');
@@ -5251,7 +5251,7 @@ export async function stepGroup_Verifying_Header_Names_From_UI_to_ExcelCommitmen
   vars["count"] = appconstants.ONE;
 
   while (parseFloat(vars["count"]) <= parseFloat(vars["CountofHeaderNamesUI"])) {
-    log.info("Iteration:"+vars['count']);
+    log.info("Iteration:" + vars['count']);
     vars["IndividualHeaderNameLockedLoansUI"] = await commitmentListPage.Individual_Header_Names_UICommitment_List(vars["count"]).textContent() || '';
 
     if (vars["IndividualHeaderNameLockedLoansUI"].includes(".")) {
@@ -5264,11 +5264,11 @@ export async function stepGroup_Verifying_Header_Names_From_UI_to_ExcelCommitmen
 
     Methods.trimWhitespace(vars["IndividualHeaderNameLockedLoansExcel"], "IndividualHeaderNameLockedLoansExcel");
 
-    if (vars["IndividualHeaderNameLockedLoansUI"] ===  appconstants.HEADER_NAME_UI_LOANAMOUNT) {
+    if (vars["IndividualHeaderNameLockedLoansUI"] === appconstants.HEADER_NAME_UI_LOANAMOUNT) {
       expect(Methods.verifyString(vars['IndividualHeaderNameLockedLoansExcel'], 'equals', appconstants.LOANAMOUNT_HEADER_EXCEL));
     } else {
       expect(Methods.verifyString(vars['IndividualHeaderNameLockedLoansUI'], 'contains', vars['IndividualHeaderNameLockedLoansExcel']));
-    
+
 
     }
 
@@ -5286,13 +5286,13 @@ export async function stepGroup_Verifying_Locked_Loans_Data_UI_to_Excel_Commitme
   vars["TotalRowsCountUILockedLoans"] = String(await CorrPortalElem.Locked_Loans_Rows_Count_Commitment_List.count());
   vars["count"] = appconstants.ONE;
   while (parseFloat(String(vars["count"])) <= parseFloat(String(vars["TotalRowsCountUILockedLoans"]))) {
-     log.info("Row No:"+vars["count"]);
+    log.info("Row No:" + vars["count"]);
     await CorrPortalElem.BidRequestIDText_Details.click();
     vars["EntireRowDataLockedLoansExcel"] = excelHelper.readEntireRow(vars["FilePathTotalLoans"], 1, vars["count"], "EntireRowDataLockedLoansExcel");
     vars["ColumnCountUILockedLoans"] = String(await CorrPortalElem.Column_Count_UI_Locked_Loans(vars["count"]).count());
     vars["Count"] = appconstants.ONE;
     while (parseFloat(String(vars["Count"])) <= parseFloat(String(vars["ColumnCountUILockedLoans"]))) {
-       log.info("Iteration:"+vars['Count']);
+      log.info("Iteration:" + vars['Count']);
       vars["IndividualCellDataLockedLoansUI"] = await CorrPortalElem.Individual_Cell_Data_UI_Locked_Loans(vars["count"], vars["Count"]).textContent() || '';
       if (String(vars["IndividualCellDataLockedLoansUI"]).includes(appconstants.DOLLAR_SYMBOL)) {
         Methods.removeMultipleSpecialChars(['$', ',', ' '], vars["IndividualCellDataLockedLoansUI"], "IndividualCellDataLockedLoansUI");
@@ -5424,17 +5424,13 @@ export async function stepGroup_Data_Verification_After_Applying_FiltersCommitme
   const Methods = new AddonHelpers(page, vars);
 
   const NextButton = CorrPortalElem.Go_to_Next_Page_Button;
-  const nextButtonCount = await NextButton.count();
-  vars["count"] = "1";
-  vars["CountofPages"] = "1";
 
-  if (nextButtonCount > 0) {
-    const isDisabled = await NextButton.getAttribute('aria-disabled');
-    console.log("isDisabled:", isDisabled);
-    if (isDisabled === 'false') {
-      vars["CountofPages"] = "2";
-    }
+  if (await NextButton.isVisible()) {
+    vars['CountofPages'] = appconstants.TWO;
+  } else {
+    vars['CountofPages'] = appconstants.ONE;
   }
+  log.info('CountofPages: ' + vars['CountofPages']);
 
   const noResults = page.getByText('No result', { exact: true });
   await page.waitForTimeout(2000);
@@ -5442,12 +5438,12 @@ export async function stepGroup_Data_Verification_After_Applying_FiltersCommitme
   if (await noResults.isVisible()) {
     console.log('No results present on current page');
   } else {
+    vars["count"] = "1";
     while (parseFloat(String(vars["count"])) <= parseFloat(String(vars["CountofPages"]))) {
       await CorrPortalElem.Committed_Date.first().waitFor({ state: 'visible' });
       await Methods.verifyMultipleElementsHaveSameText(CorrPortalElem.Committed_Date, vars["ExpectedDate"]);
       await Methods.verifyMultipleElementsHaveSameText(CorrPortalElem.BidRequest_Company_Column_Data, vars["SelectedCompanyName"].trim());
-      const isNextDisabled = nextButtonCount > 0 ? await NextButton.getAttribute('aria-disabled') : 'true';
-      if (isNextDisabled === 'false') {
+      if (await NextButton.isVisible() && await NextButton.isEnabled()) {
         await CorrPortalElem.Go_to_Next_Page_Button.click();
         await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
       }
@@ -5471,7 +5467,7 @@ export async function stepGroup_Selecting_Date_from_the_filters_by_fetching_the_
   Methods.splitBySpecialChar(vars["FirstCommDate"], "/", "0", "MonthCommDate");
   Methods.splitBySpecialChar(vars["FirstCommDate"], "/", "1", "CommDate");
   Methods.splitBySpecialChar(vars["FirstCommDate"], "/", "2", "YearCommDate");
-  Methods.convertDateFormat(vars["FirstCommDate"], 'MM/dd/yyyy', 'd-M-yyyy', 'DateFormatFilter');
+  Methods.convertDateFormat(vars["FirstCommDate"], appconstants.DATE_FORMAT_MMDDYYYY, appconstants.DATE_FORMAT_DMYYYY, 'DateFormatFilter');
   Methods.getMonthNameByNumber(vars["FirstCommDate"], "MonthName");
   await CorrPortalElem.Filter_Dropdown.click();
   await CorrPortalElem.Select_Date_Range_Dropdown.click();
@@ -5508,39 +5504,47 @@ export async function stepGroup_Selecting_Date_from_the_filters_by_fetching_the_
  */
 export async function stepGroup_Verification_of_Total_noof_rows_from_UI_to_Excel_and_Export_(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
-  if (true) /* Element Pagination Count is not visible */ {
-    vars["PageCount"] = "1";
+  const Methods = new AddonHelpers(page, vars)
+  const pagination = CorrPortalElem.Pagination_Count;
+  vars['DownloadDir'] = path.join(process.cwd(), 'downloads');
+
+  if (await pagination.isVisible()) {
+    vars['PageCount'] = await pagination.textContent() || '';
+    Methods.removeCharactersFromPosition(vars['PageCount'], '10', '0', 'PageCount');
   } else {
-    vars["PageCount"] = await CorrPortalElem.Pagination_Count.textContent() || '';
-    vars["PageCount"] = String(vars["PageCount"]).substring(10);
+    vars['PageCount'] = appconstants.ONE;
   }
-  vars["Count1"] = "1";
-  vars["TotalRowsAllPagesUI"] = "0";
+  log.info('PageCount: ' + vars['PageCount']);
+  vars["Count1"] = appconstants.ONE;
+  vars["TotalRowsAllPagesUI"] = appconstants.ZERO;
   while (parseFloat(String(vars["Count1"])) <= parseFloat(String(vars["PageCount"]))) {
     vars["RowCountUI"] = String(await CorrPortalElem.Total_Rows_Count.count());
-    vars["TotalRowsAllPagesUI"] = (parseFloat(String(vars["TotalRowsAllPagesUI"])) + parseFloat(String(vars["RowCountUI"]))).toFixed(0);
-    // [DISABLED] Perform subtraction on TotalRowsAllPages and 1 and store the result inside a RowCountUI considering 0 decimal places
-    // vars["RowCountUI"] = (parseFloat(String(vars["TotalRowsAllPages"])) - parseFloat(String("1"))).toFixed(0);
-    if (true) /* Element Go to Next Page Button is enabled */ {
+    Methods.MathematicalOperation(vars["TotalRowsAllPagesUI"], '+', vars["RowCountUI"], "TotalRowsAllPagesUI")
+    const NextButton = CorrPortalElem.Go_to_Next_Page_Button
+    if (await NextButton.isVisible() && await NextButton.isEnabled()) /* Element Go to Next Page Button is enabled */ {
       await CorrPortalElem.Go_to_Next_Page_Button.click();
     }
     await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
-    vars["Count1"] = (parseFloat(String("1")) + parseFloat(String(vars["Count1"]))).toFixed(0);
+    Methods.MathematicalOperation(vars["Count1"], '+', '1', "Count1")
   }
   await CorrPortalElem.Select_All_Loan_Num.click();
-  vars["ExportedCount"] = await CorrPortalElem.Export_Selected.textContent() || '';
-  vars["ExportedCount"] = String(vars["ExportedCount"]).trim();
-  vars["ExportedCount"] = String(vars["ExportedCount"]).replace(/\(\)/g, '');
-  vars["RowCount"] = String(await CorrPortalElem.Rows_Count_Total_Loans_Tab.count());
-  vars["RowCountInUI"] = (parseFloat(String(vars["RowCount"])) - parseFloat(String("1"))).toFixed(0);
-  await CorrPortalElem.Export_Selected_1_Button.click();
-  // Wait for download - handled by Playwright download events
-  await page.waitForTimeout(2000);
-  vars["File"] = vars['_lastDownloadPath'] || '';
-  vars["ExcelRowCount"] = String(excelHelper.getRowCount(vars["File"], "0"));
-  vars["ExcelRowCount"] = (parseFloat(String(vars["ExcelRowCount"])) - parseFloat(String("1"))).toFixed(0);
-  expect(String(vars["TotalRowsAllPagesUI"])).toBe(vars["ExcelRowCount"]);
-  expect(String(vars["RowCountInUI"])).toBe(vars["ExportedCount"]);
+  await expect(CorrPortalElem.Select_All_Loan_Num).toBeChecked();
+  vars["ExportedCount"] = await CorrPortalElem.Export_Selected_Count.textContent() || '';
+  Methods.trimtestdata(vars["ExportedCount"], 'ExportedCount');
+  Methods.removeMultipleSpecialChars(['(', ')'], vars["ExportedCount"], 'ExportedCount');
+
+  Methods.getCurrentTimestamp(appconstants.PATH_DATEFORMAT, 'TimeStamp', appconstants.ASIA_KOLKATA);
+  const [download] = await Promise.all([
+    page.waitForEvent('download'),
+    await CorrPortalElem.Export_Selected_1_Button.click()]);
+  Methods.concatenateWithSpecialChar(vars['TimeStamp'], download.suggestedFilename(), '_', 'ExportFile');
+  vars['ExportFilePath'] = path.join(vars['DownloadDir'], vars['ExportFile']);
+  await download.saveAs(vars['ExportFilePath']);
+
+  vars['AllLoansRowsCountExcel'] = String(excelHelper.getAllRowCount(vars['ExportFilePath'], 0));
+  Methods.MathematicalOperation(vars['AllLoansRowsCountExcel'], '-', '1', 'AllLoansRowsCountExcel');
+  expect(Methods.verifyComparison(vars["TotalRowsAllPagesUI"], '==', vars["AllLoansRowsCountExcel"]))
+  expect(Methods.verifyComparison(vars["TotalRowsAllPagesUI"], '==', vars["ExportedCount"]))
 }
 
 /**
@@ -5550,36 +5554,57 @@ export async function stepGroup_Verification_of_Total_noof_rows_from_UI_to_Excel
  */
 export async function stepGroup_Verification_of_Data_from_Excel_to_UI_Excluding_HeadersCommi(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
+  const Methods = new AddonHelpers(page, vars);
   vars["RowCount"] = String(await CorrPortalElem.Total_Rows_Count_UITotal_Loans.count());
-  vars["RowCountUI"] = "1";
-  vars["RowCountExcel"] = "1";
+  log.info('Total count of rows UI:' + vars["RowCount"]);
+  vars["RowCountUI"] = appconstants.ONE;
+  vars["RowCountExcel"] = appconstants.ONE;
   while (parseFloat(String(vars["RowCountUI"])) <= parseFloat(String(vars["RowCount"]))) {
-    vars["ColumnCountUI"] = "2";
-    vars["indexExcel"] = "1";
-    vars["RowDataExcel"] = excelHelper.readRow(vars['_lastDownloadPath'] || '', vars["RowCountExcel"], "0");
-    while (parseFloat(String(vars["ColumnCountUI"])) <= parseFloat(String("13"))) {
+    log.info('Iteration row:' + vars["RowCountUI"])
+    vars["ColumnCountUI"] = appconstants.TWO;
+    vars["indexExcel"] = appconstants.ONE;
+    vars["RowDataExcel"] = excelHelper.readEntireRow(vars['ExportFilePath'], 0, vars["RowCountExcel"], "RowDataExcel");
+    while (parseFloat(String(vars["ColumnCountUI"])) <= parseFloat(String(appconstants.THIRTEEN))) {
+      log.info('Iteration column:' + vars["ColumnCountUI"])
       await CorrPortalElem.Commitment_List_Text.click();
-      vars["CellValueInExcel"] = String(vars["RowDataExcel"]).split(",")[parseInt(String(vars["indexExcel"]))] || '';
-      vars["HeadersUI"] = await CorrPortalElem.Headers.textContent() || '';
-      vars["HeadersUI"] = String(vars["HeadersUI"]).trim();
-      vars["CellValuesUI "] = await CorrPortalElem.Individual_Cell_Value_UI.textContent() || '';
-      vars["CellValuesUI"] = String(vars["CellValuesUI "]).trim();
-      if (String(vars["indexExcel"]) === String("5")) {
-        vars["CountofCama"] = String((String(vars["CellValuesUI"]).split(",").length - 1));
-        vars["count"] = "1";
-        while (parseFloat(String(vars["count"])) < parseFloat(String(vars["CountofCama"]))) {
-          // [DISABLED] Split the RowDataExcel with the , and store the value from the indexExcel in the CellValueInExcel
-          // vars["CellValueInExcel"] = String(vars["RowDataExcel"]).split(",")[parseInt(String(vars["indexExcel"]))] || '';
-          vars["indexExcel"] = (parseFloat(String(vars["indexExcel"])) + parseFloat(String("1"))).toFixed(0);
-          vars["CellValueInExcel2"] = String(vars["RowDataExcel"]).split(",")[parseInt(String(vars["indexExcel"]))] || '';
-          vars["CellValueInExcel"] = String(vars["CellValueInExcel"]) + "," + String(vars["CellValueInExcel2"]);
-          vars["count"] = (parseFloat(String(vars["count"])) + parseFloat(String("1"))).toFixed(0);
-          // [DISABLED] Concate CellValueInExcel and CellValueInExcel2 with SpecialCharacter , and store into a variable CellValueInExcel
-          // vars["CellValueInExcel"] = String(vars["CellValueInExcel"]) + "," + String(vars["CellValueInExcel2"]);
+      Methods.splitStringByRegConditionWithPosition(vars["RowDataExcel"], ',', vars["indexExcel"], 'CellValueInExcel');
+      vars["HeadersUI"] = await CorrPortalElem.Headers(vars["indexExcel"]).textContent() || '';
+      Methods.trimWhitespace(vars["HeadersUI"], 'HeadersUI');
+      vars["CellValuesUI"] = await CorrPortalElem.Individual_Cell_Value_UI(vars["RowCountUI"], vars["ColumnCountUI"]).textContent() || '';
+      Methods.trimWhitespace(vars["CellValuesUI"], 'CellValuesUI');
+      if (String(vars["indexExcel"]) === String(appconstants.FIVE)) {
+        Methods.countCharacter(vars['CellValuesUI'], ',', 'CountofCama');
+        vars['count'] = appconstants.ONE;
+        while (parseFloat(String(vars['count'])) <= parseFloat(String(vars['CountofCama']))) {
+          Methods.MathematicalOperation(vars['indexExcel'], '+', '1', 'indexExcel');
+          Methods.splitStringByRegConditionWithPosition(vars['RowDataExcel'], ',', vars['indexExcel'], 'CellValueInExcel2');
+          Methods.concatenateWithSpecialChar(vars['CellValueInExcel'], vars['CellValueInExcel2'], ',', 'CellValueInExcel');
+          Methods.MathematicalOperation(vars['count'], '+', '1', 'count');
         }
       }
-      vars["CellValueInExcel"] = String(vars["CellValueInExcel"]).trim();
+      Methods.trimWhitespace(vars["CellValueInExcel"], 'CellValueInExcel');
+      if (String(vars["CellValueInExcel"]).includes(appconstants.ET)) {
+        Methods.removeCharactersFromPosition(vars["CellValueInExcel"], '0', '7', 'CellValueInExcel');
+      }
+      else if (String(vars["CellValueInExcel"]).includes('_')) {
+        Methods.removeSpecialChar('_', vars["CellValueInExcel"], 'CellValueInExcel');
+
+      }
+      else if (String(vars["CellValuesUI"]).includes('_')) {
+        Methods.removeSpecialChar('_', vars["CellValuesUI"], 'CellValuesUI');
+
+      }
+      if (String(vars["HeadersUI"]) === String(appconstants.STATUS)) {
+        Methods.verifyTestdataIgnoreCase(vars["CellValuesUI"], 'contains', vars["CellValueInExcel"]);
+      }
+      else {
+        Methods.verifyString(vars["CellValueInExcel"], 'contains', vars["CellValuesUI"]);
+      }
+      Methods.MathematicalOperation(vars["ColumnCountUI"], '+', 1, 'ColumnCountUI');
+      Methods.MathematicalOperation(vars["indexExcel"], '+', 1, 'indexExcel');
     }
+    Methods.MathematicalOperation(vars["RowCountExcel"], '+', 1, 'RowCountExcel');
+    Methods.MathematicalOperation(vars["RowCountUI"], '+', 1, 'RowCountUI');
   }
 }
 
@@ -5590,26 +5615,33 @@ export async function stepGroup_Verification_of_Data_from_Excel_to_UI_Excluding_
  */
 export async function stepGroup_Headers_Verification_Closed_List(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
-  vars["Count"] = "1";
-  vars["count"] = "1";
-  vars["ExcelHeader"] = "0";
+  const Methods = new AddonHelpers(page, vars);
+  vars["Count"] = appconstants.ONE;
+  vars["count"] = appconstants.ONE;
+  vars["ExcelHeader"] = appconstants.ZERO;
   vars["CountOfHeaders"] = String(await CorrPortalElem.Headers_UI_Closed_List.count());
-  vars["HeaderValuesExcel"] = excelHelper.readRow(vars['_lastDownloadPath'] || '', vars["ExcelHeader"], "0");
+  vars["HeaderValuesExcel"] = excelHelper.readEntireRow(vars['ExportFilePath'], 0, vars["ExcelHeader"], 'HeaderValuesExcel');
   while (parseFloat(String(vars["Count"])) <= parseFloat(String(vars["CountOfHeaders"]))) {
-    vars["IndividualHeaders"] = await CorrPortalElem.Individual_Headers_Commitment_List.textContent() || '';
-    vars["IndividualHeadersUI"] = String(vars["IndividualHeaders"]).trim();
-    vars["IndividualExcelHeaders"] = String(vars["HeaderValuesExcel"]).split(",")[parseInt(String(vars["count"]))] || '';
-    vars["IndividualExcelHeaders"] = String(vars["IndividualExcelHeaders"]).trim();
-    if (String(vars["IndividualHeadersUI"]) === String("BidReq.ID")) {
-      vars["IndividualHeadersUI"] = "BidRequestID";
+    vars["IndividualHeaderUI"] = await CorrPortalElem.Individual_Headers_Commitment_List(vars["Count"]).textContent() || '';
+    // vars["IndividualHeadersUI"] = String(vars["IndividualHeaders"]).trim();
+    Methods.trimWhitespace(vars["IndividualHeaderUI"], 'IndividualHeaderUI');
+    // vars["IndividualExcelHeader"] = String(vars["HeaderValuesExcel"]).split(",")[parseInt(String(vars["count"]))] || '';
+    Methods.splitStringByRegConditionWithPosition(vars["HeaderValuesExcel"], ',', vars["count"], 'IndividualExcelHeader');
+    // vars["IndividualExcelHeaders"] = String(vars["IndividualExcelHeaders"]).trim();
+    Methods.trimWhitespace(vars["IndividualExcelHeader"], 'IndividualExcelHeader');
+    if (String(vars["IndividualHeaderUI"]) === String(appconstants.BID_REQUEST_HEADER)) {
+      vars["IndividualHeaderUI"] = appconstants.BID_REQUEST_HEADER_EXCEL;
     }
-    if (String(vars["IndividualHeadersUI"]) === String("ExecutionType")) {
-      // [DISABLED] Store Exe.Type in IndividualHeadersUI
-      // vars["IndividualHeadersUI"] = "Exe.Type";
-    }
-    expect(String(vars["IndividualHeadersUI"]).toLowerCase()).toContain(String(vars["IndividualExcelHeaders"]).toLowerCase());
-    vars["Count"] = (parseFloat(String("1")) + parseFloat(String(vars["Count"]))).toFixed(0);
-    vars["count"] = (parseFloat(String("1")) + parseFloat(String(vars["count"]))).toFixed(0);
+    // else if (String(vars["IndividualHeaderUI"]) === String(appconstants.EXECUTIONTYPE_HEADER_UI)) {
+    //   // [DISABLED] Store Exe.Type in IndividualHeadersUI
+    //   // vars["IndividualHeaderUI"] = "Exe.Type";
+    // }
+    expect(Methods.verifyTestdataIgnoreCase(vars["IndividualHeaderUI"], 'contains', vars["IndividualExcelHeader"]));
+    // vars["Count"] = (parseFloat(String("1")) + parseFloat(String(vars["Count"]))).toFixed(0);
+    Methods.MathematicalOperation(vars["Count"], '+', 1, 'Count');
+    // vars["count"] = (parseFloat(String("1")) + parseFloat(String(vars["count"]))).toFixed(0);
+    Methods.MathematicalOperation(vars["count"], '+', 1, 'count');
+
   }
 }
 
@@ -5621,7 +5653,7 @@ export async function stepGroup_Headers_Verification_Closed_List(page: import('@
 export async function stepGroup_Headers_Verification_in_Closed_List(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
   const Methods = new AddonHelpers(page, vars);
-  vars["Count"] = "1";
+  vars["Count"] = appconstants.ONE;
   vars["CountOfHeaders"] = String(await CorrPortalElem.Headers_UI_Closed_List.count());
   vars["EntireHeadersExcel"] = excelHelper.readEntireRow(vars["ExportsFilePath"], 0, 0, "EntireHeadersExcel");
   while (parseFloat(String(vars["Count"])) <= parseFloat(String(vars["CountOfHeaders"]))) {
@@ -5642,28 +5674,30 @@ export async function stepGroup_Headers_Verification_in_Closed_List(page: import
 export async function stepGroup_Verification_of_Data_from_Excel_to_UIClosed_List(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
   const Methods = new AddonHelpers(page, vars);
-  vars["RowCount"] = "1";
-  log.info("Rows count UI:" + vars["RowCount"])
+  vars["RowCount"] = appconstants.ONE;
+  log.info("Rows count UI:" + vars["TotalRowsCountUI"])
   while (parseFloat(String(vars["RowCount"])) <= parseFloat(String(vars["TotalRowsCountUI"]))) {
-    vars["ColumnCountUI"] = "1";
-    vars["IndexCountExcel"] = "1";
+    log.info('Iteration Row:'+vars["RowCount"])
+    vars["ColumnCountUI"] = appconstants.ONE;
+    vars["IndexCountExcel"] = appconstants.ONE;
     vars["EntireRowDataExcel"] = excelHelper.readEntireRow(vars["ExportsFilePath"], 0, vars["RowCount"], "EntireRowDataExcel");
     await CorrPortalElem.Commitment_List_Text.click();
-    while (parseFloat(vars["ColumnCountUI"]) <= 13) {
+    while (parseFloat(vars["ColumnCountUI"]) <= (parseFloat(appconstants.THIRTEEN))) {
+      log.info('Iteration column:'+vars["ColumnCountUI"])
       Methods.splitStringByRegConditionWithPosition(vars["EntireRowDataExcel"], ",", vars["IndexCountExcel"], "IndividualCellValueExcel");
       vars["IndividualCellValueUI"] = await CorrPortalElem.Individual_Cell_Value_Closed_List(vars["RowCount"], vars["ColumnCountUI"]).textContent() || '';
       Methods.trimWhitespace(vars["IndividualCellValueUI"], "IndividualCellValueUI");
-      if (String(vars["ColumnCountUI"]) === "5") {
+      if (String(vars["ColumnCountUI"]) === appconstants.FIVE) {
         log.info("Column Count UI is matched with five");
         Methods.countCharacter(vars["IndividualCellValueUI"], ",", "CountofCama");
-        vars["count"] = "1";
+        vars["count"] = appconstants.ONE;
         while (parseFloat(vars["count"]) <= parseFloat(vars["CountofCama"])) {
           Methods.MathematicalOperation(vars["IndexCountExcel"], "+", "1", "IndexCountExcel");
           Methods.splitStringByRegConditionWithPosition(vars["EntireRowDataExcel"], ",", vars["IndexCountExcel"], "CellValueInExcel2");
           Methods.concatenateWithSpecialChar(vars["IndividualCellValueExcel"], vars["CellValueInExcel2"], ",", "IndividualCellValueExcel");
           Methods.MathematicalOperation(vars["count"], "+", "1", "count");
         }
-      } else if (String(vars["ColumnCountUI"]) === "13") {
+      } else if (String(vars["ColumnCountUI"]) === appconstants.THIRTEEN) {
         log.info("else if condition is passed in Column Count UI is matched with 13");
         Methods.countCharacter(vars["IndividualCellValueUI"], ",", "CountofCama");
         vars["count"] = "1";
@@ -6883,7 +6917,7 @@ export async function stepGroup_Add_to_Commit_an_Loan_Num_And_Verifying_The_Comm
   await CorrPortalElem.Total_Committed_Loans_Tab.waitFor({ state: 'visible' });
   await CorrPortalElem.Total_Committed_Loans_Tab.click();
   await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
-  await expect(CorrPortalElem.Committed_Loan_Num_Commitment_List(vars["CommitID"],vars["CommittedCorrLoan"])).toBeVisible();
+  await expect(CorrPortalElem.Committed_Loan_Num_Commitment_List(vars["CommitID"], vars["CommittedCorrLoan"])).toBeVisible();
 }
 
 /**

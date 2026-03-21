@@ -102,7 +102,7 @@ test.describe('REG_PriceOffered', () => {
         vars['BidStatusPriceOfferedPage'] = await priceOfferedPage.Bid_Status_Price_OfferedExe_Type1(vars["BidReqIdPriceOffered"]).textContent() || '';
         Methods.trimtestdata(vars['BidStatusPriceOfferedPage'], 'BidStatusPriceOfferedPage');
         log.info('BidStatus on Price Offered page: ' + vars['BidStatusPriceOfferedPage']);
-        Methods.verifyString(vars['BidStatusPriceOfferedPage'], 'equals', appconstants.COMMITTED);
+        Methods.verifyString(vars['BidStatusPriceOfferedPage'], 'equals', appconstants.COMMITTED_STATUS);
         log.stepPass('Bid status confirmed as Committed on Price Offered page');
       } catch (e) {
         log.stepFail(page, 'Failed to verify Committed status on Price Offered page');
@@ -118,7 +118,7 @@ test.describe('REG_PriceOffered', () => {
         vars['BidStatusBidReqPage'] = await bidRequestPage.Bid_Status_BidRequestsPage(vars["BidReqIdPriceOffered"]).textContent() || '';
         Methods.trimtestdata(vars['BidStatusBidReqPage'], 'BidStatusBidReqPage');
         log.info('BidStatus on Bid Requests page: ' + vars['BidStatusBidReqPage']);
-        Methods.verifyString(vars['BidStatusBidReqPage'], 'equals', appconstants.COMMITTED);
+        Methods.verifyString(vars['BidStatusBidReqPage'], 'equals', appconstants.COMMITTED_STATUS);
         log.stepPass('Bid status confirmed as Committed on Bid Requests page');
       } catch (e) {
         log.stepFail(page, 'Failed to verify Committed status on Bid Requests page');
@@ -131,7 +131,7 @@ test.describe('REG_PriceOffered', () => {
         await bidRequestPage.Bid_StatusBid_Req_Details.waitFor({ state: 'visible' });
         vars['StatusBidReqDetails'] = await bidRequestPage.Bid_StatusBid_Req_Details.textContent() || '';
         log.info('BidStatus on Bid Request Details: ' + vars['StatusBidReqDetails']);
-        Methods.verifyString(vars['StatusBidReqDetails'], 'equals', appconstants.COMMITTED);
+        Methods.verifyString(vars['StatusBidReqDetails'], 'equals', appconstants.COMMITTED_STATUS);
         testDataManager.updateProfileData('Price Offered', { 'RequestIDfrom22-3.1': vars['BidReqIdPriceOffered'] });
         log.stepPass('Bid status confirmed as Committed on Bid Request Details page');
       } catch (e) {

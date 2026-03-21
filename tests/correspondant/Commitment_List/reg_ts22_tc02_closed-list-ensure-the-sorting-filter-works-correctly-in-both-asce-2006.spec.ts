@@ -49,22 +49,21 @@ test.describe('Commitment List - TS_1', () => {
         await correspondentPortalPage.Commitments_Side_Menu.click();
         await commitmentListPage.Committed_List_Dropdown.click();
         await commitmentListPage.Closed_List_Tab.waitFor({ state: 'visible' });
-        await page.waitForTimeout(1000);
-        await commitmentListPage.Closed_List_Tab.scrollIntoViewIfNeeded();
-        await commitmentListPage.Closed_List_Tab.dispatchEvent('click');
-        await page.waitForLoadState('networkidle');
+        await commitmentListPage.Closed_List_Tab.evaluate((el: HTMLElement) => {
+          el.dispatchEvent(new MouseEvent('mousedown', { bubbles: true }));
+          el.dispatchEvent(new MouseEvent('mouseup', { bubbles: true }));
+          el.click();
+        });
         await spinnerPage.Spinner.waitFor({ state: 'hidden' });
         await commitmentListPage.Commitment_List_Text.waitFor({ state: 'visible' });
         await expect(commitmentListPage.Commitment_List_Text).toBeVisible();
         await commitmentListPage.Closed_Date.waitFor({ state: 'visible' });
         await expect(commitmentListPage.Closed_Date).toBeVisible();
         await commitmentListPage.Commitment_IDMore_Than_one_Commited_Loan.first().waitFor({ state: 'visible' });
-        await page.waitForLoadState('networkidle');
         await spinnerPage.Spinner.waitFor({ state: 'hidden' });
         await commitmentListPage.Commitment_IDMore_Than_one_Commited_Loan.first().scrollIntoViewIfNeeded();
         await commitmentListPage.Commitment_IDMore_Than_one_Commited_Loan.first().click();
         await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-        await page.waitForLoadState('networkidle');
         log.stepPass("Navigating to Commitment closed list and click on required loan number is successful");
       }
       catch (e) {
@@ -77,7 +76,6 @@ test.describe('Commitment List - TS_1', () => {
         await commitmentListPage.Total_Committed_Loans_Tab.waitFor({ state: 'visible' });
         await commitmentListPage.Total_Committed_Loans_Tab.dispatchEvent('click');
         await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-        await page.waitForLoadState('networkidle');
         await priceOfferedPage.Column_Headers_Details_ScreenUI.first().waitFor({ state: 'visible' });
         vars["IndividualHeadersCommitmentList"] = "Loan Amount and Ref Sec Price and Gross Price and Hedge Ratio and Curr Market Value and Curr Gross and Chase Loan# and Mark Adj";
         vars["ColumnHeadersDetailsScreenUI"] = String(await priceOfferedPage.Column_Headers_Details_ScreenUI.count());
@@ -89,7 +87,6 @@ test.describe('Commitment List - TS_1', () => {
           log.info('verifying ascending order for headername:' + vars["IndividualHeaderScreenDetails"]);
           await commitmentListPage.Individual_Column_Header_Details_Screen_Commitment_List(vars["count"]).click();
           await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-          await page.waitForLoadState('networkidle');
           await expect(correspondentPortalPage.Header_Sort_Down).toBeVisible();
           await priceOfferedPage.Column_Header_Data(vars["IndividualHeaderScreenDetails"]).waitFor({ state: 'visible' });
 
@@ -128,7 +125,6 @@ test.describe('Commitment List - TS_1', () => {
         await commitmentListPage.Total_LoansCommitment_List.scrollIntoViewIfNeeded();
         await commitmentListPage.Total_LoansCommitment_List.dispatchEvent('click');
         await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-        await page.waitForLoadState('networkidle');
         await priceOfferedPage.Open_Auth_Limit.waitFor({ state: 'visible' });
         await expect(priceOfferedPage.Open_Auth_Limit).toBeVisible();
         await priceOfferedPage.Column_Headers_Details_ScreenUI.first().waitFor({ state: 'visible' });
@@ -144,7 +140,6 @@ test.describe('Commitment List - TS_1', () => {
           log.info('verifying ascending order for headername:' + vars["IndividualHeaderScreenDetails"]);
           await commitmentListPage.Individual_Column_Header_Details_Screen_Commitment_List(vars["count"]).click();
           await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-          await page.waitForLoadState('networkidle');
           await expect(correspondentPortalPage.Header_Sort_Down).toBeVisible();
           await priceOfferedPage.Column_Header_Data(vars["IndividualHeaderScreenDetails"]).waitFor({ state: 'visible' });
 

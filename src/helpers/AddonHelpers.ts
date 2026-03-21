@@ -730,27 +730,38 @@ export class AddonHelpers {
   // 36. Verify testdata 1 with testdata2
   // ==========================================================================
   verifyString(
-    testData: string,
-    condition: 'contains' | 'notContains' | 'equals' | 'notEquals',
-    testData1: string
-  ): void {
-    const METHOD = 'verifyString';
-    try {
-      const conditions: Record<string, { result: boolean; pass: string; fail: string }> = {
-        contains: { result: testData.includes(testData1), pass: `"${testData}" contains "${testData1}"`, fail: `"${testData}" does not contain "${testData1}"` },
-        notContains: { result: !testData.includes(testData1), pass: `"${testData}" does not contain "${testData1}"`, fail: `"${testData}" unexpectedly contains "${testData1}"` },
-        equals: { result: testData === testData1, pass: `"${testData}" equals "${testData1}"`, fail: `"${testData}" does not equal "${testData1}"` },
-        notEquals: { result: testData !== testData1, pass: `"${testData}" does not equal "${testData1}"`, fail: `"${testData}" unexpectedly equals "${testData1}"` },
-      };
+  testData: string,
+  condition: 'contains' | 'notContains' | 'equals' | 'notEquals',
+  testData1: string
+): void {
+  const METHOD = 'verifyString';
+  try {
+    // Guard: fail immediately if the expected value is empty or blank
+    // Prevents false positives — e.g. "anyString".includes("") is always true in JS
+    if (testData1 === null || testData1 === undefined || testData1.trim() === '') {
+      throw new Error(`Expected value is empty or blank. Received: "${testData1}"`);
+    }
+     if (testData === null || testData === undefined || testData.trim() === '') {
+      throw new Error(`Expected value is empty or blank. Received: "${testData}"`);
+    }
 
-      const check = conditions[condition];
-      if (!check) throw new Error(`Invalid condition "${condition}"`);
-      if (!check.result) throw new Error(check.fail);
+    const conditions: Record<string, { result: boolean; pass: string; fail: string }> = {
+      contains:    { result: testData.includes(testData1),  pass: `"${testData}" contains "${testData1}"`,              fail: `"${testData}" does not contain "${testData1}"` },
+      notContains: { result: !testData.includes(testData1), pass: `"${testData}" does not contain "${testData1}"`,      fail: `"${testData}" unexpectedly contains "${testData1}"` },
+      equals:      { result: testData === testData1,        pass: `"${testData}" equals "${testData1}"`,                fail: `"${testData}" does not equal "${testData1}"` },
+      notEquals:   { result: testData !== testData1,        pass: `"${testData}" does not equal "${testData1}"`,        fail: `"${testData}" unexpectedly equals "${testData1}"` },
+    };
 
-      log.pass(`[${METHOD}] ${check.pass}`);
-    } catch (e) { log.fail(`[${METHOD}] verifyString | "${testData}" ${condition} "${testData1}" | Error: ${e instanceof Error ? e.message : String(e)}`); throw (e instanceof Error ? e : new Error(String(e))); }
+    const check = conditions[condition];
+    if (!check) throw new Error(`Invalid condition "${condition}"`);
+    if (!check.result) throw new Error(check.fail);
+
+    log.pass(`[${METHOD}] ${check.pass}`);
+  } catch (e) {
+    log.fail(`[${METHOD}] verifyString | "${testData}" ${condition} "${testData1}" | Error: ${e instanceof Error ? e.message : String(e)}`);
+    throw (e instanceof Error ? e : new Error(String(e)));
   }
-
+}
   // ==========================================================================
   // 37. Get character by index → store in vars
   // ==========================================================================
@@ -781,7 +792,7 @@ export class AddonHelpers {
   }
 
   //39.verifying the mathematic operation
-  MathematicalOperation(a: string | number, operator: string, b: string | number, varName: string): void {
+  MathematicalOperation(a: string | number, operator: '+' | '-' | '*' | '/', b: string | number, varName: string): void {
     const METHOD = 'MathematicalOperation';
     try {
       // Strip currency symbols, commas and whitespace before parsing
@@ -874,30 +885,38 @@ export class AddonHelpers {
       log.fail(`[${METHOD}] Expected to contain "${expectedText}" (case-insensitive) | Error: Got: "${actualText.trim()}"`); throw new Error(`Got: "${actualText.trim()}"`);
     }
   }
-  //verifying testdata with ignore case
-  async verifyTestdataIgnoreCase(
-    textData1: string,
-    matchType: 'equals' | 'contains',
-    textData2: string
-  ): Promise<void> {
-    const METHOD = 'verifyTestdataIgnoreCase';
-    const actual = textData1.trim().toLowerCase();
-    const expected = textData2.trim().toLowerCase();
+  /**
+ * Verifies that textData1 equals or contains textData2 (case-insensitive).
+ * Throws synchronously on failure so execution stops immediately.
+ *
+ * Usage:
+ *   Methods.verifyTestdataIgnoreCase(vars['HeaderUI'], 'contains', vars['HeaderExcel']);
+ */
+verifyTestdataIgnoreCase(
+  textData1: string,
+  matchType: 'equals' | 'contains',
+  textData2: string
+): void {
+  const METHOD = 'verifyTestdataIgnoreCase';
+  const actual   = textData1.trim().toLowerCase();
+  const expected = textData2.trim().toLowerCase();
 
-    if (!expected) {
-      log.fail(`[${METHOD}] Expected value is empty or blank for comparison with "${textData1}" | Error: Empty expected value`); throw new Error(`Empty expected value`);
-    }
-
-    const isMatch = matchType === 'equals'
-      ? actual === expected
-      : actual.includes(expected);
-
-    if (isMatch) {
-      log.pass(`[${METHOD}] "${textData1}" ${matchType} "${textData2}" (case-insensitive)`);
-    } else {
-      log.fail(`[${METHOD}] "${textData1}" ${matchType} "${textData2}" (case-insensitive) | Error: Expected "${textData1}" to ${matchType} "${textData2}" (case-insensitive)`); throw new Error(`Expected "${textData1}" to ${matchType} "${textData2}" (case-insensitive)`);
-    }
+  if (!expected) {
+    log.fail(`[${METHOD}] Expected value is empty or blank for comparison with "${textData1}" | Error: Empty expected value`);
+    throw new Error(`Empty expected value`);
   }
+
+  const isMatch = matchType === 'equals'
+    ? actual === expected
+    : actual.includes(expected);
+
+  if (isMatch) {
+    log.pass(`[${METHOD}] "${textData1}" ${matchType} "${textData2}" (case-insensitive)`);
+  } else {
+    log.fail(`[${METHOD}] "${textData1}" does not ${matchType} "${textData2}" (case-insensitive)`);
+    throw new Error(`Expected "${textData1}" to ${matchType} "${textData2}" (case-insensitive)`);
+  }
+}
   //count the substrings
   countCharacter(text: string, character: string, varName: string): void {
     const METHOD = 'countCharacter';

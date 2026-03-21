@@ -103,7 +103,7 @@ test.describe('REG_PriceOffered', () => {
         vars['StatusBidReqPage'] = await newBidRequestPage.Bid_Status_BidRequestsPage(vars["BidReqIdPriceOffered"]).textContent() || '';
         newMethods.trimtestdata(vars['StatusBidReqPage'], 'StatusBidReqPage');
         log.info('Bid status on Bid Requests page: ' + vars['StatusBidReqPage']);
-        if (vars['StatusBidReqPage'].includes(appconstants.PRICEOFFERED)) {
+        if (vars['StatusBidReqPage'].includes(appconstants.PRICEOFFERED_STATUS)) {
           log.info('Status is Price Offered — re-searching to wait for status update');
           await newBidRequestsPage.Search_by_Bid_Request_ID_Field.click();
           await newBidRequestsPage.Search_by_Bid_Request_ID_Field.clear();
@@ -115,7 +115,7 @@ test.describe('REG_PriceOffered', () => {
           newMethods.trimtestdata(vars['StatusBidReqPage'], 'StatusBidReqPage');
           log.info('Bid status after re-search: ' + vars['StatusBidReqPage']);
         }
-        expect(newMethods.verifyString(vars['StatusBidReqPage'], 'equals', appconstants.COMMITMENT_IN_PROGRESS));
+        expect(newMethods.verifyString(vars['StatusBidReqPage'], 'equals', appconstants.COMMITMENT_IN_PROGRESS_STATUS));
         log.stepPass('Bid Request page status verified: ' + vars['StatusBidReqPage']);
 
         log.step('Verify status on Price Offered list page for Chase Direct and Standard execution types');
@@ -129,12 +129,12 @@ test.describe('REG_PriceOffered', () => {
         vars['BidStatusChasePriceOffered'] = await newPriceOfferedPage.Bid_Status_Chase_DirectPrice_Offered_Page.textContent() || '';
         newMethods.trimtestdata(vars['BidStatusChasePriceOffered'], 'BidStatusChasePriceOffered');
         log.info('Chase Direct status on Price Offered page: ' + vars['BidStatusChasePriceOffered']);
-        expect(newMethods.verifyString(vars['BidStatusChasePriceOffered'], 'equals', appconstants.COMMITMENT_IN_PROGRESS));
+        expect(newMethods.verifyString(vars['BidStatusChasePriceOffered'], 'equals', appconstants.COMMITMENT_IN_PROGRESS_STATUS));
 
         vars['BidStatusStandardPriceOffered'] = await newPriceOfferedPage.Bid_Status_StandardPrice_Offered_Page.textContent() || '';
         newMethods.trimtestdata(vars['BidStatusStandardPriceOffered'], 'BidStatusStandardPriceOffered');
         log.info('Standard status on Price Offered page: ' + vars['BidStatusStandardPriceOffered']);
-        expect(newMethods.verifyString(vars['BidStatusStandardPriceOffered'], 'equals', appconstants.PRICEOFFERED));
+        expect(newMethods.verifyString(vars['BidStatusStandardPriceOffered'], 'equals', appconstants.PRICEOFFERED_STATUS));
 
         log.stepPass('Price Offered page status verified. Chase Direct: ' + vars['BidStatusChasePriceOffered'] + ' | Standard: ' + vars['BidStatusStandardPriceOffered']);
         await newPage.close();

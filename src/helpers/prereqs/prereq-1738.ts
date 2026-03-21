@@ -13,9 +13,12 @@ import { testDataManager } from 'testdata/TestDataManager';
 import * as stepGroups from '../../../src/helpers/step-groups';
 import { ENV } from '@config/environments';
 
-//REG_TS01_TC01
+
+const TC_ID = 'PREREQ_1738(REG_TS01_TC01)';
+const TC_TITLE = 'Verify that once when the user performs commit action from the price offered module, then a newly created commitment will be displayed';
+
 export async function runPrereq_1738(page: Page, vars: Record<string, string>): Promise<void> {
-  // await runPrereq_1394(page, vars);
+  await runPrereq_1394(page, vars);
   const bidRequestsPage = new BidRequestsPage(page);
   const commitmentListPage = new CommitmentListPage(page);
   const correspondentPortalPage = new CorrespondentPortalPage(page);
@@ -24,22 +27,20 @@ export async function runPrereq_1738(page: Page, vars: Record<string, string>): 
   const Methods = new AddonHelpers(page, vars);
   const crederntials = ENV.getCredentials('internal');
 
+  vars["Username"] = crederntials.username;
+  vars["Password"] = crederntials.password;
 
-  log.tcStart('prereq-REG_TS01_TC01', 'Pre-requisite setup for test REG_TS01_TC03');
-  
-   vars["Username"] = crederntials.username;
-    vars["Password"] = crederntials.password;
-    vars['BidReqId']="87YE6062594F";
-    await stepGroups.stepGroup_Login_to_CORR_Portal(page, vars);
+
+  log.tcStart(TC_ID, TC_TITLE);
+
   try {
     log.step('Navigating to Price Offered and searching by Bid Request ID');
     try {
-      Methods.getCurrentTimestamp(appconstants.DATE_FORMATE_, 'CurrentEstDate', appconstants.America_New_York);
+      Methods.getCurrentTimestamp(appconstants.DATE_FORMAT_MMDDYYYY, 'CurrentEstDate', appconstants.AMERICA_NEW_YORK);
       vars['DatePriceOfferedScreen'] = vars['CurrentEstDate'];
       await correspondentPortalPage.Commitments_Side_Menu.click();
       await correspondentPortalPage.Price_Offered_List_Dropdown.click();
       vars['BidReqId'] = vars['RequestIDDetails'];
-      vars['BidReqId']="87YE6062594F";
       testDataManager.updateProfileData('CommitmentList', { 'RequestIDFromPRE_PR_1-1': vars['BidReqId'] });
       await bidRequestsPage.Search_by_Bid_Request_ID_Field.click();
       await bidRequestsPage.Search_by_Bid_Request_ID_Field.fill(vars['BidReqId']);
@@ -54,16 +55,16 @@ export async function runPrereq_1738(page: Page, vars: Record<string, string>): 
     log.step('Committing selected loan from Price Offered');
     try {
       await priceOfferedPage.BidRequestIDPrice_Offered_New(vars['BidReqId']).click();
-      await priceOfferedPage.Check_Bid_Loan_NumChase_Exe.first().waitFor({ state: 'visible' });
-      await priceOfferedPage.Check_Bid_Loan_NumChase_Exe.first().check();
+      await priceOfferedPage.Check_the_Loan_Num.first().waitFor({ state: 'visible' });
+      await priceOfferedPage.Check_the_Loan_Num.first().check();
       vars['CommittedCorrLoan'] = await priceOfferedPage.Checked_Corr_Loan.textContent() || '';
       await priceOfferedPage.Get_Price_Button.waitFor({ state: 'visible' });
       await priceOfferedPage.Get_Price_Button.click();
       await priceOfferedPage.Commit_Selected_1_Dropdown.waitFor({ state: 'visible' });
       await priceOfferedPage.Commit_Selected_1_Dropdown.click();
       await priceOfferedPage.Yes_Commit_ButtonPopup.click();
-      Methods.getCurrentTimestamp(appconstants.DATE_FORMATE_, 'ExpectedCommitDate', appconstants.UTC);
-      Methods.getCurrentTimestamp(appconstants.TIME_FORMATE, 'CommitTimePriceOffered', appconstants.UTC);
+      Methods.getCurrentTimestamp(appconstants.DATE_FORMAT_MMDDYYYY, 'ExpectedCommitDate', appconstants.UTC);
+      Methods.getCurrentTimestamp(appconstants.TIME_FORMAT_HMMA, 'CommitTimePriceOffered', appconstants.UTC);
       await priceOfferedPage.Yes_Commit_ButtonPopup.waitFor({ state: 'hidden' });
       await priceOfferedPage.Okay_ButtonPopup.waitFor({ state: 'visible' });
       vars['CommitmentIDPriceOffered'] = await priceOfferedPage.Commitment_IdPrice_Offered.textContent() || '';
@@ -89,14 +90,14 @@ export async function runPrereq_1738(page: Page, vars: Record<string, string>): 
       vars['CompanyNamePriceOfferedScreen'] = await priceOfferedPage.Company_NamePrice_Offered_Screen(vars['BidReqId']).textContent() || '';
       vars['ExecutionTypePriceOfferedScreen'] = await priceOfferedPage.Execution_TypePrice_Offered_Screen(vars['BidReqId']).textContent() || '';
       vars['StatusPriceOfferedScreen'] = await priceOfferedPage.StatusPrice_Offered_Screen(vars['BidReqId']).textContent() || '';
-      Methods.addDaysToDate(vars['DatePriceOfferedScreen'], appconstants.DATE_FORMATE_, 3, appconstants.DATE_FORMATE_, 'DateAfterAdding3Days');
-      Methods.getDayFromDate(vars['DateAfterAdding3Days'], appconstants.DATE_FORMATE_, 'DayAfter3Days');
+      Methods.addDaysToDate(vars['DatePriceOfferedScreen'], appconstants.DATE_FORMAT_MMDDYYYY, 3, appconstants.DATE_FORMAT_MMDDYYYY, 'DateAfterAdding3Days');
+      Methods.getDayFromDate(vars['DateAfterAdding3Days'], appconstants.DATE_FORMAT_MMDDYYYY, 'DayAfter3Days');
       if (String(vars['DayAfter3Days']) === String(appconstants.SATURDAY)) {
-        Methods.addDaysToDate(vars['DateAfterAdding3Days'], appconstants.DATE_FORMATE_, 2, appconstants.DATE_FORMATE_, 'ExpectedExpirationDate');
+        Methods.addDaysToDate(vars['DateAfterAdding3Days'], appconstants.DATE_FORMAT_MMDDYYYY, 2, appconstants.DATE_FORMAT_MMDDYYYY, 'ExpectedExpirationDate');
       } else if (String(vars['DayAfter3Days']) === String(appconstants.SUNDAY)) {
-        Methods.addDaysToDate(vars['DateAfterAdding3Days'], appconstants.DATE_FORMATE_, 1, appconstants.DATE_FORMATE_, 'ExpectedExpirationDate');
+        Methods.addDaysToDate(vars['DateAfterAdding3Days'], appconstants.DATE_FORMAT_MMDDYYYY, 1, appconstants.DATE_FORMAT_MMDDYYYY, 'ExpectedExpirationDate');
       } else {
-        Methods.addDaysToDate(vars['DateAfterAdding3Days'], appconstants.DATE_FORMATE_, 0, appconstants.DATE_FORMATE_, 'ExpectedExpirationDate');
+        Methods.addDaysToDate(vars['DateAfterAdding3Days'], appconstants.DATE_FORMAT_MMDDYYYY, 0, appconstants.DATE_FORMAT_MMDDYYYY, 'ExpectedExpirationDate');
       }
       log.stepPass('Price Offered data captured. Expected expiration date: ' + vars['ExpectedExpirationDate']);
     } catch (e) {
@@ -148,18 +149,18 @@ export async function runPrereq_1738(page: Page, vars: Record<string, string>): 
       Methods.verifyString(vars['LockedLoansCount'], 'equals', vars['CommLoansCommitmentList']);
       Methods.verifyString(vars['ExpectedCommitDate'], 'equals', vars['CommittedDateCommitmentList']);
       Methods.verifyString(vars['ExecutionTypePriceOfferedScreen'], 'equals', vars['ExecutionTypeCommitmentList']);
-      Methods.verifyString(appconstants.ZEROWITHDOLLER, 'equals', vars['AmountDeliveredCommitmentList']);
-      Methods.verifyString(appconstants.ZEROWITHDOLLER, 'equals', vars['AmountFundedCommitmentList']);
-      Methods.verifyString(appconstants.ZEROWITHDOLLER, 'equals', vars['AmountPairedOffCommitmentList']);
+      Methods.verifyString(appconstants.ZERO_WITH_DOLLAR_SYMBOL, 'equals', vars['AmountDeliveredCommitmentList']);
+      Methods.verifyString(appconstants.ZERO_WITH_DOLLAR_SYMBOL, 'equals', vars['AmountFundedCommitmentList']);
+      Methods.verifyString(appconstants.ZERO_WITH_DOLLAR_SYMBOL, 'equals', vars['AmountPairedOffCommitmentList']);
       Methods.verifyString(vars['ExpectedExpirationDate'], 'equals', vars['ExpirationDateCommitmentList']);
       log.stepPass('All commitment data verified successfully');
     } catch (e) {
-      log.stepFail(page, 'Verification failed for commitment data');
+      log.stepFail(page, 'Failed to verify commitment data');
       throw e;
     }
-    log.tcEnd('PASS');
+  log.tcEnd('PASS');
   } catch (e) {
-    await log.captureOnFailure(page, 'REG_TS01_TC01', e);
+    await log.captureOnFailure(page, TC_ID, e);
     log.tcEnd('FAIL');
     throw e;
   }
