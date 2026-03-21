@@ -8,6 +8,10 @@ import { BidRequestPage } from '../../../src/pages/correspondant/bid-request';
 import { CorrespondentPortalPage } from '../../../src/pages/correspondant/correspondent-portal';
 import { SpinnerPage } from '../../../src/pages/correspondant/spinner';
 import * as excelHelper from '../../../src/helpers/excel-helpers';
+import { ENV } from '@config/environments';
+import { Logger as log } from '../../../src/helpers/log-helper';
+import { CorrPortalPage } from '@pages/correspondant/CorrPortalPage';
+import { testDataManager } from 'testdata/TestDataManager';
 
 test.describe('REG_TC_Bid_Requests', () => {
   let vars: Record<string, string> = {};
@@ -27,128 +31,216 @@ test.describe('REG_TC_Bid_Requests', () => {
   });
 
   test('REG_TS09_TC01_When a bid file is uploaded with some invalid details ,the POS Validation check status should display a warning, and the loan on the details screen should be marked with an error status', async ({ page }) => {
-    const testData: Record<string, string> = {
-  "Pos Check(Errors Column)": "No eligibility results",
-  "Pos Check(Error Description)": "Not approved for [nonagency], no eligibility results",
-  "Pos Check(Loan Status)": "Error",
-  "Execution Type Header": "Exe.Type",
-  "Resubmit Pricing Error Standard1": "( nmlsId = 2767 )",
-  "Company Name.": "Wik1C BeuLD MoJbr CoEmy LLpoJ  - A2964",
-  "BidMappingID": "Deepika Aug1",
-  "Geo Coding Reducer flow(Errors Column)": "Geo Coding error",
-  "Bid Valid File(Error Description)": "No Errors",
-  "Company Name New": "American Pacific  - A4257",
-  "Email Success Message": "Email sent successfuly",
-  "Loan Field Validation(Number)": "Deepika_June_invaliddatafield",
-  "Bid Valid File(Loan Status)": "Success",
-  "Bid Request ID Header": "BidRequestID",
-  "Resubmit Pricing Error Chase Direct": "Execution type 'Chase Direct' not permitted for client",
-  "Geo Coding happy flow(Error Description)": "No Errors",
-  "Bid Enum Check(Loan Status)": "Error",
-  "Eligibility Check(LoanStatus)": "Error",
-  "Geo Coding Reducer flow(Error Description))": "Geocode unknown",
-  "Selected Company Count": "2",
-  "Geo Coding happy flow(Loan Status)": "Success",
-  "Geo Coding happy flow (Errors Column)": "No errors",
-  "Resubmit Pricing Error Standard": "Execution type 'Standard' not permitted for client",
-  "MissingHeaders_ErrorMessage1": "Bid tape is missing values for following headers: Loan Purpose.",
-  "Price Offered": "Price Offered",
-  "Geo Coding Failed flow(Errors))": "Geo Coding error",
-  "Ccode for freedom": "A4187",
-  "MissingHeaders_ErrorMessage2": "Please verify the correct Map ID is selected or tape is formatted correctly.",
-  "Geo Coding Reducer flow(Loan Status)": "Success",
-  "Eligibility Check(Error Description)": "Minimum loan amount $5,000",
-  "Stored_Text1": "10:10 AM",
-  "Status Name": "Committed",
-  "Bid Valid File(Error Column)": "No errors",
-  "CompanyName3": "American Pacific - A4257",
-  "Assigned Companies1": "Wik1C BeuLD MoJbr CoEmy LLpoJ",
-  "SpecialCharacter_ErrorHeader": "EXTRA_SPACE_FOUND",
-  "Geo Coding Failed flow(Loan Status)": "Error",
-  "Loan Field Validation(Status)": "Error",
-  "Eligibility Check(Error Column)": "Minimum Loan Amount $5,000",
-  "Loan Field Validation(Error description)": "Loan value cannot be blank or zero for 'loan purpose'",
-  "Last One Month": "Last One Month",
-  "Resubmit Pricing Error Standard and Chase": "Execution type 'Standard' not permitted for client",
-  "Reason For Cancellation": "To be Cancelled",
-  "Reason For Deletion": "To be deleted",
-  "Loan Field Validation(Error)": "Invalid Loan Data",
-  "DeletingMessage for File": "You have selected to delete this file. Do you want to proceed?",
-  "Resubmit Pricing Error Standard and Chase1": "( nmlsId = 2767 )",
-  "Creating Batch Success Message": "Batch timing has been created successfull",
-  "Bid Enum Check(Errors Column)": "Secondary Residence, Investment (NOO)]. Path: search.criteria.propertyUse is missing value",
-  "Status Count 1": "3",
-  "Display_Text1": "Delete Batch Time",
-  "CompanyName(CustomerPermissions)": "Freedom - A4187",
-  "New Company Name": "Home Sweet Mortgage",
-  "CCode Header": "Ccode",
-  "FileRow": "4",
-  "SpecialCharacter_ErrorMessage": "Found extra space(s) in row 3 for 'Correspondent Loan Number'. Please modify and retry upload.",
-  "Display_Text2": "Delete Batch",
-  "Email Message Verification": "Do you want to resend Bid Offer email?",
-  "BidMappingIDNew": "Default Map Internal",
-  "Geo Coding Failed flow(Error Description)": "Geocode unknown, no eligibility results: cannot find zip detail information for : 09999",
-  "MissingHeaders_ErrorHeader": "Missing Headers",
-  "Search Field Company Name": "Wik1C",
-  "DuplicateLoans_HeaderMessage": "Duplicate Loans",
-  "Company Name": "Freedom - A4187",
-  "Stored_Text": "09:19 AM",
-  "Resubmit Pricing Error Chase Direct1": "( nmlsId = 2767 )",
-  "DuplicateLoans_ErrorMessage": "Duplicate loan numbers contained in this file: Deepika_June_02_02, Deepika_June_02_04. Please remove these from the file and retry upload.",
-  "Missing Headers(Error Message)": "Bid tape is missing values for following headers: Loan Purpose. Please verify the correct Map ID is selected or tape is formatted correctly.",
-  "Bid Enum Check(Error Description)": "enum field occupancy type is missing value or value is not in valid list [primary residence, secondary residence, investment (noo)]. path: search.criteria.propertyuse is missing value"
-}; // Profile: "Bid Requests", row: 0
 
+    // Load credentials
+    const credentials = ENV.getCredentials('internal');
+    vars["Username"] = credentials.username;
+    vars["Password"] = credentials.password;
+    log.info(`Credentials loaded for user: ${vars["Username"]}`);
+
+    const CorrPortalElem = new CorrPortalPage(page);
+
+    // Load test data - profile 1
+    const profileName = 'Bid Requests';
+    const profile = testDataManager.getProfileByName(profileName);
+    if (profile && profile.data) {
+      const PosCheck_ErrorsColumn = profile.data[0]['Pos Check(Errors Column)'];
+      vars["Pos Check(Errors Column)"] = PosCheck_ErrorsColumn;
+      log.info(`Loaded Pos Check Errors Column: ${vars["Pos Check(Errors Column)"]}`);
+
+      const PosCheck_ErrorDescription = profile.data[0]['Pos Check(Error Description)'];
+      vars["Pos Check(Error Description)"] = PosCheck_ErrorDescription;
+      log.info(`Loaded Pos Check Error Description: ${vars["Pos Check(Error Description)"]}`);
+
+      const PosCheck_LoanStatus = profile.data[0]['Pos Check(Loan Status)'];
+      vars["Pos Check(Loan Status)"] = PosCheck_LoanStatus;
+      log.info(`Loaded Pos Check Loan Status: ${vars["Pos Check(Loan Status)"]}`);
+
+      const CompanyName = profile.data[0]['Company Name'];
+      vars["CompanyName"] = CompanyName;
+      log.info(`Loaded Company Name: ${vars["CompanyName"]}`);
+
+      const BidMappingID = profile.data[0]['BidMappingID'];
+      vars["BidMappingID"] = BidMappingID;
+      log.info(`Loaded BidMappingID: ${vars["BidMappingID"]}`);
+    }
+
+    // Load test data - profile 2
+    const profile2 = testDataManager.getProfileByName("Administration_Bulk Batch Timing");
+    if (profile2 && profile2.data) {
+      const TimeInterval = profile2.data[0]['Time Interval'];
+      vars["Time Interval"] = TimeInterval;
+      log.info(`Loaded Time Interval: ${vars["Time Interval"]}`);
+
+      const NoOfBatches = profile2.data[0]['NO of Batches'];
+      vars["NO of Batches"] = NoOfBatches;
+      log.info(`Loaded NO of Batches: ${vars["NO of Batches"]}`);
+    }
+
+    // Login and initial navigation
+    log.info(`Logging in to Correspondent Portal`);
     await stepGroups.stepGroup_Login_to_CORR_Portal(page, vars);
+    log.info(`Login successful`);
+
+    log.info(`Deleting early config report if present`);
     await stepGroups.stepGroup_Deleting_Early_Config_Report_If_Present(page, vars);
-    await stepGroups.stepGroup_Navigating_to_Upload_New_Bid_Request(page, vars);
+    log.info(`Early config report deletion step completed`);
+
+    // Navigate to Bid Requests menu
+    log.info(`Clicking Bid Requests menu`);
+    await CorrPortalElem.BidRequests_Menu.click();
+    log.info(`Waiting for spinner to hide after Bid Requests menu click`);
+    await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
+    await expect(page.getByText("Bid Requests").first()).toBeVisible();
+    log.info(`Bid Requests page is visible`);
+
+    // Upload initial bid request
+    log.info(`Uploading initial Bid Request via step group`);
     await stepGroups.stepGroup_Uploading_Bid_Request(page, vars);
-    if (true) /* Element Second Enabled Time is visible */ {
+    log.info(`Initial Bid Request upload step completed`);
+
+    // Check if second enabled batch time is visible
+    let isVisible = false;
+    try {
+      await page.locator('app-single-select-dropdown#pricingReturnTimeDropdown').waitFor({ state: 'visible', timeout: 10000 });
+      const count = await CorrPortalElem.Second_Enabled_Time.count();
+      log.info(`Second_Enabled_Time element count: ${count}`);
+      isVisible = count > 0;
+    } catch {
+      isVisible = false;
+    }
+    log.info(`Is the second enabled batch time visible? ${isVisible}`);
+
+    if (isVisible) {
+      log.info(`Second enabled batch time is visible, selecting it directly`);
       await stepGroups.stepGroup_Selecting_Second_Enabled_Batch_Time_If_the_Condition_is_fail(page, vars);
-      // [DISABLED] Scroll to the element Enabled Date into view
-      // await bidRequestPage.Enabled_Time.scrollIntoViewIfNeeded();
-      // [DISABLED] Click on Enabled Date
-      // await bidRequestPage.Enabled_Time.click();
+      log.info('Bid Request uploaded and enabled batch time selected successfully without modifying batch intervals');
     } else {
+      log.info(`Second enabled batch time not visible, navigating to Bulk Batch Timing to modify batches`);
       await stepGroups.stepGroup_Navigating_to_Bulk_Batch_Timing(page, vars);
+      log.info(`Modifying batches with 5 min prior`);
       await stepGroups.stepGroup_Modifying_batches_with_5_min_prior(page, vars);
-      await stepGroups.stepGroup_Navigating_to_Upload_New_Bid_Request(page, vars);
+      log.info(`Batch modification done, navigating back to Bid Requests`);
+      await CorrPortalElem.BidRequests_Menu.click();
+      await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
+      await expect(page.getByText("Bid Requests").first()).toBeVisible();
+      log.info(`Bid Requests page reloaded successfully`);
+      log.info(`Re-uploading Bid Request after batch modification`);
       await stepGroups.stepGroup_Uploading_Bid_Request(page, vars);
       await stepGroups.stepGroup_Selecting_Second_Enabled_Batch_Time_If_the_Condition_is_fail(page, vars);
-      // [DISABLED] Scroll to the element Enabled Date into view
-      // await bidRequestPage.Enabled_Time.scrollIntoViewIfNeeded();
-      // [DISABLED] Click on Enabled Date
-      // await bidRequestPage.Enabled_Time.click();
+      log.info('Bid Request uploaded and enabled batch time selected successfully after modifying batch intervals');
     }
-    await correspondentPortalPage.Upload_File.setInputFiles(path.resolve(__dirname, 'test-data', "POS_Check.xlsx"));
-    vars["LoanNumberFromExcel"] = excelHelper.readCell(path.resolve(__dirname, 'test-data', "POS_Check.xlsx,POS_Check.xlsx"), "2", "1");
+
+    // Upload POS check file
+    log.info(`Uploading POS check file: POS_Check_UploadProgress(1).xlsx`);
+    await correspondentPortalPage.Upload_File.setInputFiles(path.resolve(__dirname, '../../../uploads', "POS_Check_UploadProgress(1).xlsx"));
+    log.info(`POS check file upload input set successfully`);
+
+    vars["LoanNumberFromExcel"] = String(
+      excelHelper.readCell({
+        filePath: path.resolve(__dirname, '../../../uploads', "POS_Check_UploadProgress(1).xlsx"),
+        columnHeader: "Correspondent Loan Number",
+        rowIndex: 0,
+      }) ?? ''
+    );
+    log.info(`Loan Number read from Excel: ${vars["LoanNumberFromExcel"]}`);
+
+    // Click Upload Bid button
+    log.info(`Verifying Upload Bid button is visible and enabled`);
     await expect(correspondentPortalPage.UploadBid_Button).toBeVisible();
+    await expect(correspondentPortalPage.UploadBid_Button).toBeEnabled();
+    log.info(`Clicking Upload Bid button`);
     await correspondentPortalPage.UploadBid_Button.click();
+    log.info(`Upload Bid button clicked`);
+
+    // Wait for upload progress
+    log.info(`Waiting for spinner to hide after upload click`);
     await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+    log.info(`Waiting for Bid Upload Progress text to appear`);
     await page.getByText("Bid Upload Progress").waitFor({ state: 'visible' });
+    log.info(`Bid Upload Progress is visible`);
+    log.info(`Waiting for spinner to hide on progress screen`);
+    await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+
+    // Verify Continue button
+    log.info(`Waiting for Continue button to be visible`);
     await bidRequestPage.Continue_ButtonUpload_Pop_up.waitFor({ state: 'visible' });
-    await expect(bidRequestPage.Rows_above_Loan_Field_validation).toContainText("Success");
+    log.info(`Continue button is visible`);
+await expect(bidRequestPage.Continue_ButtonUpload_Pop_up).toBeEnabled;
+    // Verify POS Validation Check shows Warning
     await expect(bidRequestDetailsPage.Pos_Validation_Check_On_Popup).toContainText("Warning");
+    log.info(`POS Validation Check on popup shows 'Warning' as expected`);
+
+    // Validate rows above loan field validation
+    const rows = await bidRequestPage.Rows_above_Loan_Field_validation.all();
+    log.info(`Total rows above loan field validation: ${rows.length}`);
+    for (const row of rows) {
+      await expect(row).toContainText("Success");
+      log.info(`Row above loan field validation verified as 'Success': ${await row.textContent()}`);
+    }
+
+    // Validate rows below loan field validation
+    const rows1 = await bidrequestPage.Rows_Below_Loan_Field.all();
+    log.info(`Total rows below loan field validation: ${rows1.length}`);
+    vars["RowsCountBelowLoanField"] = String(rows1.length);
+    log.info(`Rows count below loan field validation set to: ${vars["RowsCountBelowLoanField"]}`);
+
     vars["RowsCountBelowLoanField"] = String(await bidrequestPage.Rows_Below_Loan_Field.count());
+    log.info(`Rows count below loan field (re-fetched via count): ${vars["RowsCountBelowLoanField"]}`);
+
     vars["count"] = "1";
+    log.info(`Starting row-by-row status validation for ${vars["RowsCountBelowLoanField"]} rows below loan field`);
     while (parseFloat(String(vars["count"])) <= parseFloat(String(vars["RowsCountBelowLoanField"]))) {
-      vars["StatusBelowLoanField"] = await bidrequestPage.Individual_RowUpload_progress_popup.textContent() || '';
-      expect(String("Success , Warning")).toBe(vars["StatusBelowLoanField"]);
+      vars["StatusBelowLoanField"] = (await bidrequestPage.Individual_RowUpload_progress_popup(vars["count"]).textContent() || '').trim();
+      expect(["Success", "Warning"]).toContain(vars["StatusBelowLoanField"]);
+      log.info(`Row ${vars["count"]} status validated: ${vars["StatusBelowLoanField"]}`);
       vars["count"] = (parseFloat(String("1")) + parseFloat(String(vars["count"]))).toFixed(0);
     }
+    log.info(`All rows below loan field validation passed`);
+
+    // Click Continue and wait for page load
+    log.info(`Clicking Continue button`);
     await bidRequestPage.Continue_ButtonUpload_Pop_up.click();
+    log.info(`Continue button clicked`);
+    log.info(`Waiting for spinner to hide after Continue click`);
+    await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+    log.info(`Waiting for page load state`);
+    await page.waitForLoadState('load');
+    log.info(`Waiting 5 seconds for page to stabilize`);
+    await page.waitForTimeout(5000);
+    log.info(`Page stabilized after Continue`);
+
+    // Validate Errors Column
     vars["ErrorColumnData"] = await bidRequestDetailsPage.Errors_Column.textContent() || '';
-    if (String(testData["Pos Check(Errors Column)"]).includes(String(vars["ErrorColumnData"]))) {
-      await expect(bidRequestDetailsPage.Errors_Column).toContainText(testData["Pos Check(Errors Column)"]);
+    log.info(`Errors Column text content read: '${vars["ErrorColumnData"]}'`);
+
+    if (String(vars["Pos Check(Errors Column)"]).includes(String(vars["ErrorColumnData"]))) {
+      log.info(`Error column text is fully visible — asserting directly`);
+      await expect(bidRequestDetailsPage.Errors_Column).toContainText(vars["Pos Check(Errors Column)"]);
+      log.info(`Errors Column validated directly: ${vars["Pos Check(Errors Column)"]}`);
     } else {
+      log.info(`Error column text is truncated — hovering to reveal popup`);
       await bidRequestDetailsPage.Errors_Column.hover();
       await expect(bidRequestDetailsPage.Error_Column_Popup1).toBeVisible();
-      await expect(bidRequestDetailsPage.Error_Column_Popup1).toContainText(testData["Pos Check(Errors Column)"]);
+      log.info(`Error Column popup is visible`);
+      await expect(bidRequestDetailsPage.Error_Column_Popup1).toContainText(vars["Pos Check(Errors Column)"]);
+      log.info(`Error Column popup validated: ${vars["Pos Check(Errors Column)"]}`);
     }
-    await expect(bidRequestPage.Error_Description_ColumnBid_request_details).toContainText(testData["Pos Check(Error Description)"]);
-    await expect(bidRequestDetailsPage.Loan_Status_Column).toContainText(testData["Pos Check(Loan Status)"]);
+
+    // Validate remaining columns and buttons
+    await expect(bidRequestPage.Error_Description_ColumnBid_request_details).toContainText(vars["Pos Check(Error Description)"]);
+    log.info(`Error Description column validated: ${vars["Pos Check(Error Description)"]}`);
+
+    await expect(bidRequestDetailsPage.Loan_Status_Column).toContainText(vars["Pos Check(Loan Status)"]);
+    log.info(`Loan Status column validated: ${vars["Pos Check(Loan Status)"]}`);
+
     await expect(bidRequestDetailsPage.Loan_Number_Column).toContainText(vars["LoanNumberFromExcel"]);
-    await expect(bidRequestDetailsPage.PQ_button).toBeVisible();
-    await expect(bidRequestDetailsPage.PS_button).toBeVisible();
+    log.info(`Loan Number column validated: ${vars["LoanNumberFromExcel"]}`);
+
+    await expect(bidRequestDetailsPage.PQ_button).toBeEnabled();
+    log.info(`PQ button is enabled`);
+
+    await expect(bidRequestDetailsPage.PS_button).toBeEnabled();
+    log.info(`PS button is enabled`);
   });
 });

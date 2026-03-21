@@ -11,8 +11,8 @@ export class ChaseFieldNamePage {
     return this.page.locator("(//h5[@class=\"modal-title fw-semibold\"]/../../..//td[@data-title=\"Added On\"])[2]");
   }
 
-  get Bid_Mapping_ID_Dropdown(): Locator {
-    return this.page.locator("//button//div[text()=' @|BidMappingID| ']");
+  Bid_Mapping_ID_Dropdown(BidMappingID: String): Locator {
+    return this.page.locator(`//button//div[text()=' ${BidMappingID} ']`);
   }
 
   get Company_Names_In_DropdownBidRequest(): Locator {
