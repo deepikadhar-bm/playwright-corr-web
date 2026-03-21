@@ -1,4 +1,3 @@
-// [POM-APPLIED]
 import { test, expect } from '@playwright/test';
 import * as stepGroups from '../../../src/helpers/step-groups';
 import { CommitmentListPage } from '../../../src/pages/correspondant/commitment-list';
@@ -48,18 +47,20 @@ test.describe('Commitment List - TS_1', () => {
       }
       log.step('Navigating to Commitment closed list');
       try {
-      await correspondentPortalPage.Commitments_Side_Menu.click();
-      await commitmentListPage.Committed_List_Dropdown.click();
-      await commitmentListPage.Closed_List_Tab.waitFor({ state: 'visible' });
-      await commitmentListPage.Closed_List_Tab.hover();
-      await commitmentListPage.Closed_List_Tab.click();
-      await page.waitForLoadState('networkidle');
-      await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-      await commitmentListPage.Commitment_List_Text.waitFor({ state: 'visible' });
-      await expect(commitmentListPage.Commitment_List_Text).toBeVisible();
-      await commitmentListPage.Closed_Date.waitFor({ state: 'visible' });
-      await expect(commitmentListPage.Closed_Date).toBeVisible();
-      log.stepPass("Navigating to Commitment closed list is successful");
+        await correspondentPortalPage.Commitments_Side_Menu.click();
+        await commitmentListPage.Committed_List_Dropdown.click();
+        await commitmentListPage.Closed_List_Tab.waitFor({ state: 'visible' });
+        await commitmentListPage.Closed_List_Tab.evaluate((el: HTMLElement) => {
+          el.dispatchEvent(new MouseEvent('mousedown', { bubbles: true }));
+          el.dispatchEvent(new MouseEvent('mouseup', { bubbles: true }));
+          el.click();
+        });
+        await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+        await commitmentListPage.Commitment_List_Text.waitFor({ state: 'visible' });
+        await expect(commitmentListPage.Commitment_List_Text).toBeVisible();
+        await commitmentListPage.Closed_Date.waitFor({ state: 'visible' });
+        await expect(commitmentListPage.Closed_Date).toBeVisible();
+        log.stepPass("Navigating to Commitment closed list is successful");
       }
       catch (e) {
         log.stepFail(page, 'Fail to navigate closed list');
@@ -67,67 +68,65 @@ test.describe('Commitment List - TS_1', () => {
       }
       log.step('Verification of list screen screen sorting order both ascending and descending');
       try {
-      vars["CountOfColumnHeaders"] = String(await priceOfferedPage.Columns_Headers.count());
-      vars["HeadersUI"] = appconstants.HeadersUI;
-      vars["HeadersUI1"] = appconstants.HeadersUI1;
-      vars["count"] = "1";
-      while (parseFloat(vars["count"]) <= 11) {
-        vars["IndividualHeaderUI"] = await priceOfferedPage.Individual_Column_Header_UI(vars["count"]).textContent() || '';
-        Methods.trimtestdata(vars["IndividualHeaderUI"], "IndividualHeaderUI");
-        if (vars["HeadersUI"].includes(vars["IndividualHeaderUI"])) {
-          log.info("if condition passed:" + vars["IndividualHeaderUI"]);
-          await page.waitForLoadState('networkidle');
-          await commitmentListPage.Individual_Column_Header_UI_Commitment_List(vars["count"]).click();
-          await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-          await expect(correspondentPortalPage.Header_Sort_Down).toBeVisible();
-          await priceOfferedPage.First_Column_Data_UI(vars["IndividualHeaderUI"]).waitFor({ state: 'visible' });
-          await commitmentListPage.Closed_Date.waitFor({ state: 'visible' });
-          log.info("Ascending order -"+ vars["IndividualHeaderUI"]);
-          await Methods.verifyNumericOrder(priceOfferedPage.Column_Data_UI(vars["IndividualHeaderUI"]), undefined, 'ascending');
-          await commitmentListPage.Individual_Column_Header_UI_Commitment_List(vars["count"]).click();
-          await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-          await expect(priceOfferedPage.Header_Sort_Up_Symbol).toBeVisible();
-          await priceOfferedPage.First_Column_Data_UI(vars["IndividualHeaderUI"]).waitFor({ state: 'visible' });
-          await page.waitForTimeout(4000);
-          log.info("Descending order -"+ vars["IndividualHeaderUI"]);
-          await Methods.verifyNumericOrder(priceOfferedPage.Column_Data_UI(vars["IndividualHeaderUI"]), undefined, 'descending');
+        vars["CountOfColumnHeaders"] = String(await priceOfferedPage.Columns_Headers.count());
+        vars["HeadersUI"] = appconstants.HEADERSUI;
+        vars["HeadersUI1"] = appconstants.HEADERSUI1;
+        vars["count"] = appconstants.ONE;
+        while (parseFloat(String(vars['count'])) <= parseFloat(String(appconstants.ELEVEN))) {
+          vars["IndividualHeaderUI"] = await priceOfferedPage.Individual_Column_Header_UI(vars["count"]).textContent() || '';
+          Methods.trimtestdata(vars["IndividualHeaderUI"], "IndividualHeaderUI");
+          if (vars["HeadersUI"].includes(vars["IndividualHeaderUI"])) {
+            log.info("if condition passed:" + vars["IndividualHeaderUI"]);
+            await commitmentListPage.Individual_Column_Header_UI_Commitment_List(vars["count"]).click();
+            await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+            await expect(correspondentPortalPage.Header_Sort_Down).toBeVisible();
+            await priceOfferedPage.First_Column_Data_UI(vars["IndividualHeaderUI"]).waitFor({ state: 'visible' });
+            await commitmentListPage.Closed_Date.waitFor({ state: 'visible' });
+            log.info("Ascending order -" + vars["IndividualHeaderUI"]);
+            await Methods.verifyNumericOrder(priceOfferedPage.Column_Data_UI(vars["IndividualHeaderUI"]), undefined, 'ascending');
+            await commitmentListPage.Individual_Column_Header_UI_Commitment_List(vars["count"]).click();
+            await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+            await expect(priceOfferedPage.Header_Sort_Up_Symbol).toBeVisible();
+            await priceOfferedPage.First_Column_Data_UI(vars["IndividualHeaderUI"]).waitFor({ state: 'visible' });
+            await page.waitForTimeout(4000);
+            log.info("Descending order -" + vars["IndividualHeaderUI"]);
+            await Methods.verifyNumericOrder(priceOfferedPage.Column_Data_UI(vars["IndividualHeaderUI"]), undefined, 'descending');
 
-        } else if (vars["HeadersUI1"].includes(vars["IndividualHeaderUI"])) {
-          log.info("else if condition passed:" + vars["IndividualHeaderUI"]);
-          await page.waitForLoadState('networkidle');
-          await commitmentListPage.Individual_Column_Header_UI_Commitment_List(vars["count"]).click();
-          await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-          await expect(correspondentPortalPage.Header_Sort_Down).toBeVisible();
-          await priceOfferedPage.First_Column_Data_UI(vars["IndividualHeaderUI"]).waitFor({ state: 'visible' });
-          log.info("Ascending order -"+ vars["IndividualHeaderUI"]);
-          await Methods.verifyDateOrder(priceOfferedPage.Column_Data_UI(vars["IndividualHeaderUI"]), 'ascending', 'MM/dd/yyyy');
-          await commitmentListPage.Individual_Column_Header_UI_Commitment_List(vars["count"]).click();
-          await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-          await expect(priceOfferedPage.Header_Sort_Up_Symbol).toBeVisible();
-          await priceOfferedPage.First_Column_Data_UI(vars["IndividualHeaderUI"]).waitFor({ state: 'visible' });
-          await page.waitForTimeout(4000);
-          log.info("Descending order -"+vars["IndividualHeaderUI"]);
-          await Methods.verifyDateOrder(priceOfferedPage.Column_Data_UI(vars["IndividualHeaderUI"]), 'descending', 'MM/dd/yyyy');
+          } else if (vars["HeadersUI1"].includes(vars["IndividualHeaderUI"])) {
+            log.info("else if condition passed:" + vars["IndividualHeaderUI"]);
+            await commitmentListPage.Individual_Column_Header_UI_Commitment_List(vars["count"]).click();
+            await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+            await expect(correspondentPortalPage.Header_Sort_Down).toBeVisible();
+            await priceOfferedPage.First_Column_Data_UI(vars["IndividualHeaderUI"]).waitFor({ state: 'visible' });
+            log.info("Ascending order -" + vars["IndividualHeaderUI"]);
+            await Methods.verifyDateOrder(priceOfferedPage.Column_Data_UI(vars["IndividualHeaderUI"]), 'ascending', 'MM/dd/yyyy');
+            await commitmentListPage.Individual_Column_Header_UI_Commitment_List(vars["count"]).click();
+            await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+            await expect(priceOfferedPage.Header_Sort_Up_Symbol).toBeVisible();
+            await priceOfferedPage.First_Column_Data_UI(vars["IndividualHeaderUI"]).waitFor({ state: 'visible' });
+            await page.waitForTimeout(4000);
+            log.info("Descending order -" + vars["IndividualHeaderUI"]);
+            await Methods.verifyDateOrder(priceOfferedPage.Column_Data_UI(vars["IndividualHeaderUI"]), 'descending', 'MM/dd/yyyy');
 
-        } else {
-          log.info("else condition passed:" + vars["IndividualHeaderUI"]);
-          await commitmentListPage.Individual_Column_Header_UI_Commitment_List(vars["count"]).click();
-          await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-          await expect(correspondentPortalPage.Header_Sort_Down).toBeVisible();
-          await priceOfferedPage.First_Column_Data_UI(vars["IndividualHeaderUI"]).waitFor({ state: 'visible' });
-          await commitmentListPage.Closed_Date.waitFor({ state: 'visible' });
-          log.info("Ascending order -"+ vars["IndividualHeaderUI"]);
-          await Methods.verifyStringOrder(priceOfferedPage.Column_Data_UI(vars["IndividualHeaderUI"]), undefined, 'ascending');
-          await commitmentListPage.Individual_Column_Header_UI_Commitment_List(vars["count"]).click();
-          await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-          await expect(priceOfferedPage.Header_Sort_Up_Symbol).toBeVisible();
-          await priceOfferedPage.First_Column_Data_UI(vars["IndividualHeaderUI"]).waitFor({ state: 'visible' });
-          await page.waitForTimeout(4000);
-          log.info("Descending order -"+vars["IndividualHeaderUI"]);
-          await Methods.verifyStringOrder(priceOfferedPage.Column_Data_UI(vars["IndividualHeaderUI"]), undefined, 'descending');
+          } else {
+            log.info("else condition passed:" + vars["IndividualHeaderUI"]);
+            await commitmentListPage.Individual_Column_Header_UI_Commitment_List(vars["count"]).click();
+            await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+            await expect(correspondentPortalPage.Header_Sort_Down).toBeVisible();
+            await priceOfferedPage.First_Column_Data_UI(vars["IndividualHeaderUI"]).waitFor({ state: 'visible' });
+            await commitmentListPage.Closed_Date.waitFor({ state: 'visible' });
+            log.info("Ascending order -" + vars["IndividualHeaderUI"]);
+            await Methods.verifyStringOrder(priceOfferedPage.Column_Data_UI(vars["IndividualHeaderUI"]), undefined, 'ascending');
+            await commitmentListPage.Individual_Column_Header_UI_Commitment_List(vars["count"]).click();
+            await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+            await expect(priceOfferedPage.Header_Sort_Up_Symbol).toBeVisible();
+            await priceOfferedPage.First_Column_Data_UI(vars["IndividualHeaderUI"]).waitFor({ state: 'visible' });
+            await page.waitForTimeout(4000);
+            log.info("Descending order -" + vars["IndividualHeaderUI"]);
+            await Methods.verifyStringOrder(priceOfferedPage.Column_Data_UI(vars["IndividualHeaderUI"]), undefined, 'descending');
+          }
+          Methods.MathematicalOperation(vars["count"], "+", "1", "count");
         }
-        Methods.MathematicalOperation(vars["count"], "+", "1", "count");
-      }
         log.stepPass("Verification of list screen screen sorting order both ascending and descending is successful");
       }
       catch (e) {

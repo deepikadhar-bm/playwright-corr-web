@@ -136,7 +136,7 @@ test.describe('REG_PriceOffered', () => {
         vars['BidStatusPriceOfferedPage'] = await priceOfferedPage.Bid_Status_Price_OfferedExe_Type1(vars["BidReqIdPriceOffered"]).textContent() || '';
         Methods.trimtestdata(vars['BidStatusPriceOfferedPage'], 'BidStatusPriceOfferedPage');
         log.info('BidStatusPriceOfferedPage: ' + vars['BidStatusPriceOfferedPage']);
-        expect(Methods.verifyString(vars['BidStatusPriceOfferedPage'], 'equals', appconstants.COMMITTED));
+        expect(Methods.verifyString(vars['BidStatusPriceOfferedPage'], 'equals', appconstants.COMMITTED_STATUS));
         log.stepPass('Bid status remains Committed after expiry window');
       } catch (e) {
         

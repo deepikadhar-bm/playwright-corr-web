@@ -1,6 +1,4 @@
 import { test, expect } from '@playwright/test';
-import path from 'path';
-import * as stepGroups from '../../../src/helpers/step-groups';
 import { BidRequestsPage } from '../../../src/pages/correspondant/bid-requests';
 import { CommitmentListPage } from '../../../src/pages/correspondant/commitment-list';
 import { CorrespondentPortalPage } from '../../../src/pages/correspondant/correspondent-portal';
@@ -63,14 +61,14 @@ test.describe('Commitment List - TS_2', () => {
         await page.keyboard.press('Enter');
         await spinnerPage.Spinner.waitFor({ state: 'hidden' });
         await priceOfferedPage.BidRequestIDPrice_Offered_New(vars["BidReqId"]).click();
-        await priceOfferedPage.Check_Bid_Loan_NumChase_Exe.waitFor({ state: 'visible' });
-        await priceOfferedPage.Check_Bid_Loan_NumChase_Exe.check();
+        await priceOfferedPage.Check_the_Loan_Num.waitFor({ state: 'visible' });
+        await priceOfferedPage.Check_the_Loan_Num.check();
         await priceOfferedPage.Get_Price_Button.click();
         await priceOfferedPage.Commit_Selected_1_Dropdown.waitFor({ state: 'visible' });
         await priceOfferedPage.Commit_Selected_1_Dropdown.click();
         await priceOfferedPage.Yes_Commit_ButtonPopup.click();
         await priceOfferedPage.Okay_ButtonPopup.waitFor({ state: 'visible' });
-        Methods.getCurrentTimestamp(appconstants.TIME_FORMATE, 'CommittedTime', appconstants.UTC);
+        Methods.getCurrentTimestamp(appconstants.TIME_FORMAT1_HHMMA, 'CommittedTime', appconstants.UTC);
         vars['CommitmentIDPriceOffered'] = await priceOfferedPage.Commitment_IdPrice_Offered.textContent() || '';
         await priceOfferedPage.Okay_ButtonPopup.click();
         log.stepPass('Loan committed successfully. Commitment ID: ' + vars['CommitmentIDPriceOffered']);
