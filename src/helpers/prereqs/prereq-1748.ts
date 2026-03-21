@@ -8,7 +8,10 @@ import { SpinnerPage } from '../../pages/correspondant/spinner';
 import { runPrereq_1738 } from './prereq-1738';
 import { Logger as log } from '../../../src/helpers/log-helper';
 
-//REG_TS03_TC01
+
+const TC_ID = 'PREREQ_1748(REG_TS03_TC01)';
+const TC_TITLE = 'Verify that the loans marked as committed are displayed correctly on the respective commitment detail screen under that commitment section';
+
 export async function runPrereq_1748(page: Page, vars: Record<string, string>): Promise<void> {
   await runPrereq_1738(page, vars);
 
@@ -19,7 +22,7 @@ export async function runPrereq_1748(page: Page, vars: Record<string, string>): 
   const spinnerPage = new SpinnerPage(page);
 
 
-  log.tcStart('REG_TS03_TC01', 'Pre-requisite setup for test REG_TS04_TC02');
+   log.tcStart(TC_ID, TC_TITLE);
   try {
 
     log.step('Navigating to Price Offered and capturing locked loan details');
@@ -104,7 +107,7 @@ export async function runPrereq_1748(page: Page, vars: Record<string, string>): 
 
     log.tcEnd('PASS');
   } catch (e) {
-    await log.captureOnFailure(page, 'REG_TS03_TC01', e);
+    await log.captureOnFailure(page, TC_ID, e);
     log.tcEnd('FAIL');
     throw e;
   }
