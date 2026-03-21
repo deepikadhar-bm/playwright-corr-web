@@ -51,8 +51,8 @@ export class BidrequestPage {
     return this.page.locator(`(((//div[@class="dropdown-overflow"])[1]//span)[position() >= 1 and position() <= 7])[${count}]`);
   }
 
-  get Individual_RowUpload_progress_popup(): Locator {
-    return this.page.locator("((//td[@data-title=\"Status\"])[position() >=7 and position()<=last()])[$|count|]");
+  Individual_RowUpload_progress_popup(count: string): Locator {
+    return this.page.locator(`((//td[@data-title="Status"])[position() >=7 and position()<=last()])[${count}]`);
   }
 
   get OptionsCountInPricingDropdown(): Locator {

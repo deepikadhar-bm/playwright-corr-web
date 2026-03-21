@@ -6464,7 +6464,7 @@ export async function stepGroup_Modifying_batches_with_5_min_prior(page: import(
   //log.info(`[${profileName}] Loaded Time Interval: "${vars["Time_Interval"]}", NO of Batches: "${vars["NO of Batches"]}"`);
   //const profile = testDataManager.getProfileByName("Administration_Bulk Batch Timing");
   //const testData = profile?.data?.[0] || {};
-  await CorrPortalElem.Time_Interval.fill(vars["Time_Interval"]);
+  await CorrPortalElem.Time_Interval.fill(vars["Time Interval"]);
   await CorrPortalElem.No_Of_Batches.fill(vars["NO of Batches"]);
   await expect(CorrPortalElem.On_Radio_button_in_Bid_Request).toBeEnabled();
   await CorrPortalElem.Modify_Batch_Button.click();

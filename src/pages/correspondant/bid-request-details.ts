@@ -331,8 +331,8 @@ Individual_PQ_Button(RowsCount:string): Locator {
     return this.page.locator("(//td[@data-title=\"Corr. Loan#\"]//button[1])[last()]");
   }
 
-  get Loan_Number_DataCommon(): Locator {
-    return this.page.locator("(//td[@data-title=\"Corr. Loan#\"]//div)[$|RowsCountTable|]");
+  Loan_Number_DataCommon(RowsCountTable: String): Locator {
+    return this.page.locator(`(//td[@data-title=\"Corr. Loan#\"]//div)[${RowsCountTable}]`);
   }
 
   get Loan_Number_Sort_Button_2(): Locator {
