@@ -15,8 +15,9 @@ export class UploadProgressPopUpPage {
     return this.page.locator("//div[text()=\" Geo Coding \"]/../..//span");
   }
 
-  get Individual_Status_On_Popup(): Locator {
-    return this.page.locator("(//td[@data-title=\"Status\"]//span)[$|count|]");
-  }
+  Individual_Status_On_Popup(count: String): Locator {
+  return this.page.locator(`(//td[@data-title='Status']//span)[${count}]`);
+}
+  
 
 }
