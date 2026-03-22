@@ -11,7 +11,7 @@ import { ENV } from '@config/environments';
 
 
 const TC_ID = 'REG_TS08_TC06';
-const TC_TITLE ='If a bid has multiple execution types verify that commitment details belong to respective execution type';
+const TC_TITLE = 'If a bid has multiple execution types verify that commitment details belong to respective execution type';
 
 test.describe('Commitment List - TS_2', () => {
 
@@ -78,7 +78,7 @@ test.describe('Commitment List - TS_2', () => {
       try {
         await commitmentListPage.Commitment_IDStandard.first().click();
         await priceOfferedPage.Commit_IDCommitment_List.first().waitFor({ state: 'visible' });
-        vars['CommitIDStandard'] =await priceOfferedPage.Commit_IDCommitment_List.first().textContent() || '';
+        vars['CommitIDStandard'] = await priceOfferedPage.Commit_IDCommitment_List.first().textContent() || '';
         Methods.trimtestdata(vars['CommitIDStandard'], 'CommitIDStandard');
         log.info('Standard Commitment ID: ' + vars['CommitIDStandard']);
         await priceOfferedPage.Back_To_Commitment_List.click();
@@ -93,12 +93,12 @@ test.describe('Commitment List - TS_2', () => {
       try {
         await commitmentListPage.Commitment_IDChase_Direct.first().click();
         await priceOfferedPage.Commit_IDCommitment_List.first().waitFor({ state: 'visible' });
-        vars['CommitIDChase'] =await priceOfferedPage.Commit_IDCommitment_List.first().textContent() || '';
+        vars['CommitIDChase'] = await priceOfferedPage.Commit_IDCommitment_List.first().textContent() || '';
         Methods.trimtestdata(vars['CommitIDChase'], 'CommitIDChase');
         log.info('Chase Commitment ID: ' + vars['CommitIDChase']);
         await priceOfferedPage.Back_To_Commitment_List.click();
         await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-      log.stepPass('Captured Chase commitment ID');
+        log.stepPass('Captured Chase commitment ID');
 
       } catch (e) {
         await log.stepFail(page, 'Failed to capture Chase commitment ID');
@@ -143,15 +143,11 @@ test.describe('Commitment List - TS_2', () => {
         await log.stepFail(page, 'Commit dropdown verification failed for Chase Direct');
         throw e;
       }
-
       log.tcEnd('PASS');
 
     } catch (e) {
-
       await log.captureOnFailure(page, TC_ID, e);
-
       log.tcEnd('FAIL');
-
       throw e;
     }
   });

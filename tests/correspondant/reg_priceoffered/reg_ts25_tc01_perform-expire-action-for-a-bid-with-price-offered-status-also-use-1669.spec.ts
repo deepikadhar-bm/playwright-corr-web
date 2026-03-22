@@ -64,7 +64,7 @@ test.describe('Unassigned', () => {
         await priceOfferedPage.Bid_Req_IdPrice_Offered_Page(vars["BidReqIdPriceOffered"]).waitFor({ state: 'visible' });
         vars['BidStatusPriceOffered'] = await priceOfferedPage.Bid_Status_Price_OfferedExe_Type1(vars["BidReqIdPriceOffered"]).textContent() || '';
         Methods.trimtestdata(vars['BidStatusPriceOffered'], 'BidStatusPriceOffered');
-        Methods.verifyString(vars['BidStatusPriceOffered'], 'equals', appconstants.PRICEOFFERED);
+        Methods.verifyString(vars['BidStatusPriceOffered'], 'equals', appconstants.PRICEOFFERED_STATUS);
         vars['BidValuePriceOffered'] = await priceOfferedPage.Bid_ValuePrice_Offered_Page(vars["BidReqIdPriceOffered"]).textContent() || '';
         vars['TotalLoansPriceOffered'] = await priceOfferedPage.Total_LoansPrice_Offered_Page(vars["BidReqIdPriceOffered"]).textContent() || '';
         log.info('BidStatus: ' + vars['BidStatusPriceOffered']);
@@ -96,7 +96,7 @@ test.describe('Unassigned', () => {
         await priceOfferedPage.Bid_Status_Price_OfferedExe_Type1(vars["BidReqIdPriceOffered"]).waitFor({ state: 'visible' });
         vars['BidStatusPriceOffered'] = await priceOfferedPage.Bid_Status_Price_OfferedExe_Type1(vars["BidReqIdPriceOffered"]).textContent() || '';
         Methods.trimtestdata(vars['BidStatusPriceOffered'], 'BidStatusPriceOffered');
-        Methods.verifyString(vars['BidStatusPriceOffered'], 'equals', appconstants.EXPIRED);
+        Methods.verifyString(vars['BidStatusPriceOffered'], 'equals', appconstants.EXPIRED_STATUS);
         log.info('BidStatus after expire: ' + vars['BidStatusPriceOffered']);
         log.stepPass('Bid status confirmed as Expired');
       } catch (e) {
@@ -128,7 +128,7 @@ test.describe('Unassigned', () => {
         await page.waitForTimeout(10000);
         vars['BidStatusPriceOffered'] = await priceOfferedPage.Bid_Status_Price_OfferedExe_Type1(vars["BidReqIdPriceOffered"]).textContent() || '';
         Methods.trimtestdata(vars['BidStatusPriceOffered'], 'BidStatusPriceOffered');
-        Methods.verifyString(vars['BidStatusPriceOffered'], 'equals', appconstants.PRICEOFFERED);
+        Methods.verifyString(vars['BidStatusPriceOffered'], 'equals', appconstants.PRICEOFFERED_STATUS);
         log.info('BidStatus after change: ' + vars['BidStatusPriceOffered']);
         log.stepPass('Bid status successfully changed back to Price Offered');
       } catch (e) {

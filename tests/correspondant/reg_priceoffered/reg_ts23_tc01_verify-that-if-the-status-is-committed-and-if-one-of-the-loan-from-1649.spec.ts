@@ -102,7 +102,7 @@ test.describe('REG_PriceOffered', () => {
         await spinnerPage.Spinner.waitFor({ state: 'hidden' });
         await priceOfferedPage.CommitmentID(vars["BidReqIdPriceOffered"]).first().waitFor({ state: 'visible' });
         await priceOfferedPage.CommitmentID(vars["BidReqIdPriceOffered"]).first().click();
-        await priceOfferedPage.Check_Bid_Loan_NumChase_Exe.first().check();
+        await priceOfferedPage.Check_the_Loan_Num.first().check();
         vars['UncommittedLoanNum'] = await priceOfferedPage.Checked_Corr_Loan.textContent() || '';
         log.info('UncommittedLoanNum: ' + vars['UncommittedLoanNum']);
         vars['UncommittedLoanAmount'] = await priceOfferedPage.Checked_Loan_Amount.textContent() || '';
@@ -138,7 +138,7 @@ test.describe('REG_PriceOffered', () => {
         vars['BidStatusPriceOfferedPage'] = await priceOfferedPage.Bid_Status_Price_OfferedExe_Type1(vars['BidReqIdPriceOffered']).textContent() || '';
         log.info('BidStatus on Price Offered page: ' + vars['BidStatusPriceOfferedPage']);
         Methods.trimtestdata(vars['BidStatusPriceOfferedPage'], 'BidStatusPriceOfferedPage');
-        expect(Methods.verifyString(vars['BidStatusPriceOfferedPage'], 'equals', appconstants.PARTIALLYCOMMITTED));
+        expect(Methods.verifyString(vars['BidStatusPriceOfferedPage'], 'equals', appconstants.PARTIALLYCOMMITTED_STATUS));
         log.stepPass('Bid status confirmed as Partially Committed on Price Offered page');
       } catch (e) {
         log.stepFail(page, 'Failed to verify Partially Committed status on Price Offered page');
@@ -201,12 +201,12 @@ test.describe('REG_PriceOffered', () => {
         vars['BidStatusBidReqPage'] = await bidRequestPage.Bid_Status_BidRequestsPage(vars["BidReqIdPriceOffered"]).textContent() || '';
         Methods.trimtestdata(vars['BidStatusBidReqPage'], 'BidStatusBidReqPage');
         log.info('BidStatus on Bid Requests page: ' + vars['BidStatusBidReqPage']);
-        expect(Methods.verifyString(vars['BidStatusBidReqPage'], 'equals', appconstants.PARTIALLYCOMMITTED));
+        expect(Methods.verifyString(vars['BidStatusBidReqPage'], 'equals', appconstants.PARTIALLYCOMMITTED_STATUS));
         await bidRequestPage.Required_Bid_Req_IDBid_Req_Page(vars["BidReqIdPriceOffered"]).click();
         await bidRequestPage.Bid_StatusBid_Req_Details.waitFor({ state: 'visible' });
         vars['StatusBidReqDetails'] = await bidRequestPage.Bid_StatusBid_Req_Details.textContent() || '';
         log.info('BidStatus on Bid Request Details: ' + vars['StatusBidReqDetails']);
-        expect(Methods.verifyString(vars['StatusBidReqDetails'], 'equals', appconstants.PARTIALLYCOMMITTED));
+        expect(Methods.verifyString(vars['StatusBidReqDetails'], 'equals', appconstants.PARTIALLYCOMMITTED_STATUS));
         log.stepPass('Bid status confirmed as Partially Committed on Bid Requests page and Bid Request Details page');
       } catch (e) {
         log.stepFail(page, 'Failed to verify Partially Committed status on Bid Requests or Bid Request Details page');

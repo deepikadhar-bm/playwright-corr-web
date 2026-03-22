@@ -25,6 +25,8 @@ test.describe('Commitment List - TS_1', () => {
 
   test.beforeEach(async ({ page }) => {
     vars = {};
+    vars["Username"] = credentials.username;
+    vars["Password"] = credentials.password;
     commitmentListPage = new CommitmentListPage(page);
     correspondentPortalPage = new CorrespondentPortalPage(page);
     priceOfferedPage = new PriceOfferedPage(page);
@@ -34,8 +36,6 @@ test.describe('Commitment List - TS_1', () => {
 
   test(`${TC_ID} - ${TC_TITLE}`, async ({ page }) => {
     vars['DownloadDir'] = path.join(process.cwd(), 'downloads');
-    vars["Username"] = credentials.username;
-    vars["Password"] = credentials.password;
     log.tcStart(TC_ID, TC_TITLE);
     try {
       log.step('Login to corr application');
@@ -52,17 +52,11 @@ test.describe('Commitment List - TS_1', () => {
         await correspondentPortalPage.Commitments_Side_Menu.click();
         await commitmentListPage.Committed_List_Dropdown.click();
         await commitmentListPage.Closed_List_Tab.waitFor({ state: 'visible' });
-        // await commitmentListPage.Closed_List_Tab.hover();
-        // await commitmentListPage.Closed_List_Tab.click();
         await commitmentListPage.Closed_List_Tab.evaluate((el: HTMLElement) => {
           el.dispatchEvent(new MouseEvent('mousedown', { bubbles: true }));
           el.dispatchEvent(new MouseEvent('mouseup', { bubbles: true }));
           el.click();
         });
-        // await commitmentListPage.Closed_List_Tab.evaluate((el) => {
-        //   el.dispatchEvent(new MouseEvent('click', { bubbles: true }));
-        // });
-        await page.waitForLoadState('networkidle'),
         await spinnerPage.Spinner.waitFor({ state: 'hidden' });  
         await commitmentListPage.Commitment_List_Text.waitFor({ state: 'visible' });
         await expect(commitmentListPage.Commitment_List_Text).toBeVisible();
@@ -77,7 +71,6 @@ test.describe('Commitment List - TS_1', () => {
       }
       log.step('Select the required loan number and verify the export functionality by comparing the UI data with the Excel file');
       try {
-        // await commitmentListPage.First_Company_CommitmentClosedList.click();
         await commitmentListPage.Required_Record.first().waitFor({ state: 'visible' });
         await commitmentListPage.Required_Record.first().check();
         expect(await commitmentListPage.Required_Record.first().isChecked());

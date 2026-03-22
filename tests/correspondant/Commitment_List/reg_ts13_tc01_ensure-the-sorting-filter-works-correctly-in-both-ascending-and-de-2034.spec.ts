@@ -52,8 +52,8 @@ test.describe('Commitment List - TS_1', () => {
       log.step('Verification of list screen screen sorting order both ascending and descending');
       try {
         vars["CountOfColumnHeaders"] = String(await priceOfferedPage.Columns_Headers.count());
-        vars["HeadersUI"] = appconstants.HeadersUI;
-        vars["HeadersUI1"] = appconstants.HeadersUI1;
+        vars["HeadersUI"] = appconstants.HEADERSUI;
+        vars["HeadersUI1"] = appconstants.HEADERSUI1;
         vars["count"] = "1";
 
         while (parseFloat(vars["count"]) <= 10) {
