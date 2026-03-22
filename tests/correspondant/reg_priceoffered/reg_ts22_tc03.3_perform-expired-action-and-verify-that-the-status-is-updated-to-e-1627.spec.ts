@@ -59,12 +59,12 @@ test.describe('REG_PriceOffered', () => {
         vars['BidStatusChasePriceOffered'] = await priceOfferedPage.Bid_Status_Chase_DirectPrice_Offered_Page.textContent() || '';
         Methods.trimtestdata(vars['BidStatusChasePriceOffered'], 'BidStatusChasePriceOffered');
         log.info('Chase Direct status: ' + vars['BidStatusChasePriceOffered']);
-        expect(Methods.verifyString(vars['BidStatusChasePriceOffered'], 'equals', appconstants.COMMITTED));
+        expect(Methods.verifyString(vars['BidStatusChasePriceOffered'], 'equals', appconstants.COMMITTED_STATUS));
 
         vars['BidStatusStandardPriceOffered'] = await priceOfferedPage.Bid_Status_StandardPrice_Offered_Page.textContent() || '';
         Methods.trimtestdata(vars['BidStatusStandardPriceOffered'], 'BidStatusStandardPriceOffered');
         log.info('Standard status: ' + vars['BidStatusStandardPriceOffered']);
-        expect(Methods.verifyString(vars['BidStatusStandardPriceOffered'], 'equals', appconstants.EXPIRED));
+        expect(Methods.verifyString(vars['BidStatusStandardPriceOffered'], 'equals', appconstants.EXPIRED_STATUS));
 
         log.stepPass('Price Offered page status verified. Chase Direct: ' + vars['BidStatusChasePriceOffered'] + ' | Standard: ' + vars['BidStatusStandardPriceOffered']);
       } catch (e) {
@@ -82,7 +82,7 @@ test.describe('REG_PriceOffered', () => {
         vars['StatusBidReqPage'] = await bidRequestPage.Bid_Status_BidRequestsPage(vars["BidReqIdPriceOffered"]).textContent() || '';
         Methods.trimtestdata(vars['StatusBidReqPage'], 'StatusBidReqPage');
         log.info('Bid Request list status: ' + vars['StatusBidReqPage']);
-        expect(Methods.verifyString(vars['StatusBidReqPage'], 'equals', appconstants.COMMITTED));
+        expect(Methods.verifyString(vars['StatusBidReqPage'], 'equals', appconstants.COMMITTED_STATUS));
         log.stepPass('Bid Requests list status verified: ' + vars['StatusBidReqPage']);
       } catch (e) {
         await log.stepFail(page, 'Bid Requests list status verification failed. Status: ' + vars['StatusBidReqPage']);
@@ -96,7 +96,7 @@ test.describe('REG_PriceOffered', () => {
         vars['StatusBidReqDetails'] = await bidRequestPage.Bid_StatusBid_Req_Details.textContent() || '';
         Methods.trimtestdata(vars['StatusBidReqDetails'], 'StatusBidReqDetails');
         log.info('Bid Request details status: ' + vars['StatusBidReqDetails']);
-        expect(Methods.verifyString(vars['StatusBidReqDetails'], 'equals', appconstants.COMMITTED));
+        expect(Methods.verifyString(vars['StatusBidReqDetails'], 'equals', appconstants.COMMITTED_STATUS));
         log.stepPass('Bid Request details status verified: ' + vars['StatusBidReqDetails']);
       } catch (e) {
         await log.stepFail(page, 'Bid Request details status verification failed. Status: ' + vars['StatusBidReqDetails']);

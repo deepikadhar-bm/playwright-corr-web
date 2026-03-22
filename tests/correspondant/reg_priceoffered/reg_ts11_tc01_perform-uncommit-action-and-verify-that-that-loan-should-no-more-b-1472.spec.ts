@@ -77,7 +77,6 @@ test.describe('REG_PriceOffered', () => {
         await priceOfferedPage.Yes_Commit_ButtonPopup.click();
         await priceOfferedPage.Okay_ButtonPopup.waitFor({ state: 'visible' });
         await priceOfferedPage.Okay_ButtonPopup.click();
-        await page.waitForLoadState('networkidle');
         vars['OpenAuthLimitAfterCommit'] = await correspondentPortalPage.Open_Auth_Limit_Total_Loan.textContent() || '';
         Methods.splitBySpecialChar(vars['OpenAuthLimitAfterCommit'], '(', '0', 'OpenAuthLimitAfterCommit');
         log.info('OpenAuthLimitAfterCommit: ' + vars['OpenAuthLimitAfterCommit']);

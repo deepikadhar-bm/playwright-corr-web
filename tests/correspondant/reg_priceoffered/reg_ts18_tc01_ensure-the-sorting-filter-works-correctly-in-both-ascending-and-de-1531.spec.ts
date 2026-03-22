@@ -47,7 +47,7 @@ test.describe('REG_PriceOffered', () => {
         await correspondentPortalPage.Commitments_Side_Menu.click();
         await correspondentPortalPage.Price_Offered_List_Dropdown.click();
         vars["CountOfColumnHeaders"] = String(await priceOfferedPage.Columns_Headers.count());
-        vars["HeadersUI"] = appconstants.HeadersUi;
+        vars["HeadersUI"] = appconstants.HEADERSUI_PRICEOFFERD;
         vars["count"] = "1";
         while (parseFloat(String(vars["count"])) <= parseFloat(String("8"))) {
           vars["IndividualHeaderUI"] = await priceOfferedPage.Individual_Column_Header_UI(vars["count"]).textContent() || '';
@@ -84,7 +84,6 @@ test.describe('REG_PriceOffered', () => {
         vars["BidValue"] = await priceOfferedPage.BidValue.textContent() || '';
         log.info("Ascending order for Bid value");
         await priceOfferedPage.BidValue.click();
-        await page.waitForLoadState('networkidle');
         await expect(correspondentPortalPage.Header_Sort_Down).toBeVisible();
         await spinnerPage.Spinner.waitFor({ state: 'hidden' });
         await priceOfferedPage.BidValue_Column.first().waitFor({ state: 'visible' });

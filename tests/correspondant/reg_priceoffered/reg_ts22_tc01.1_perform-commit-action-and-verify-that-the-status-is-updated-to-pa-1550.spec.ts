@@ -9,7 +9,6 @@ import { AddonHelpers } from '../../../src/helpers/AddonHelpers';
 import { Logger as log } from '../../../src/helpers/log-helper';
 import { testDataManager } from 'testdata/TestDataManager';
 import { APP_CONSTANTS as appconstants } from '../../../src/constants/app-constants';
-// import { ENV } from '@config/environments';
 
 
 const TC_ID = 'REG_TS22_TC01.1';
@@ -22,7 +21,6 @@ test.describe('REG_PriceOffered', () => {
   let priceOfferedPage: PriceOfferedPage;
   let spinnerPage: SpinnerPage;
   let Methods: AddonHelpers;
-  // const credentials = ENV.getCredentials('internal');
 
   test.beforeEach(async ({ page }) => {
     vars = {};
@@ -36,9 +34,6 @@ test.describe('REG_PriceOffered', () => {
 
   test(`${TC_ID} - ${TC_TITLE}`, async ({ page }) => {
     log.tcStart(TC_ID, TC_TITLE);
-    //         vars['Username'] = credentials.username;
-    // vars['Password'] = credentials.password;
-    // await stepGroups.stepGroup_Login_to_CORR_Portal(page, vars);
     try {
 
       log.step('Navigating to Price Offered, committing a fresh loan and verifying status is Partially Committed');
@@ -47,7 +42,6 @@ test.describe('REG_PriceOffered', () => {
         await correspondentPortalPage.Price_Offered_List_Dropdown.click();
         await spinnerPage.Spinner.waitFor({ state: 'hidden' });
         vars['BidReqIdPriceOffered'] = vars['RequestIDDetails'];
-        // vars['BidReqIdPriceOffered'] = "87ZY3F5E1CDF";
         await correspondentPortalPage.Search_By_Bid_Request_ID_Input.fill(vars['BidReqIdPriceOffered']);
         await page.keyboard.press('Enter');
         await spinnerPage.Spinner.waitFor({ state: 'hidden' });
@@ -57,7 +51,7 @@ test.describe('REG_PriceOffered', () => {
         vars['BidStatusPriceOfferedPage'] = await priceOfferedPage.Bid_Status_Price_OfferedExe_Type1(vars["BidReqIdPriceOffered"]).textContent() || '';
         Methods.trimtestdata(vars['BidStatusPriceOfferedPage'], 'BidStatusPriceOfferedPage');
         log.info('BidStatus on Price Offered page: ' + vars['BidStatusPriceOfferedPage']);
-        Methods.verifyString(vars['BidStatusPriceOfferedPage'], 'equals', appconstants.PARTIALLYCOMMITTED);
+        Methods.verifyString(vars['BidStatusPriceOfferedPage'], 'equals', appconstants.PARTIALLYCOMMITTED_STATUS);
         log.stepPass('Bid status confirmed as Partially Committed on Price Offered page');
       } catch (e) {
         log.stepFail(page, 'Failed to commit loan or verify Partially Committed status on Price Offered page');
@@ -72,7 +66,7 @@ test.describe('REG_PriceOffered', () => {
         await spinnerPage.Spinner.waitFor({ state: 'hidden' });
         vars['BidStatusBidReqPage'] = await bidRequestPage.Bid_Status_BidRequestsPage(vars["BidReqIdPriceOffered"]).textContent() || '';
         Methods.trimtestdata(vars['BidStatusBidReqPage'], 'BidStatusBidReqPage');
-        Methods.verifyString(vars['BidStatusBidReqPage'], 'equals', appconstants.PARTIALLYCOMMITTED);
+        Methods.verifyString(vars['BidStatusBidReqPage'], 'equals', appconstants.PARTIALLYCOMMITTED_STATUS);
         log.info('BidStatus on Bid Requests page: ' + vars['BidStatusBidReqPage']);
         log.stepPass('Bid status confirmed as Partially Committed on Bid Requests page');
       } catch (e) {
@@ -86,7 +80,7 @@ test.describe('REG_PriceOffered', () => {
         await bidRequestPage.Bid_StatusBid_Req_Details.waitFor({ state: 'visible' });
         vars['StatusBidReqDetails'] = await bidRequestPage.Bid_StatusBid_Req_Details.textContent() || '';
         log.info('BidStatus on Bid Request Details: ' + vars['StatusBidReqDetails']);
-        Methods.verifyString(vars['StatusBidReqDetails'], 'equals', appconstants.PARTIALLYCOMMITTED);
+        Methods.verifyString(vars['StatusBidReqDetails'], 'equals', appconstants.PARTIALLYCOMMITTED_STATUS);
         log.stepPass('Bid status confirmed as Partially Committed on Bid Request Details page');
         testDataManager.updateProfileData('Price Offered', { 'RequestIDfrom22-1.1': vars['BidReqIdPriceOffered'] });
       } catch (e) {

@@ -10,7 +10,7 @@ import { ENV } from '@config/environments';
 import { APP_CONSTANTS as appconstants } from '../../../src/constants/app-constants';
 
 
-const TC_ID    = 'REG_TS12_TC01';
+const TC_ID = 'REG_TS12_TC01';
 const TC_TITLE = 'Verify the pagination flows';
 
 test.describe('Commitment List - TS_1', () => {
@@ -27,11 +27,11 @@ test.describe('Commitment List - TS_1', () => {
     vars = {};
     vars['Username'] = credentials.username;
     vars['Password'] = credentials.password;
-    commitmentListPage      = new CommitmentListPage(page);
+    commitmentListPage = new CommitmentListPage(page);
     correspondentPortalPage = new CorrespondentPortalPage(page);
-    priceOfferedPage        = new PriceOfferedPage(page);
-    spinnerPage             = new SpinnerPage(page);
-    Methods                 = new AddonHelpers(page, vars);
+    priceOfferedPage = new PriceOfferedPage(page);
+    spinnerPage = new SpinnerPage(page);
+    Methods = new AddonHelpers(page, vars);
   });
 
   test(`${TC_ID} - ${TC_TITLE}`, async ({ page }) => {
@@ -79,9 +79,9 @@ test.describe('Commitment List - TS_1', () => {
           await spinnerPage.Spinner.waitFor({ state: 'hidden' });
           Methods.trimWhitespace(vars['IndividualSetPageSize'], 'IndividualSetPageSize');
           vars['RowsCount'] = String(await priceOfferedPage.Total_Rows_Count_UIDetails.count());
-          expect(Methods.verifyComparison(vars['IndividualSetPageSize'],'==',vars['RowsCount']));
+          expect(Methods.verifyComparison(vars['IndividualSetPageSize'], '==', vars['RowsCount']));
           log.info('Page size: ' + vars['IndividualSetPageSize'] + ' Rows displayed: ' + vars['RowsCount']);
-          Methods.MathematicalOperation(vars['count'],"+","1","count");
+          Methods.MathematicalOperation(vars['count'], "+", "1", "count");
         }
         log.stepPass('Pagination verified for all ' + vars['CountOfSetPageSize'] + ' page size');
       } catch (e) {

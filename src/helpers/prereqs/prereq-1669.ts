@@ -30,10 +30,7 @@ export async function runPrereq_1669(page: Page, vars: Record<string, string>): 
   const Methods = new AddonHelpers(page, vars);
 
   log.tcStart(TC_ID, TC_TITLE);
-  if (profile && profile.data) {
-    vars['BidReqIdPriceOffered'] = profile.data[0]['RequestIDfrom24-1'];
-    log.info('BidReqIdPriceOffered: ' + vars['BidReqIdPriceOffered']);
-  }
+
   try {
     log.step('login to CORR portal');
     try {
@@ -49,12 +46,16 @@ export async function runPrereq_1669(page: Page, vars: Record<string, string>): 
       await correspondentPortalPage.Commitments_Side_Menu.click();
       await correspondentPortalPage.Price_Offered_List_Dropdown.click();
       await bidRequestsPage.Search_by_Bid_Request_ID_Field.click();
+      if (profile && profile.data) {
+        vars['BidReqIdPriceOffered'] = profile.data[0]['RequestIDfrom24-1'];
+        log.info('BidReqIdPriceOffered: ' + vars['BidReqIdPriceOffered']);
+      }
       await bidRequestsPage.Search_by_Bid_Request_ID_Field.fill(vars['BidReqIdPriceOffered']);
       await page.keyboard.press('Enter');
       await priceOfferedPage.Bid_Req_IdPrice_Offered_Page(vars['BidReqIdPriceOffered']).waitFor({ state: 'visible' });
       vars['BidStatusPriceOffered'] = await priceOfferedPage.Bid_Status_Price_OfferedExe_Type1(vars['BidReqIdPriceOffered']).textContent() || '';
       Methods.trimtestdata(vars['BidStatusPriceOffered'], 'BidStatusPriceOffered');
-      Methods.verifyString(vars['BidStatusPriceOffered'], 'equals', appconstants.PRICEOFFERED);
+      Methods.verifyString(vars['BidStatusPriceOffered'], 'equals', appconstants.PRICEOFFERED_STATUS);
       vars['BidValuePriceOffered'] = await priceOfferedPage.Bid_ValuePrice_Offered_Page(vars['BidReqIdPriceOffered']).textContent() || '';
       vars['TotalLoansPriceOffered'] = await priceOfferedPage.Total_LoansPrice_Offered_Page(vars['BidReqIdPriceOffered']).textContent() || '';
       log.info('BidStatus: ' + vars['BidStatusPriceOffered']);
@@ -87,7 +88,7 @@ export async function runPrereq_1669(page: Page, vars: Record<string, string>): 
       await priceOfferedPage.Bid_Status_Price_OfferedExe_Type1(vars['BidReqIdPriceOffered']).waitFor({ state: 'visible' });
       vars['BidStatusPriceOffered'] = await priceOfferedPage.Bid_Status_Price_OfferedExe_Type1(vars['BidReqIdPriceOffered']).textContent() || '';
       Methods.trimtestdata(vars['BidStatusPriceOffered'], 'BidStatusPriceOffered');
-      Methods.verifyString(vars['BidStatusPriceOffered'], 'equals', appconstants.EXPIRED);
+      Methods.verifyString(vars['BidStatusPriceOffered'], 'equals', appconstants.EXPIRED_STATUS);
       log.info('BidStatus after expire: ' + vars['BidStatusPriceOffered']);
       log.stepPass('Bid status confirmed as Expired');
     } catch (e) {
@@ -117,7 +118,7 @@ export async function runPrereq_1669(page: Page, vars: Record<string, string>): 
       await page.waitForTimeout(10000);
       vars['BidStatusPriceOffered'] = await priceOfferedPage.Bid_Status_Price_OfferedExe_Type1(vars['BidReqIdPriceOffered']).textContent() || '';
       Methods.trimtestdata(vars['BidStatusPriceOffered'], 'BidStatusPriceOffered');
-      Methods.verifyString(vars['BidStatusPriceOffered'], 'equals', appconstants.PRICEOFFERED);
+      Methods.verifyString(vars['BidStatusPriceOffered'], 'equals', appconstants.PRICEOFFERED_STATUS);
       log.info('BidStatus after change: ' + vars['BidStatusPriceOffered']);
       log.stepPass('Bid status successfully restored to Price Offered');
     } catch (e) {

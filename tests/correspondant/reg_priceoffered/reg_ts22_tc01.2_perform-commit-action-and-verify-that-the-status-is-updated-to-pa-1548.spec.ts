@@ -10,7 +10,6 @@ import { AddonHelpers } from '../../../src/helpers/AddonHelpers';
 import { Logger as log } from '../../../src/helpers/log-helper';
 import { testDataManager } from 'testdata/TestDataManager';
 import { APP_CONSTANTS as appconstants } from '../../../src/constants/app-constants';
-// import { ENV } from '@config/environments';
 
 
 const TC_ID = 'REG_TS22_TC01.2';
@@ -24,7 +23,6 @@ test.describe('REG_PriceOffered', () => {
   let priceOfferedPage: PriceOfferedPage;
   let spinnerPage: SpinnerPage;
   let Methods: AddonHelpers;
-  // const credentials = ENV.getCredentials('internal');
 
 
   test.beforeEach(async ({ page }) => {
@@ -39,9 +37,7 @@ test.describe('REG_PriceOffered', () => {
   });
 
   test(`${TC_ID} - ${TC_TITLE}`, async ({ page }) => {
-    //            vars['Username'] = credentials.username;
-    // vars['Password'] = credentials.password;
-    // await stepGroups.stepGroup_Login_to_CORR_Portal(page, vars);
+
     log.tcStart(TC_ID, TC_TITLE);
     try {
 
@@ -51,7 +47,6 @@ test.describe('REG_PriceOffered', () => {
         await correspondentPortalPage.Price_Offered_List_Dropdown.click();
         await spinnerPage.Spinner.waitFor({ state: 'hidden' });
         vars['BidReqIdPriceOffered'] = vars['RequestIDDetails'];
-        // vars['BidReqIdPriceOffered'] = '879MBD1B9B48';
         await correspondentPortalPage.Search_By_Bid_Request_ID_Input.fill(vars['BidReqIdPriceOffered']);
         await page.keyboard.press('Enter');
         await spinnerPage.Spinner.waitFor({ state: 'hidden' });
@@ -72,11 +67,11 @@ test.describe('REG_PriceOffered', () => {
         vars['BidStatusChasePriceOffered'] = await priceOfferedPage.Bid_Status_Chase_DirectPrice_Offered_Page.textContent() || '';
         Methods.trimtestdata(vars['BidStatusChasePriceOffered'], 'BidStatusChasePriceOffered');
         log.info('BidStatus Chase Direct: ' + vars['BidStatusChasePriceOffered']);
-        Methods.verifyString(vars['BidStatusChasePriceOffered'], 'equals', appconstants.PARTIALLYCOMMITTED);
+        Methods.verifyString(vars['BidStatusChasePriceOffered'], 'equals', appconstants.PARTIALLYCOMMITTED_STATUS);
         vars['BidStatusStandardPriceOffered'] = await priceOfferedPage.Bid_Status_StandardPrice_Offered_Page.textContent() || '';
         Methods.trimtestdata(vars['BidStatusStandardPriceOffered'], 'BidStatusStandardPriceOffered');
         log.info('BidStatus Standard: ' + vars['BidStatusStandardPriceOffered']);
-        Methods.verifyString(vars['BidStatusStandardPriceOffered'], 'equals', appconstants.PRICEOFFERED); 
+        Methods.verifyString(vars['BidStatusStandardPriceOffered'], 'equals', appconstants.PARTIALLYCOMMITTED_STATUS); 
         log.stepPass('Chase Direct confirmed Partially Committed and Standard confirmed Price Offered');
       } catch (e) {
         log.stepFail(page, 'Failed to verify Chase Direct or Standard status on Price Offered page');
@@ -93,12 +88,12 @@ test.describe('REG_PriceOffered', () => {
         vars['StatusBidReqPage'] = await bidRequestPage.Bid_Status_BidRequestsPage(vars['BidReqIdPriceOffered']).textContent() || '';
         Methods.trimtestdata(vars['StatusBidReqPage'], 'StatusBidReqPage');
         log.info('BidStatus on Bid Requests page: ' + vars['StatusBidReqPage']);
-        Methods.verifyString(vars['StatusBidReqPage'], 'equals', appconstants.PARTIALLYCOMMITTED);
+        Methods.verifyString(vars['StatusBidReqPage'], 'equals', appconstants.PARTIALLYCOMMITTED_STATUS);
         await bidRequestPage.Required_Bid_Req_IDBid_Req_Page(vars['BidReqIdPriceOffered']).click();
         await bidRequestPage.Bid_StatusBid_Req_Details.waitFor({ state: 'visible' });
         vars['StatusBidReqDetails'] = await bidRequestPage.Bid_StatusBid_Req_Details.textContent() || '';
         log.info('BidStatus on Bid Request Details: ' + vars['StatusBidReqDetails']);
-        Methods.verifyString(vars['StatusBidReqDetails'], 'equals', appconstants.PARTIALLYCOMMITTED);
+        Methods.verifyString(vars['StatusBidReqDetails'], 'equals', appconstants.PARTIALLYCOMMITTED_STATUS);
         log.stepPass('Bid status confirmed as Partially Committed on Bid Requests page and Bid Request Details page');
       } catch (e) {
         log.stepFail(page, 'Failed to verify Partially Committed status on Bid Requests or Bid Request Details page');
@@ -127,11 +122,11 @@ test.describe('REG_PriceOffered', () => {
         vars['BidStatusChasePriceOffered'] = await priceOfferedPage.Bid_Status_Chase_DirectPrice_Offered_Page.textContent() || '';
         Methods.trimtestdata(vars['BidStatusChasePriceOffered'], 'BidStatusChasePriceOffered');
         log.info('BidStatus Chase Direct: ' + vars['BidStatusChasePriceOffered']);
-        Methods.verifyString(vars['BidStatusChasePriceOffered'], 'equals', appconstants.PARTIALLYCOMMITTED);
+        Methods.verifyString(vars['BidStatusChasePriceOffered'], 'equals', appconstants.PARTIALLYCOMMITTED_STATUS);
         vars['BidStatusStandardPriceOffered'] = await priceOfferedPage.Bid_Status_StandardPrice_Offered_Page.textContent() || '';
         Methods.trimtestdata(vars['BidStatusStandardPriceOffered'], 'BidStatusStandardPriceOffered');
         log.info('BidStatus Standard: ' + vars['BidStatusStandardPriceOffered']);
-        Methods.verifyString(vars['BidStatusStandardPriceOffered'], 'equals', appconstants.PARTIALLYCOMMITTED);      
+        Methods.verifyString(vars['BidStatusStandardPriceOffered'], 'equals', appconstants.PARTIALLYCOMMITTED_STATUS);      
         log.stepPass('Both Chase Direct and Standard confirmed as Partially Committed');
       } catch (e) {
         log.stepFail(page, 'Failed to verify both Chase Direct and Standard statuses as Partially Committed');
@@ -148,12 +143,12 @@ test.describe('REG_PriceOffered', () => {
         vars['StatusBidReqPage'] = await bidRequestPage.Bid_Status_BidRequestsPage(vars['BidReqIdPriceOffered']).textContent() || '';
         Methods.trimtestdata(vars['StatusBidReqPage'], 'StatusBidReqPage');
         log.info('BidStatus on Bid Requests page: ' + vars['StatusBidReqPage']);
-        Methods.verifyString(vars['StatusBidReqPage'], 'equals', appconstants.PARTIALLYCOMMITTED);
+        Methods.verifyString(vars['StatusBidReqPage'], 'equals', appconstants.PARTIALLYCOMMITTED_STATUS);
         await bidRequestPage.Required_Bid_Req_IDBid_Req_Page(vars['BidReqIdPriceOffered']).click();
         await bidRequestPage.Bid_StatusBid_Req_Details.waitFor({ state: 'visible' });
         vars['StatusBidReqDetails'] = await bidRequestPage.Bid_StatusBid_Req_Details.textContent() || '';
         log.info('BidStatus on Bid Request Details: ' + vars['StatusBidReqDetails']);
-        Methods.verifyString(vars['StatusBidReqDetails'], 'equals', appconstants.PARTIALLYCOMMITTED);       
+        Methods.verifyString(vars['StatusBidReqDetails'], 'equals', appconstants.PARTIALLYCOMMITTED_STATUS);       
         testDataManager.updateProfileData('Price Offered', { 'RequestIDfrom22-1.2': vars['BidReqIdPriceOffered'] });
         log.stepPass('Bid status confirmed as Partially Committed on both pages and profile updated');
       } catch (e) {

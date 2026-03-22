@@ -10,7 +10,11 @@ import { AddonHelpers } from '../AddonHelpers';
 import { Logger as log } from '../log-helper';
 import { APP_CONSTANTS as appconstants } from '../../constants/app-constants';
 import { testDataManager } from 'testdata/TestDataManager';
-//REG_TS04_TC02
+
+
+const TC_ID = 'PREREQ_1746(REG_TS04_TC02';
+const TC_TITLE = 'Create a new commitment for a bid that already has an existing commitment, and verify that an new commitment entry is added and visible in the list screen';
+
 export async function runPrereq_1746(page: Page, vars: Record<string, string>): Promise<void> {
   await runPrereq_1748(page, vars);
 
@@ -20,31 +24,32 @@ export async function runPrereq_1746(page: Page, vars: Record<string, string>): 
   const priceOfferedPage = new PriceOfferedPage(page);
   const spinnerPage = new SpinnerPage(page);
   const Methods = new AddonHelpers(page, vars);
-  const profile = testDataManager.getProfileByName('Commitment List');
 
-  if (profile && profile.data) {
-    vars['BidReqId'] = profile.data[0]['RequestIDFromPRE_PR_1-1'];
-    log.info('Bid ID from TDP: ' + vars['BidReqId']);
-  }
-  log.info('REG_TS04_TC02 BidReqId: ' + vars['BidReqId']);
-  log.tcStart('REG_TS04_TC02', 'Pre-requisite setup for test REG_TS04_TC03');
+  const profileName = 'CommitmentList';
+  const profile = testDataManager.getProfileByName(profileName);
+
+  log.tcStart(TC_ID, TC_TITLE);
   try {
-
     log.step('Navigating to Price Offered and committing selected loan');
     try {
       await correspondentPortalPage.Commitments_Side_Menu.click();
       await correspondentPortalPage.Price_Offered_List_Dropdown.click();
+      if (profile && profile.data) {
+        vars['BidReqId'] = profile.data[0]['RequestIDFromPRE_PR_1-1'];
+        log.info('Bid ID from TDP: ' + vars['BidReqId']);
+      }
+      log.info('REG_TS04_TC02 BidReqId: ' + vars['BidReqId']);
       await bidRequestsPage.Search_by_Bid_Request_ID_Field.fill(vars['BidReqId']);
       await spinnerPage.Spinner.waitFor({ state: 'hidden' });
       await priceOfferedPage.BidRequestIDPrice_Offered_New(vars["BidReqId"]).click();
-      await priceOfferedPage.Check_Bid_Loan_NumChase_Exe.first().waitFor({ state: 'visible' });
-      await priceOfferedPage.Check_Bid_Loan_NumChase_Exe.first().check();
+      await priceOfferedPage.Check_the_Loan_Num.first().waitFor({ state: 'visible' });
+      await priceOfferedPage.Check_the_Loan_Num.first().check();
       await priceOfferedPage.Get_Price_Button.click();
       await priceOfferedPage.Commit_Selected_1_Dropdown.waitFor({ state: 'visible' });
       await priceOfferedPage.Commit_Selected_1_Dropdown.click();
       await priceOfferedPage.Yes_Commit_ButtonPopup.click();
       await priceOfferedPage.Okay_ButtonPopup.waitFor({ state: 'visible' });
-      Methods.getCurrentTimestamp(appconstants.TIME_FORMATE, 'CommittedTime', appconstants.UTC);
+      Methods.getCurrentTimestamp(appconstants.TIME_FORMAT1_HHMMA, 'CommittedTime', appconstants.UTC);
       vars['CommitmentIDPriceOffered'] = await priceOfferedPage.Commitment_IdPrice_Offered.textContent() || '';
       await priceOfferedPage.Okay_ButtonPopup.click();
       log.stepPass('Loan committed. Commitment ID: ' + vars['CommitmentIDPriceOffered']);
@@ -73,10 +78,9 @@ export async function runPrereq_1746(page: Page, vars: Record<string, string>): 
       log.stepFail(page, 'Failed to verify new commitment entry in Commitment List');
       throw e;
     }
-
     log.tcEnd('PASS');
   } catch (e) {
-    await log.captureOnFailure(page, 'REG_TS04_TC02', e);
+    await log.captureOnFailure(page, TC_ID, e);
     log.tcEnd('FAIL');
     throw e;
   }

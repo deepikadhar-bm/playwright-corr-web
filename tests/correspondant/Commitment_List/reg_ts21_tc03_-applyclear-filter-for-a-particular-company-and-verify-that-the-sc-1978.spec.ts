@@ -11,6 +11,8 @@ import { AddonHelpers } from '@helpers/AddonHelpers';
 import { testDataManager } from 'testdata/TestDataManager';
 import { Logger as log } from '@helpers/log-helper';
 import { ENV } from '@config/environments'
+import { APP_CONSTANTS as appconstants } from '../../../src/constants/app-constants';
+
 
 
 const TC_ID = "REG_TS21_TC03";
@@ -30,6 +32,8 @@ test.describe('Commitment List - TS_1', () => {
 
   test.beforeEach(async ({ page }) => {
     vars = {};
+    vars["Username"] = credentials.username;
+    vars["Password"] = credentials.password;
     applyFiltersButtonPage = new ApplyFiltersButtonPage(page);
     commitmentListPage = new CommitmentListPage(page);
     correspondentPortalPage = new CorrespondentPortalPage(page);
@@ -44,8 +48,7 @@ test.describe('Commitment List - TS_1', () => {
   const profile = testDataManager.getProfileByName(profileName);
 
   test(`${TC_ID} - ${TC_TITLE}`, async ({ page }) => {
-    vars["Username"] = credentials.username;
-    vars["Password"] = credentials.password;
+
 
     if (profile && profile.data) {
       const companyName = profile.data[0]['CompanyNameInFilters'];
@@ -68,10 +71,11 @@ test.describe('Commitment List - TS_1', () => {
         await correspondentPortalPage.Commitments_Side_Menu.click();
         await commitmentListPage.Committed_List_Dropdown.click();
         await commitmentListPage.Closed_List_Tab.waitFor({ state: 'visible' });
-        await commitmentListPage.Closed_List_Tab.evaluate((el) => {
-          el.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+        await commitmentListPage.Closed_List_Tab.evaluate((el: HTMLElement) => {
+          el.dispatchEvent(new MouseEvent('mousedown', { bubbles: true }));
+          el.dispatchEvent(new MouseEvent('mouseup', { bubbles: true }));
+          el.click();
         });
-        await page.waitForLoadState('networkidle'),
         await spinnerPage.Spinner.waitFor({ state: 'hidden' });
         await commitmentListPage.Commitment_List_Text.waitFor({ state: 'visible' });
         await expect(commitmentListPage.Commitment_List_Text).toBeVisible();
@@ -106,8 +110,8 @@ test.describe('Commitment List - TS_1', () => {
       Methods.trimtestdata(vars["numberOfItemsSelected"], "numberOfItemsSelected");
       await expect(priceOfferedPage.Selected_Company).toContainText(vars["SelectedCompanyName"]);
       vars["SelectedCompanyCountInFilters"] = String(await priceOfferedPage.Selected_Company_Count_in_Filters.count());
-      expect(Methods.verifyComparison("1","==",vars["SelectedCompanyCountInFilters"]));
-      expect(Methods.verifyComparison("1","==",vars["numberOfItemsSelected"]));
+      expect(Methods.verifyComparison(appconstants.ONE,"==",vars["SelectedCompanyCountInFilters"]));
+      expect(Methods.verifyComparison(appconstants.ONE,"==",vars["numberOfItemsSelected"]));
 
       log.info("click on show all and check select all verify the dropdown companies count");
       await correspondentPortalPage.Show_All_Button.click();
@@ -133,13 +137,11 @@ test.describe('Commitment List - TS_1', () => {
       log.info("selected company name is matched with displayed company chip");
       
       const NextButton = correspondentPortalPage.Go_to_Next_Page_Button;
-      log.info("isDisabled:"+ await NextButton.getAttribute('aria-disabled'));
       vars["Ccount"] = "1";
-      while (parseFloat(String(vars["Ccount"])) <= parseFloat(String("2"))) {
+      while (parseFloat(String(vars["Ccount"])) <= parseFloat(String(appconstants.TWO))) {
         await priceOfferedPage.Price_Offered_Company_Name_Column_Data.first().waitFor({ state: 'visible' });
         await Methods.verifyMultipleElementsHaveSameText(priceOfferedPage.Price_Offered_Company_Name_Column_Data, vars["SelectedCompanyName"]);
-        const isDisabled = await NextButton.getAttribute('aria-disabled');
-        if (isDisabled === 'false') {
+        if (await NextButton.isVisible() && await NextButton.isEnabled()) {
           await correspondentPortalPage.Go_to_Next_Page_Button_2.click();
           log.info("cliked on next button");
           await spinnerPage.Spinner.waitFor({ state: 'hidden' });
@@ -156,45 +158,33 @@ test.describe('Commitment List - TS_1', () => {
       }
       log.step('Navigating to customer permissions and very the no of companies count with available companies count in filters dropdown');
       try {
-      await page.waitForTimeout(3000);
       await correspondentPortalPage.Administration_Menu.waitFor({ state: 'visible' });
-      await correspondentPortalPage.Administration_Menu.dispatchEvent('click');
+      await correspondentPortalPage.Administration_Menu.click();
       await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-      await page.waitForTimeout(3000);
-      await page.waitForLoadState('networkidle');
       await correspondentPortalPage.GeneralSettings_Menu.waitFor({ state: 'visible' });
-      await correspondentPortalPage.GeneralSettings_Menu.dispatchEvent('click');
+      await correspondentPortalPage.GeneralSettings_Menu.click();
       await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-      await page.waitForTimeout(3000);
-      await page.waitForLoadState('networkidle');
       await customerPermissionPage.CustomerPermission_Menu.waitFor({ state: 'visible' });
-      await customerPermissionPage.CustomerPermission_Menu.dispatchEvent('click');
-      await page.waitForLoadState('networkidle');
-      await page.waitForTimeout(3000);
+      await customerPermissionPage.CustomerPermission_Menu.click();
       await expect(customerPermissionPage.CustomerPermission_Menu_Active).toBeVisible();
       await priceOfferedPage.Page_Selection.click();
       await priceOfferedPage.Number_50.waitFor({ state: 'visible' });
-      await page.waitForTimeout(3000);
       await priceOfferedPage.Number_50.click();
-      await page.waitForTimeout(3000);
       await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-      await page.waitForLoadState('networkidle');
 
-      vars["Count"] = "1";
+      vars["Count"] = appconstants.ONE;
       const NextButton1 = correspondentPortalPage.Go_to_Next_Page_Button;
-      vars["TotalCompanyCountCustomerPermission"] = "0";
+      vars["TotalCompanyCountCustomerPermission"] = appconstants.ZERO;
       vars["PageCount"] = await correspondentPortalPage.Pagination_Count.textContent() || '';
       Methods.removeCharactersFromPosition(vars["PageCount"], "10", "0", "PageCount");
 
       while (parseFloat(String(vars["Count"])) <= parseFloat(String(vars["PageCount"]))) {
         vars["CompanyNameCount"] = String(await statusInactivePage.Company_Names.count());
         Methods.MathematicalOperation(vars["TotalCompanyCountCustomerPermission"], '+', vars["CompanyNameCount"], "TotalCompanyCountCustomerPermission");
-        const isDisabled1 = await NextButton1.getAttribute('aria-disabled');
-        if (isDisabled1 === 'false') {
+        if (await NextButton1.isVisible() && await NextButton1.isEnabled()) {
           await correspondentPortalPage.Go_to_Next_Page_Button_2.click();
           log.info("clicked on next button");
           await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-          await page.waitForLoadState('networkidle');
         }
         Methods.MathematicalOperation(vars["Count"], '+', 1, "Count");
       }
