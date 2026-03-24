@@ -72,4 +72,8 @@ export const APP_CONSTANTS = {
   DATE_TEXT:"Date:",
   COMPANY_TEXT:"Company:",
   ELEVEN:'11',
+  LOAN_TEXT:"Loan",
+  MARKET_ADJ_ERROR_TEXT:"can not be committed. Market adjuster value",
+  MARKET_ADJ_REASON_TEXT:"is greater than market threshold value",
+  ONE_HUNDRED_TWEENTY:'120',
 };
