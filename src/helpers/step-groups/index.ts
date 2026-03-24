@@ -5344,8 +5344,9 @@ export async function stepGroup_Updating_Back_MinMaxThreshold(page: import('@pla
   await CorrPortalElem.Market_Thresholds.click();
   await stepGroup_Market_Threshold(page, vars);
   await CorrPortalElem.Enter_minimum_display_value_in_percentage.clear();
-  await CorrPortalElem.Enter_maximum_display_value_in_percentage_Input.fill("120");
-  await CorrPortalElem.Enter_minimum_display_value_in_percentage.fill("1");
+  await CorrPortalElem.Enter_maximum_display_value_in_percentage_Input.type(appconstants.ONE_HUNDRED_TWEENTY);
+  await CorrPortalElem.Enter_minimum_display_value_in_percentage.type(appconstants.ONE);
+  await expect(CorrPortalElem.Update_Threshold_Button).toBeEnabled();
   await CorrPortalElem.Update_Threshold_Button.click();
 }
 
@@ -5355,9 +5356,14 @@ export async function stepGroup_Updating_Back_MinMaxThreshold(page: import('@pla
  * Steps: 3
  */
 export async function stepGroup_Storing_PopUpError(page: import('@playwright/test').Page, vars: Record<string, string>) {
-  vars["space"] = "key_blank";
-  vars["ExpectedPopUpError1"] = "Loan" + vars["space"] + vars["CorrLoan"] + vars["space"] + "can not be committed. Market adjuster value" + vars["space"];
-  vars["ExpectedPopUpError2"] = "is greater than market threshold value" + vars["space"] + vars["NumLowerThanMarkAdjPopup"];
+  const Methods=new AddonHelpers(page,vars);
+  // vars["ExpectedPopUpError1"] = "Loan" + vars["space"] + vars["CorrLoan"] + vars["space"] + "can not be committed. Market adjuster value" + vars["space"];
+  Methods.concatenateWithSpace(appconstants.LOAN_TEXT,vars["CorrLoan"],'ExpectedPopUpError1');
+  Methods.concatenateWithSpace(vars['ExpectedPopUpError1'],appconstants.MARKET_ADJ_ERROR_TEXT,'ExpectedPopUpError1');
+  // vars["ExpectedPopUpError2"] = "is greater than market threshold value" + vars["space"] + vars["NumLowerThanMarkAdjPopup"];
+  Methods.concatenateWithSpace(appconstants.MARKET_ADJ_REASON_TEXT,vars["NumLowerThanMarkAdjPopup"],'ExpectedPopUpError2');
+  log.info('ExpectedPopUpError1: ' + vars['ExpectedPopUpError1']);
+  log.info('ExpectedPopUpError2: ' + vars['ExpectedPopUpError2']);
 }
 
 /**

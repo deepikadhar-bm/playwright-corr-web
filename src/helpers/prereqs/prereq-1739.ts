@@ -7,6 +7,15 @@ import { CommitmentDetailsPage } from '../../pages/correspondant/commitment-deta
 import { CorrespondentPortalPage } from '../../pages/correspondant/correspondent-portal';
 import { PriceOfferedPage } from '../../pages/correspondant/price-offered';
 import { SpinnerPage } from '../../pages/correspondant/spinner';
+import { Logger as log } from '@helpers/log-helper';
+import { APP_CONSTANTS as appconstants } from '../../../src/constants/app-constants';
+import { ENV } from '@config/environments';
+import { AddonHelpers } from '@helpers/AddonHelpers';
+import { testDataManager } from 'testdata/TestDataManager';
+
+
+const TC_ID = 'PREREQ_1739(REG_TS04_TC01)';
+const TC_TITLE = 'Verify the Total loans section, It should display the list of all the loans present in Price offered module';
 
 export async function runPrereq_1739(page: Page, vars: Record<string, string>): Promise<void> {
   const bidRequestDetailsPage = new BidRequestDetailsPage(page);
@@ -15,67 +24,134 @@ export async function runPrereq_1739(page: Page, vars: Record<string, string>): 
   const correspondentPortalPage = new CorrespondentPortalPage(page);
   const priceOfferedPage = new PriceOfferedPage(page);
   const spinnerPage = new SpinnerPage(page);
+  const Methods = new AddonHelpers(page, vars);
+  const credentials = ENV.getCredentials('internal');
 
+  const profileName = 'CommitmentList';
+  const profile = testDataManager.getProfileByName(profileName);
 
-  const testData: Record<string, string> = {
-  "RequestIDFromPRE_PR_1-1": "87YTD25F4356",
-  "Requestidfrom4-2": "873O84593BB5",
-  "RequestIdfrom6-1.1": "57HK54C5AE2A",
-  "RequestIDfrom14-1": "876U855F6483",
-  "CommitmentIdfrom8-8": "87JU2DDD",
-  "RequestIdFrom5-1": "876YA587E147",
-  "RequestIdFrom5-5": "87CKA7D37EB6",
-  "RequestIdFrom6-4": "87MWF9C278BC",
-  "CommitmentIDfrom8-10": "87JU2DDD",
-  "RequestIdFrom8-8": "87BI08DD054F"
-}; // Profile: "Commitment List", row: 0
+  vars['Username'] = credentials.username;
+  vars['Password'] = credentials.password;
 
-  await stepGroups.stepGroup_Login_to_CORR_Portal(page, vars);
-  await correspondentPortalPage.Commitments_Side_Menu.click();
-  await correspondentPortalPage.Price_Offered_List_Dropdown.click();
-  vars["BidReqId"] = testData["RequestIDFromPRE_PR_1-1"];
-  // [DISABLED] Store RequestIDFromPRE_PR_1-1 in BidReqIdPriceOffered
-  // vars["BidReqIdPriceOffered"] = testData["RequestIDFromPRE_PR_1-1"];
-  await bidRequestsPage.Search_by_Bid_Request_ID_Field.fill(vars["BidReqId"]);
-  await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-  await priceOfferedPage.BidRequestIDPrice_Offered_New.click();
-  await priceOfferedPage.All_Loans_Tabprice_offered_screen.waitFor({ state: 'visible' });
-  await bidRequestDetailsPage.Last_Name_Sort_Button.click();
-  await priceOfferedPage.Last_Name_Down_ArrowDetails.waitFor({ state: 'visible' });
-  vars["TotalLoans"] = String(await priceOfferedPage.Total_LoansDetails_Screen.count());
-  vars["count"] = "1";
-  while (parseFloat(String(vars["count"])) <= parseFloat(String(vars["TotalLoans"]))) {
-    await commitmentDetailsPage.Bid_ReqID_TextPrice_Offered_Details.click();
-    vars["CorrLoanNumAllLoans"] = await priceOfferedPage.Corr_Loan_NumDetails_Screen.textContent() || '';
-    vars["LastNameAllLoans"] = await priceOfferedPage.Last_NameDetails_Screen.textContent() || '';
-    vars["LoanAmountAllLoans"] = await priceOfferedPage.Loan_AmountDetails_Screen.textContent() || '';
-    vars["InterestRateAllLoans"] = await priceOfferedPage.Interest_rateDetails_Screen.textContent() || '';
-    vars["ReferenceSecurityAllLoans"] = await priceOfferedPage.Reference_SecurityDetails_Screen.textContent() || '';
-    vars["ReferenceSecurityPriceAllLoans"] = await priceOfferedPage.Reference_security_priceDetails_Screen.textContent() || '';
-    vars["GrossPriceAllLoans"] = await priceOfferedPage.Gross_PriceDetails_Screen.textContent() || '';
-    vars["HedgeRatioAllLoans"] = await priceOfferedPage.Hedge_RatioDetails_Screen.textContent() || '';
-    vars["MarketAdjustmentAllLoans"] = await priceOfferedPage.Market_AdjustmentDetails_Screen.textContent() || '';
-    vars["CurrentGrossPriceAllLoans"] = await priceOfferedPage.Current_Gross_PriceDetails_Screen.textContent() || '';
-    for (let dataIdx = parseInt(vars["count"]); dataIdx <= parseInt(vars["count"]); dataIdx++) {
-      // Write to test data profile: "Corr Loan Num" = vars["CorrLoanNumAllLoans"]
-      // Write to test data profile: "Last Name" = vars["LastNameAllLoans"]
-      // Write to test data profile: "Loan Amount" = vars["LoanAmountAllLoans"]
-      // Write to test data profile: "Interest Rate" = vars["InterestRateAllLoans"]
-      // Write to test data profile: "Ref Sec Prod" = vars["ReferenceSecurityAllLoans"]
-      // Write to test data profile: "Ref Sec Price" = vars["ReferenceSecurityPriceAllLoans"]
-      // Write to test data profile: "Gross Price" = vars["GrossPriceAllLoans"]
-      // Write to test data profile: "Hedge Ratio" = vars["HedgeRatioAllLoans"]
-      // Write to test data profile: "Mark Adj" = vars["MarketAdjustmentAllLoans"]
-      // Write to test data profile: "Current Gross Price" = vars["CurrentGrossPriceAllLoans"]
-      if (true) /* Element Committed Loan Lock icon(Detail Screen) is visible */ {
-        vars["CommitmentOderAllLoans"] = await priceOfferedPage.Commitment_OrderDetails_Screen.textContent() || '';
-        // Write to test data profile: "Locked Loan" = "Yes"
-        // Write to test data profile: "Commitment Order" = vars["CommitmentOderAllLoans"]
-      } else {
-        // Write to test data profile: "Locked Loan" = "None"
-        // Write to test data profile: "Commitment Order" = "None"
-      }
-      vars["count"] = (parseFloat(String(vars["count"])) + parseFloat(String("1"))).toFixed(0);
+  log.tcStart(TC_ID, TC_TITLE);
+
+  try {
+
+    if (profile && profile.data) {
+      vars['BidReqId'] = profile.data[0]['RequestIDFromPRE_PR_1-1'];
+      log.info('BidReqId: ' + vars['BidReqId']);
     }
+    log.step('Login to Correspondent Portal');
+    try {
+      await stepGroups.stepGroup_Login_to_CORR_Portal(page, vars);
+      log.stepPass('Logged in to Correspondent Portal');
+    } catch (e) {
+      await log.stepFail(page, 'Failed to login to Correspondent Portal');
+      throw e;
+    }
+
+    log.step('Navigate to Price Offered List and open bid request');
+    try {
+      await correspondentPortalPage.Commitments_Side_Menu.click();
+      await correspondentPortalPage.Price_Offered_List_Dropdown.click();
+      await bidRequestsPage.Search_by_Bid_Request_ID_Field.fill(vars['BidReqId']);
+      await page.keyboard.press('Enter');
+      await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+      await priceOfferedPage.BidRequestIDPrice_Offered_New(vars['BidReqId']).click();
+      await priceOfferedPage.All_Loans_Tabprice_offered_screen.waitFor({ state: 'visible' });
+      await bidRequestDetailsPage.Last_Name_Sort_Button.click();
+      await priceOfferedPage.Last_Name_Down_ArrowDetails.waitFor({ state: 'visible' });
+      vars['TotalLoans'] = String(await priceOfferedPage.Total_LoansDetails_Screen.count());
+      log.info('TotalLoans: ' + vars['TotalLoans']);
+      log.stepPass('Opened bid request and sorted by last name. TotalLoans: ' + vars['TotalLoans']);
+    } catch (e) {
+      await log.stepFail(page, 'Failed to navigate to Price Offered or open bid: ' + vars['BidReqId']);
+      throw e;
+    }
+
+    log.step('Iterate through all loans and capture loan details, store to test data profile');
+    try {
+      vars['count'] = appconstants.ONE;
+      const ProfileName = 'Store All Loans Tab Data from Price Offered to Verify the Commitment List';
+      while (parseFloat(String(vars['count'])) <= parseFloat(String(vars['TotalLoans']))) {
+        log.info('Processing loan row: ' + vars['count']);
+        await commitmentDetailsPage.Bid_ReqID_TextPrice_Offered_Details.click();
+
+        vars['CorrLoanNumAllLoans'] = await priceOfferedPage.Corr_Loan_NumDetails_Screen(vars['count']).textContent() || '';
+        // Methods.trimtestdata(vars['CorrLoanNumAllLoans'], 'CorrLoanNumAllLoans');
+
+        vars['LastNameAllLoans'] = await priceOfferedPage.Last_NameDetails_Screen(vars['count']).textContent() || '';
+        // Methods.trimtestdata(vars['LastNameAllLoans'], 'LastNameAllLoans');
+
+        vars['LoanAmountAllLoans'] = await priceOfferedPage.Loan_AmountDetails_Screen(vars['count']).textContent() || '';
+        // Methods.trimtestdata(vars['LoanAmountAllLoans'], 'LoanAmountAllLoans');
+
+        vars['InterestRateAllLoans'] = await priceOfferedPage.Interest_rateDetails_Screen(vars['count']).textContent() || '';
+        // Methods.trimtestdata(vars['InterestRateAllLoans'], 'InterestRateAllLoans');
+
+        vars['ReferenceSecurityAllLoans'] = await priceOfferedPage.Reference_SecurityDetails_Screen(vars['count']).textContent() || '';
+        // Methods.trimtestdata(vars['ReferenceSecurityAllLoans'], 'ReferenceSecurityAllLoans');
+
+        vars['ReferenceSecurityPriceAllLoans'] = await priceOfferedPage.Reference_security_priceDetails_Screen(vars['count']).textContent() || '';
+        // Methods.trimtestdata(vars['ReferenceSecurityPriceAllLoans'], 'ReferenceSecurityPriceAllLoans');
+
+        vars['GrossPriceAllLoans'] = await priceOfferedPage.Gross_PriceDetails_Screen(vars['count']).textContent() || '';
+        // Methods.trimtestdata(vars['GrossPriceAllLoans'], 'GrossPriceAllLoans');
+
+        vars['HedgeRatioAllLoans'] = await priceOfferedPage.Hedge_RatioDetails_Screen(vars['count']).textContent() || '';
+        // Methods.trimtestdata(vars['HedgeRatioAllLoans'], 'HedgeRatioAllLoans');
+
+        vars['MarketAdjustmentAllLoans'] = await priceOfferedPage.Market_AdjustmentDetails_Screen(vars['count']).textContent() || '';
+        // Methods.trimtestdata(vars['MarketAdjustmentAllLoans'], 'MarketAdjustmentAllLoans');
+
+        vars['CurrentGrossPriceAllLoans'] = await priceOfferedPage.Current_Gross_PriceDetails_Screen(vars['count']).textContent() || '';
+        // Methods.trimtestdata(vars['CurrentGrossPriceAllLoans'], 'CurrentGrossPriceAllLoans');
+
+        log.info('Successfully stored the row data:' + vars['count']);
+
+        testDataManager.updatePartialProfileDataByDataIndex(ProfileName, {
+          'Corr Loan Num': vars['CorrLoanNumAllLoans'],
+          'Last Name': vars['LastNameAllLoans'],
+          'Loan Amount': vars['LoanAmountAllLoans'],
+          'Interest Rate': vars['InterestRateAllLoans'],
+          'Ref Sec Prod': vars['ReferenceSecurityAllLoans'],
+          'Ref Sec Price': vars['ReferenceSecurityPriceAllLoans'],
+          'Gross Price': vars['GrossPriceAllLoans'],
+          'Hedge Ratio': vars['HedgeRatioAllLoans'],
+          'Mark Adj': vars['MarketAdjustmentAllLoans'],
+          'Current Gross Price': vars['CurrentGrossPriceAllLoans'],
+        }, vars['count']);
+
+        // const isLocked = await priceOfferedPage.Committed_Loan_Lock_iconDetail_Screen(vars['CorrLoanNumAllLoans']).isVisible();
+        if (await priceOfferedPage.Committed_Loan_Lock_iconDetail_Screen(vars['CorrLoanNumAllLoans']).isVisible()) {
+          vars['CommitmentOderAllLoans'] = await priceOfferedPage.Commitment_OrderDetails_Screen(vars['CorrLoanNumAllLoans']).textContent() || '';
+          Methods.trimtestdata(vars['CommitmentOderAllLoans'], 'CommitmentOderAllLoans');
+          log.info('Loan is locked CommitmentOrder: ' + vars['CommitmentOderAllLoans']);
+          testDataManager.updatePartialProfileDataByDataIndex(ProfileName, {
+            'Locked Loan': 'Yes',
+            'Commitment Order': vars['CommitmentOderAllLoans'],
+          }, vars['count']);
+        } else {
+          log.info('Loan is not locked');
+          testDataManager.updatePartialProfileDataByDataIndex(ProfileName, {
+            'Locked Loan': 'None',
+            'Commitment Order': 'None',
+          }, vars['count']);
+        }
+
+        Methods.MathematicalOperation(vars['count'], '+', 1, 'count');
+      }
+      log.stepPass('loan details captured and stored to test data profile for row:' + vars['count']);
+    } catch (e) {
+      await log.stepFail(page, 'Failed to capture loan details at row: ' + vars['count']);
+      throw e;
+    }
+
+    log.tcEnd('PASS');
+
+  } catch (e) {
+    await log.captureOnFailure(page, TC_ID, e);
+    log.tcEnd('FAIL');
+    throw e;
   }
 }
