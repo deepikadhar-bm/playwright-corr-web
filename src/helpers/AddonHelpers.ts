@@ -1186,4 +1186,178 @@ verifyTestdataIgnoreCase(
     this.vars[targetVar] = result;
     log.info(`generateRandomString | Length: ${length} | Result: "${result}" | StoredIn: ${targetVar}`);
   }
+
+/**
+ * Gets a CSS property value of an element and stores it into a target variable.
+ *
+ * @param locator    - Playwright Locator of the element
+ * @param property   - CSS property name (e.g. 'color', 'background-color', 'font-size')
+ * @param targetVar  - Variable name to store the result in vars
+ *
+ * Usage:
+ *   await Methods.getCSSProperty(priceOfferedPage.Duplicate_Loantext_box_popup, 'color', 'ColorValueDuplicateLoan');
+ *   log.info('ColorValueDuplicateLoan: ' + vars['ColorValueDuplicateLoan']);
+ */
+async getCSSProperty(
+  locator: Locator,
+  property: string,
+  targetVar: string
+): Promise<void> {
+  const METHOD = 'getCSSProperty';
+
+  if (!property || property.trim() === '') {
+    log.fail(`[${METHOD}] CSS property name is empty or blank | Error: Empty property`);
+    throw new Error(`Empty CSS property name`);
+  }
+
+  if (!targetVar || targetVar.trim() === '') {
+    log.fail(`[${METHOD}] Target variable name is empty or blank | Error: Empty targetVar`);
+    throw new Error(`Empty target variable name`);
+  }
+
+  const value: string = await locator.evaluate(
+    (el: HTMLElement, prop: string) => window.getComputedStyle(el).getPropertyValue(prop),
+    property
+  );
+
+  this.vars[targetVar] = value.trim();
+  log.pass(`[${METHOD}] CSS property "${property}" = "${this.vars[targetVar]}" stored in "${targetVar}"`);
+}
+/**
+ * Calculates the time difference between two timestamps and stores the result in a target variable.
+ *
+ * @param timestamp1  - First timestamp string (e.g. vars['CurrentTime'])
+ * @param timestamp2  - Second timestamp string (e.g. vars['CommitTime'])
+ * @param unit        - Unit of result: 'HOURS' | 'MINUTES' | 'SECONDS' | 'HH:MM:SS' | 'HH:MM'
+ * @param targetVar   - Variable name to store the result in vars
+ *
+ * Usage:
+ *   Methods.calculateTimeDifference(vars['CurrentTime'], vars['CommitTime'], 'HOURS', 'TimeDiff');
+ *   Methods.calculateTimeDifference(vars['CurrentTime'], vars['CommitTime'], 'MINUTES', 'TimeDiff');
+ *   Methods.calculateTimeDifference(vars['CurrentTime'], vars['CommitTime'], 'HH:MM:SS', 'TimeDiff');
+ *   Methods.calculateTimeDifference(vars['CurrentTime'], vars['CommitTime'], 'HH:MM', 'TimeDiff');
+ */
+calculateTimeDifference(
+  timestamp1: string,
+  timestamp2: string,
+  unit: 'HOURS' | 'MINUTES' | 'SECONDS' | 'HH:MM:SS' | 'HH:MM',
+  targetVar: string
+): void {
+  const METHOD = 'calculateTimeDifference';
+
+  if (!timestamp1 || timestamp1.trim() === '') {
+    log.fail(`[${METHOD}] timestamp1 is empty or blank | Error: Empty timestamp1`);
+    throw new Error(`Empty timestamp1`);
+  }
+
+  if (!timestamp2 || timestamp2.trim() === '') {
+    log.fail(`[${METHOD}] timestamp2 is empty or blank | Error: Empty timestamp2`);
+    throw new Error(`Empty timestamp2`);
+  }
+
+  if (!targetVar || targetVar.trim() === '') {
+    log.fail(`[${METHOD}] Target variable name is empty or blank | Error: Empty targetVar`);
+    throw new Error(`Empty target variable name`);
+  }
+
+  const date1 = new Date(timestamp1).getTime();
+  const date2 = new Date(timestamp2).getTime();
+
+  if (isNaN(date1)) {
+    log.fail(`[${METHOD}] timestamp1 "${timestamp1}" is not a valid date`);
+    throw new Error(`Invalid timestamp1: "${timestamp1}"`);
+  }
+
+  if (isNaN(date2)) {
+    log.fail(`[${METHOD}] timestamp2 "${timestamp2}" is not a valid date`);
+    throw new Error(`Invalid timestamp2: "${timestamp2}"`);
+  }
+
+  const diffMs   = Math.abs(date1 - date2);
+  const diffSecs = Math.floor(diffMs / 1000);
+  const diffMins = Math.floor(diffMs / (1000 * 60));
+  const diffHrs  = Math.floor(diffMs / (1000 * 60 * 60));
+
+  let result: string;
+
+  switch (unit) {
+    case 'HOURS':
+      result = String(diffHrs);
+      break;
+    case 'MINUTES':
+      result = String(diffMins);
+      break;
+    case 'SECONDS':
+      result = String(diffSecs);
+      break;
+    case 'HH:MM:SS': {
+      const hh = String(Math.floor(diffMs / (1000 * 60 * 60))).padStart(2, '0');
+      const mm = String(Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60))).padStart(2, '0');
+      const ss = String(Math.floor((diffMs % (1000 * 60)) / 1000)).padStart(2, '0');
+      result = `${hh}:${mm}:${ss}`;
+      break;
+    }
+    case 'HH:MM': {
+      const hh = String(Math.floor(diffMs / (1000 * 60 * 60))).padStart(2, '0');
+      const mm = String(Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60))).padStart(2, '0');
+      result = `${hh}:${mm}`;
+      break;
+    }
+    default:
+      log.fail(`[${METHOD}] Invalid unit "${unit}". Must be HOURS | MINUTES | SECONDS | HH:MM:SS | HH:MM`);
+      throw new Error(`Invalid unit: "${unit}"`);
+  }
+
+  this.vars[targetVar] = result;
+  log.pass(`[${METHOD}] Time difference between "${timestamp1}" and "${timestamp2}" in ${unit} = "${result}" stored in "${targetVar}"`);
+}
+/**
+ * Generates a random integer between min and max (inclusive) and stores in targetVar.
+ *
+ * @param min        - Minimum value (inclusive)
+ * @param max        - Maximum value (inclusive)
+ * @param targetVar  - Variable name to store the result in vars
+ *
+ * Usage:
+ *   Methods.generateRandomInteger('3', '6', 'RandomInteger');
+ *   // vars['RandomInteger'] could be '3', '4', '5', or '6'
+ *
+ *   Methods.generateRandomInteger('1', '100', 'RandomNumber');
+ *   // vars['RandomNumber'] could be any integer from 1 to 100
+ */
+generateRandomInteger(
+  min: string | number,
+  max: string | number,
+  targetVar: string
+): void {
+  const METHOD = 'generateRandomInteger';
+
+  const minVal = typeof min === 'string' ? parseInt(min, 10) : min;
+  const maxVal = typeof max === 'string' ? parseInt(max, 10) : max;
+
+  if (isNaN(minVal)) {
+    log.info(`[${METHOD}] Min value "${min}" is not a valid integer`);
+    throw new Error(`Invalid min value: "${min}"`);
+  }
+
+  if (isNaN(maxVal)) {
+    log.info(`[${METHOD}] Max value "${max}" is not a valid integer`);
+    throw new Error(`Invalid max value: "${max}"`);
+  }
+
+  if (minVal > maxVal) {
+    log.info(`[${METHOD}] Min (${minVal}) must be less than or equal to Max (${maxVal})`);
+    throw new Error(`Min (${minVal}) is greater than Max (${maxVal})`);
+  }
+
+  if (!targetVar || targetVar.trim() === '') {
+    log.info(`[${METHOD}] Target variable name is empty or blank`);
+    throw new Error(`Empty target variable name`);
+  }
+
+  const result = Math.floor(Math.random() * (maxVal - minVal + 1)) + minVal;
+  this.vars[targetVar] = String(result);
+
+  log.info(`[${METHOD}] Random integer between ${minVal} and ${maxVal} = "${result}" stored in "${targetVar}"`);
+}
 }
