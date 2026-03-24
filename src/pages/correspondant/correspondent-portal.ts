@@ -1542,12 +1542,12 @@ export class CorrespondentPortalPage {
     return this.page.locator("//span[text()[normalize-space() = \"Queued For: 07/30/2025 08:09 AM ET\"]]");
   }
 
-  get Random_BidRequest(): Locator {
-    return this.page.locator("(//td[@data-title=\"Bid Req. ID\"]//button)[$|RandomNumber|]");
+  Random_BidRequest(RandomNumber : String): Locator {
+    return this.page.locator(`(//td[@data-title=\"Bid Req. ID\"]//button)[${RandomNumber}]`);
   }
 
-  get Random_BidRequest_Checkbox(): Locator {
-    return this.page.locator("(//tbody//input[@type=\"checkbox\"])[$|RandomNumber|]");
+  Random_BidRequest_Checkbox(RandomNumber : String): Locator {
+    return this.page.locator(`(//tbody//input[@type=\"checkbox\"])[${RandomNumber}]`);
   }
 
   get ReSubmit_For_Pricing(): Locator {

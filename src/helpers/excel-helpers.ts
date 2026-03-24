@@ -372,6 +372,41 @@ export function getRowCount(filePath: string, sheetName?: string): number {
   return dataRows.length;
 }
 
+/**
+ * Returns the total number of columns (headers) in the sheet.
+ *
+ * @example
+ * const count = getColumnCount(FILE, 'Orders');
+ * // 5
+ */
+export function getColumnCount(
+  filePath: string,
+  sheetIndex: string | number = 0
+): number {
+  const resolved = path.resolve(filePath);
+  if (!fs.existsSync(resolved)) {
+    throw new Error(`Excel file not found: ${resolved}`);
+  }
+
+  const sheetIdx = typeof sheetIndex === 'string' ? parseInt(sheetIndex, 10) : sheetIndex;
+  if (isNaN(sheetIdx)) throw new Error(`Sheet index "${sheetIndex}" is not a valid number`);
+
+  const wb = XLSX.readFile(resolved, { cellDates: true, cellNF: true });
+
+  if (sheetIdx < 0 || sheetIdx >= wb.SheetNames.length) {
+    throw new Error(`Sheet index ${sheetIdx} out of range. Available sheets: ${wb.SheetNames.length}`);
+  }
+
+  const sheetName = wb.SheetNames[sheetIdx];
+  const sheet = wb.Sheets[sheetName];
+
+  const rows: any[][] = XLSX.utils.sheet_to_json(sheet, {
+    header: 1,
+    defval: null,
+  });
+
+  return rows[0] ? (rows[0] as any[]).filter(c => c !== null).length : 0;
+}
 // ─────────────────────────────────────────────────────────────────────────────
 
 /**
@@ -817,7 +852,8 @@ export function switchToSheetByIndex(filePath: string, index: number): ExcelSess
 
 /**
  * Switches to a sheet by name and returns a bound ExcelSession.
- * Matching is case-insensitive. All session methods target this sheet automatically.
+ * Matching is case-insensitive. All session metho
+ * ds target this sheet automatically.
  *
  * @param filePath   Path to the Excel file.
  * @param name       Sheet name (case-insensitive).

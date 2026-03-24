@@ -1011,6 +1011,8 @@ verifyTestdataIgnoreCase(
   ): void {
     const METHOD = 'verifyDateStringMonthMatchesExpectedMonth';
     try {
+      if (!uploadedDateText)
+        throw new Error(`Date string is null, undefined, or empty`);
       const uploadedMonth = this.getMonthFromDate(uploadedDateText.trim());
       if (uploadedMonth !== expectedMonth)
         throw new Error(`Month extracted from date "${uploadedDateText}" is "${uploadedMonth}" but expected "${expectedMonth}"`);
