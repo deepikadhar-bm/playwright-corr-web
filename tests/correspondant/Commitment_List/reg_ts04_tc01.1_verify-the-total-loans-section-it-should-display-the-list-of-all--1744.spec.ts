@@ -1,14 +1,18 @@
-// [PREREQ-APPLIED]
-// [POM-APPLIED]
 import { test, expect } from '@playwright/test';
-import path from 'path';
-import * as stepGroups from '../../../src/helpers/step-groups';
 import { BidRequestDetailsPage } from '../../../src/pages/correspondant/bid-request-details';
 import { CommitmentListPage } from '../../../src/pages/correspondant/commitment-list';
 import { CorrespondentPortalPage } from '../../../src/pages/correspondant/correspondent-portal';
 import { PriceOfferedPage } from '../../../src/pages/correspondant/price-offered';
 import { SpinnerPage } from '../../../src/pages/correspondant/spinner';
 import { runPrereq_1739 } from '../../../src/helpers/prereqs/prereq-1739';
+import { AddonHelpers } from '@helpers/AddonHelpers';
+import { Logger as log } from '@helpers/log-helper';
+import { testDataManager } from 'testdata/TestDataManager';
+import { APP_CONSTANTS as appconstants } from '../../../src/constants/app-constants';
+
+
+const TC_ID = 'REG_TS04_TC01.1';
+const TC_TITLE = 'Verify the Total loans section, It should display the list of all the loans present in Price offered module';
 
 test.describe('Commitment List - TS_2', () => {
   let vars: Record<string, string> = {};
@@ -17,6 +21,7 @@ test.describe('Commitment List - TS_2', () => {
   let correspondentPortalPage: CorrespondentPortalPage;
   let priceOfferedPage: PriceOfferedPage;
   let spinnerPage: SpinnerPage;
+  let Methods: AddonHelpers;
 
   test.beforeEach(async ({ page }) => {
     vars = {};
@@ -26,59 +31,100 @@ test.describe('Commitment List - TS_2', () => {
     correspondentPortalPage = new CorrespondentPortalPage(page);
     priceOfferedPage = new PriceOfferedPage(page);
     spinnerPage = new SpinnerPage(page);
+    Methods = new AddonHelpers(page, vars);
   });
 
-  test('REG_TS04_TC01.1_Verify the Total loans section, It should display the list of all the loans present in Price offered module', async ({ page }) => {
+  const profileName = 'Store All Loans Tab Data from Price Offered to Verify the Commitment List';
+  const profile = testDataManager.getProfileByName(profileName);
 
-    const testData: Record<string, string> = {
-  "Locked Loan": "",
-  "Commitment Order": "",
-  "Corr Loan Num": "",
-  "Last Name": " LN_Deepika_JULY_16_11 ",
-  "Loan Amount": " $150,023 ",
-  "Interest Rate": "",
-  "Ref Sec Prod": " FN30 ",
-  "Ref Sec Price": " 117.000 ",
-  "Gross Price": " 125.250 ",
-  "Hedge Ratio": " 1.550 ",
-  "Mark Adj": " -36.619 ",
-  "Current Gross Price": "",
-  "CommitOrder": "1",
-  "Curr Gross": " 88.631 ",
-  "Corr Loan": "TestSigma_19-02-2026_SC1_dz_818",
-  "Int Rate": " 6.500% "
-} // Profile: "All Loans Tab - Committed Loans Tab(Price offered)", row 0;
+  test(`${TC_ID} - ${TC_TITLE}`, async ({ page }) => {
+    log.tcStart(TC_ID, TC_TITLE);
 
-    await correspondentPortalPage.Commitments_Side_Menu.click();
-    await commitmentListPage.Committed_List_Dropdown.click();
-    await priceOfferedPage.Search_Dropdown.click();
-    await priceOfferedPage.Search_Dropdown.fill(vars["BidReqId"]);
-    await priceOfferedPage.Bid_Request_ID_DropdownCommitment_List_Page.click();
-    await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-    await commitmentListPage.Commitment_IDCommitment_List_Page.click();
-    await commitmentListPage.Total_LoansCommitment_List.waitFor({ state: 'visible' });
-    await commitmentListPage.Total_LoansCommitment_List.click();
-    await bidRequestDetailsPage.Last_Name_Sort_Button.waitFor({ state: 'visible' });
-    await bidRequestDetailsPage.Last_Name_Sort_Button.click();
-    await priceOfferedPage.Last_Name_Down_ArrowDetails.waitFor({ state: 'visible' });
-    vars["TotalLoans"] = String(await priceOfferedPage.Total_LoansDetails_Screen.count());
-    vars["count"] = "1";
-    for (let dataIdx = -1; dataIdx <= parseInt(vars["TotalLoans"]); dataIdx++) {
-      if (String(testData["Locked Loan"]) === String("Yes")) {
-        await expect(commitmentListPage.Committed_Loan_Locked_iconCommitment_List).toBeVisible();
-        await expect(commitmentListPage.Commitment_OrderCommitment_List_Details).toContainText(testData["Commitment Order"]);
+    try {
+
+      log.step('Navigate to Commitment List and open Total Loans tab');
+      try {
+        await correspondentPortalPage.Commitments_Side_Menu.click();
+        await commitmentListPage.Committed_List_Dropdown.click();
+        await priceOfferedPage.Search_Dropdown.type(vars['BidReqId']);
+        await priceOfferedPage.Search_Dropdown.click();
+        await priceOfferedPage.Bid_Request_ID_DropdownCommitment_List_Page.click();
+        await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+        await commitmentListPage.Commitment_IDCommitment_List_Page(vars['BidReqId']).first().click();
+        await commitmentListPage.Total_LoansCommitment_List.waitFor({ state: 'visible' });
+        await commitmentListPage.Total_LoansCommitment_List.click();
+        await bidRequestDetailsPage.Last_Name_Sort_Button.waitFor({ state: 'visible' });
+        await bidRequestDetailsPage.Last_Name_Sort_Button.click();
+        await priceOfferedPage.Last_Name_Down_ArrowDetails.waitFor({ state: 'visible' });
+        vars['TotalLoans'] = String(await priceOfferedPage.Total_LoansDetails_Screen.count());
+        log.info('TotalLoans: ' + vars['TotalLoans']);
+        log.stepPass('Navigated to Total Loans tab for BidReqId: ' + vars['BidReqId'] + ' | TotalLoans: ' + vars['TotalLoans']);
+      } catch (e) {
+        await log.stepFail(page, 'Failed to navigate to Commitment List or open Total Loans tab');
+        throw e;
       }
-      await expect(priceOfferedPage.Corr_Loan_NumDetails_Screen).toContainText(testData["Corr Loan Num"]);
-      await expect(priceOfferedPage.Last_NameDetails_Screen).toContainText(testData["Last Name"]);
-      await expect(priceOfferedPage.Loan_AmountDetails_Screen).toContainText(testData["Loan Amount"]);
-      await expect(priceOfferedPage.Interest_rateDetails_Screen).toContainText(testData["Interest Rate"]);
-      await expect(priceOfferedPage.Reference_SecurityDetails_Screen).toContainText(testData["Ref Sec Prod"]);
-      await expect(priceOfferedPage.Reference_security_priceDetails_Screen).toContainText(testData["Ref Sec Price"]);
-      await expect(priceOfferedPage.Gross_PriceDetails_Screen).toContainText(testData["Gross Price"]);
-      await expect(priceOfferedPage.Hedge_RatioDetails_Screen).toContainText(testData["Hedge Ratio"]);
-      await expect(priceOfferedPage.Market_AdjustmentDetails_Screen).toContainText(testData["Mark Adj"]);
-      await expect(priceOfferedPage.Current_Gross_PriceDetails_Screen).toContainText(testData["Current Gross Price"]);
-      vars["count"] = (parseFloat(String(vars["count"])) + parseFloat(String("1"))).toFixed(0);
+
+      log.step('Verifying loan details against test data for each row');
+      try {
+        vars['count'] = appconstants.ONE;
+        const dataList = profile?.data as Record<string, any>[];
+        for (let i = 0; i < Number(vars['TotalLoans']); i++) {
+          log.info('verification of row data:' + vars['count'])
+          vars['CorrLoanNum'] = dataList[i]['Corr Loan Num'];
+          // log.info('Corr Loan Num'+':'+vars['count']+'-' +vars['CorrLoanNum']);
+          vars['LockedLoan'] = dataList[i]['Locked Loan'];
+          // log.info('Locked Loan status' +':'+vars['count']+'-'+ vars['LockedLoan']);
+          vars['CommitmentOrder'] = dataList[i]['Commitment Order'];
+          // log.info('CommitmentOrder' +':'+vars['count']+'-' + vars['CommitmentOrder']);
+          vars['LastName'] = dataList[i]['Last Name'];
+          // log.info('Last Name'+':'+vars['count']+ '-' + vars['LastName']);
+          vars['LoanAmount'] = dataList[i]['Loan Amount'];
+          // log.info('Loan Amount'  +':'+vars['count']+'-'+ vars['LoanAmount']);
+          vars['InterestRate'] = dataList[i]['Interest Rate'];
+          // log.info('Interest Rate'  +':'+vars['count']+'-' + vars['InterestRate']);
+          vars['RefSecProd'] = dataList[i]['Ref Sec Prod'];
+          // log.info('Ref Sec Prod '  +':'+vars['count']+'-'+ vars['RefSecProd']);
+          vars['RefSecPrice'] = dataList[i]['Ref Sec Price'];
+          // log.info('Ref Sec Price ' +':'+vars['count']+'-' + vars['RefSecPrice']);
+          vars['GrossPrice'] = dataList[i]['Gross Price'];
+          // log.info('Gross Price'  +':'+vars['count']+'-'+ vars['GrossPrice']);
+          vars['HedgeRatio'] = dataList[i]['Hedge Ratio'];
+          // log.info('Hedge Ratio'  +':'+vars['count']+'-'+ vars['HedgeRatio']);
+          vars['MarkAdj'] = dataList[i]['Mark Adj'];
+          // log.info('Mark Adj'  +':'+vars['count']+'-'+ vars['MarkAdj']);
+          vars['CurrentGrossPrice'] = dataList[i]['Current Gross Price'];
+          // log.info('Current Gross Price'  +':'+vars['count']+'-'+ vars['CurrentGrossPrice']);
+          if (String(vars['LockedLoan']) === 'Yes') {
+            await expect(commitmentListPage.Committed_Loan_Locked_iconCommitment_List(vars['CorrLoanNum'])).toBeVisible();
+            await expect(commitmentListPage.Commitment_OrderCommitment_List_Details(vars['CorrLoanNum'])).toContainText(vars['CommitmentOrder']);
+            log.info('Locked loan verified — CommitmentOrder: ' + vars['CommitmentOrder']);
+          }
+
+          await expect(priceOfferedPage.Corr_Loan_NumDetails_Screen(vars['count'])).toContainText(vars['CorrLoanNum']);
+          await expect(priceOfferedPage.Last_NameDetails_Screen(vars['count'])).toContainText(vars['LastName']);
+          await expect(priceOfferedPage.Loan_AmountDetails_Screen(vars['count'])).toContainText(vars['LoanAmount']);
+          await expect(priceOfferedPage.Interest_rateDetails_Screen(vars['count'])).toContainText(vars['InterestRate']);
+          await expect(priceOfferedPage.Reference_SecurityDetails_Screen(vars['count'])).toContainText(vars['RefSecProd']);
+          await expect(priceOfferedPage.Reference_security_priceDetails_Screen(vars['count'])).toContainText(vars['RefSecPrice']);
+          await expect(priceOfferedPage.Gross_PriceDetails_Screen(vars['count'])).toContainText(vars['GrossPrice']);
+          await expect(priceOfferedPage.Hedge_RatioDetails_Screen(vars['count'])).toContainText(vars['HedgeRatio']);
+          await expect(priceOfferedPage.Market_AdjustmentDetails_Screen(vars['count'])).toContainText(vars['MarkAdj']);
+          await expect(priceOfferedPage.Current_Gross_PriceDetails_Screen(vars['count'])).toContainText(vars['CurrentGrossPrice']);
+          Methods.MathematicalOperation(vars['count'], '+', 1, 'count');
+          log.info('Total loans data verified successfully row:' + vars['count']);
+        }
+        log.stepPass('All loan details verified successfully against test data');
+      } catch (e) {
+        await log.stepFail(page, 'Total loans data verification failed row: ' + vars['count']);
+        throw e;
+      }
+
+      log.tcEnd('PASS');
+
+    } catch (e) {
+      await log.captureOnFailure(page, TC_ID, e);
+      log.tcEnd('FAIL');
+      throw e;
     }
   });
 });

@@ -197,8 +197,8 @@ Column_Count_UICommitted_Loans1(count: string): Locator {
     return this.page.locator(`//div[normalize-space(text())="${CommitmentID}"]//preceding-sibling::div[contains(text(),"Commitment Order")]`);
   }
 
-  get Commitment_OrderCommitment_List_Details(): Locator {
-    return this.page.locator("//button[text()=\"@|Corr Loan Num|\"]//ancestor::tr//div[@class=\"commit-order\"]");
+  Commitment_OrderCommitment_List_Details(CorrLoanNum:string): Locator {
+    return this.page.locator(`//button[text()=\"${CorrLoanNum}\"]//ancestor::tr//div[@class=\"commit-order\"]`);
   }
 
   get Commitment_OrderCommitment_List_New(): Locator {
@@ -253,8 +253,8 @@ Column_Count_UICommitted_Loans1(count: string): Locator {
     return this.page.locator("//button[text()=\"$|CommittedCorrLoan|\"]//ancestor::tr//div[@class=\"commit-order\"]");
   }
 
-  get Committed_Loan_Locked_iconCommitment_List(): Locator {
-    return this.page.locator("//button[text()=\"@|Corr Loan Num|\"]//ancestor::tr//span[contains(@class,\"fa fas fa-lock lock-icon\")]");
+  Committed_Loan_Locked_iconCommitment_List(CorrLoanNum:string): Locator {
+    return this.page.locator(`//button[text()=\"${CorrLoanNum}\"]//ancestor::tr//span[contains(@class,\"fa fas fa-lock lock-icon\")]`);
   }
 
    Committed_Loan_NumCommitment_List(CommitID:string,CommittedCorrLoan:string): Locator {
