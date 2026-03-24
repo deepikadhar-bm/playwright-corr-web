@@ -9,6 +9,10 @@ import { CorrespondentPortalPage } from '../../../src/pages/correspondant/corres
 import { PriceOfferedPage } from '../../../src/pages/correspondant/price-offered';
 import { SpinnerPage } from '../../../src/pages/correspondant/spinner';
 import * as excelHelper from '../../../src/helpers/excel-helpers';
+import { AddonHelpers } from '@helpers/AddonHelpers';
+import { testDataManager } from 'testdata/TestDataManager';
+import { Logger as log } from '../../../src/helpers/log-helper';
+import { ENV } from '../../../src/config/environments';
 
 test.describe('REG_TC_Bid_Requests', () => {
   let vars: Record<string, string> = {};
@@ -30,132 +34,175 @@ test.describe('REG_TC_Bid_Requests', () => {
   });
 
   test('REG_TS32_TC01_Verify Export Functionality by selecting all records', async ({ page }) => {
-    // Set up download handler
-    page.on('download', async (download) => {
+
+    // ── Step 1: Load Credentials and Test Data ───────────────────────────
+    log.step('Loading credentials and test data');
+    try {
+      const profileName = 'Bid Requests';
+      const profile = testDataManager.getProfileByName(profileName);
+      if (profile && profile.data) {
+        const ExecutionTypeHeader = profile.data[0]['Execution Type Header'];
+        vars["Execution Type Header"] = ExecutionTypeHeader;
+        const CCodeHeader = profile.data[0]['CCode Header'];
+        vars["CCode Header"] = CCodeHeader;
+        const BidRequestIDHeader = profile.data[0]['Bid Request ID Header'];
+        vars["Bid Request ID Header"] = BidRequestIDHeader;
+      }
+      const credentials = ENV.getCredentials('internal');
+      vars["Username"] = credentials.username;
+      vars["Password"] = credentials.password;
+      log.stepPass('Credentials and test data loaded successfully');
+    } catch (e) {
+      await log.stepFail(page, 'Loading credentials and test data failed');
+      throw e;
+    }
+
+    // ── Step 2: Set up download handler ──────────────────────────────────
+    log.step('Setting up download handler');
+    try {
+      page.on('download', async (download) => {
+        const filePath = path.join('test-results', 'downloads', download.suggestedFilename());
+        await download.saveAs(filePath);
+        vars['_lastDownloadPath'] = filePath;
+      });
+      log.stepPass('Download handler set up successfully');
+    } catch (e) {
+      await log.stepFail(page, 'Setting up download handler failed');
+      throw e;
+    }
+
+    // ── Step 3: Login to Correspondent Portal ────────────────────────────
+    log.step('Logging in to Correspondent Portal');
+    try {
+      await stepGroups.stepGroup_Login_to_CORR_Portal(page, vars);
+      await expect(correspondentPortalPage.Bid_Requests).toBeVisible();
+      log.stepPass('Logged in to Correspondent Portal successfully');
+    } catch (e) {
+      await log.stepFail(page, 'Login to Correspondent Portal failed');
+      throw e;
+    }
+
+    // ── Step 4: Navigate to Bid Requests and apply filters ───────────────
+    log.step('Navigating to Bid Requests and applying Last One Month filter');
+    try {
+      await correspondentPortalPage.Bid_Requests.click();
+      await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+      await priceOfferedPage.Filter_Dropdown1.click();
+      await correspondentPortalPage.Select_Date_Range_Dropdown.click();
+      await correspondentPortalPage.Last_One_Month_Button.click();
+      vars["LastMonth"] = await correspondentPortalPage.Last_One_Month_Button.textContent() || '';
+      await expect(correspondentPortalPage.Date_Input_Box).toContainText(vars["LastMonth"]);
+      await applyFiltersButtonPage.Apply_Filters_Button.click();
+      await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+      log.stepPass(`Navigated to Bid Requests and applied filter: "${vars["LastMonth"]}"`);
+    } catch (e) {
+      await log.stepFail(page, 'Navigating to Bid Requests and applying filter failed');
+      throw e;
+    }
+
+    // ── Step 5: Select all records ───────────────────────────────────────
+    log.step('Selecting all records');
+    try {
+      await expect(correspondentPortalPage.Export_Selected_Button_Bid_Request).toBeVisible();
+      await priceOfferedPage.Select_All_Loan_Num.check();
+      await expect(priceOfferedPage.Select_All_Loan_Num).toBeChecked();
+      await expect(correspondentPortalPage.First_Checkbox_Bid_Request).toBeChecked();
+      log.stepPass('All records selected successfully');
+    } catch (e) {
+      await log.stepFail(page, 'Selecting all records failed');
+      throw e;
+    }
+
+    // ── Step 6: Capture UI record count and export ───────────────────────
+    log.step('Capturing UI record count and triggering export');
+    try {
+      vars["CountOfRequestsUI"] = await correspondentPortalPage.Export_Records_Count.textContent() || '';
+      //vars["CountOfRequestsUI"] = String(vars["CountOfRequestsUI"]).trim().substring(1, String(vars["CountOfRequestsUI"]).length-1);
+      vars["CountOfRequestsUI"] = String(vars["CountOfRequestsUI"]).trim();                                                                          // remove whitespace first
+      vars["CountOfRequestsUI"] = String(vars["CountOfRequestsUI"]).substring(1, String(vars["CountOfRequestsUI"]).length - 1);  // then remove brackets
+
+log.step(`CountOfRequestsUI after cleanup: "${vars["CountOfRequestsUI"]}"`);
+     // vars["CountOfRequestsUI"] = String(vars["CountOfRequestsUI"]).substring(1, String(vars["CountOfRequestsUI"]).length - 1);
+      await expect(correspondentPortalPage.Export_Selected_Button_Bid_Request).toBeEnabled();
+      await correspondentPortalPage.Export_Selected_Button_Bid_Request.click();
+      await page.waitForTimeout(2000);
+      //vars["File"] = vars['_lastDownloadPath'] || '';
+      await correspondentPortalPage.Export_Selected_1_Button.waitFor({ state: 'visible' });
+      const [download] = await Promise.all([
+        page.waitForEvent('download'),
+        correspondentPortalPage.Export_Selected_1_Button.click(),
+      ]);
       const filePath = path.join('test-results', 'downloads', download.suggestedFilename());
       await download.saveAs(filePath);
       vars['_lastDownloadPath'] = filePath;
-    });
-
-    const testData: Record<string, string> = {
-  "Execution Type Header": "Exe.Type",
-  "CCode Header": "Ccode",
-  "Bid Request ID Header": "BidRequestID",
-  "Resubmit Pricing Error Standard1": "( nmlsId = 2767 )",
-  "Company Name.": "Wik1C BeuLD MoJbr CoEmy LLpoJ  - A2964",
-  "BidMappingID": "Deepika Aug1",
-  "Geo Coding Reducer flow(Errors Column)": "Geo Coding error",
-  "Bid Valid File(Error Description)": "No Errors",
-  "Company Name New": "American Pacific  - A4257",
-  "Email Success Message": "Email sent successfuly",
-  "Loan Field Validation(Number)": "Deepika_June_invaliddatafield",
-  "Bid Valid File(Loan Status)": "Success",
-  "Resubmit Pricing Error Chase Direct": "Execution type 'Chase Direct' not permitted for client",
-  "Geo Coding happy flow(Error Description)": "No Errors",
-  "Bid Enum Check(Loan Status)": "Error",
-  "Pos Check(Errors Column)": "No eligibility results",
-  "Eligibility Check(LoanStatus)": "Error",
-  "Geo Coding Reducer flow(Error Description))": "Geocode unknown",
-  "Selected Company Count": "2",
-  "Geo Coding happy flow(Loan Status)": "Success",
-  "Geo Coding happy flow (Errors Column)": "No errors",
-  "Resubmit Pricing Error Standard": "Execution type 'Standard' not permitted for client",
-  "MissingHeaders_ErrorMessage1": "Bid tape is missing values for following headers: Loan Purpose.",
-  "Price Offered": "Price Offered",
-  "Geo Coding Failed flow(Errors))": "Geo Coding error",
-  "Ccode for freedom": "A4187",
-  "MissingHeaders_ErrorMessage2": "Please verify the correct Map ID is selected or tape is formatted correctly.",
-  "Geo Coding Reducer flow(Loan Status)": "Success",
-  "Eligibility Check(Error Description)": "Minimum loan amount $5,000",
-  "Stored_Text1": "10:10 AM",
-  "Status Name": "Committed",
-  "Bid Valid File(Error Column)": "No errors",
-  "CompanyName3": "American Pacific - A4257",
-  "Assigned Companies1": "Wik1C BeuLD MoJbr CoEmy LLpoJ",
-  "SpecialCharacter_ErrorHeader": "EXTRA_SPACE_FOUND",
-  "Geo Coding Failed flow(Loan Status)": "Error",
-  "Pos Check(Loan Status)": "Error",
-  "Loan Field Validation(Status)": "Error",
-  "Eligibility Check(Error Column)": "Minimum Loan Amount $5,000",
-  "Loan Field Validation(Error description)": "Loan value cannot be blank or zero for 'loan purpose'",
-  "Last One Month": "Last One Month",
-  "Resubmit Pricing Error Standard and Chase": "Execution type 'Standard' not permitted for client",
-  "Reason For Cancellation": "To be Cancelled",
-  "Reason For Deletion": "To be deleted",
-  "Loan Field Validation(Error)": "Invalid Loan Data",
-  "DeletingMessage for File": "You have selected to delete this file. Do you want to proceed?",
-  "Resubmit Pricing Error Standard and Chase1": "( nmlsId = 2767 )",
-  "Creating Batch Success Message": "Batch timing has been created successfull",
-  "Bid Enum Check(Errors Column)": "Secondary Residence, Investment (NOO)]. Path: search.criteria.propertyUse is missing value",
-  "Status Count 1": "3",
-  "Display_Text1": "Delete Batch Time",
-  "CompanyName(CustomerPermissions)": "Freedom - A4187",
-  "New Company Name": "Home Sweet Mortgage",
-  "FileRow": "4",
-  "SpecialCharacter_ErrorMessage": "Found extra space(s) in row 3 for 'Correspondent Loan Number'. Please modify and retry upload.",
-  "Display_Text2": "Delete Batch",
-  "Email Message Verification": "Do you want to resend Bid Offer email?",
-  "BidMappingIDNew": "Default Map Internal",
-  "Geo Coding Failed flow(Error Description)": "Geocode unknown, no eligibility results: cannot find zip detail information for : 09999",
-  "Pos Check(Error Description)": "Not approved for [nonagency], no eligibility results",
-  "MissingHeaders_ErrorHeader": "Missing Headers",
-  "Search Field Company Name": "Wik1C",
-  "DuplicateLoans_HeaderMessage": "Duplicate Loans",
-  "Company Name": "Freedom - A4187",
-  "Stored_Text": "09:19 AM",
-  "Resubmit Pricing Error Chase Direct1": "( nmlsId = 2767 )",
-  "DuplicateLoans_ErrorMessage": "Duplicate loan numbers contained in this file: Deepika_June_02_02, Deepika_June_02_04. Please remove these from the file and retry upload.",
-  "Missing Headers(Error Message)": "Bid tape is missing values for following headers: Loan Purpose. Please verify the correct Map ID is selected or tape is formatted correctly.",
-  "Bid Enum Check(Error Description)": "enum field occupancy type is missing value or value is not in valid list [primary residence, secondary residence, investment (noo)]. path: search.criteria.propertyuse is missing value"
-}; // Profile: "Bid Requests", row: 0
-
-    await stepGroups.stepGroup_Login_to_CORR_Portal(page, vars);
-    await expect(correspondentPortalPage.Bid_Requests).toBeVisible();
-    await correspondentPortalPage.Bid_Requests.click();
-    await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-    await priceOfferedPage.Filter_Dropdown1.click();
-    await correspondentPortalPage.Select_Date_Range_Dropdown.click();
-    await correspondentPortalPage.Last_One_Month_Button.click();
-    vars["LastMonth"] = await correspondentPortalPage.Last_One_Month_Button.textContent() || '';
-    await expect(correspondentPortalPage.Date_Input_Box).toContainText(vars["LastMonth"]);
-    await applyFiltersButtonPage.Apply_Filters_Button.click();
-    await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-    await expect(correspondentPortalPage.Export_Selected_Button_Bid_Request).toBeVisible();
-    await priceOfferedPage.Select_All_Loan_Num.click();
-    await expect(priceOfferedPage.Select_All_Loan_Num).toBeVisible();
-    await expect(correspondentPortalPage.First_Checkbox_Bid_Request).toBeVisible();
-    vars["CountOfRequestsUI"] = await correspondentPortalPage.Export_Records_Count.textContent() || '';
-    vars["CountOfRequestsUI"] = String(vars["CountOfRequestsUI"]).trim();
-    vars["CountOfRequestsUI"] = String(vars["CountOfRequestsUI"]).substring(1, String(vars["CountOfRequestsUI"]).length - 1);
-    await expect(correspondentPortalPage.Export_Selected_Button_Bid_Request).toBeVisible();
-    await correspondentPortalPage.Export_Selected_Button_Bid_Request.click();
-    // Wait for download - handled by Playwright download events
-    await page.waitForTimeout(2000);
-    vars["File"] = vars['_lastDownloadPath'] || '';
-    vars["CountOfRequestsExcel"] = String(excelHelper.getRowCount(vars["File"], "0"));
-    vars["CountOfRequestsExcel"] = (parseFloat(String(vars["CountOfRequestsExcel"])) - parseFloat(String("1"))).toFixed(0);
-    expect(String(vars["CountOfRequestsUI"])).toBe(vars["CountOfRequestsExcel"]);
-    vars["CountOfColumnsUI"] = String(await bidRequestsPage.Count_of_Columns_Request_list.count());
-    vars["CountOfColumnsExcel"] = String(excelHelper.getColumnCount(vars["File"], "0"));
-    expect(String(vars["CountOfColumnsUI"])).toBe(vars["CountOfColumnsExcel"]);
-    vars["count1"] = "0";
-    vars["count"] = "1";
-    while (parseFloat(String(vars["count"])) <= parseFloat(String(vars["CountOfColumnsUI"]))) {
-      vars["ColumnNameUI"] = await bidRequestPage.Individual_Column_Name.textContent() || '';
-      vars["ColumnNameUI"] = String(vars["ColumnNameUI"]).trim();
-      vars["ColumnNameExcel"] = excelHelper.readCell(vars['_lastDownloadPath'] || '', "0", vars["count1"], "0");
-      vars["ColumnNameExcel"] = String(vars["ColumnNameExcel"]).trim();
-      if (String(vars["count"]) === String("6")) {
-        expect(String(vars["ColumnNameExcel"])).toBe(testData["Execution Type Header"]);
-      } else if (String(vars["count"]) === String("1")) {
-        expect(String(vars["ColumnNameExcel"])).toBe(testData["CCode Header"]);
-      } else if (String(vars["count"]) === String("2")) {
-        expect(String(vars["ColumnNameExcel"])).toBe(testData["Bid Request ID Header"]);
-      } else {
-        expect(String(vars["ColumnNameUI"])).toBe(vars["ColumnNameExcel"]);
-      }
-      vars["count"] = (parseFloat(String("1")) + parseFloat(String(vars["count"]))).toFixed(0);
-      vars["count1"] = (parseFloat(String("1")) + parseFloat(String(vars["count1"]))).toFixed(0);
+      vars["File"] = filePath
+      log.stepPass(`Export action completed and file downloaded successfully: "${filePath}"`);
+      log.stepPass(`UI record count captured: "${vars["CountOfRequestsUI"]}", file downloaded: "${filePath}"`);
+    } catch (e) {
+      await log.stepFail(page, 'Capturing UI record count and exporting failed');
+      throw e;
     }
+
+    // ── Step 7: Verify row count matches between UI and Excel ────────────
+    log.step('Verifying row count matches between UI and Excel');
+    try {
+      vars["CountOfRequestsExcel"] = String(excelHelper.getRowCount(vars["File"], "0"));
+      //vars["CountOfRequestsExcel"] = (parseFloat(String(vars["CountOfRequestsExcel"])) - parseFloat(String("1"))).toFixed(0);
+      expect(String(vars["CountOfRequestsUI"])).toBe(vars["CountOfRequestsExcel"]);
+      log.stepPass(`Row count matched — UI: "${vars["CountOfRequestsUI"]}", Excel: "${vars["CountOfRequestsExcel"]}"`);
+    } catch (e) {
+      await log.stepFail(page, `Row count verification between UI and Excel failed - UI Count - ${vars["CountOfRequestsUI"]} - Excel Count - ${vars["CountOfRequestsExcel"]}`);
+      throw e;
+    }
+
+    // ── Step 8: Verify column count matches between UI and Excel ─────────
+    log.step('Verifying column count matches between UI and Excel');
+    try {
+      vars["CountOfColumnsUI"] = String(await bidRequestsPage.Count_of_Columns_Request_list.count());
+      vars["CountOfColumnsExcel"] = String(excelHelper.getColumnCount(vars["File"], "0"));
+      log.info(`Column Count UI: ${vars["CountOfColumnsUI"]} Column Count Excel: ${vars["CountOfColumnsExcel"]}`);
+      expect(String(vars["CountOfColumnsUI"])).toBe(vars["CountOfColumnsExcel"]);
+      //log.info(`Column Count Excel: ${vars["CountOfColumnsUI"]} Column Count UI: ${vars["CountOfColumnsExcel"]}`);
+      log.stepPass(`Column count matched — UI: "${vars["CountOfColumnsUI"]}", Excel: "${vars["CountOfColumnsExcel"]}"`);
+    } catch (e) {
+      await log.stepFail(page, 'Column count verification between UI and Excel failed');
+      throw e;
+    }
+
+    // ── Step 9: Verify each column name matches between UI and Excel ─────
+    log.step('Verifying each column name matches between UI and Excel');
+    try {
+      vars["count1"] = "0";
+      vars["count"] = "1";
+      while (parseFloat(String(vars["count"])) <= parseFloat(String(vars["CountOfColumnsUI"]))) {
+        log.info(`In While Loop: Column count -  ${vars["count"]}`)
+        vars["ColumnNameUI"] = await bidRequestPage.Individual_Column_Name(vars["count"]).textContent() || '';
+        vars["ColumnNameUI"] = String(vars["ColumnNameUI"]).replace(/\s+/g, '').trim();
+        vars["ColumnNameExcel"] = excelHelper.readCellByColAndRowIndex(vars["File"], 0, 0, vars["count1"]);
+        //vars["ColumnNameExcel"] = String(vars["ColumnNameExcel"]).replace(/\s+/g, ' ').trim();
+        vars["ColumnNameExcel"] = String(vars["ColumnNameExcel"]).replace(/\s+/g, '').trim();
+        log.info(`UI - ${vars["ColumnNameUI"]} / Excel - ${vars["ColumnNameExcel"]}`)
+        if (String(vars["count"]) === String("6")) {
+          log.info(`Excuting If condition for column ${vars["count"]}`);
+          expect(String(vars["ColumnNameExcel"])).toBe(vars["Execution Type Header"]);
+        } else if (String(vars["count"]) === String("1")) {
+          log.info(`Excuting If condition for column ${vars["count"]}`);
+          expect(String(vars["ColumnNameExcel"])).toBe(vars["CCode Header"]);
+        } else if (String(vars["count"]) === String("2")) {
+          log.info(`Excuting If condition for column ${vars["count"]}`);
+          expect(String(vars["ColumnNameExcel"])).toBe(vars["Bid Request ID Header"]);
+        } else {
+          expect(String(vars["ColumnNameUI"])).toBe(vars["ColumnNameExcel"]);
+        }
+        log.info(`Verification Successfull ${vars["ColumnNameUI"]} == ${vars["ColumnNameExcel"]}`)
+        vars["count"] = (parseFloat(String("1")) + parseFloat(String(vars["count"]))).toFixed(0);
+        vars["count1"] = (parseFloat(String("1")) + parseFloat(String(vars["count1"]))).toFixed(0);
+      }
+      log.stepPass('All column names matched between UI and Excel');
+    } catch (e) {
+      await log.stepFail(page, 'Column name verification between UI and Excel failed');
+      throw e;
+    }
+
   });
 });
