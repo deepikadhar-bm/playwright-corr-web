@@ -922,8 +922,8 @@ Column_Data_UI_DetainsScreen(IndividualHeaderUI:string): Locator {
     return this.page.locator("//div[text()=\" Corr. Loan# \"]/..//span[@class=\"fas small px-1 fa-sort-down\"]");
   }
 
-  get Corr_Loan_NumDetails_Screen(): Locator {
-    return this.page.locator("(//tbody//tr[$|count|]//td[@data-title=\"Corr. Loan#\"]//button)[1]");
+  Corr_Loan_NumDetails_Screen(count:string): Locator {
+    return this.page.locator(`(//tbody//tr[${count}]//td[@data-title=\"Corr. Loan#\"]//button)[1]`);
   }
 
   get Corr_Loan_Number_ID(): Locator {
@@ -1269,8 +1269,8 @@ Execution_TypeCommitment_List(BidReqId:string): Locator {
     return this.page.locator("//div//ancestor::tr//td[@data-title=\"Gross Price\"]");
   }
 
-  get Gross_PriceDetails_Screen(): Locator {
-    return this.page.locator("//tbody//tr[$|count|]//td[@data-title=\"Gross Price\"]");
+  Gross_PriceDetails_Screen(count:string): Locator {
+    return this.page.locator(`//tbody//tr[${count}]//td[@data-title=\"Gross Price\"]`);
   }
 
   get Gross_PriceHeader_Name(): Locator {
@@ -1313,8 +1313,8 @@ Execution_TypeCommitment_List(BidReqId:string): Locator {
     return this.page.locator("//span[contains(@aria-label,\"Committed loan\")]/../..//div[contains(@aria-label,\"Hedge ratio:\")]");
   }
 
-  get Hedge_RatioDetails_Screen(): Locator {
-    return this.page.locator("//tbody//tr[$|count|]//td[@data-title=\"Hedge Ratio\"]");
+  Hedge_RatioDetails_Screen(count:string): Locator {
+    return this.page.locator(`//tbody//tr[${count}]//td[@data-title=\"Hedge Ratio\"]`);
   }
 
   get Hedge_RatioHeader_Name(): Locator {
@@ -1417,8 +1417,8 @@ Execution_TypeCommitment_List(BidReqId:string): Locator {
     return this.page.locator(`//button[text()=\"${UncommittedLoanNumStandard}\"]//ancestor::tr/td/div[contains(@aria-label,\"Interest rate:\")]`);
   }
 
-  get Interest_rateDetails_Screen(): Locator {
-    return this.page.locator("//tbody//tr[$|count|]//td[@data-title=\"Int. Rate\"]");
+  Interest_rateDetails_Screen(count:string): Locator {
+    return this.page.locator(`//tbody//tr[${count}]//td[@data-title=\"Int. Rate\"]`);
   }
 
   get Items_Selected(): Locator {
@@ -1453,8 +1453,8 @@ Execution_TypeCommitment_List(BidReqId:string): Locator {
     return this.page.locator("//div[contains(text(),\"Last Name\")]//following::span[contains(@class,\"fas small px-1 fa-sort-down\")]");
   }
 
-  get Last_NameDetails_Screen(): Locator {
-    return this.page.locator("//tbody//tr[$|count|]//td[@data-title=\"Last Name\"]");
+  Last_NameDetails_Screen(count:string): Locator {
+    return this.page.locator(`//tbody//tr[${count}]//td[@data-title=\"Last Name\"]`);
   }
 
 Last_Nameprice_offered_screen_table(count1:string): Locator {
@@ -1493,8 +1493,8 @@ Last_Nameprice_offered_screen_table(count1:string): Locator {
     return this.page.locator(`(//input[@type=\"checkbox\" and contains(@aria-label,\"Select loan\")]/../..//td[@data-title=\"Loan Amount\"])[${count1}]`);
   }
 
-  get Loan_AmountDetails_Screen(): Locator {
-    return this.page.locator("//tbody//tr[$|count|]//td[@data-title=\"Loan Amount\"]");
+  Loan_AmountDetails_Screen(count:string): Locator {
+    return this.page.locator(`//tbody//tr[${count}]//td[@data-title=\"Loan Amount\"]`);
   }
 
   Loan_AmountDuplicate_Loan_Num(CommittedLoanNumStandard:string): Locator {
@@ -1761,8 +1761,8 @@ Last_Nameprice_offered_screen_table(count1:string): Locator {
     return this.page.locator("//td[@role=\"cell\"]//input[@type=\"checkbox\"]//..//..//div[contains(@aria-label,\"Market adjustment: \")]");
   }
 
-  get Market_AdjustmentDetails_Screen(): Locator {
-    return this.page.locator("//tbody//tr[$|count|]//td[@data-title=\"Mark Adj\"]");
+  Market_AdjustmentDetails_Screen(count:string): Locator {
+    return this.page.locator(`//tbody//tr[${count}]//td[@data-title=\"Mark Adj\"]`);
   }
 
   get Maximum_Display_Value(): Locator {
@@ -1949,12 +1949,12 @@ Last_Nameprice_offered_screen_table(count1:string): Locator {
     return this.page.locator("//input[@class=\"text-primary pointer\"]/../..//div[contains(@aria-label,\"Reference security price: \")]");
   }
 
-  get Reference_security_priceDetails_Screen(): Locator {
-    return this.page.locator("//tbody//tr[$|count|]//td[@data-title=\"Ref Sec Price\"]");
+  Reference_security_priceDetails_Screen(count:string): Locator {
+    return this.page.locator(`//tbody//tr[${count}]//td[@data-title=\"Ref Sec Price\"]`);
   }
 
-  get Reference_SecurityDetails_Screen(): Locator {
-    return this.page.locator("//tbody//tr[$|count|]//td[@data-title=\"Ref Sec Prod.\"]");
+  Reference_SecurityDetails_Screen(count:string): Locator {
+    return this.page.locator(`//tbody//tr[${count}]//td[@data-title=\"Ref Sec Prod.\"]`);
   }
 
   get Remaining_Timeprice_offered(): Locator {
