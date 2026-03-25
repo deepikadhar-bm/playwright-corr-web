@@ -71,8 +71,8 @@ export class StatusInactive2Page {
     return this.page.locator("//div[@class=\"gap-2 header-grid-layout\"][contains(.,\"$|CustomHeader|\")]//select");
   }
 
-  get Delete_Early_Config_Button_CurrentDateList(): Locator {
-    return this.page.locator("(//td[@data-title='Date' and contains(text(), '$|CurrentDateList|')]/..//button[2])");
+  Delete_Early_Config_Button_CurrentDateList(CurrentDateList:String): Locator {
+    return this.page.locator(`(//td[@data-title='Date' and contains(text(), '${CurrentDateList}')]/..//button[2])`);
   }
 
   get Delete_Button_in_Enumeration_Mapping(): Locator {
