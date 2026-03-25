@@ -2954,6 +2954,7 @@ export async function stepGroup_Uploading_Bid_Request(page: import('@playwright/
   // await expect(CorrPortalElem.SelectCompany_Value).toContainText(testData["Company Name"]);
   await page.waitForTimeout(2000);
   await expect(CorrPortalElem.Standard_Execution_Checkbox).toBeVisible();
+  await expect(CorrPortalElem.Standard_Execution_Checkbox).toBeChecked();
   await CorrPortalElem.StandardExecution_Dropdown.selectOption({ label: "3" });
   await CorrPortalElem.StandardExceutionType_Dropdown.waitFor({ state: 'visible' });
   await expect(CorrPortalElem.StandardExceutionType_Dropdown).toHaveValue("3");
@@ -3421,17 +3422,21 @@ export async function stepGroup_Uploading_Bid_Request_By_Selecting_both_standard
   await expect(CorrPortalElem.SelectCompany_Value).toContainText(vars["CompanyName"]);
   await CorrPortalElem.SelectCompany_Value.click();
   await expect(CorrPortalElem.Standard_Execution_Checkbox).toBeVisible();
+  await expect(CorrPortalElem.Standard_Execution_Checkbox).toBeChecked();
   await CorrPortalElem.StandardExecution_Dropdown.selectOption({ label: "3" });
   await expect(CorrPortalElem.StandardExceutionType_Dropdown).toHaveValue("3");
   await CorrPortalElem.Chase_Direct_Checkbox.check();
   await expect(CorrPortalElem.Chase_Direct_Checkbox).toBeVisible();
+  await expect(CorrPortalElem.Chase_Direct_Checkbox).toBeChecked();
   await CorrPortalElem.Chase_Direct_Dropdown_Upload_Bidrequest.selectOption({ index: parseInt("1") });
   await CorrPortalElem.Bid_Mapping_ID_Dropdown.click();
   await CorrPortalElem.Search_box_Bid_mapping_id.fill(vars["BidMappingID"]);
   await page.waitForTimeout(3000);
   //await CorrPortalElem.Entered_Bid_Mapping_Id_New.waitFor({ state: 'visible' });
   await CorrPortalElem.Entered_Bid_Mapping_Id_New(vars["BidMappingID"]).first().click();
-  await expect(CorrPortalElem.Bid_Mapping_ID_Dropdown_1).toContainText(vars["BidMappingID"]);
+  // await expect(CorrPortalElem.Bid_Mapping_ID_Dropdown_1).toContainText(vars["BidMappingID"]);
+  await expect(CorrPortalElem.Bid_Mapping_Id_Selected_Text).toContainText(vars["BidMappingID"]);
+  
   await CorrPortalElem.Pricing_Return_Time.click();
 }
 
@@ -4345,23 +4350,17 @@ export async function stepGroup_Storing_Chase_Field_and_Chase_Value_from_Enum_Pa
  * Steps: 7
  */
 export async function stepGroup_Getting_Next_Month_From_Current_Month(page: import('@playwright/test').Page, vars: Record<string, string>) {
-  vars["CurrentMonth"] = (() => {
-    const d = new Date();
-    const opts: Intl.DateTimeFormatOptions = { timeZone: "Asia/Kolkata" };
-    const fmt = "MM";
-    // Map Java date format to Intl parts
-    const parts = new Intl.DateTimeFormat('en-US', { ...opts, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }).formatToParts(d);
-    const p = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
-    return fmt.replace('yyyy', p.year || '').replace('yy', (p.year || '').slice(-2)).replace('MM', p.month || '').replace('dd', p.day || '').replace('HH', String(d.getHours()).padStart(2, '0')).replace('hh', p.hour || '').replace('mm', p.minute || '').replace('ss', p.second || '').replace('a', p.dayPeriod || '').replace(/M(?!M)/g, String(parseInt(p.month || '0'))).replace(/d(?!d)/g, String(parseInt(p.day || '0'))).replace(/h(?!h)/g, String(parseInt(p.hour || '0')));
-  })();
-  if (String(vars["CurrentMonth"]) === String("12")) {
-    vars["NextMonth"] = "1";
-  } else {
-    vars["NextMonth"] = (parseFloat(String(vars["CurrentMonth"])) + parseFloat(String("1"))).toFixed(0);
-  }
-  if (String("1,2,3,4,5,6,7,8,9").includes(String(vars["NextMonth"]))) {
-    vars["NextMonth"] = String('') + String('');
-  }
+ const Methods = new AddonHelpers(page, vars);
+ Methods.getCurrentTimestamp(appconstants.MONTH_NUM_FORMAT, 'CurrentMonth', appconstants.ASIA_KOLKATA);
+if (Number(vars['CurrentMonth']) === 12) {
+  vars['NextMonth'] = appconstants.ONE;
+} else {
+  Methods.performArithmetic(vars['CurrentMonth'], 'ADDITION', '1', 'NextMonth');
+}
+
+if (['1','2','3','4','5','6','7','8','9'].includes(String(vars['NextMonth']))) {
+  Methods.concatenate('0', vars['NextMonth'], 'NextMonth');
+}
 }
 
 /**
@@ -5018,12 +5017,12 @@ export async function stepGroup_Add_Early_Config_With_Current_Est_Time(page: imp
   await CorrPortalElem.Add_New_Config_Button.click();
   await CorrPortalElem.Toggle_Date_Picker_Button.click();
 
-  Methods.getCurrentTimestamp(appconstants.DATE_FORMAT, 'CurrentDate', appconstants.UTC);
+  Methods.getCurrentTimestamp(appconstants.TIME_FORMAT_HHMMA ,'CurrentDate', appconstants.UTC);
   log.info('CurrentDate: ' + vars['CurrentDate']);
 
   await CorrPortalElem.Select_Current_Date_Filters_Price_Offered(vars["CurrentDate"]).click();
 
-  Methods.getCurrentTimestamp(appconstants.TIME_FORMAT_HHMMA, 'CurrentEstTime', appconstants.America_New_York);
+  Methods.getCurrentTimestamp(appconstants.TIME_FORMAT_HHMMA, 'CurrentEstTime', appconstants.AMERICA_NEW_YORK);
   log.info('CurrentEstTime before adding minutes: ' + vars['CurrentEstTime']);
 
   Methods.addMinutesToDatetime(vars['CurrentEstTime'], appconstants.TIME_FORMAT_HHMMA, 3, appconstants.TIME_FORMAT_HHMMA, 'CurrentEstTime');
