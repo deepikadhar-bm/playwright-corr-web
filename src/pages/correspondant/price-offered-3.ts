@@ -7,8 +7,8 @@ import { Page, Locator } from '@playwright/test';
 export class PriceOffered3Page {
   constructor(private page: Page) {}
 
-  get Commitment_IdAdd_To_Commit_Dropdown(): Locator {
-    return this.page.locator("//div[normalize-space(text())=\"$|CommitmentID|\"]");
+  Commitment_IdAdd_To_Commit_Dropdown(CommitmentID:string): Locator {
+    return this.page.locator(`//div[normalize-space(text())=\"${CommitmentID}\"]`);
   }
 
 }

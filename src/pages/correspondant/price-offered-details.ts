@@ -15,8 +15,8 @@ export class PriceOfferedDetailsPage {
     return this.page.locator("(//button[contains(@aria-label,\"Download PQ file\")])[1]");
   }
 
-  get Individual_Mark_Adjust_ValueFresh_Loans(): Locator {
-    return this.page.locator("(//*[contains(@aria-label,\"Select loan\")]/../..//td[@data-title=\"Mark Adj\"])[$|count|]");
+  Individual_Mark_Adjust_ValueFresh_Loans(count:string): Locator {
+    return this.page.locator(`(//*[contains(@aria-label,\"Select loan\")]/../..//td[@data-title=\"Mark Adj\"])[${count}]`);
   }
 
   get Locked_Loan_Num_Price_Offered_details(): Locator {
@@ -31,8 +31,8 @@ export class PriceOfferedDetailsPage {
     return this.page.locator("//div[contains(@aria-label,\"Reference security price\")]");
   }
 
-  get Required_Loan_Check_boxprice_offered_details(): Locator {
-    return this.page.locator("//td[@data-title=\"Corr. Loan#\"]//button[contains(@aria-label,\"View loan\") and not(contains(text(),\"$|CommittedLoanNumChaseDirect|\"))]/../../..//input[@type=\"checkbox\"]");
+  Required_Loan_Check_boxprice_offered_details(CommittedLoanNumChaseDirect:string): Locator {
+    return this.page.locator(`//td[@data-title=\"Corr. Loan#\"]//button[contains(@aria-label,\"View loan\") and not(contains(text(),\"${CommittedLoanNumChaseDirect}\"))]/../../..//input[@type=\"checkbox\"]`);
   }
 
   get Second_loan_Check_Box_price_offered_details(): Locator {
