@@ -279,8 +279,8 @@ export class BidRequestPage {
     return this.page.locator(`((//th//div[@role="button"])[position() >=1 and position() <= 7])[${count}]`);
   }
 
-  get Individual_Column_Name(): Locator {
-    return this.page.locator("//th[position() >1 and position() < last()][$|count|]");
+  Individual_Column_Name(count : String): Locator {
+    return this.page.locator(`//th[position() >1 and position() < last()][${count}]`);
   }
 
    Individual_Company_Checkbox_Dropdown(count: string): Locator {
