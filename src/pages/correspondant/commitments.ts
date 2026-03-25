@@ -7,8 +7,8 @@ import { Page, Locator } from '@playwright/test';
 export class CommitmentsPage {
   constructor(private page: Page) {}
 
-  get Required_Date_Filters(): Locator {
-    return this.page.locator("//div[@role=\"gridcell\" and @aria-label=\"$|DateFormatFilter|\"]");
+  Required_Date_Filters(DateFormatFilter:string): Locator {
+    return this.page.locator(`//div[@role=\"gridcell\" and @aria-label=\"${DateFormatFilter}\"]`);
   }
 
   get Select_month_Dropdownfilters(): Locator {

@@ -201,12 +201,12 @@ Column_Count_UICommitted_Loans1(count: string): Locator {
     return this.page.locator(`//button[text()=\"${CorrLoanNum}\"]//ancestor::tr//div[@class=\"commit-order\"]`);
   }
 
-  get Commitment_OrderCommitment_List_New(): Locator {
-    return this.page.locator("//div[text()=\"574X3D2A\"]//preceding-sibling::div[contains(text(),\"Commitment Order\")]//parent::a[contains(@class,\"disabled\")]");
+  Commitment_OrderCommitment_List_New(CommitID:string): Locator {
+    return this.page.locator(`//div[text()=\"${CommitID}\"]//preceding-sibling::div[contains(text(),\"Commitment Order\")]//parent::a[contains(@class,\"disabled\")]`);
   }
 
-  get Commitment_OrderCommitment_List(): Locator {
-    return this.page.locator("//div[text()=\"$|CommitID|\"]//preceding-sibling::div[contains(text(),\"Commitment Order\")]");
+  Commitment_OrderCommitment_List(CommitID:string): Locator {
+    return this.page.locator(`//div[text()=\"${CommitID}\"]//preceding-sibling::div[contains(text(),\"Commitment Order\")]`);
   }
 
   get Commitment_OrderDisabled(): Locator {

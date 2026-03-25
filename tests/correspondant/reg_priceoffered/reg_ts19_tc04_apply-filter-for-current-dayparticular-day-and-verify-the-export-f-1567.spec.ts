@@ -26,6 +26,8 @@ test.describe('REG_PriceOffered', () => {
 
   test.beforeEach(async ({ page }) => {
     vars = {};
+    vars['Username'] = credentials.username;
+    vars['Password'] = credentials.password;
     applyFiltersButtonPage = new ApplyFiltersButtonPage(page);
     correspondentPortalPage = new CorrespondentPortalPage(page);
     priceOfferedPage = new PriceOfferedPage(page);
@@ -35,8 +37,6 @@ test.describe('REG_PriceOffered', () => {
 
   test(`${TC_ID} - ${TC_TITLE}`, async ({ page }) => {
     vars['DownloadDir'] = path.join(process.cwd(), 'downloads');
-    vars['Username'] = credentials.username;
-    vars['Password'] = credentials.password;
 
     log.tcStart(TC_ID, TC_TITLE);
     try {
@@ -55,12 +55,11 @@ test.describe('REG_PriceOffered', () => {
         await priceOfferedPage.Filter_Dropdown1.click();
         await correspondentPortalPage.Select_Date_Range_Dropdown.click();
         await correspondentPortalPage.Current_Date_On_Filters.click();
-        Methods.getCurrentTimestamp(appconstants.DATE_FORMAT, 'CurrentDate', appconstants.ASIA_KOLKATA);
-        Methods.subtractDaysFromDate(vars['CurrentDate'], 1, appconstants.DATE_FORMAT, appconstants.DATE_FORMAT, 'CurrentDate');
+        Methods.getCurrentTimestamp(appconstants.DATE_FORMAT_DMYYYY, 'CurrentDate', appconstants.ASIA_KOLKATA);
+        Methods.subtractDaysFromDate(vars['CurrentDate'], 1, appconstants.DATE_FORMAT_DMYYYY, appconstants.DATE_FORMAT_DMYYYY, 'CurrentDate');
         await correspondentPortalPage.Select_Current_DateAdd_Config(vars['CurrentDate']).click();
         await correspondentPortalPage.Apply_Button.click();
         await applyFiltersButtonPage.Apply_Filters_Button.click();
-        await spinnerPage.Spinner.waitFor({ state: 'visible' });
         await spinnerPage.Spinner.waitFor({ state: 'hidden' });
         log.stepPass(`Successfully selected current date filter: ${vars['CurrentDate']}`);
       } catch (e) {
@@ -69,28 +68,23 @@ test.describe('REG_PriceOffered', () => {
       }
       log.step('Count rows across all result pages');
       try {
-        const nextButtonLocator = correspondentPortalPage.Go_to_Next_Page_Button;
-        const isNextVisible = await nextButtonLocator.isVisible().catch(() => false);
-        if (!isNextVisible) {
-          vars['PageCount'] = '1';
+        const NextButton = correspondentPortalPage.Go_to_Next_Page_Button;
+        if (!(await NextButton.isVisible())) {
+          vars['PageCount'] = appconstants.ONE;
         } else {
           vars['PageCount'] = await correspondentPortalPage.Pagination_Count.textContent() || '';
           vars['PageCount'] = String(vars['PageCount']).substring(10);
         }
         log.info(`PageCount: ${vars['PageCount']}`);
-        vars['Count1'] = '1';
-        vars['TotalRowsAllPages'] = '0';
+        vars['Count1'] = appconstants.ONE;
+        vars['TotalRowsAllPages'] = appconstants.ZERO;
         while (parseFloat(String(vars['Count1'])) <= parseFloat(String(vars['PageCount']))) {
           vars['RowCountUI'] = String(await priceOfferedPage.RowCount.count());
           Methods.MathematicalOperation(vars['TotalRowsAllPages'], '+', vars['RowCountUI'], 'TotalRowsAllPages');
-          const isVisible = await nextButtonLocator.isVisible().catch(() => false);
-          if (isVisible) {
-            const isDisabled = await nextButtonLocator.getAttribute('aria-disabled', { timeout: 5000 }).catch(() => null);
-            if (isDisabled === 'false') {
+            if (await NextButton.isVisible() && await NextButton.isEnabled()) {
               await correspondentPortalPage.Go_to_Next_Page_Button_2.click();
               await spinnerPage.Spinner.waitFor({ state: 'hidden' });
             }
-          }
 
           Methods.MathematicalOperation(vars['Count1'], '+', 1, 'Count1');
         }
@@ -132,9 +126,9 @@ test.describe('REG_PriceOffered', () => {
       }
       log.step('Verify column headers between UI and Excel');
       try {
-        vars['Count'] = '1';
-        vars['count'] = '1';
-        vars['ExcelHeader'] = '0';
+        vars['Count'] = appconstants.ONE;
+        vars['count'] = appconstants.ONE;
+        vars['ExcelHeader'] = appconstants.ZERO;
         vars['CountOfHeaders'] = String(await priceOfferedPage.Headers_UI.count());
         vars['HeaderValuesExcel'] = excelHelper.readEntireRow(vars['DownloadedFilePath'], 0, vars['ExcelHeader'], 'HeaderValuesExcel');
 

@@ -1246,37 +1246,58 @@ calculateTimeDifference(
   const METHOD = 'calculateTimeDifference';
 
   if (!timestamp1 || timestamp1.trim() === '') {
-    log.fail(`[${METHOD}] timestamp1 is empty or blank | Error: Empty timestamp1`);
+    log.info(`[${METHOD}] timestamp1 is empty or blank`);
     throw new Error(`Empty timestamp1`);
   }
 
   if (!timestamp2 || timestamp2.trim() === '') {
-    log.fail(`[${METHOD}] timestamp2 is empty or blank | Error: Empty timestamp2`);
+    log.info(`[${METHOD}] timestamp2 is empty or blank`);
     throw new Error(`Empty timestamp2`);
   }
 
   if (!targetVar || targetVar.trim() === '') {
-    log.fail(`[${METHOD}] Target variable name is empty or blank | Error: Empty targetVar`);
+    log.info(`[${METHOD}] Target variable name is empty or blank`);
     throw new Error(`Empty target variable name`);
   }
 
-  const date1 = new Date(timestamp1).getTime();
-  const date2 = new Date(timestamp2).getTime();
+  const parseTime = (input: string): number => {
+    const fullDate = new Date(input);
+    if (!isNaN(fullDate.getTime())) return fullDate.getTime();
+
+    const match = input.trim().match(/^(\d{1,2}):(\d{2})\s?(AM|PM)$/i);
+    if (match) {
+      let hours = parseInt(match[1], 10);
+      const minutes = parseInt(match[2], 10);
+      const meridian = match[3].toUpperCase();
+
+      if (meridian === 'PM' && hours !== 12) hours += 12;
+      if (meridian === 'AM' && hours === 12) hours = 0;
+
+      const now = new Date();
+      now.setHours(hours, minutes, 0, 0);
+      return now.getTime();
+    }
+
+    return NaN;
+  };
+
+  const date1 = parseTime(timestamp1);
+  const date2 = parseTime(timestamp2);
 
   if (isNaN(date1)) {
-    log.fail(`[${METHOD}] timestamp1 "${timestamp1}" is not a valid date`);
+    log.info(`[${METHOD}] timestamp1 "${timestamp1}" is not a valid date`);
     throw new Error(`Invalid timestamp1: "${timestamp1}"`);
   }
 
   if (isNaN(date2)) {
-    log.fail(`[${METHOD}] timestamp2 "${timestamp2}" is not a valid date`);
+    log.info(`[${METHOD}] timestamp2 "${timestamp2}" is not a valid date`);
     throw new Error(`Invalid timestamp2: "${timestamp2}"`);
   }
 
-  const diffMs   = Math.abs(date1 - date2);
+  const diffMs = Math.abs(date1 - date2);
   const diffSecs = Math.floor(diffMs / 1000);
   const diffMins = Math.floor(diffMs / (1000 * 60));
-  const diffHrs  = Math.floor(diffMs / (1000 * 60 * 60));
+  const diffHrs = Math.floor(diffMs / (1000 * 60 * 60));
 
   let result: string;
 
@@ -1304,12 +1325,12 @@ calculateTimeDifference(
       break;
     }
     default:
-      log.fail(`[${METHOD}] Invalid unit "${unit}". Must be HOURS | MINUTES | SECONDS | HH:MM:SS | HH:MM`);
+      log.info(`[${METHOD}] Invalid unit "${unit}"`);
       throw new Error(`Invalid unit: "${unit}"`);
   }
 
   this.vars[targetVar] = result;
-  log.pass(`[${METHOD}] Time difference between "${timestamp1}" and "${timestamp2}" in ${unit} = "${result}" stored in "${targetVar}"`);
+  log.info(`[${METHOD}] Time difference between "${timestamp1}" and "${timestamp2}" in ${unit} = "${result}" stored in "${targetVar}"`);
 }
 /**
  * Generates a random integer between min and max (inclusive) and stores in targetVar.

@@ -15,8 +15,8 @@ export class BidRequestDetailsPage {
     return this.page.locator("//div[@class=\"flex-grow-1 d-flex gap-3\"]//div/div[@id=\"errorsCheckLabel\"]/..//h5[@aria-labelledby=\"errorsCheckLabel\"]");
   }
 
-  get All_Success_Loan_Amount_Textbid_request_details_tbl1(): Locator {
-    return this.page.locator("((//tbody)[1]//td[@data-title=\"Loan Status\"]//div[contains(text(),\"Success\")]/../..//td[@data-title=\"Loan Amount\"])[$|count1|]");
+  All_Success_Loan_Amount_Textbid_request_details_tbl1(count1:string): Locator {
+    return this.page.locator(`((//tbody)[1]//td[@data-title=\"Loan Status\"]//div[contains(text(),\"Success\")]/../..//td[@data-title=\"Loan Amount\"])[${count1}]`);
   }
 
   get Apply_Selected_Button_2_filter(): Locator {
@@ -191,8 +191,8 @@ export class BidRequestDetailsPage {
     return this.page.locator("//div[@aria-labelledby=\"executionHeader\"]//div/h5[text()=\"Standard Flow Loans\"]");
   }
 
-  get ExecutionTypebid_requests_details_counter(): Locator {
-    return this.page.locator("(//div[text()=\" Execution Type \"]/..//h5)[$|count|]");
+  ExecutionTypebid_requests_details_counter(count:string): Locator {
+    return this.page.locator(`(//div[text()=\" Execution Type \"]/..//h5)[${count}]`);
   }
 
   get Expected_Execution_Type_Parsed_Row(): Locator {
@@ -228,39 +228,39 @@ export class BidRequestDetailsPage {
   }
 
   get Heading_Successful_Loans_4(): Locator {
-    return this.page.locator(" //div[@aria-labelledby=\"executionHeader\"]//div/h5[text()=\"Chase Direct\"]/../..//div[text()='Total Loan Rows']/..//span[contains(@aria-label,\"Successful Loan\")]");
+    return this.page.locator(" //div[@aria-labelledby=\"executionHeader\"]//div/h5[contains(text(),\"Chase\")]/../..//div[text()='Total Loan Rows']/..//span[contains(@aria-label,\"Successful Loan\")]");
   }
 
-  get Individual_Cell_Data(): Locator {
-    return this.page.locator("(//tr[$|RowsCount|]//td)[$|ColumnCount|]");
+  Individual_Cell_Data(RowsCount:string,ColumnCount:string): Locator {
+    return this.page.locator(`(//tr[${RowsCount}]//td)[${ColumnCount}]`);
   }
 
-  get Individual_Cell_Data_from_table_2(): Locator {
-    return this.page.locator("(//table)[2]//tr[$|RowsCount|]//td[$|ColumnCount|]");
+  Individual_Cell_Data_from_table_2(RowsCount:string,ColumnCount:string): Locator {
+    return this.page.locator(`(//table)[2]//tr[${RowsCount}]//td[${ColumnCount}]`);
   }
 
-  get Individual_Cell_Data_Table(): Locator {
-    return this.page.locator("(//td[@data-title=\"$|ColumnHeaderUI|\"])[$|RowsCountTable|]");
+   Individual_Cell_Data_Table(ColumnHeaderUI:string,RowsCountTable:string): Locator {
+    return this.page.locator(`(//td[@data-title=\"${ColumnHeaderUI}\"])[${RowsCountTable}]`);
   }
 
-  get Individual_Cell_Data_Table_2(): Locator {
-    return this.page.locator("((//table)[2]//td[@data-title=\"$|ColumnHeaderUI|\"])[$|RowsCountTable|]");
+  Individual_Cell_Data_Table_2(ColumnHeaderUI:string,RowsCountTable:string): Locator {
+    return this.page.locator(`((//table)[2]//td[@data-title=\"${ColumnHeaderUI}\"])[${RowsCountTable}]`);
   }
 
-  get Individual_Cell_Table(): Locator {
-    return this.page.locator("(//table)[$|count|]//tr[$|RowCountExcel|]//td[$|ColumnCount|]");
+  Individual_Cell_Table(count:string,RowCountExcel:string,ColumnCount:string): Locator {
+    return this.page.locator(`(//table)[${count}]//tr[${RowCountExcel}]//td[${ColumnCount}]`);
   }
 
-  get Individual_Chase_Field_Name_Popup(): Locator {
-    return this.page.locator("(//div[@class=\"border-bottom p-2\"])[$|count|]");
+  Individual_Chase_Field_Name_Popup(count:string): Locator {
+    return this.page.locator(`(//div[@class=\"border-bottom p-2\"])[${count}]`);
   }
 
-  get Individual_Chase_Value_Popup(): Locator {
-    return this.page.locator("(//div[@class=\"border-bottom p-2\" and contains(text(),\"$|ChaseFieldNameBeforeSubmit|\")]/following-sibling::div)[1]");
+  Individual_Chase_Value_Popup(ChaseFieldNameBeforeSubmit:string): Locator {
+    return this.page.locator(`(//div[@class=\"border-bottom p-2\" and contains(text(),\"${ChaseFieldNameBeforeSubmit}\")]/following-sibling::div)[1]`);
   }
 
-  get Individual_Chase_Value_popup2(): Locator {
-    return this.page.locator("(//div[@class=\"border-bottom p-2\" and contains(text(),\"$|ChaseFieldPopupAfterSubmit|\")]/following-sibling::div)[1]");
+  Individual_Chase_Value_popup2(ChaseFieldPopupAfterSubmit:string): Locator {
+    return this.page.locator(`(//div[@class=\"border-bottom p-2\" and contains(text(),\"${ChaseFieldPopupAfterSubmit}\")]/following-sibling::div)[1]`);
   }
 
   Individual_Error_Danger_TextTool_Tip(ErrorCount:string): Locator {
@@ -504,7 +504,7 @@ Individual_PQ_Button(RowsCount:string): Locator {
   }
 
   get Success_Loansfl_bid_request_details(): Locator {
-    return this.page.locator(" //div[@aria-labelledby=\"executionHeader\"]//div/h5[text()=\"Standard Flow Loans\"]/../..//div[text()='Total Loan Rows']/..//span[contains(@aria-label,\"Successful Loan\")]");
+    return this.page.locator(" //div[@aria-labelledby=\"executionHeader\"]//div/h5[contains(text(),\"Standard\")]/../..//div[text()='Total Loan Rows']/..//span[contains(@aria-label,\"Successful Loan\")]");
   }
 
   get Success_Loans_Count_From_Rows_table1(): Locator {

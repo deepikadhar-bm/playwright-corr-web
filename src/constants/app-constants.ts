@@ -76,4 +76,5 @@ export const APP_CONSTANTS = {
   MARKET_ADJ_ERROR_TEXT:"can not be committed. Market adjuster value",
   MARKET_ADJ_REASON_TEXT:"is greater than market threshold value",
   ONE_HUNDRED_TWEENTY:'120',
+  STANDARD_TEXT:"Standard",
 };
