@@ -113,7 +113,7 @@ test.describe('Commitment List - TS_2', () => {
           await spinnerPage.Spinner.waitFor({ state: 'hidden' });
           await priceOfferedPage.Required_Loan_Num.first().check();
           await priceOfferedPage.Commit_Selected_1_Dropdown.click();
-          await expect(commitmentListPage.Commitment_OrderCommitment_List_New).toContainClass('disabled');
+          await expect(commitmentListPage.Commitment_OrderCommitment_List_New(vars['CommitID'])).toContainClass('disabled');
           log.info('Time exceeded 1 hour Commitment Order is disabled as expected');
           log.stepPass('Add to commitment is disabled after time limit exceeded. TimeDiff: ' + vars['TimeDiff'] + ' hours');
         } 
