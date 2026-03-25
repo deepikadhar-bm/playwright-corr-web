@@ -2703,13 +2703,23 @@ export async function stepGroup_Delete_Last_Batch_Time(page: import('@playwright
  * ID: 1206
  * Steps: 5
  */
-export async function stepGroup_Separating_Hours_and_Minutes(page: import('@playwright/test').Page, vars: Record<string, string>) {
-  // [DISABLED] Trim white space from DeletedBatch1 and store it in a runtime DeletedBatch1
-  // vars["DeletedBatch1"] = String(vars["DeletedBatch1"]).trim();
-  vars["MinWithStandard"] = String(vars["DeletedBatch1"]).split(":")["2"] || '';
-  vars["Time_Hour"] = String(vars["DeletedBatch1"]).substring(0, String(vars["DeletedBatch1"]).length - 5);
-  vars["Time_Min"] = String(vars["MinWithStandard"]).substring(0, String(vars["MinWithStandard"]).length - 2);
-  vars["Time_Unit"] = String(vars["MinWithStandard"]).substring(2);
+export async function stepGroup_Separating_Hours_and_Minutes(
+  page: import('@playwright/test').Page,
+  vars: Record<string, string>
+) {
+  const time = String(vars["RequiredBatchTime"]).trim(); 
+
+  const [hour, minWithUnit] = time.split(":"); 
+  const [minute, unit] = minWithUnit.split(" "); 
+
+  vars["Time_Hour"] = hour;
+  log.info(`Time Hour : ${vars["Time_Hour"]}`);
+
+  vars["Time_Min"] = minute;
+  log.info(`Time Min : ${vars["Time_Min"]}`);
+
+  vars["Time_Unit"] = unit;
+  log.info(`Time Unit : ${vars["Time_Unit"]}`);
 }
 
 /**
@@ -3505,10 +3515,10 @@ export async function stepGroup_Verifying_the_second_accordian_table_from_excel_
  */
 export async function stepGroup_Navigating_To_Bid_Request_Config(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
-  await page.waitForLoadState('networkidle');
+  await page.waitForLoadState('load');
   await CorrPortalElem.Administration_Menu.click();
   await CorrPortalElem.General_Settings.click();
-  await page.waitForLoadState('networkidle');
+  await page.waitForLoadState('load');
   await CorrPortalElem.Bid_Request_Config_Menu.click();
   await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
 }

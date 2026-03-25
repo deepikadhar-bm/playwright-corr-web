@@ -63,8 +63,8 @@ export class BidRequestListPage {
     return this.page.locator("//button[contains(text(),\"$|RequestIDDetails|\")]/../..//button[@aria-label=\"Cancel Bid Request\"]");
   }
 
-  get Select_Date_From_CalenderCurrent_date(): Locator {
-    return this.page.locator("//span[normalize-space(text())='$|CurrentDate|' and @class=\"custom-day\"]");
+  Select_Date_From_CalenderCurrent_date(CurrentDate:String): Locator {
+    return this.page.locator(`//span[normalize-space(text())='${CurrentDate}' and @class=\"custom-day\"]`);
   }
 
   get Selection_Dropdown_In_Resubmit_Popup2(): Locator {
