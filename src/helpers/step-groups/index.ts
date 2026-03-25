@@ -22,6 +22,8 @@ import { CorrespondentPortal4Page } from '@pages/correspondant/correspondent-por
 import { EnumerationMappingPage } from '../../../src/pages/correspondant/enumeration-mapping';
 import { SpinnerPage } from '@pages/correspondant';
 import { APP_CONSTANTS as appconstants } from '../../../src/constants/app-constants';
+import { BidRequestPage } from '../../../src/pages/correspondant/bid-request';
+import { BidRequestsPage } from '../../../src/pages/correspondant/bid-requests';
 
 
 const credentials = ENV.getCredentials('internal');
@@ -1825,31 +1827,57 @@ export async function stepGroup_Verification_Of_BidSampleNames_In_Header_Mapping
  * Steps: 20
  */
 export async function stepGroup_Verification_of_Column_Headers_Count_and_Column_Names_From_U(page: import('@playwright/test').Page, vars: Record<string, string>) {
-  const CorrPortalElem = new CorrPortalPage(page);
-  const testData: Record<string, string> = {}; // TODO: Load from test data profile
-  vars["CountOfColumnsUI"] = String(await CorrPortalElem.Count_of_Columns_Request_list.count());
-  vars["CountOfColumnsExcel"] = String(excelHelper.getColumnCount(vars["File"], "0"));
-  expect(String(vars["CountOfColumnsUI"])).toBe(vars["CountOfColumnsExcel"]);
-  vars["count1"] = "0";
-  vars["count"] = "1";
-  while (parseFloat(String(vars["count"])) <= parseFloat(String(vars["CountOfColumnsUI"]))) {
-    vars["ColumnNameUI"] = await CorrPortalElem.Individual_Column_Name.textContent() || '';
-    vars["ColumnNameUI"] = String(vars["ColumnNameUI"]).trim();
-    vars["ColumnNameExcel"] = excelHelper.readCell(vars['_lastDownloadPath'] || '', "0", vars["count1"], "0");
-    vars["ColumnNameExcel"] = String(vars["ColumnNameExcel"]).trim();
-    if (String(vars["count"]) === String("6")) {
-      expect(String(vars["ColumnNameExcel"])).toBe(testData["Execution Type Header"]);
-    } else if (String(vars["count"]) === String("1")) {
-      expect(String(vars["ColumnNameExcel"])).toBe(testData["CCode Header"]);
-    } else if (String(vars["count"]) === String("2")) {
-      expect(String(vars["ColumnNameExcel"])).toBe(testData["Bid Request ID Header"]);
-    } else {
-      expect(String(vars["ColumnNameUI"])).toBe(vars["ColumnNameExcel"]);
+  const bidRequestElem = new BidRequestPage(page);
+  const bidRequestsElem = new BidRequestsPage(page);
+
+  // ── Column Count Verification ─────────────────────────────────────────
+  log.step('Verifying column count matches between UI and Excel');
+  try {
+    vars["CountOfColumnsUI"] = String(await bidRequestsElem.Count_of_Columns_Request_list.count());
+    vars["CountOfColumnsExcel"] = String(excelHelper.getColumnCount(vars["File"], "0"));
+    log.info(`Column Count UI: ${vars["CountOfColumnsUI"]} Column Count Excel: ${vars["CountOfColumnsExcel"]}`);
+    expect(String(vars["CountOfColumnsUI"])).toBe(vars["CountOfColumnsExcel"]);
+    log.stepPass(`Column count matched — UI: "${vars["CountOfColumnsUI"]}", Excel: "${vars["CountOfColumnsExcel"]}"`);
+  } catch (e) {
+    await log.stepFail(page, 'Column count verification between UI and Excel failed');
+    throw e;
+  }
+
+  // ── Column Name Verification ──────────────────────────────────────────
+  log.step('Verifying each column name matches between UI and Excel');
+  try {
+    vars["count1"] = "0";
+    vars["count"] = "1";
+    while (parseFloat(String(vars["count"])) <= parseFloat(String(vars["CountOfColumnsUI"]))) {
+      log.info(`In While Loop: Column count -  ${vars["count"]}`);
+      vars["ColumnNameUI"] = await bidRequestElem.Individual_Column_Name(vars["count"]).textContent() || '';
+      vars["ColumnNameUI"] = String(vars["ColumnNameUI"]).replace(/\s+/g, '').trim();
+      vars["ColumnNameExcel"] = excelHelper.readCellByColAndRowIndex(vars["File"], 0, 0, vars["count1"]);
+      vars["ColumnNameExcel"] = String(vars["ColumnNameExcel"]).replace(/\s+/g, '').trim();
+      log.info(`UI - ${vars["ColumnNameUI"]} / Excel - ${vars["ColumnNameExcel"]}`);
+      if (String(vars["count"]) === String("6")) {
+        log.info(`Executing If condition for column ${vars["count"]}`);
+        expect(String(vars["ColumnNameExcel"])).toBe(vars["Execution Type Header"]);
+      } else if (String(vars["count"]) === String("1")) {
+        log.info(`Executing If condition for column ${vars["count"]}`);
+        expect(String(vars["ColumnNameExcel"])).toBe(vars["CCode Header"]);
+      } else if (String(vars["count"]) === String("2")) {
+        log.info(`Executing If condition for column ${vars["count"]}`);
+        expect(String(vars["ColumnNameExcel"])).toBe(vars["Bid Request ID Header"]);
+      } else {
+        expect(String(vars["ColumnNameUI"])).toBe(vars["ColumnNameExcel"]);
+      }
+      log.info(`Verification Successful ${vars["ColumnNameUI"]} == ${vars["ColumnNameExcel"]}`);
+      vars["count"] = (parseFloat(String("1")) + parseFloat(String(vars["count"]))).toFixed(0);
+      vars["count1"] = (parseFloat(String("1")) + parseFloat(String(vars["count1"]))).toFixed(0);
     }
-    vars["count"] = (parseFloat(String("1")) + parseFloat(String(vars["count"]))).toFixed(0);
-    vars["count1"] = (parseFloat(String("1")) + parseFloat(String(vars["count1"]))).toFixed(0);
+    log.stepPass('All column names matched between UI and Excel');
+  } catch (e) {
+    await log.stepFail(page, 'Column name verification between UI and Excel failed');
+    throw e;
   }
 }
+
 
 /**
  * Step Group: Creating New Header In Header Mapping Screen
