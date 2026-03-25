@@ -15,8 +15,8 @@ export class MarketThresholdPage {
     return this.page.locator("//input[@type=\"text\"]");
   }
 
-  get Last_Max_ValueBPS(): Locator {
-    return this.page.locator("//td[@data-title=\"Security Product\"]//div[contains(text(),\"$|ExpectedProductCode|\")]/../..//td[@data-title=\"Max Value (BPS)\"]");
+  Last_Max_ValueBPS(ExpectedProductCode:string): Locator {
+    return this.page.locator(`//td[@data-title=\"Security Product\"]//div[contains(text(),\"${ExpectedProductCode}\")]/../..//td[@data-title=\"Max Value (BPS)\"]`);
   }
 
   get Min_Display_Valuemarket_thresholds(): Locator {
@@ -27,28 +27,28 @@ export class MarketThresholdPage {
     return this.page.locator("//button[text()[normalize-space() = \"Remove selected\"]]");
   }
 
-  get Required_Edit_Threshold_Button(): Locator {
-    return this.page.locator("//td[@data-title=\"Security Product\"]//div[contains(text(),\"$|ExpectedProductCode|\")]/../..//button[@aria-label=\"Edit Map\"]");
+  Required_Edit_Threshold_Button(ExpectedProductCode:string): Locator {
+    return this.page.locator(`//td[@data-title=\"Security Product\"]//div[contains(text(),\"${ExpectedProductCode}\")]/../..//button[@aria-label=\"Edit Map\"]`);
   }
 
-  get Required_Market_Threshold_Checkbox(): Locator {
-    return this.page.locator("//td[@data-title=\"Security Product\"]//div[contains(text(),\"$|ExpectedProductCode|\")]/../..//input[@type=\"checkbox\"]");
+  Required_Market_Threshold_Checkbox(ExpectedProductCode:string): Locator {
+    return this.page.locator(`//td[@data-title=\"Security Product\"]//div[contains(text(),\"${ExpectedProductCode}\")]/../..//input[@type=\"checkbox\"]`);
   }
 
-  get Required_Max_Display_Value(): Locator {
-    return this.page.locator("//td[@data-title=\"Security Product\"]//div[contains(text(),\"$|ExpectedProductCode|\")]/../..//td[@data-title=\"Max Display Value\"]");
+  Required_Max_Display_Value(ExpectedProductCode:string): Locator {
+    return this.page.locator(`//td[@data-title=\"Security Product\"]//div[contains(text(),\"${ExpectedProductCode}\")]/../..//td[@data-title=\"Max Display Value\"]`);
   }
 
-  get Required_Min_Display_Value(): Locator {
-    return this.page.locator("//td[@data-title=\"Security Product\"]//div[contains(text(),\"$|ExpectedProductCode|\")]/../..//td[@data-title=\"Min Display Value\"]");
+  Required_Min_Display_Value(ExpectedProductCode:string): Locator {
+    return this.page.locator(`//td[@data-title=\"Security Product\"]//div[contains(text(),\"${ExpectedProductCode}\")]/../..//td[@data-title=\"Min Display Value\"]`);
   }
 
-  get Required_Min_Value_BPS(): Locator {
-    return this.page.locator("//td[@data-title=\"Security Product\"]//div[contains(text(),\"$|ExpectedProductCode|\")]/../..//td[@data-title=\"Min Value (BPS)\"]");
+  Required_Min_Value_BPS(ExpectedProductCode:string): Locator {
+    return this.page.locator(`//td[@data-title=\"Security Product\"]//div[contains(text(),\"${ExpectedProductCode}\")]/../..//td[@data-title=\"Min Value (BPS)\"]`);
   }
 
-  get Required_Threshold_Delete_Button(): Locator {
-    return this.page.locator("//td[@data-title=\"Security Product\"]//div[contains(text(),\"$|ExpectedProductCode|\")]/../..//button[@aria-label=\"Delete Map\"]");
+  Required_Threshold_Delete_Button(ExpectedProductCode:string): Locator {
+    return this.page.locator(`//td[@data-title=\"Security Product\"]//div[contains(text(),\"${ExpectedProductCode}\")]/../..//button[@aria-label=\"Delete Map\"]`);
   }
 
   get Unwanted_Market_Threshold_Record(): Locator {

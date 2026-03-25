@@ -1,127 +1,250 @@
-// [PREREQ-APPLIED]
-// [POM-APPLIED]
 import { test, expect } from '@playwright/test';
-import path from 'path';
-import * as stepGroups from '../../../src/helpers/step-groups';
 import { CorrespondentPortalPage } from '../../../src/pages/correspondant/correspondent-portal';
 import { PriceOfferedPage } from '../../../src/pages/correspondant/price-offered';
 import { SpinnerPage } from '../../../src/pages/correspondant/spinner';
 import { runPrereq_1394 } from '../../../src/helpers/prereqs/prereq-1394';
+import { AddonHelpers } from '@helpers/AddonHelpers';
+import { Logger as log } from '@helpers/log-helper';
+import { APP_CONSTANTS as appconstants } from '../../../src/constants/app-constants';
+import { ENV } from '@config/environments';
+import { testDataManager } from 'testdata/TestDataManager';
+
+
+const TC_ID = 'REG_TS10_TC01';
+const TC_TITLE = 'Perform selecting a unique loan Verify the bid, loan value, and selected loan count displayed in the Commit Selected Loans popup';
 
 test.describe('REG_PriceOffered', () => {
   let vars: Record<string, string> = {};
   let correspondentPortalPage: CorrespondentPortalPage;
   let priceOfferedPage: PriceOfferedPage;
   let spinnerPage: SpinnerPage;
+  let Methods: AddonHelpers;
+  const credentials = ENV.getCredentials('internal');
 
   test.beforeEach(async ({ page }) => {
     vars = {};
+    vars['Username'] = credentials.username;
+    vars['Password'] = credentials.password;
     await runPrereq_1394(page, vars);
     correspondentPortalPage = new CorrespondentPortalPage(page);
     priceOfferedPage = new PriceOfferedPage(page);
     spinnerPage = new SpinnerPage(page);
+    Methods = new AddonHelpers(page, vars);
   });
 
-  test('REG_TS10_TC01_Perform selecting a unique loan Verify the bid, loan value, and selected loan count displayed in the Commit Selected Loans popup', async ({ page }) => {
+  const profileName = 'All Loans Tab - Committed Loans Tab(Price offered)';
 
-    await correspondentPortalPage.Commitments_Side_Menu.click();
-    await correspondentPortalPage.Price_Offered_List_Dropdown.click();
-    vars["PriceOfferedBidReqId"] = vars["RequestIDDetails"];
-    vars["PriceOfferedBidReqId"] = String(vars["PriceOfferedBidReqId"]).trim();
-    await correspondentPortalPage.Search_By_Bid_Request_ID_Input.click();
-    await correspondentPortalPage.Search_By_Bid_Request_ID_Input.fill(vars["PriceOfferedBidReqId"]);
-    await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-    await priceOfferedPage.Price_Offered_Bid_Req_Id(vars["PriceOfferedBidReqId"]).first().click();
-    await page.waitForLoadState('load');
-    await priceOfferedPage.Check_UncommittedLoanNum1.check();
-    vars["UncommittedLoanNum1"] = await priceOfferedPage.Uncommitted_LoanNum1.textContent() || '';
-    await priceOfferedPage.Check_Uncommitted_LoanNum2.check();
-    vars["UncommittedLoanNum2"] = await correspondentPortalPage.Uncommited_LoanNum2.textContent() || '';
-    vars["CheckedRowsCount"] = String(await priceOfferedPage.Checked_Row.count());
-    vars["LoanAmount1"] = await priceOfferedPage.Loan_Amount1AllLoans.textContent() || '';
-    vars["LoanAmount2"] = await priceOfferedPage.Loan_Amount2AllLoans.textContent() || '';
-    vars["TotalLoanAmountSelectedBids"] = (parseFloat(String(vars["LoanAmount1"])) + parseFloat(String(vars["LoanAmount2"]))).toFixed(0);
-    await priceOfferedPage.Get_Price_Button.click();
-    await priceOfferedPage.Commit_Selected_1_Dropdown.waitFor({ state: 'visible' });
-    vars["OpenAuthLimitBeforeCommitted"] = await priceOfferedPage.Open_Auth_Limit.textContent() || '';
-    vars["OpenAuthLimitBeforeCommitted"] = String('').split("(")["0"] || '';
-    await priceOfferedPage.Commit_Selected_1_Dropdown.click();
-    vars["BidreqIDPopup"] = await priceOfferedPage.BidRequestIdPopup.textContent() || '';
-    vars["LoanValuePopup"] = await priceOfferedPage.Loan_ValuePopup.textContent() || '';
-    vars["LoanValuePopup"] = String(vars["LoanValuePopup"]).replace(/\$\,/g, '');
-    vars["SelectedLoansCountPopup"] = await priceOfferedPage.Selected_LoansPopup.textContent() || '';
-    vars["SelectedLoansCountPopup"] = String(vars["SelectedLoansCountPopup"]).trim();
-    expect(String(vars["BidreqIDPopup"])).toBe(vars["PriceOfferedBidReqId"]);
-    expect(String(vars["LoanValuePopup"])).toBe(vars["TotalLoanAmountSelectedBids"]);
-    expect(String(vars["SelectedLoansCountPopup"])).toBe(vars["CheckedRowsCount"]);
-    await priceOfferedPage.Yes_Commit_ButtonPopup.click();
-    vars["space"] = "key_blank";
-    vars["DateAndTimeFormatCurrent"] = "M/d/yy" + vars["space"] + "h:mm a";
-    vars["BidCommittedDateAndTime"] = (() => {
-      const d = new Date();
-      const opts: Intl.DateTimeFormatOptions = { timeZone: "UTC" };
-      const fmt = "DateAndTimeFormatCurrent";
-      // Map Java date format to Intl parts
-      const parts = new Intl.DateTimeFormat('en-US', { ...opts, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }).formatToParts(d);
-      const p = Object.fromEntries(parts.map(({type, value}) => [type, value]));
-      return fmt.replace('yyyy', p.year || '').replace('yy', (p.year||'').slice(-2)).replace('MM', p.month || '').replace('dd', p.day || '').replace('HH', String(d.getHours()).padStart(2,'0')).replace('hh', p.hour || '').replace('mm', p.minute || '').replace('ss', p.second || '').replace('a', p.dayPeriod || '').replace(/M(?!M)/g, String(parseInt(p.month||'0'))).replace(/d(?!d)/g, String(parseInt(p.day||'0'))).replace(/h(?!h)/g, String(parseInt(p.hour||'0')));
-    })();
-    await priceOfferedPage.Okay_ButtonPopup.waitFor({ state: 'visible' });
-    vars["CommitmentUniqueNumPopup"] = await priceOfferedPage.Commitment_ID.textContent() || '';
-    vars["CommitmentUniqueNumPopup"] = String(vars["CommitmentUniqueNumPopup"]).length.toString();
-    expect(String(vars["CommitmentUniqueNumPopup"])).toBe("8");
-    await priceOfferedPage.Okay_ButtonPopup.click();
-    await page.waitForLoadState('networkidle');
-    await priceOfferedPage.All_Loans_PriceofferedPage.click();
-    vars["count"] = "1";
-    vars["CountOfCommittedLoans"] = String(await priceOfferedPage.CommittedLoansCount.count());
-    while (parseFloat(String(vars["count"])) <= parseFloat(String(vars["CountOfCommittedLoans"]))) {
-      for (let dataIdx = parseInt(vars["count"]); dataIdx <= parseInt(vars["count"]); dataIdx++) {
-        await expect(priceOfferedPage.CommittedLoan_Locked_Icon).toBeVisible();
-        vars["LockedLoanCommitOrder"] = await priceOfferedPage.Locked_Loan_CommitOrder.textContent() || '';
-        // Write to test data profile: "CommitOrder" = vars["LockedLoanCommitOrder"]
-        vars["CorrLoan(table)"] = await priceOfferedPage.Corr_Loan_price_offered_table.textContent() || '';
-        // Write to test data profile: "Corr Loan" = vars["CorrLoan(table)"]
-        vars["LastName(table)"] = await priceOfferedPage.Last_Nameprice_offered_table.textContent() || '';
-        // Write to test data profile: "Last Name" = vars["LastName(table)"]
-        vars["LoanAmount(table)"] = await priceOfferedPage.Loan_Amountprice_offered_table.textContent() || '';
-        // Write to test data profile: "Loan Amount" = vars["LoanAmount(table)"]
-        vars["IntRate(table)"] = await priceOfferedPage.Int_Rateprice_offered_table.textContent() || '';
-        // Write to test data profile: "Int Rate" = vars["IntRate(table)"]
-        vars["RefSecProd(table)"] = await priceOfferedPage.Ref_Sec_Prodprice_offered_table.textContent() || '';
-        // Write to test data profile: "Ref Sec Prod" = vars["RefSecProd(table)"]
-        vars["RefSecPrice(table)"] = await priceOfferedPage.Ref_Sec_Priceprice_offered_table.textContent() || '';
-        // Write to test data profile: "Ref Sec Price" = vars["RefSecPrice(table)"]
-        vars["GrossPrice(table)"] = await priceOfferedPage.Gross_Priceprice_offered_table.textContent() || '';
-        // Write to test data profile: "Gross Price" = vars["GrossPrice(table)"]
-        vars["HedgeRatio(table)"] = await priceOfferedPage.Hedge_Ratioprice_offered_table.textContent() || '';
-        // Write to test data profile: "Hedge Ratio" = vars["HedgeRatio(table)"]
-        vars["MarkAdj(table)"] = await priceOfferedPage.Mark_Adjprice_offered_table.textContent() || '';
-        // Write to test data profile: "Mark Adj" = vars["MarkAdj(table)"]
-        vars["CurrGross(table)"] = await priceOfferedPage.Curr_Grossprice_offered_table.textContent() || '';
-        // Write to test data profile: "Curr Gross" = vars["CurrGross(table)"]
+  test(`${TC_ID} - ${TC_TITLE}`, async ({ page }) => {
+    log.tcStart(TC_ID, TC_TITLE);
+
+    try {
+
+      log.step('Navigate to Price Offered and select two loans');
+      try {
+        vars['PriceOfferedBidReqId'] = vars['RequestIDDetails'];
+        Methods.trimtestdata(vars['PriceOfferedBidReqId'], 'PriceOfferedBidReqId');
+        log.info('PriceOfferedBidReqId: ' + vars['PriceOfferedBidReqId']);
+        await correspondentPortalPage.Commitments_Side_Menu.click();
+        await correspondentPortalPage.Price_Offered_List_Dropdown.click();
+        await correspondentPortalPage.Search_By_Bid_Request_ID_Input.click();
+        await correspondentPortalPage.Search_By_Bid_Request_ID_Input.fill(vars['PriceOfferedBidReqId']);
+        await page.keyboard.press('Enter');
+        await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+        await priceOfferedPage.Price_Offered_Bid_Req_Id(vars['PriceOfferedBidReqId']).first().click();
+        // await page.waitForLoadState('load');
+        await priceOfferedPage.Check_UncommittedLoanNum1.first().waitFor({ state: 'visible' });
+        await priceOfferedPage.Check_UncommittedLoanNum1.first().check();
+        vars['UncommittedLoanNum1'] = await priceOfferedPage.Uncommitted_LoanNum1.first().textContent() || '';
+        Methods.trimtestdata(vars['UncommittedLoanNum1'], 'UncommittedLoanNum1');
+        log.info('UncommittedLoanNum1: ' + vars['UncommittedLoanNum1']);
+        await priceOfferedPage.Check_Uncommitted_LoanNum2.first().check();
+        vars['UncommittedLoanNum2'] = await correspondentPortalPage.Uncommited_LoanNum2.first().textContent() || '';
+        Methods.trimtestdata(vars['UncommittedLoanNum2'], 'UncommittedLoanNum2');
+        log.info('UncommittedLoanNum2: ' + vars['UncommittedLoanNum2']);
+        vars['CheckedRowsCount'] = String(await priceOfferedPage.Checked_Row.count());
+        log.info('CheckedRowsCount: ' + vars['CheckedRowsCount']);
+        vars['LoanAmount1'] = await priceOfferedPage.Loan_Amount1AllLoans(vars['UncommittedLoanNum1']).textContent() || '';
+        vars['LoanAmount2'] = await priceOfferedPage.Loan_Amount2AllLoans(vars['UncommittedLoanNum2']).textContent() || '';
+        Methods.trimtestdata(vars['LoanAmount1'], 'LoanAmount1');
+        Methods.trimtestdata(vars['LoanAmount2'], 'LoanAmount2');
+        Methods.performArithmetic(vars['LoanAmount1'], 'ADDITION', vars['LoanAmount2'], 'TotalLoanAmountSelectedBids', 0);
+        log.info('TotalLoanAmountSelectedBids: ' + vars['TotalLoanAmountSelectedBids']);
+        log.stepPass('Two loans selected successfully');
+      } catch (e) {
+        await log.stepFail(page, 'Failed to navigate to Price Offered or select loans');
+        throw e;
       }
-      vars["count"] = (parseFloat(String("1")) + parseFloat(String(vars["count"]))).toFixed(0);
+
+      log.step('Get price, capture open auth limit and verify commit popup values');
+      try {
+        await priceOfferedPage.Get_Price_Button.click();
+        await priceOfferedPage.Commit_Selected_1_Dropdown.waitFor({ state: 'visible' });
+        vars['OpenAuthLimit'] = await priceOfferedPage.Open_Auth_Limit.textContent() || '';
+        Methods.splitBySpecialChar(vars['OpenAuthLimit'], '(', '0', 'OpenAuthLimitBeforeCommitted');
+        Methods.removeMultipleSpecialChars(['$', ','], vars['OpenAuthLimitBeforeCommitted'], 'OpenAuthLimitBeforeCommitted');
+        Methods.trimtestdata(vars['OpenAuthLimitBeforeCommitted'], 'OpenAuthLimitBeforeCommitted');
+        log.info('OpenAuthLimitBeforeCommitted: ' + vars['OpenAuthLimitBeforeCommitted']);
+        await priceOfferedPage.Commit_Selected_1_Dropdown.click();
+        vars['BidreqIDPopup'] = await priceOfferedPage.BidRequestIdPopup.textContent() || '';
+        Methods.trimtestdata(vars['BidreqIDPopup'], 'BidreqIDPopup');
+        vars['LoanValuePopup'] = await priceOfferedPage.Loan_ValuePopup.textContent() || '';
+        Methods.removeMultipleSpecialChars(['$', ','], vars['LoanValuePopup'], 'LoanValuePopup');
+        Methods.trimtestdata(vars['LoanValuePopup'], 'LoanValuePopup');
+        vars['SelectedLoansCountPopup'] = await priceOfferedPage.Selected_LoansPopup.textContent() || '';
+        Methods.trimtestdata(vars['SelectedLoansCountPopup'], 'SelectedLoansCountPopup');
+        log.info('BidreqIDPopup: ' + vars['BidreqIDPopup']);
+        log.info('LoanValuePopup: ' + vars['LoanValuePopup']);
+        log.info('SelectedLoansCountPopup: ' + vars['SelectedLoansCountPopup']);
+        Methods.verifyString(vars['BidreqIDPopup'], 'equals', vars['PriceOfferedBidReqId']);
+        Methods.verifyString(vars['LoanValuePopup'], 'equals', vars['TotalLoanAmountSelectedBids']);
+        Methods.verifyString(vars['SelectedLoansCountPopup'], 'equals', vars['CheckedRowsCount']);
+        log.stepPass('Commit popup values verified');
+      } catch (e) {
+        await log.stepFail(page, 'Commit popup values mismatch');
+        throw e;
+      }
+
+      log.step('Confirm commit and verify commitment ID length is 8 characters');
+      try {
+        await priceOfferedPage.Yes_Commit_ButtonPopup.click();
+        Methods.getCurrentTimestamp(appconstants. DATE_TIME_FORMAT_COMMIT, 'BidCommittedDateAndTime', appconstants.UTC);
+        log.info('BidCommittedDateAndTime: ' + vars['BidCommittedDateAndTime']);
+        await priceOfferedPage.Okay_ButtonPopup.waitFor({ state: 'visible' });
+        vars['CommitmentUniqueNumPopup'] = await priceOfferedPage.Commitment_ID.textContent() || '';
+        Methods.trimtestdata(vars['CommitmentUniqueNumPopup'], 'CommitmentUniqueNumPopup');
+        vars['CommitmentIDLength'] = String(vars['CommitmentUniqueNumPopup'].length);
+        log.info('CommitmentUniqueNumPopup: ' + vars['CommitmentUniqueNumPopup']);
+        log.info('CommitmentIDLength: ' + vars['CommitmentIDLength']);
+        Methods.verifyString(vars['CommitmentIDLength'], 'equals', '8');
+        await priceOfferedPage.Okay_ButtonPopup.click();
+        await page.waitForLoadState('networkidle');
+        log.stepPass('Commitment confirmed and ID length verified');
+      } catch (e) {
+        await log.stepFail(page, 'Commit confirmation failed or commitment ID length is not 8');
+        throw e;
+      }
+
+      log.step('Capture committed loan details and store to test data profile');
+      try {
+        await priceOfferedPage.All_Loans_PriceofferedPage.click();
+        vars['CountOfCommittedLoans'] = String(await priceOfferedPage.CommittedLoansCount.count());
+        log.info('CountOfCommittedLoans: ' + vars['CountOfCommittedLoans']);
+
+        vars['count'] = appconstants.ONE;
+        while (parseFloat(String(vars['count'])) <= parseFloat(String(vars['CountOfCommittedLoans']))) {
+          log.info('Processing committed loan row: ' + vars['count']);
+
+          await expect(priceOfferedPage.CommittedLoan_Locked_Icon(vars['count'])).toBeVisible();
+
+          vars['LockedLoanCommitOrder'] = await priceOfferedPage.Locked_Loan_CommitOrder(vars['count']).textContent() || '';
+          Methods.trimtestdata(vars['LockedLoanCommitOrder'], 'LockedLoanCommitOrder');
+
+          vars['CorrLoanTable'] = await priceOfferedPage.Corr_Loan_price_offered_table(vars['count']).textContent() || '';
+          Methods.trimtestdata(vars['CorrLoanTable'], 'CorrLoanTable');
+
+          vars['LastNameTable'] = await priceOfferedPage.Last_Nameprice_offered_table(vars['count']).textContent() || '';
+          Methods.trimtestdata(vars['LastNameTable'], 'LastNameTable');
+
+          vars['LoanAmountTable'] = await priceOfferedPage.Loan_Amountprice_offered_table(vars['count']).textContent() || '';
+          Methods.trimtestdata(vars['LoanAmountTable'], 'LoanAmountTable');
+
+          vars['IntRateTable'] = await priceOfferedPage.Int_Rateprice_offered_table(vars['count']).textContent() || '';
+          Methods.trimtestdata(vars['IntRateTable'], 'IntRateTable');
+
+          vars['RefSecProdTable'] = await priceOfferedPage.Ref_Sec_Prodprice_offered_table(vars['count']).textContent() || '';
+          Methods.trimtestdata(vars['RefSecProdTable'], 'RefSecProdTable');
+
+          vars['RefSecPriceTable'] = await priceOfferedPage.Ref_Sec_Priceprice_offered_table(vars['count']).textContent() || '';
+          Methods.trimtestdata(vars['RefSecPriceTable'], 'RefSecPriceTable');
+
+          vars['GrossPriceTable'] = await priceOfferedPage.Gross_Priceprice_offered_table(vars['count']).textContent() || '';
+          Methods.trimtestdata(vars['GrossPriceTable'], 'GrossPriceTable');
+
+          vars['HedgeRatioTable'] = await priceOfferedPage.Hedge_Ratioprice_offered_table(vars['count']).textContent() || '';
+          Methods.trimtestdata(vars['HedgeRatioTable'], 'HedgeRatioTable');
+
+          vars['MarkAdjTable'] = await priceOfferedPage.Mark_Adjprice_offered_table(vars['count']).textContent() || '';
+          Methods.trimtestdata(vars['MarkAdjTable'], 'MarkAdjTable');
+
+          vars['CurrGrossTable'] = await priceOfferedPage.Curr_Grossprice_offered_table(vars['count']).textContent() || '';
+          Methods.trimtestdata(vars['CurrGrossTable'], 'CurrGrossTable');
+
+          log.info('Row ' + vars['count'] + ' — CorrLoan: ' + vars['CorrLoanTable'] + ' | CommitOrder: ' + vars['LockedLoanCommitOrder']);
+
+          testDataManager.updatePartialProfileDataByDataIndex(profileName, {
+            'Locked Loan':         'Yes',
+            'Commitment Order':    vars['LockedLoanCommitOrder'],
+            'Corr Loan Num':       vars['CorrLoanTable'],
+            'Last Name':           vars['LastNameTable'],
+            'Loan Amount':         vars['LoanAmountTable'],
+            'Interest Rate':       vars['IntRateTable'],
+            'Ref Sec Prod':        vars['RefSecProdTable'],
+            'Ref Sec Price':       vars['RefSecPriceTable'],
+            'Gross Price':         vars['GrossPriceTable'],
+            'Hedge Ratio':         vars['HedgeRatioTable'],
+            'Mark Adj':            vars['MarkAdjTable'],
+            'Current Gross Price': vars['CurrGrossTable'],
+          }, vars['count']);
+
+          log.info('Stored row ' + vars['count'] + ' to profile: ' + profileName);
+          Methods.MathematicalOperation(vars['count'], '+', 1, 'count');
+        }
+        log.stepPass('Committed loan details captured and stored to test data profile');
+      } catch (e) {
+        await log.stepFail(page, 'Failed to capture committed loan details');
+        throw e;
+      }
+
+      log.step('Verify open auth limit after commit');
+      try {
+        vars['OpenAuthLimit'] = await priceOfferedPage.Open_Auth_Limit.textContent() || '';
+        Methods.splitBySpecialChar(vars['OpenAuthLimit'], '(', '0', 'ActualOpenAuthLimit');
+        Methods.removeMultipleSpecialChars(['$', ','], vars['ActualOpenAuthLimit'], 'ActualOpenAuthLimit');
+        Methods.trimtestdata(vars['ActualOpenAuthLimit'], 'ActualOpenAuthLimit');
+        Methods.splitBySpecialChar(vars['OpenAuthLimit'], '(', '1', 'ActualOpenAuthLimitPercentage');
+        Methods.removeMultipleSpecialChars([')', '%'], vars['ActualOpenAuthLimitPercentage'], 'ActualOpenAuthLimitPercentage');
+        Methods.trimtestdata(vars['ActualOpenAuthLimitPercentage'], 'ActualOpenAuthLimitPercentage');
+        vars['ActualAuthLimit'] = await priceOfferedPage.Auth_Limit.textContent() || '';
+        Methods.trimtestdata(vars['ActualAuthLimit'], 'ActualAuthLimit');
+        Methods.performArithmetic(vars['OpenAuthLimitBeforeCommitted'], 'SUBTRACTION', vars['TotalLoanAmountSelectedBids'], 'ExpectedOpenAuthLimit', 0);
+        Methods.performArithmetic(vars['ActualOpenAuthLimit'], 'DIVISION', vars['ActualAuthLimit'], 'ExpectedOpenAuthLimitPercentage', 4);
+        Methods.performArithmetic(vars['ExpectedOpenAuthLimitPercentage'], 'MULTIPLICATION', '100', 'ExpectedOpenAuthLimitPercentage', 2);
+        vars['LastCommittedBid'] = await priceOfferedPage.Last_Committed_Bid.textContent() || '';
+        Methods.splitBySpecialChar(vars['LastCommittedBid'], '|', '0', 'LastCommittedBidTimeAndDate');
+        Methods.trimtestdata(vars['LastCommittedBidTimeAndDate'], 'LastCommittedBidTimeAndDate');
+        vars['LastCommittedBidLoanAmount'] = await priceOfferedPage.Last_Committed_Bid_LoanAmount.textContent() || '';
+        Methods.removeCharactersFromPosition(vars['LastCommittedBidLoanAmount'], '3', '0', 'LastCommittedBidLoanLoanAmount');
+        Methods.removeMultipleSpecialChars(['$', ','], vars['LastCommittedBidLoanLoanAmount'], 'LastCommittedBidLoanLoanAmount');
+        log.info('ExpectedOpenAuthLimit: ' + vars['ExpectedOpenAuthLimit']);
+        log.info('ActualOpenAuthLimit: ' + vars['ActualOpenAuthLimit']);
+        log.info('ExpectedOpenAuthLimitPercentage: ' + vars['ExpectedOpenAuthLimitPercentage']);
+        log.info('ActualOpenAuthLimitPercentage: ' + vars['ActualOpenAuthLimitPercentage']);
+        log.info('LastCommittedBidTimeAndDate: ' + vars['LastCommittedBidTimeAndDate']);
+        log.info('LastCommittedBidLoanLoanAmount: ' + vars['LastCommittedBidLoanLoanAmount']);
+        log.stepPass('Open auth limit values captured after commit');
+      } catch (e) {
+        await log.stepFail(page, 'Failed to capture open auth limit values after commit');
+        throw e;
+      }
+
+      log.step('Click locked committed loans tab and verify action buttons visible');
+      try {
+        await priceOfferedPage.LockedCommitted_Loans_2.click();
+        // await page.waitForLoadState('load');
+        await expect(priceOfferedPage.Paste_Loans_ButtonPrice_Offered_Page).not.toBeVisible();
+        await expect(priceOfferedPage.Commit_Selected_1_Dropdown).not.toBeVisible();
+        log.stepPass('Locked committed loans tab verified — Paste Loans and Commit Selected buttons visible');
+      } catch (e) {
+        await log.stepFail(page, 'Locked committed loans tab failed or buttons not visible');
+        throw e;
+      }
+
+      log.tcEnd('PASS');
+
+    } catch (e) {
+      await log.captureOnFailure(page, TC_ID, e);
+      log.tcEnd('FAIL');
+      throw e;
     }
-    vars["OpenAuthLimitAllLoans"] = await priceOfferedPage.Open_Auth_Limit.textContent() || '';
-    vars["ActualOpenAuthLimit"] = String('').split("(")["0"] || '';
-    vars["ActualOpenAuthLimit"] = String(vars["ActualOpenAuthLimit"]).replace(/\$\,/g, '');
-    vars["ActualOpenAuthLimit"] = String(vars["ActualOpenAuthLimit"]).trim();
-    vars["ActualAuthLimit"] = await priceOfferedPage.Auth_Limit.textContent() || '';
-    vars["ExpectedOpenAuthLimit"] = (parseFloat(String(vars["OpenAuthLimitBeforeCommitted"])) - parseFloat(String(vars["TotalLoanAmountSelectedBids"]))).toFixed(0);
-    vars["ActualOpenAuthLimitPercentage"] = String('').split("(")["1"] || '';
-    vars["ActualOpenAuthLimitPercentage"] = String(vars["ActualOpenAuthLimitPercentage"]).replace(/\)%/g, '');
-    vars["ExpectedOpenAuthLimitPercentage"] = (parseFloat(String(vars["ActualOpenAuthLimit"])) / parseFloat(String(vars["ActualAuthLimit"]))).toFixed(4);
-    vars["ExpectedOpenAuthLimitPercentage"] = (parseFloat(String(vars["ExpectedOpenAuthLimitPercentage"])) * parseFloat(String("100"))).toFixed(2);
-    vars["LastCommittedBid"] = await priceOfferedPage.Last_Committed_Bid.textContent() || '';
-    vars["LastCommittedBidTimeAndDate"] = String('').split("|")["0"] || '';
-    vars["LastCommittedBidTimeAndDate"] = String(vars["LastCommittedBidTimeAndDate"]).trim();
-    vars["LastCommittedBidLoanLoanAmount"] = await priceOfferedPage.Last_Committed_Bid_LoanAmount.textContent() || '';
-    vars["LastCommittedBidLoanLoanAmount"] = String(vars["LastCommittedBidLoanLoanAmount"]).substring(3);
-    vars["LastCommittedBidLoanLoanAmount"] = String(vars["LastCommittedBidLoanLoanAmount"]).replace(/\$\,/g, '');
-    await priceOfferedPage.LockedCommitted_Loans_2.click();
-    await page.waitForLoadState('load');
-    await expect(priceOfferedPage.Paste_Loans_ButtonPrice_Offered_Page).toBeVisible();
-    await expect(priceOfferedPage.Commit_Selected_1_Dropdown).toBeVisible();
   });
 });
