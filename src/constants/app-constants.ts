@@ -77,4 +77,5 @@ export const APP_CONSTANTS = {
   MARKET_ADJ_REASON_TEXT:"is greater than market threshold value",
   ONE_HUNDRED_TWEENTY:'120',
   STANDARD_TEXT:"Standard",
+  ADD_TO_COMMIT_TEXT:'Add to Commit',
 };
