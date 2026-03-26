@@ -1,5 +1,5 @@
 // [POM-APPLIED]
-import { test, expect, Page } from '@playwright/test';
+import { test, expect} from '@playwright/test';
 import path from 'path';
 import * as stepGroups from '../../../src/helpers/step-groups';
 import { CorrespondentPortalPage } from '../../../src/pages/correspondant/correspondent-portal';
@@ -14,6 +14,8 @@ import { AddonHelpers } from '../../../src/helpers/AddonHelpers';
 import { testDataManager } from 'testdata/TestDataManager';
 import { uploadFile } from '../../../src/helpers/file-helpers';
 import { Logger as log } from '../../../src/helpers/log-helper';
+import { APP_CONSTANTS as appconstants } from '../../../src/constants/app-constants';
+import { ENV } from '@config/environments'
 
 const TC_ID = "REG_TS01_TC05";
 const TC_TITLE = "Verify that user should be able to upload only xls, xlsx, csv and txt files and we should not allow the user to upload any other file if tried uploading then it should display the error";
@@ -29,6 +31,7 @@ test.describe('REG_Bid Maps', () => {
   let selectAllCheckboxPage: SelectAllCheckboxPage;
   let spinnerPage: SpinnerPage;
   let helpers: AddonHelpers;
+  const credentials = ENV.getCredentials('internal');
 
   test.beforeEach(async ({ page }) => {
     vars = {};
@@ -47,6 +50,8 @@ test.describe('REG_Bid Maps', () => {
     log.tcStart(TC_ID, TC_TITLE);
 
     try {
+      vars["Username"] = credentials.username;
+      vars["Password"] = credentials.password;
       log.step("Step 1: Login to CORR Portal");
       try {
         await stepGroups.stepGroup_Login_to_CORR_Portal(page, vars);
@@ -73,7 +78,7 @@ test.describe('REG_Bid Maps', () => {
       try {
         await correspondentPortalPage.Add_New_Mapping_Button.click();
         await expect(headingCreateNewMapPage.Create_New_Map).toBeVisible();
-        helpers.getCurrentTimestamp('dd/MM/yyyy/HH:mm:ss', 'CurrentDate');
+        helpers.getCurrentTimestamp(appconstants.DATE_FORMAT_SLASH, 'CurrentDate');
         helpers.concatenate('Testsigma_', vars['CurrentDate'], 'Create New Map');
         await correspondentPortalPage.Create_New_Map_Field.fill(vars["Create New Map"]);
         vars["BidMap"] = await correspondentPortalPage.Create_New_Map_Field.inputValue() || '';
@@ -157,7 +162,7 @@ test.describe('REG_Bid Maps', () => {
         log.stepFail(page, "Step 8 failed: Failed to upload or delete TXT file");
         throw error;
       }
-      
+
       log.step("Step 9: Upload PDF file and verify error message");
       try {
         await correspondentPortalPage.Upload_File.setInputFiles(path.join(process.cwd(), 'uploads', 'Bid_Maps_File_Pdf.pdf'));

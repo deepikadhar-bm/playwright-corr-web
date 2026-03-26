@@ -217,8 +217,8 @@ export class CorrPortalPage {
     return this.page.locator("//a[@href=\"#/admin/general-settings/bidmap-creation\"]");
   }
 
-  get Bid_Map_Name_Field_In_Row(): Locator {
-    return this.page.locator("//td[@data-title=\"Map Name\"]//button[text()=\" $|Create New Map| \"]");
+  get_Bid_Map_Name_Field_In_Row(CreateNewMap:string): Locator {
+    return this.page.locator(`//td[@data-title=\"Map Name\"]//button[text()=\" ${CreateNewMap} \"]`);
   }
 
   get Bid_Mapping_ID_Dropdown(): Locator {
@@ -322,7 +322,9 @@ export class CorrPortalPage {
   }
 
   get CLM_Field_Name(): Locator {
-    return this.page.locator("//div[text()='CLM Field Name']//..//..//select");
+    // return this.page.locator("//div[text()='CLM Field Name']//..//..//select");
+    return this.page.locator(`//div[contains(@class, 'd-flex') and contains(@class, 'small')]/following-sibling::div[contains(@class, 'd-flex')]//select[contains(@class, 'form-select')]`);
+
   }
 
   get_Category_In_Dropdown(categoryName: string): Locator {
@@ -590,7 +592,7 @@ export class CorrPortalPage {
   }
 
   get Company_Name_ChaseDirect(): Locator {
-    return this.page.locator("//td[contains(.,\"Allowed\") and @data-title=\"Chase Direct\"]/../td[@data-title=\"Company Name\"]");
+    return this.page.locator(`//td[@data-title="Chase Direct"]/../td[@data-title="Company Name" and contains(text(),'Freedom')]`);
   }
 
   get Company_Name_ChaseDirect_FirstRow(): Locator {
@@ -1720,8 +1722,8 @@ export class CorrPortalPage {
     return this.page.locator("//div[text()[normalize-space() = \"Select\"]]");
   }
 
-  get Select_Company_Names(): Locator {
-    return this.page.locator("//span[@class='pl-2'][contains(.,'@|Company name 1|')]");
+  get_Select_Company_Names(CompanyName1:string): Locator {
+    return this.page.locator(`//span[@class='pl-2'][contains(.,'${CompanyName1}')]`);
   }
 
   get Select_Companys_Dropdown(): Locator {

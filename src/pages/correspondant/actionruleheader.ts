@@ -8,7 +8,7 @@ export class ActionruleheaderPage {
   constructor(private page: Page) {}
 
   get Action_Chase_Field_Name_1(): Locator {
-    return this.page.locator("(//div[@class=\"row rules-actions\"]//div[@class=\"col-4\"]//select)[1]");
+    return this.page.locator(`(//div[@class=\"row rules-actions\"]//div[@class=\"col-4\"]//select)[1]`);
   }
 
   get Action_Chasename_1(): Locator {

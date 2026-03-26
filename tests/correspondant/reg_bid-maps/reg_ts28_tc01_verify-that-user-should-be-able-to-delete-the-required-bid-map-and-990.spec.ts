@@ -21,6 +21,8 @@ import { ENV } from '@config/environments';
 import { testDataManager } from 'testdata/TestDataManager';
 import { Logger as log } from '../../../src/helpers/log-helper';
 import { uploadFile } from '../../../src/helpers/file-helpers';
+import { APP_CONSTANTS as appconstants } from '../../../src/constants/app-constants';
+
 
 const TC_ID = "REG_TS28_TC01";
 const TC_TITLE = "Verify that user should be able to delete the required bid map and create a new one using the same name.";
@@ -92,7 +94,7 @@ test.describe('REG_Bid Maps', () => {
       try {
         await correspondentPortalPage.Administration_Menu.click();
         await correspondentPortalPage.Bid_Maps_Menu.click();
-        await stepGroups.stepGroup_Creation_Of_Bid_Map_Upto_Header_Mapping(page, vars);
+        await stepGroups.stepGroup_Creation_Of_Bid_Map_Upto_Header_Mapping(page, vars,"DeepikaAugBidQA_(3)_(1)_(1)_(2).xlsx");
         log.stepPass("Step 2 passed: Bid Map created up to header mapping.");
       } catch (error) {
         log.stepFail(page, "Step 2 failed: Unable to create Bid Map.");
@@ -130,8 +132,8 @@ test.describe('REG_Bid Maps', () => {
         await page.reload();
         await statusInactive2Page.SearchFilter_Fields.click();
         await statusInactive2Page.SearchFilter_Fields.pressSequentially(vars["CreateNewMap"]);
-        await page.getByText(vars["CreateNewMap"]).last().hover();
-        await showAllPage.Show_All_2.hover();
+        // await page.getByText(vars["CreateNewMap"]).last().hover();
+        // await showAllPage.Show_All_2.hover();
         await deleteIdPage.Click_on_Show_All.click();
         await deleteMapPage.Delete_Option.click();
         await correspondentPortalPage.Yes_Proceed_Button.click();

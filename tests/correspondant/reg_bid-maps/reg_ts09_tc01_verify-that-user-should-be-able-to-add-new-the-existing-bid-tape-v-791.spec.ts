@@ -8,6 +8,8 @@ import { SpinnerPage } from '../../../src/pages/correspondant/spinner';
 import { ENV } from '@config/environments'
 import { Logger as log } from '../../../src/helpers/log-helper';
 import { testDataManager } from 'testdata/TestDataManager';
+import { APP_CONSTANTS as appconstants } from '../../../src/constants/app-constants';
+
 
 const TC_ID = "REG_TS09_TC01";
 const TC_TITLE = "Verify that user should be able to Add new the existing bid tape value under the enum and also should be able to update the chase values";
@@ -47,7 +49,7 @@ test.describe('Unassigned', () => {
             }
         await stepGroups.stepGroup_Login_to_CORR_Portal(page, vars);
         await stepGroups.stepGroup_Smart_Mapper_from_Off_to_On(page, vars);
-        await stepGroups.stepGroup_Creation_Of_Bid_Map_Upto_Header_Mapping(page, vars);
+        await stepGroups.stepGroup_Creation_Of_Bid_Map_Upto_Header_Mapping(page, vars,"DeepikaAugBidQA_(3)_(1)_(1)_(2).xlsx");
         await expect(correspondentPortalPage.Rules_and_Actions_Step_4_of_4).toBeVisible();
         log.stepPass("Step 1 passed: Logged in, enabled Smart Mapper, and navigated to Rules and Actions step.");
       } catch (error) {

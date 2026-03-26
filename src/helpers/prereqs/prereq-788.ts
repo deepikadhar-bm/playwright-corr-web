@@ -64,13 +64,13 @@ export async function runPrereq_788(page: Page, vars: Record<string, string>): P
   vars["First Active Rule Name"] = await rulesAndActionsPage.First_Rule_Name_Field.inputValue() || '';
   vars["First Active Rule Multiselected Value"] = await importRulePage.First_Active_Rule_Multiselected_Value.textContent() || '';
   vars["Bid Field Selected Option From Active 1st Rule"] = await importRulePage.Bid_Field_Selected_Option_From_Active_1st_Rule.textContent() || '';
-  vars[" Bid Enumerated Tape Value Selected Option From Active 1st Rule"] = await importRulePage.Bid_Enumerated_Tape_Value_Selected_Option_From_Active_1st_Rule.textContent() || '';
+  vars["Bid Enumerated Tape Value Selected Option From Active 1st Rule"] = await importRulePage.Bid_Enumerated_Tape_Value_Selected_Option_From_Active_1st_Rule.textContent() || '';
   vars["Chase Field Name Selected Option From Active 1st Rule"] = await importRulePage.Chase_Field_Name_Selected_Option_From_Active_1st_Rule.evaluate(el => { const s = el as HTMLSelectElement; return s.options[s.selectedIndex]?.text || ''; });
   vars["Chase Value Selected Option From Active 1st Rule"] = await importRulePage.Chase_Value_Selected_Option_From_Active_1st_Rule.evaluate(el => { const s = el as HTMLSelectElement; return s.options[s.selectedIndex]?.text || ''; });
   vars["Second Active Rule Name"] = await statusInactive2Page.Rule_Name.inputValue() || '';
   vars["Second Active Rule Multiselected Value"] = await rulesAndActionsPage.Select_Category_DropdownDuplicated.textContent() || '';
   vars["Bid Field Selected Option From Active 2nd Rule"] = await importRulePage.Bid_Field_Selected_Option_From_Active_2nd_Rule.textContent() || '';
-  vars[" Bid Enumerated Tape Value Selected Option From Active 2nd Rule"] = await importRulePage.Bid_Enumerated_Tape_Value_Selected_Option_From_Active_2nd_Rule.textContent() || '';
+  vars["Bid Enumerated Tape Value Selected Option From Active 2nd Rule"] = await importRulePage.Bid_Enumerated_Tape_Value_Selected_Option_From_Active_2nd_Rule.textContent() || '';
   vars["Chase Field Name Selected Option From Active 2nd Rule"] = await importRulePage.Chase_Field_Name_Selected_Option_From_Active_2nd_Rule.evaluate(el => { const s = el as HTMLSelectElement; return s.options[s.selectedIndex]?.text || ''; });
   vars["Chase Value Selected Option From Active 2nd Rule"] = await importRulePage.Chase_Value_Selected_Option_From_Active_2nd_Rule.evaluate(el => { const s = el as HTMLSelectElement; return s.options[s.selectedIndex]?.text || ''; });
   await saveAndPublishButtonPage.Save_and_Publish_Button.click();
@@ -99,7 +99,7 @@ export async function runPrereq_788(page: Page, vars: Record<string, string>): P
   vars["Draft Rule Name"] = await statusInactivePage.Enter_Rule_Name.inputValue() || '';
   vars["Draft Rule Multiselected Value"] = await importRulePage.Draft_Rule_Multiselected_Value.textContent() || '';
   vars["Bid Field Selected Option From Draft Rule"] = await importRulePage.Bid_Field_Selected_Option_From_Draft_Rule.textContent() || '';
-  vars[" Bid Enumerated Tape Value Selected Option From Draft Rule"] = await importRulePage.Bid_Enumerated_Tape_Value_Selected_Option_From_Draft_Rule.textContent() || '';
+  vars["Bid Enumerated Tape Value Selected Option From Draft Rule"] = await importRulePage.Bid_Enumerated_Tape_Value_Selected_Option_From_Draft_Rule.textContent() || '';
   vars["Chase Field Name Selected Option From Draft Rule"] = await importRulePage.Chase_Field_Name_Selected_Option_From_Draft_Rule.evaluate(el => { const s = el as HTMLSelectElement; return s.options[s.selectedIndex]?.text || ''; });
   vars["Chase Value Selected Option From Draft Rule"] = await importRulePage.Chase_Value_Selected_Option_From_Draft_Rule.evaluate(el => { const s = el as HTMLSelectElement; return s.options[s.selectedIndex]?.text || ''; });
   await correspondentPortalPage.Save_Draft_Button1.click();

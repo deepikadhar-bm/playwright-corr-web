@@ -179,8 +179,8 @@ export class ChaseFieldNamePage {
     return this.page.locator("(//div[text()=\"First Time Home Buyer\"]/../..//select[@id=\"id\"])[1]");
   }
 
-  get Header_2(): Locator {
-    return this.page.locator("(//div[contains(@class,\"gap-2 header-grid-layout\")]//div[@class=\"flex-grow-1\" and text()=\"$|SecondHeaderName|\"])[1]/..//input");
+  get_Header_2(SecondHeaderName:string): Locator {
+    return this.page.locator(`(//div[contains(@class,\"gap-2 header-grid-layout\")]//div[@class=\"flex-grow-1\" and text()=\"${SecondHeaderName}\"])[1]/..//input`);
   }
 
   get Individual_Company_in_Customer_permission(): Locator {
