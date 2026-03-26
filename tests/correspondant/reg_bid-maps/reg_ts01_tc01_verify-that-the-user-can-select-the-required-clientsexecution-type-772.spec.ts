@@ -1,5 +1,5 @@
 // [POM-APPLIED]
-import { test, expect, Page } from '@playwright/test';
+import { test, expect } from '@playwright/test';
 import * as stepGroups from '../../../src/helpers/step-groups';
 import { CorrespondentPortalPage } from '../../../src/pages/correspondant/correspondent-portal';
 import { HeaderMappingPage } from '../../../src/pages/correspondant/header-mapping';
@@ -16,6 +16,8 @@ import { AddonHelpers } from '../../../src/helpers/AddonHelpers';
 import { uploadFile } from '../../../src/helpers/file-helpers';
 import { Logger as log } from '../../../src/helpers/log-helper';
 import { ENV } from '@config/environments'
+import { APP_CONSTANTS as appconstants } from '../../../src/constants/app-constants';
+
 
 const TC_ID = "REG_TS01_TC01";
 const TC_TITLE = "Verify that the user can select the required clients/execution type and upload a file with the necessary headers for map creation."
@@ -91,12 +93,11 @@ test.describe('REG_Bid Maps', () => {
       try {
         await correspondentPortalPage.Add_New_Mapping_Button.click();
         await expect(headingCreateNewMapPage.Create_New_Map).toBeVisible();
-        helpers.getCurrentTimestamp('dd/MM/yyyy/HH:mm:ss', 'CurrentDate');
-        helpers.concatenate('Testsigma_', vars['CurrentDate'], 'Create New Map');
+        helpers.getCurrentTimestamp(appconstants.DATE_FORMAT_SLASH, 'CurrentDate');
+        helpers.concatenate(appconstants.Testsigma_, vars['CurrentDate'], 'Create New Map');
         await correspondentPortalPage.Create_New_Map_Field.pressSequentially(vars["Create New Map"]);
         await correspondentPortalPage.Create_Button.click();
         await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-        await page.waitForTimeout(5000);
         helpers.verifyElementContainsTextIgnoreCase(p2142530YrFreddieMacFixedDropdownPage.Bid_Maps_Name, vars["Create New Map"]);
         log.stepPass("Step 3 passed: New Bid Map created successfully with name: " + vars["Create New Map"]);
       } catch (error) {
@@ -140,9 +141,7 @@ test.describe('REG_Bid Maps', () => {
         log.stepFail(page, "Step 6 failed: Failed to map headers and proceed to next page");
         throw error;
       }
-
       log.tcEnd('PASS');
-
     } catch (error) {
       log.captureOnFailure(page, TC_ID, error);
       log.tcEnd('FAIL');

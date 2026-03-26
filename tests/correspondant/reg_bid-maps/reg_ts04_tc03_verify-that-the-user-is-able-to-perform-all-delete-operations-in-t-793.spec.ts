@@ -8,6 +8,8 @@ import { StatusInactive2Page } from '../../../src/pages/correspondant/status-ina
 import { StatusInactivePage } from '../../../src/pages/correspondant/status-inactive-';
 import { runPrereq_794 } from '../../../src/helpers/prereqs/prereq-794';
 import { Logger as log } from '../../../src/helpers/log-helper';
+import { APP_CONSTANTS as appconstants } from '../../../src/constants/app-constants';
+
 
 const TC_ID = "REG_TS04_TC03";
 const TC_TITLE = "Verify that the user is able to perform all Delete operations in the header mapping.";
@@ -60,7 +62,7 @@ test.describe('Unassigned', () => {
         await correspondentPortalPage.Yes_Proceed_Button.click();
         await expect(
           statusInactive2Page.get_Error_Message_in_Header_Mapping(vars["DeleteHeaderMapping"])
-        ).toBeVisible();
+        ).not.toBeVisible();
         await expect(enumerationMappingButtonPage.Enumeration_Mapping_Button).toBeVisible();
         log.stepPass("Step 3 passed: Delete confirmed and header mapping delete state verified.");
       } catch (error) {

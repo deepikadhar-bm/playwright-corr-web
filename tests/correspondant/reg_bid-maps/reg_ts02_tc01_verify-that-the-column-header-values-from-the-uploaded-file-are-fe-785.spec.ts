@@ -20,6 +20,7 @@ import { AddonHelpers } from '../../../src/helpers/AddonHelpers';
 import { uploadFile } from '../../../src/helpers/file-helpers';
 import { getRowDataWithCommaSeperator } from '../../../src/helpers/excel-helpers';
 import { Logger as log } from '../../../src/helpers/log-helper';
+import { APP_CONSTANTS as appconstants } from '../../../src/constants/app-constants';
 
 const TC_ID = "REG_TS02_TC01";
 const TC_TITLE = "Verify that the column header values from the uploaded file are fetched and displayed as bid sample field names in the header mapping screen."
@@ -69,7 +70,7 @@ test.describe('REG_Bid Maps', () => {
       log.step("Step 1: Prepare test data");
       try {
         if (profile && profile.data) {
-          const companyName1 = profile.data[0]["Company name 1"];
+          const companyName1 = profile.data[0]["CompanyName1"];
           vars["Company name 1"] = companyName1;
           const uploadText = profile.data[0]['Upload File Text Verification'];
           vars["Upload File Text Verification"] = uploadText;
@@ -109,8 +110,8 @@ test.describe('REG_Bid Maps', () => {
         await correspondentPortalPage.Add_New_Mapping_Button.click();
         await expect(headingCreateNewMapPage.Create_New_Map).toBeVisible();
 
-        Helpers.getCurrentTimestamp("dd/MM/yyyy/HH:mm:ss", "Current Date", "Asia/Kolkata");
-        Helpers.concatenate("Testsigma_", vars["Current Date"], "CreateNewMap");
+        Helpers.getCurrentTimestamp(appconstants.DATE_FORMAT_SLASH, "Current Date", appconstants.ASIA_KOLKATA);
+        Helpers.concatenate(appconstants.Testsigma_, vars["Current Date"], "CreateNewMap");
 
         log.info(`Generated Map Name: ${vars["CreateNewMap"]}`);
 
@@ -147,12 +148,9 @@ test.describe('REG_Bid Maps', () => {
       try {
         await mapHeadersButtonPage.Map_Headers_Button.click();
         await correspondentPortalPage.Heading_Save_and_Move_to_Next_Page1.waitFor({ state: 'visible' });
-
         await expect(thisActionWillSaveTheChangesAndMoveToNextPagePage.This_action_will_save_the_changes_and_Move_to_Next_Page).toBeVisible();
-
         await proceedWithSavingButtonPage.Proceed_with_Saving_Button.click();
         await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-
         await expect(page.getByText(vars["CreateNewMap"])).toBeVisible();
         await headerMappingPage.Header_Mapping.waitFor({ state: 'visible' });
         await expect(correspondentPortalPage.Rules_and_Actions_Step_4_of_4).toBeVisible();
@@ -165,14 +163,12 @@ test.describe('REG_Bid Maps', () => {
 
       log.step("Step 6: Validate headers with loop");
       try {
-        vars["Total Headers From Xls"] = getRowDataWithCommaSeperator(
-          path.resolve(process.cwd(), 'uploads/Bid_Maps_File_QA_-_Bidmap_1(xlsx).xlsx'), 0
-        );
+        vars["Total Headers From Xls"] = getRowDataWithCommaSeperator(path.resolve(process.cwd(), 'uploads/Bid_Maps_File_QA_-_Bidmap_1(xlsx).xlsx'), 0);
 
         vars["BidSampleFieldNameCount"] = String(await p24UnitDropdownPage.Bid_Sample_Field_Name_in_Header_Mapping.count());
-        vars["count"] = "1";
-        vars["MappedHeaderCount"] = "0";
-        vars["UnmappedHeaderCount"] = "0";
+        vars["count"] = appconstants.ONE;
+        vars["MappedHeaderCount"] = appconstants.ZERO;
+        vars["UnmappedHeaderCount"] = appconstants.ZERO;
 
         log.info(`Total Headers From XLS: ${vars["Total Headers From Xls"]}`);
         log.info(`UI Count: ${vars["BidSampleFieldNameCount"]}`);

@@ -17,6 +17,8 @@ import { AddonHelpers } from '../../../src/helpers/AddonHelpers';
 import { uploadFile } from '../../../src/helpers/file-helpers';
 import { Logger as log } from '../../../src/helpers/log-helper';
 import { ENV } from '@config/environments'
+import { APP_CONSTANTS as appconstants } from '../../../src/constants/app-constants';
+
 
 const TC_ID = "REG_TS13_TC02";
 const TC_TITLE = "Enumeration Mapping - Verify save draft preserves data across screens"
@@ -141,3 +143,6 @@ test.describe('REG_Bid Maps', () => {
     }
   });
 });
+
+
+
