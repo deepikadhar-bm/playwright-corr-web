@@ -7,6 +7,8 @@ import { CorrespondentPortalPage } from '../../../src/pages/correspondant/corres
 import { P24UnitDropdownPage } from '../../../src/pages/correspondant/p-24-unit-dropdown';
 import { ENV } from '@config/environments'
 import { Logger as log } from '../../../src/helpers/log-helper';
+import { APP_CONSTANTS as appconstants } from '../../../src/constants/app-constants';
+
 
 const TC_ID = "REG_TS02_TC06";
 const TC_TITLE = "User should be allow to select and deselect all the Fields via \"Select all\" checkbox."
@@ -44,7 +46,7 @@ test.describe('REG_Bid Maps', () => {
 
       log.step("Step 2: Create Bid Map up to Header Mapping page");
       try {
-        await stepGroups.stepGroup_Creation_Of_Bid_Map_Upto_Header_Mapping(page, vars);
+        await stepGroups.stepGroup_Creation_Of_Bid_Map_Upto_Header_Mapping(page, vars,"DeepikaAugBidQA_(3)_(1)_(1)_(2).xlsx");
         log.stepPass("Step 2 passed: Navigated to Header Mapping page successfully");
       } catch (error) {
         log.stepFail(page, "Step 2 failed: Failed to create Bid Map up to Header Mapping");
@@ -64,7 +66,7 @@ test.describe('REG_Bid Maps', () => {
       log.step("Step 4: Verify all header fields are selected");
       try {
         vars["BidSampleFieldName"] = String(await p24UnitDropdownPage.Bid_Sample_Field_Name_in_Header_Mapping.count());
-        vars["Count"] = "2";
+        vars["Count"] = appconstants.TWO;
 
         while (parseFloat(String(vars["Count"])) <= parseFloat(String(vars["BidSampleFieldName"]))) {
           await expect(amortizationTypePage.get_All_Header_Checkbox_In_Bid_Map(vars["Count"])).toBeVisible();

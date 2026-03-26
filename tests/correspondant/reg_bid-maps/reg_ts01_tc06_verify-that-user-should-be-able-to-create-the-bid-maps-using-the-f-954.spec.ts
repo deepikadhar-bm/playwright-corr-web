@@ -1,5 +1,5 @@
 // [POM-APPLIED]
-import { test, expect } from '@playwright/test';
+import { test, expect, Page } from '@playwright/test';
 import path from 'path';
 import * as stepGroups from '../../../src/helpers/step-groups';
 import { ActionruleheaderPage } from '../../../src/pages/correspondant/actionruleheader';
@@ -17,6 +17,7 @@ import { SpinnerPage } from '../../../src/pages/correspondant/spinner';
 import { testDataManager } from 'testdata/TestDataManager';
 import { ENV } from '@config/environments'
 import { Logger as log } from '../../../src/helpers/log-helper';
+import { APP_CONSTANTS as appconstants } from '../../../src/constants/app-constants';
 
 const TC_ID = "REG_TS01_TC06";
 const TC_TITLE = "Verify that user should be able to create the bid maps using the file extension xlsx"
@@ -70,16 +71,16 @@ test.describe('REG_Bid Maps', () => {
         vars["Rule Name"] = ruleName;
         vars["BidField"] = bidField;
         vars["BidEnumeratedTapeValue"] = bidEnumeratedTapeValue;
+        vars["Username"] = credentials.username;
+        vars["Password"] = credentials.password;
       }
-
-      vars["Username"] = credentials.username;
-      vars["Password"] = credentials.password;
 
       log.step("Step 1: Login and navigate to Header Mapping");
       try {
         await stepGroups.stepGroup_Login_to_CORR_Portal(page, vars);
         await stepGroups.stepGroup_Smart_Mapper_from_Off_to_On(page, vars);
-        await stepGroups.stepGroup_Creation_Of_Bid_Map_Upto_Header_Mapping(page, vars);
+        // await stepGroups.stepGroup_Creation_Of_Bid_Map_Upto_Header_Mapping(page, vars);
+        await stepGroups.stepGroup_Creation_Of_Bid_Map_Upto_Header_Mapping(page, vars, "BidMAP_Happy_Flow_1.xlsx");
         log.stepPass("Step 1 passed: Navigated to Header Mapping page");
       } catch (error) {
         log.stepFail(page, "Step 1 failed: Navigation failed");
@@ -88,7 +89,7 @@ test.describe('REG_Bid Maps', () => {
 
       log.step("Step 2: Prepare Enum Values");
       try {
-        vars["EnumValues"] = "Loan Purpose";
+        vars["EnumValues"] = appconstants.LOAN_PURPOSE;
 
         if (profile && profile.data && profile.data.length > 0) {
           profile.data.forEach((dataRow: Record<string, string>) => {
@@ -106,8 +107,8 @@ test.describe('REG_Bid Maps', () => {
       try {
         await headerMappingPage.MappedChaseFieldName.first().waitFor({ state: 'visible' });
         vars["MappedChaseFieldCount"] = String(await headerMappingPage.MappedChaseFieldName.count());
-        vars["count"] = "1";
-        vars["ChaseEnumValue"] = "sample";
+        vars["count"] = appconstants.ONE;
+        vars["ChaseEnumValue"] = appconstants.SAMPLE;
 
         log.info(`Total Mapped Chase Fields: ${vars["MappedChaseFieldCount"]}`);
 
@@ -124,15 +125,10 @@ test.describe('REG_Bid Maps', () => {
             await enumerationMappingButtonPage.Enumeration_Mapping_Button.click();
             await bidmapPage.Yes_Proceed_Button_Text.click();
             await rulesAndActionsButtonPage.Rules_and_Actions_Button.waitFor({ state: 'visible' });
-
-            await expect(
-              enumerationMappingPage.get_Bid_Sample_Name_Field_Enumeration_Mapping(vars["ChaseName"])
-            ).toContainText(vars["CorrespondentBidName"]);
-
+            await expect(enumerationMappingPage.get_Bid_Sample_Name_Field_Enumeration_Mapping(vars["ChaseName"])).toContainText(vars["CorrespondentBidName"]);
             await correspondentPortalPage.Header_Mapping1.click();
             await spinnerPage.Spinner.waitFor({ state: 'hidden' });
           }
-
           vars["count"] = (parseFloat(vars["count"]) + 1).toFixed(0);
         }
 
@@ -155,7 +151,7 @@ test.describe('REG_Bid Maps', () => {
         }
 
         vars["ChaseEnumNamesCount[Enumeration]"] = String(await enumerationMappingPage.Chase_Enum_Names.count());
-        vars["count1"] = "1";
+        vars["count1"] = appconstants.ONE;
 
         log.info(`Total Enumeration Names: ${vars["ChaseEnumNamesCount[Enumeration]"]}`);
 
@@ -184,17 +180,13 @@ test.describe('REG_Bid Maps', () => {
         }
 
         await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-
         await stepGroups.stepGroup_Add_Rule_For_Add_Condition_In_Rules_and_Actions(page, vars);
         await stepGroups.stepGroup_Add_Actions_in_Rules_and_Actions(page, vars);
-
         await expect(rulesAndActionsButtonPage.Condition_BidField_1).toContainText(vars["RuleBidField"]);
         await expect(rulesAndActionsButtonPage.Condition_BidTape1).toContainText(vars["RuleBidTapeValue"]);
         await expect(actionruleheaderPage.Action_Chase_Field_Name_1).toContainText(vars["ChaseFiledNameonAddActions"]);
-
         await saveAndPublishButtonPage.Save_and_Publish_Button.click();
         await expect(mapNameFieldInBidMapsPage.get_Bid_Map_Name_Field_In_Row(vars["BidMap"])).toBeVisible();
-
         log.stepPass("Step 5 passed: Rules added and Bid Map published successfully");
       } catch (error) {
         log.stepFail(page, "Step 5 failed: Failed to add rules/actions or publish");

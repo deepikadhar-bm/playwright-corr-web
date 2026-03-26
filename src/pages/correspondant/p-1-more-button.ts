@@ -103,8 +103,8 @@ export class P1MoreButtonPage {
     return this.page.locator("//span[@class='pl-2'][contains(.,'@|Company Name|')]");
   }
 
-  get Status_In_BidMap_Listcreen(): Locator {
-    return this.page.locator("//td[@data-title=\"Map Name\"]//button[text()=\" $|Create New Maps| \"]/../..//td[@data-title=\"Status\"]//*[text()=\"ACTIVE\"]/..//*[text()=\"DRAFT\"]");
+  get_Status_In_BidMap_Listcreen(CreateNewMap:string): Locator {
+    return this.page.locator(`//td[@data-title=\"Map Name\"]//button[text()=\" ${CreateNewMap} \"]/../..//td[@data-title=\"Status\"]//*[text()=\"ACTIVE\"]/..//*[text()=\"DRAFT\"]`);
   }
 
   get Third_Company_Name(): Locator {
