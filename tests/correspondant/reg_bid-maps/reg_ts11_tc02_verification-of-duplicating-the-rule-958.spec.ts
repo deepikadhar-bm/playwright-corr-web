@@ -69,11 +69,7 @@ test.describe('REG_Bid Maps', () => {
         }
 
         await stepGroups.stepGroup_Login_to_CORR_Portal(page, vars);
-        await stepGroups.stepGroup_Creation_Of_Bid_Map_Upto_Header_Mapping(
-          page,
-          vars,
-          "DeepikaAugBidQA_(3)_(1)_(1)_(2).xlsx"
-        );
+        await stepGroups.stepGroup_Creation_Of_Bid_Map_Upto_Header_Mapping(page,vars, "DeepikaAugBidQA_(3)_(1)_(1)_(2).xlsx");
 
         log.stepPass("Step 1 passed: Logged in and navigated to Header Mapping");
       } catch (error) {

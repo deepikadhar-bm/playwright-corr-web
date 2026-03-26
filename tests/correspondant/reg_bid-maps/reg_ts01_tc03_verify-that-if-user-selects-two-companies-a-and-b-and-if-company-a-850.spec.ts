@@ -1,5 +1,5 @@
 // [POM-APPLIED]
-import { test, expect, Page } from '@playwright/test';
+import { test, expect } from '@playwright/test';
 import path from 'path';
 import * as stepGroups from '../../../src/helpers/step-groups';
 import { BackButtonPage } from '../../../src/pages/correspondant/back-button';
@@ -17,6 +17,8 @@ import { CorrespondentPortal7Page } from '../../../src/pages/correspondant/corre
 import { AddonHelpers } from '@helpers/AddonHelpers';
 import { testDataManager } from 'testdata/TestDataManager';
 import { Logger as log } from '../../../src/helpers/log-helper';
+import { APP_CONSTANTS as appconstants } from '../../../src/constants/app-constants';
+import { ENV } from '@config/environments'
 
 const TC_ID = "REG_TS01_TC03";
 const TC_TITLE = "Verify that if user selects two companies A and B and if Company A has both standard and chase execution type, and company B has only standard execution type -> Now if user selects both companies";
@@ -36,6 +38,7 @@ test.describe('REG_Bid Maps', () => {
   let spinnerPage: SpinnerPage;
   let youHaveUnsavedChangesIfYouLeaveYourChangesPage: YouHaveUnsavedChangesIfYouLeaveYourChangesPage;
   let helpers: AddonHelpers;
+  const credentials = ENV.getCredentials('internal');
 
   test.beforeEach(async ({ page }) => {
     vars = {};
@@ -69,6 +72,10 @@ test.describe('REG_Bid Maps', () => {
         vars["SecondCompanyName"] = secondCompanyName;
         vars["Upload File Text Verification"] = uploadText;
         vars["Execution Type"] = executionType;
+        const companyName2 = profile.data[0]['CompanyName2'];
+        vars["Company name 2"] = companyName2;
+        vars["Username"] = credentials.username;
+        vars["Password"] = credentials.password;
       }
 
       log.step("Step 1: Login to CORR Portal");
@@ -103,7 +110,7 @@ test.describe('REG_Bid Maps', () => {
       try {
         await correspondentPortalPage.Add_New_Mapping_Button.click();
         await expect(headingCreateNewMapPage.Create_New_Map).toBeVisible();
-        helpers.getCurrentTimestamp('dd/MM/yyyy/HH:mm:ss', 'CurrentDate');
+        helpers.getCurrentTimestamp(appconstants.DATE_FORMAT_SLASH, 'CurrentDate');
         helpers.concatenate('Testsigma_', vars['CurrentDate'], 'Create New Map');
         await correspondentPortalPage.Create_New_Map_Field.fill(vars["Create New Map"]);
         vars["BidMap"] = await correspondentPortalPage.Create_New_Map_Field.inputValue() || '';
@@ -119,12 +126,10 @@ test.describe('REG_Bid Maps', () => {
       try {
         await correspondentPortalPage.Select_Companys_Dropdown.click();
         await bidMapPage.Required_Company_Checkbox_Bidmap_Company_dropdown.check();
-        
+
         vars["SelectedCompanyName"] = await correspondentPortalPage.Selected_Company_Name.textContent() || '';
-        console.log("Selected company name:", vars["SelectedCompanyName"]);
         vars["NotSelectedCompanyName"] = await correspondentPortalPage.Not_Selected_Company_Name.textContent() || '';
-        console.log("Not selected company name:", vars["NotSelectedCompanyName"]);
-        
+
         await expect(correspondentPortalPage.Show_Selected_Button).toBeVisible();
         await correspondentPortalPage.Show_Selected_Button.click();
         await expect(correspondentPortalPage.Dropdown_Company_for_Selected).toContainText(vars["SelectedCompanyName"]);
@@ -147,8 +152,10 @@ test.describe('REG_Bid Maps', () => {
         await page.waitForTimeout(3000);
         await expect(correspondentPortalPage.Apply_Selected_for_Bid_Maps).toContainText("2");
         await correspondentPortalPage.Apply_Selected.click();
-        await expect(correspondentPortalPage.Dropdown_selection_2).toHaveValue("STANDARD");
-        await correspondentPortalPage.Dropdown_selection_2.click();
+        // await expect(correspondentPortalPage.Dropdown_selection_2).toHaveValue("STANDARD");
+        await expect(correspondentPortalPage.Execution_Type_Dropdown).toHaveValue("STANDARD");
+        // await correspondentPortalPage.Dropdown_selection_2.click();
+        await correspondentPortalPage.Execution_Type_Dropdown.click();
         log.stepPass("Step 6 passed: Companies filtered and applied successfully, execution type verified as STANDARD");
       } catch (error) {
         log.stepFail(page, "Step 6 failed: Failed to filter or apply companies");

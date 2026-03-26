@@ -7,6 +7,8 @@ import { EnumerationMappingButtonPage } from '../../../src/pages/correspondant/e
 import { Logger as log } from '../../../src/helpers/log-helper';
 import { ENV } from '@config/environments'
 import { testDataManager } from 'testdata/TestDataManager';
+import { APP_CONSTANTS as appconstants } from '../../../src/constants/app-constants';
+
 
 const TC_ID = "REG_TS02_TC10";
 const TC_TITLE = "Not mapped fields will be identified in Red color."
@@ -41,7 +43,7 @@ test.describe('REG_Bid Maps', () => {
         }
 
         await stepGroups.stepGroup_Login_to_CORR_Portal(page, vars);
-        await stepGroups.stepGroup_Creation_Of_Bid_Map_Upto_Header_Mapping(page, vars);
+        await stepGroups.stepGroup_Creation_Of_Bid_Map_Upto_Header_Mapping(page, vars,"DeepikaAugBidQA_(3)_(1)_(1)_(2).xlsx");
 
         log.stepPass("Step 1 passed: Logged in and navigated to Header Mapping");
       } catch (error) {
@@ -62,7 +64,7 @@ test.describe('REG_Bid Maps', () => {
       try {
         // Debug pause (kept as per original test)
         vars["HeaderMapping"] = String(await correspondentPortalPage.Amortization_Term.count());
-        vars["Count"] = "2";
+        vars["Count"] = appconstants.TWO;
         log.info(`Total HeaderMapping count: ${vars["HeaderMapping"]}`);
         log.info(`Starting validation from Count: ${vars["Count"]}`);
         while (parseFloat(String(vars["Count"])) <= parseFloat(String(vars["HeaderMapping"]))) {

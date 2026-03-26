@@ -1,5 +1,5 @@
 // [POM-APPLIED]
-import { test, expect } from '@playwright/test';
+import { test, expect, Page } from '@playwright/test';
 import path from 'path';
 import * as stepGroups from '../../../src/helpers/step-groups';
 import { ActionruleheaderPage } from '../../../src/pages/correspondant/actionruleheader';
@@ -11,6 +11,8 @@ import { StatusInactive2Page } from '../../../src/pages/correspondant/status-ina
 import { Logger as log } from '../../../src/helpers/log-helper';
 import { ENV } from '@config/environments'
 import { testDataManager } from 'testdata/TestDataManager';
+import { APP_CONSTANTS as appconstants } from '../../../src/constants/app-constants';
+
 
 const TC_ID = "REG_TS02_TC02";
 const TC_TITLE = "Verify that the user is able to Update the Bid Sample Field Name and CLM Field Name."
@@ -59,7 +61,7 @@ test.describe('REG_Bid Maps', () => {
         }
 
         await stepGroups.stepGroup_Login_to_CORR_Portal(page, vars);
-        await stepGroups.stepGroup_Creation_Of_Bid_Map_Upto_Header_Mapping(page, vars);
+        await stepGroups.stepGroup_Creation_Of_Bid_Map_Upto_Header_Mapping(page, vars,"DeepikaAugBidQA_(3)_(1)_(1)_(2).xlsx");
 
         log.stepPass("Step 1 passed: Logged in and navigated to Header Mapping");
       } catch (error) {

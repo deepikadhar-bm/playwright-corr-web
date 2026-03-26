@@ -52,7 +52,7 @@ export class HeaderMappingPage {
 }
 
   get Custom_Header(): Locator {
-    return this.page.locator("//div[@class=\"gap-2 header-grid-layout custom-header\"]//div[@class=\"flex-grow-1\"]");
+    return this.page.locator(`//div[contains(@class,"gap-2 header-grid-layout custom-header")]//div[@class="flex-grow-1"]`);
   }
 
   get Custom_Header_Chase_Value(): Locator {
@@ -67,8 +67,8 @@ export class HeaderMappingPage {
     return this.page.locator("(//div[@class=\"flex-grow-1\"])[6]");
   }
 
-  get Deleted_Header_In_HeaderMaping(): Locator {
-    return this.page.locator("//div[@class=\"gap-2 header-grid-layout\"]//div[text()=\"$|DeletedHeader[HeaderMapping]|\"]");
+  get_Deleted_Header_In_HeaderMaping(DeletedHeaderHeaderMapping:string): Locator {
+    return this.page.locator(`//div[@class=\"gap-2 header-grid-layout\"]//div[text()=\"${DeletedHeaderHeaderMapping}\"]`);
   }
 
   get Deleting_Header(): Locator {
@@ -111,17 +111,15 @@ export class HeaderMappingPage {
     return this.page.locator("//*[text()[normalize-space() = \"General Settings\"]]");
   }
 
-  get Header_1(): Locator {
-    return this.page.locator("(//div[contains(@class,\"gap-2 header-grid-layout\")]//div[@class=\"flex-grow-1\" and text()=\"$|FirstHeaderName|\"])[1]/..//input");
+  get_Header_1(FirstHeaderName:string): Locator {
+    return this.page.locator(`(//div[contains(@class,\"gap-2 header-grid-layout\")]//div[@class=\"flex-grow-1\" and text()=\"${FirstHeaderName}\"])[1]/..//input`);
   }
 
   get Header_Mapping(): Locator {
     return this.page.locator("//a[text()[normalize-space() = \"Header Mapping\"]]");
   }
 
-  // get Header_Value_In_Mapping(): Locator {
-  //   return this.page.locator("//div[text()=\"@|Custom Header|\"]/..//select[@id=\"id\"]");
-  // }
+
   getHeaderValueInMapping(CustomHeader: string): Locator {
   return this.page.locator(`//div[text()="${CustomHeader}"]/..//select[@id="id"]`);
 }
@@ -202,12 +200,12 @@ export class HeaderMappingPage {
     return this.page.locator("//span[text()=\"Update Header\"]/../..//button");
   }
 
-  get Updated_BidSample_Name(): Locator {
-    return this.page.locator("//div[text()=\"$|UpdatedBidSampleNameHeaderMapping|\"]/ancestor::div[@class=\"gap-2 header-grid-layout\"]//*[@class=\"flex-grow-1\"]");
+  get_Updated_BidSample_Name(UpdatedBidSampleNameHeaderMapping:string): Locator {
+    return this.page.locator(`//div[text()=\"${UpdatedBidSampleNameHeaderMapping}\"]/ancestor::div[@class=\"gap-2 header-grid-layout\"]//*[@class=\"flex-grow-1\"]`);
   }
 
-  get Updated_Element_In_Header_Mapping(): Locator {
-    return this.page.locator("//div[text()=\"$|UpdatedBidSampleNameHeaderMapping|\"]/ancestor::div[@class=\"gap-2 header-grid-layout\"]//select");
+  get_Updated_Element_In_Header_Mapping(UpdatedBidSampleNameHeaderMapping:string): Locator {
+    return this.page.locator(`//div[text()=\"${UpdatedBidSampleNameHeaderMapping}\"]/ancestor::div[@class=\"gap-2 header-grid-layout\"]//select`);
   }
 
 }

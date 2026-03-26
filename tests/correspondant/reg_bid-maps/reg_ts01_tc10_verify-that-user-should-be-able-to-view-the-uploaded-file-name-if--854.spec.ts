@@ -6,7 +6,8 @@ import { BackButtonPage } from '../../../src/pages/correspondant/back-button';
 import { ContinueEditingButtonPage } from '../../../src/pages/correspondant/continue-editing-button';
 import { CorrespondentPortal16Page } from '../../../src/pages/correspondant/correspondent-portal-16';
 import { CorrespondentPortalPage } from '../../../src/pages/correspondant/correspondent-portal';
-import { Deepikaaugbidqa1csvButtonDivPage } from '../../../src/pages/correspondant/mapping-creation-wizard';
+// import { Deepikaaugbidqa1csvButtonDivPage } from '../../../src/pages/correspondant/mapping-creation-wizard';
+import { MappingCreationWizard } from '../../../src/pages/correspondant/mapping-creation-wizard';
 import { HeaderMappingPage } from '../../../src/pages/correspondant/header-mapping';
 import { NoButtonPage } from '../../../src/pages/correspondant/no-button';
 import { ProceedWithoutSavingButtonPage } from '../../../src/pages/correspondant/proceed-without-saving-button';
@@ -16,6 +17,8 @@ import { testDataManager } from 'testdata/TestDataManager';
 import { uploadFile } from '../../../src/helpers/file-helpers';
 import { AddonHelpers } from '../../../src/helpers/AddonHelpers';
 import { Logger as log } from '../../../src/helpers/log-helper';
+import { APP_CONSTANTS as appconstants } from '../../../src/constants/app-constants';
+import { ENV } from '@config/environments'
 
 const TC_ID = "REG_TS01_TC10";
 const TC_TITLE = "Verify that user should be able to view the uploaded file name (if it is short then the complete file name will be displayed, if it has more than like 22 characters then upon hovering on it should display the complete file name)";
@@ -26,13 +29,16 @@ test.describe('REG_Bid Maps', () => {
   let continueEditingButtonPage: ContinueEditingButtonPage;
   let correspondentPortal16Page: CorrespondentPortal16Page;
   let correspondentPortalPage: CorrespondentPortalPage;
-  let deepikaaugbidqa1csvButtonDivPage: Deepikaaugbidqa1csvButtonDivPage;
+  // let deepikaaugbidqa1csvButtonDivPage: Deepikaaugbidqa1csvButtonDivPage;
+  let mappingCreationWizardPage: MappingCreationWizard;
   let headerMappingPage: HeaderMappingPage;
   let noButtonPage: NoButtonPage;
   let proceedWithoutSavingButtonPage: ProceedWithoutSavingButtonPage;
   let spinnerPage: SpinnerPage;
   let youHaveUnsavedChangesIfYouLeaveYourChangesPage: YouHaveUnsavedChangesIfYouLeaveYourChangesPage;
   let helpers: AddonHelpers;
+  const credentials = ENV.getCredentials('internal');
+
 
   test.beforeEach(async ({ page }) => {
     vars = {};
@@ -40,7 +46,8 @@ test.describe('REG_Bid Maps', () => {
     continueEditingButtonPage = new ContinueEditingButtonPage(page);
     correspondentPortal16Page = new CorrespondentPortal16Page(page);
     correspondentPortalPage = new CorrespondentPortalPage(page);
-    deepikaaugbidqa1csvButtonDivPage = new Deepikaaugbidqa1csvButtonDivPage(page);
+    // deepikaaugbidqa1csvButtonDivPage = new Deepikaaugbidqa1csvButtonDivPage(page);
+    mappingCreationWizardPage = new MappingCreationWizard(page);
     headerMappingPage = new HeaderMappingPage(page);
     noButtonPage = new NoButtonPage(page);
     proceedWithoutSavingButtonPage = new ProceedWithoutSavingButtonPage(page);
@@ -56,10 +63,12 @@ test.describe('REG_Bid Maps', () => {
     log.tcStart(TC_ID, TC_TITLE);
 
     try {
-    
+
       if (profile && profile.data) {
         const uploadText = profile.data[0]['Upload File Text Verification'];
         vars["Upload File Text Verification"] = uploadText;
+        vars["Username"] = credentials.username;
+        vars["Password"] = credentials.password;
       }
 
       log.step("Step 1: Login to CORR Portal and create new Bid Map");
@@ -78,7 +87,7 @@ test.describe('REG_Bid Maps', () => {
         vars["File"] = (await correspondentPortal16Page.File_Field.textContent())?.trim() || '';
         await expect(page.getByText(vars["File"])).toBeVisible({ timeout: 5000 });
         await expect(correspondentPortal16Page.File_Field).toBeVisible();
-        await expect(deepikaaugbidqa1csvButtonDivPage.Delete_Button_in_Bid_Maps).toBeVisible();
+        await expect(mappingCreationWizardPage.Delete_Button_in_Bid_Maps).toBeVisible();
         log.stepPass("Step 2 passed: CSV file uploaded and file name displayed successfully");
       } catch (error) {
         log.stepFail(page, "Step 2 failed: Failed to upload CSV file or verify file name display");
@@ -87,12 +96,12 @@ test.describe('REG_Bid Maps', () => {
 
       log.step("Step 3: Test delete file functionality with cancel and no actions");
       try {
-        await deepikaaugbidqa1csvButtonDivPage.Delete_Button_in_Bid_Maps.click();
+        await mappingCreationWizardPage.Delete_Button_in_Bid_Maps.click();
         await expect(correspondentPortalPage.Cross_button_in_Bid_Map).toBeVisible();
         await expect(correspondentPortalPage.Are_you_sure_you_want_to_delete_fixed_from_enumeration).toBeVisible();
         await correspondentPortalPage.close_pop_up_bid_request_details.click();
         await expect(correspondentPortal16Page.File_Field).toBeVisible();
-        await deepikaaugbidqa1csvButtonDivPage.Delete_Button_in_Bid_Maps.click();
+        await mappingCreationWizardPage.Delete_Button_in_Bid_Maps.click();
         await expect(noButtonPage.No_Button).toBeVisible();
         await noButtonPage.No_Button.click();
         await expect(correspondentPortal16Page.File_Field).toBeVisible();
@@ -104,7 +113,7 @@ test.describe('REG_Bid Maps', () => {
 
       log.step("Step 4: Delete CSV file and upload XLSX file with long name");
       try {
-        await deepikaaugbidqa1csvButtonDivPage.Delete_Button_in_Bid_Maps.click();
+        await mappingCreationWizardPage.Delete_Button_in_Bid_Maps.click();
         await expect(correspondentPortalPage.Yes_Proceed_Button).toBeVisible();
         await correspondentPortalPage.Yes_Proceed_Button.click();
         await uploadFile(page, correspondentPortalPage.Upload_File, "Bid_Maps_File_QAtfydrdydcesestrduytfydrtd(xlsx).xlsx");
@@ -132,7 +141,7 @@ test.describe('REG_Bid Maps', () => {
         log.stepFail(page, "Step 5 failed: Failed to test back navigation with unsaved changes");
         throw error;
       }
-      
+
       log.step("Step 6: Proceed without saving and verify draft status");
       try {
         await backButtonPage.BACK_Button.click();
@@ -140,7 +149,6 @@ test.describe('REG_Bid Maps', () => {
         await proceedWithoutSavingButtonPage.Proceed_without_Saving_Button.click();
         await spinnerPage.Spinner.waitFor({ state: 'hidden' });
         await expect(correspondentPortalPage.Status).toContainText("DRAFT");
-        console.log('Searching using vars["BidMap"]:', vars["BidMap"]);
         await correspondentPortalPage.Bid_Maps_name(vars["BidMap"]).click();
         await spinnerPage.Spinner.waitFor({ state: 'hidden' });
         await expect(correspondentPortalPage.Dropdown_selection_2).toHaveValue('');
