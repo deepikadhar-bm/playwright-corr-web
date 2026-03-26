@@ -3200,13 +3200,6 @@ export async function stepGroup_Creating_Of_Bid_Maps(page: import('@playwright/t
   await CorrPortalElem.Search_Field_For_Company.fill(vars["Company name 1"]);
   await CorrPortalElem.get_Select_Company_Names(vars["Company name 1"]).click();
   await CorrPortalElem.Apply_Selected.click();
-  await page.pause();
-//  await CorrPortalElem.Select_Companys_Dropdown.click();
-//   await CorrespondentPortal4Elem.Search_Text_Field.fill(vars["Companyname"]);
-  //await CorrPortalElem.Search_Text_Field.click();
-  // await CorrPortalElem.Required_Company_s_Name_Value(vars["Companyname"]).first().click();
-  // await CorrPortalElem.Apply_Selected.click();
-
   await expect(CorrPortalElem.Upload_File).toHaveValue('');
   await expect(page.getByText("Drag and drop files here or click to browse. Allowed formats: .xls,.xlsx,.csv,.txt")).toBeVisible();
   // await CorrPortalElem.Upload_File.setInputFiles(path.resolve(__dirname, 'test-data', "DeepikaAugBidQA.xlsx"));
@@ -3219,6 +3212,7 @@ export async function stepGroup_Creating_Of_Bid_Maps(page: import('@playwright/t
   await expect(page.getByText(vars["Create New Map"])).toBeVisible();
   await CorrPortalElem.Header_Mapping.waitFor({ state: 'visible' });
 }
+
 
 
 //cloning stepgroup from "stepGroup_Creating_Of_Bid_Maps" to explicitly add Execution Type
@@ -3645,8 +3639,6 @@ export async function stepGroup_EditActions_In_CustomerPermission(page: import('
   }
 
   await CorrPortalElem.Search_Filter_Input_in_Customer_Permission.clear();
-  // await page.waitForLoadState('networkidle');
-  // await page.waitForTimeout(4000)
 }
 
 /**
