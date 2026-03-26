@@ -96,24 +96,6 @@ export const APP_CONSTANTS = {
   PARTIALLYCOMMITTED: "Partially Committed",
   EXPIRED: "Expired",
   COMMITTED: "Committed",
-  COMMITMENT_IN_PROGRESS: "Commitment in progress"
-};
-
-
- 
-  TIME_FORMAT_HMMA:"h:mm a",
-  BID_REQUEST_HEADER:"BidReq.ID",
-  BID_REQUEST_HEADER_EXCEL:"BidRequestID",
-  EXECUTIONTYPE_HEADER_UI:"ExecutionType",
-  ET:'ET',
-  STATUS:"Status",
-  DATE_TEXT:"Date:",
-  COMPANY_TEXT:"Company:",
-  ELEVEN:'11',
-  LOAN_TEXT:"Loan",
-  MARKET_ADJ_ERROR_TEXT:"can not be committed. Market adjuster value",
-  MARKET_ADJ_REASON_TEXT:"is greater than market threshold value",
-  ONE_HUNDRED_TWEENTY:'120',
-  STANDARD_TEXT:"Standard",
+  COMMITMENT_IN_PROGRESS: "Commitment in progress",
   ADD_TO_COMMIT_TEXT:'Add to Commit',
 };
