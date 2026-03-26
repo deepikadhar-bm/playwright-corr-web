@@ -44,7 +44,7 @@ test.describe('REG_Bid Maps', () => {
         vars["Password"] = credentials.password;
         await stepGroups.stepGroup_Login_to_CORR_Portal(page, vars);
         await stepGroups.stepGroup_Smart_Mapper_from_Off_to_On(page, vars);
-        await stepGroups.stepGroup_Creation_Of_Bid_Map_Upto_Header_Mapping(page, vars);
+        await stepGroups.stepGroup_Creation_Of_Bid_Map_Upto_Header_Mapping(page, vars,"DeepikaAugBidQA_(3)_(1)_(1)_(2).xlsx");
         log.stepPass("Step 1 passed: Logged in, Smart Mapper ON, and Bid Map created up to header mapping.");
       } catch (error) {
         log.stepFail(page, "Step 1 failed: Unable to login, toggle Smart Mapper ON, or create Bid Map up to header mapping.");

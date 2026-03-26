@@ -8,6 +8,8 @@ import { NameCantBeEmptyPage } from '../../../src/pages/correspondant/name-cant-
 import { ENV } from '@config/environments'
 import { testDataManager } from 'testdata/TestDataManager';
 import { Logger as log } from '../../../src/helpers/log-helper';
+import { APP_CONSTANTS as appconstants } from '../../../src/constants/app-constants';
+
 
 const TC_ID = "REG_TS04_TC01";
 const TC_TITLE = "Verify that the user is able to perform all Create operations in the header mapping.";
@@ -45,7 +47,7 @@ test.describe('REG_Bid Maps', () => {
       log.step("Step 1: Login to CORR Portal and navigate to Header Mapping");
       try {
         await stepGroups.stepGroup_Login_to_CORR_Portal(page, vars);
-        await stepGroups.stepGroup_Creation_Of_Bid_Map_Upto_Header_Mapping(page, vars);
+        await stepGroups.stepGroup_Creation_Of_Bid_Map_Upto_Header_Mapping(page, vars,"DeepikaAugBidQA_(3)_(1)_(1)_(2).xlsx");
         await expect(correspondentPortalPage.Rules_and_Actions_Step_4_of_4).toBeVisible();
         log.stepPass("Step 1 passed: Logged in and navigated to Rules and Actions step.");
       } catch (error) {
@@ -70,7 +72,7 @@ test.describe('REG_Bid Maps', () => {
       log.step("Step 3: Select Chase field name and insert header mapping");
       try {
         await correspondentPortalPage.Chase_Field_Name.click();
-        await correspondentPortalPage.Chase_Field_Name.selectOption({ index: parseInt("10") });
+        await correspondentPortalPage.Chase_Field_Name.selectOption({ index: parseInt(appconstants.TEN) });
         await correspondentPortalPage.Insert_Header_Button.click();
         await expect(correspondentPortalPage.New_Header_Mapping).toBeVisible();
         vars["Header Value"] = await headerMappingPage.getHeaderValueInMapping(vars["Custom Header"]).getAttribute('title') || '';

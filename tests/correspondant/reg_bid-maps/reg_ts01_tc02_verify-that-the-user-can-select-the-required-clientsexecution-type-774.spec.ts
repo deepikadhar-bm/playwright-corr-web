@@ -1,5 +1,5 @@
 // [POM-APPLIED]
-import { test, expect, Page } from '@playwright/test';
+import { test, expect} from '@playwright/test';
 import path from 'path';
 import * as stepGroups from '../../../src/helpers/step-groups';
 import { CorrespondentPortalPage } from '../../../src/pages/correspondant/correspondent-portal';
@@ -16,6 +16,9 @@ import { AddonHelpers } from '../../../src/helpers/AddonHelpers';
 import { testDataManager } from 'testdata/TestDataManager';
 import { uploadFile } from '../../../src/helpers/file-helpers';
 import { Logger as log } from '../../../src/helpers/log-helper';
+import { APP_CONSTANTS as appconstants } from '../../../src/constants/app-constants';
+import { ENV } from '@config/environments'
+
 
 const TC_ID = "REG_TS01_TC02";
 const TC_TITLE = "Verify that the user can select the required clients/execution type and upload a file with the necessary headers for map creation.";
@@ -33,6 +36,8 @@ test.describe('REG_Bid Maps', () => {
   let spinnerPage: SpinnerPage;
   let thisActionWillSaveTheChangesAndMoveToNextPagePage: ThisActionWillSaveTheChangesAndMoveToNextPagePage;
   let helpers: AddonHelpers;
+  const credentials = ENV.getCredentials('internal');
+
 
   test.beforeEach(async ({ page }) => {
     vars = {};
@@ -49,7 +54,7 @@ test.describe('REG_Bid Maps', () => {
     helpers = new AddonHelpers(page, vars);
   });
 
-  
+
   const profileName = "Bid_Maps";
   const profile = testDataManager.getProfileByName(profileName);
 
@@ -61,6 +66,10 @@ test.describe('REG_Bid Maps', () => {
         const executionType = profile.data[0]['Execution Type'];
         vars["Upload File Text Verification"] = uploadText;
         vars["Execution Type"] = executionType;
+        vars["Username"] = credentials.username;
+        vars["Password"] = credentials.password;
+        const companyName1 = profile.data[0]['CompanyName1'];
+        vars["Company name 1"] = companyName1;
       }
 
       log.step("Step 1: Login to CORR Portal and verify dashboard");
@@ -102,7 +111,7 @@ test.describe('REG_Bid Maps', () => {
       try {
         await correspondentPortalPage.Add_New_Mapping_Button.click();
         await expect(headingCreateNewMapPage.Create_New_Map).toBeVisible();
-        helpers.getCurrentTimestamp('dd/MM/yyyy/HH:mm:ss', 'CurrentDate');
+        helpers.getCurrentTimestamp(appconstants.DATE_FORMAT_SLASH, 'CurrentDate');
         helpers.concatenate('Testsigma_', vars['CurrentDate'], 'Create New Map');
         await correspondentPortalPage.Create_New_Map_Field.fill(vars["Create New Map"]);
         await correspondentPortalPage.Create_Button.click();
@@ -120,7 +129,8 @@ test.describe('REG_Bid Maps', () => {
         await correspondentPortalPage.Select_Companys_Dropdown.click();
         await p15ActivePage.Select_Company_Names(vars["Company name 1"]).first().click();
         await correspondentPortalPage.Apply_Selected.click();
-        await correspondentPortalPage.Dropdown_selection_2.selectOption({ label: vars["Execution Type"] });
+        // await correspondentPortalPage.Dropdown_selection_2.selectOption({ label: vars["Execution Type"] });
+        await correspondentPortalPage.Execution_Type_Dropdown.selectOption({ label: vars["Execution Type"] });
         log.stepPass("Step 5 passed: Company and execution type selected successfully");
       } catch (error) {
         log.stepFail(page, "Step 5 failed: Failed to select company or execution type");

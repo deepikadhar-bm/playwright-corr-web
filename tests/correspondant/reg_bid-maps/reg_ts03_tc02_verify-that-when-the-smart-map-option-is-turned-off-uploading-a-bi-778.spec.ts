@@ -1,5 +1,5 @@
 // [POM-APPLIED]
-import { test, expect } from '@playwright/test';
+import { test, expect, Page } from '@playwright/test';
 import * as stepGroups from '../../../src/helpers/step-groups';
 import { AppraisedvalueselectamDivDivPage } from '../../../src/pages/correspondant/appraisedvalueselectam-div-div';
 import { BidMapPage } from '../../../src/pages/correspondant/bid-map';
@@ -21,6 +21,8 @@ import { uploadFile } from '../../../src/helpers/file-helpers';
 import { Logger as log } from '../../../src/helpers/log-helper';
 import { AddonHelpers } from '../../../src/helpers/AddonHelpers';
 import { ENV } from '@config/environments'
+import { APP_CONSTANTS as appconstants } from '../../../src/constants/app-constants';
+
 
 
 const TC_ID = "REG_TS03_TC02";
@@ -99,8 +101,8 @@ test.describe('REG_Bid Maps', () => {
       try {
         await correspondentPortalPage.Add_New_Mapping_Button.click();
         await expect(headingCreateNewMapPage.Create_New_Map).toBeVisible();
-        helpers.getCurrentTimestamp('dd/MM/yyyy/HH:mm:ss', 'CurrentDate', "Asia/Kolkata"); /* format: dd/MM/yyyy/HH:mm:ss */;
-        helpers.concatenate('Testsigma_', vars['CurrentDate'], 'Create New Map');
+        helpers.getCurrentTimestamp(appconstants.DATE_FORMAT_SLASH, 'CurrentDate', appconstants.ASIA_KOLKATA); /* format: dd/MM/yyyy/HH:mm:ss */;
+        helpers.concatenate(appconstants.Testsigma_, vars['CurrentDate'], 'Create New Map');
         await correspondentPortalPage.Create_New_Map_Field.fill(vars["Create New Map"]);
         await correspondentPortalPage.Create_Button.click();
         await spinnerPage.Spinner.waitFor({ state: 'hidden' });

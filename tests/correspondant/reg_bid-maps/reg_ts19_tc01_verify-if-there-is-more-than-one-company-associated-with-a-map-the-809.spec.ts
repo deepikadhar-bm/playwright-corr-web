@@ -11,6 +11,8 @@ import { SpinnerPage } from '../../../src/pages/correspondant/spinner';
 import { StatusInactive2Page } from '../../../src/pages/correspondant/status-inactive--2';
 import { AddonHelpers } from '../../../src/helpers/AddonHelpers';
 import { Logger as log } from '../../../src/helpers/log-helper';
+import { ENV } from '@config/environments'
+import { APP_CONSTANTS as appconstants } from '../../../src/constants/app-constants';
 
 const TC_ID = "REG_TS19_TC01";
 const TC_TITLE = "Verify if there is more than one company associated with a map, then the count of associated company should be displayed next to the company value in the list";
@@ -25,6 +27,8 @@ test.describe('REG_Bid Maps', () => {
   let spinnerPage: SpinnerPage;
   let statusInactive2Page: StatusInactive2Page;
   let helpers: AddonHelpers;
+const credentials = ENV.getCredentials('internal');
+
 
   test.beforeEach(async ({ page }) => {
     vars = {};
@@ -45,6 +49,8 @@ test.describe('REG_Bid Maps', () => {
       // Step 1: Login
       log.step("Step 1: Login to CORR Portal");
       try {
+             vars["Username"] = credentials.username;
+          vars["Password"] = credentials.password;
         await stepGroups.stepGroup_Login_to_CORR_Portal(page, vars);
         log.stepPass("Step 1 passed: Logged in to CORR Portal successfully");
       } catch (error) {

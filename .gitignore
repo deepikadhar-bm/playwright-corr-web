@@ -9,3 +9,8 @@ node_modules/
 /downloads/
 /reports/html-reports-zip/
 /uploads/
+
+
+
+
+.vscode/settings.json package-lock.json package.json src/constants/app-constants.ts tests/correspondant/reg_bid-maps/reg_ts11_tc01_verify-that-the-user-can-create-and-duplicate-rule-797.spec.ts tests/correspondant/reg_bid-maps/reg_ts13_tc03_rules-and-actions-_verify-that-when-the-user-performs-the-save-dra-1114.spec.ts tests/correspondant/reg_priceoffered/reg_ts19_tc02_verify-the-export-action-after-performing-a-search-for-a-particula-1556.spec.ts tsconfig.json tests/correspondant/reg_bid-maps/reg_ts26_tc02_verify-that-if-there-are-multiple-versions-in-a-bid-then-user-shou-1367.spec.ts tests/correspondant/reg_bid-maps/reg_ts26_tc01_verify-that-if-there-are-multiple-versions-in-a-bid-then-user-shou-814.spec.ts tests/correspondant/reg_bid-maps/reg_ts17_tc01_if-a-new-record-is-created-then-verify-the-data-present-in-the-lis-808.spec.ts tests/correspondant/reg_bid-maps/reg_ts16_tc03_rules-and-actionsif-the-status-is-active-draft-then-verify-that-us-1019.spec.ts

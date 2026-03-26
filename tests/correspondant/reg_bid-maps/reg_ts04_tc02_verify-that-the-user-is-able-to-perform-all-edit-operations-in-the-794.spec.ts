@@ -10,6 +10,8 @@ import { runPrereq_775 } from '../../../src/helpers/prereqs/prereq-775';
 import { ENV } from '@config/environments'
 import { testDataManager } from 'testdata/TestDataManager';
 import { Logger as log } from '../../../src/helpers/log-helper';
+import { APP_CONSTANTS as appconstants } from '../../../src/constants/app-constants';
+
 
 const TC_ID = "REG_TS04_TC02";
 const TC_TITLE = "Verify that the user is able to perform all Edit operations in the header mapping.";
@@ -71,7 +73,7 @@ test.describe('Unassigned', () => {
       log.step("Step 3: Update header name and Chase field, then save");
       try {
         await correspondentPortal4Page.Custom_Header.fill(vars["Chase Field Name"]);
-        await correspondentPortalPage.Chase_Field_Name.selectOption({ index: parseInt("11") });
+        await correspondentPortalPage.Chase_Field_Name.selectOption({ index: parseInt(appconstants.ELEVEN) });
         await correspondentPortalPage.Update_Header_Button.click();
         await expect(headerMappingPage.Chase_Field_Name_Text_Field.last()).toBeVisible();
         log.stepPass("Step 3 passed: Header updated successfully and mapping is visible.");
