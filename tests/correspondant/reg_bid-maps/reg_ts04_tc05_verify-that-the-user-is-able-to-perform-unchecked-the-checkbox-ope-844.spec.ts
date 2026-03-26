@@ -1,6 +1,6 @@
 // [PREREQ-APPLIED]
 // [POM-APPLIED]
-import { test, expect } from '@playwright/test';
+import { test, expect, Page } from '@playwright/test';
 import { CorrespondentPortal8Page } from '../../../src/pages/correspondant/correspondent-portal-8';
 import { CorrespondentPortalPage } from '../../../src/pages/correspondant/correspondent-portal';
 import { EnumerationMappingButtonPage } from '../../../src/pages/correspondant/enumeration-mapping-button';

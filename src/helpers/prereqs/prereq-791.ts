@@ -39,7 +39,7 @@ export async function runPrereq_791(page: Page, vars: Record<string, string>): P
     try {
       await stepGroups.stepGroup_Login_to_CORR_Portal(page, vars);
       await stepGroups.stepGroup_Smart_Mapper_from_Off_to_On(page, vars);
-      await stepGroups.stepGroup_Creation_Of_Bid_Map_Upto_Header_Mapping(page, vars);
+      await stepGroups.stepGroup_Creation_Of_Bid_Map_Upto_Header_Mapping(page, vars,"DeepikaAugBidQA_(3)_(1)_(1)_(2).xlsx");
       await expect(correspondentPortalPage.Rules_and_Actions_Step_4_of_4).toBeVisible();
       await enumerationMappingButtonPage.Enumeration_Mapping_Button.waitFor({ state: 'visible' });
       await enumerationMappingButtonPage.Enumeration_Mapping_Button.click();

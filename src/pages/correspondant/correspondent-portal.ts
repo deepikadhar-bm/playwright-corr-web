@@ -252,7 +252,6 @@ export class CorrespondentPortalPage {
   }
 
   get Apply_Selected_for_Bid_Maps(): Locator {
-    // return this.page.locator(`//span[@class=\"counter bg-white text-primary mx-2 text-center fw-semibold small\"]`);
     return this.page.locator(`//button[@aria-label='Apply selected items']//span[@class="counter bg-white text-primary mx-2 text-center fw-semibold small"]`);
 
   }
@@ -999,7 +998,7 @@ export class CorrespondentPortalPage {
   }
 
   get Execution_Type_Dropdown(): Locator {
-    return this.page.locator("//select[contains(@class,'form-select ng-valid')]");
+    return this.page.locator("//select[@aria-label='Dropdown selection' and contains(@class,'form-select ng')]");
   }
 
   get ExistingCompany_Name(): Locator {
@@ -1208,7 +1207,6 @@ export class CorrespondentPortalPage {
   get_Headers_From_UI(index: number): Locator {
     return this.page.locator(`(//input[@type="checkbox"]/../..//div[@class="flex-grow-1"])[${index}]`);
   }
-
 
   get Headers_from_UI_Count(): Locator {
     return this.page.locator("(//input[@type=\"checkbox\"]/../..//div[@class=\"flex-grow-1\"])");

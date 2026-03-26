@@ -8,6 +8,8 @@ import { PriceOfferedPage } from '../../../src/pages/correspondant/price-offered
 import { SpinnerPage } from '../../../src/pages/correspondant/spinner';
 import { AddonHelpers } from '../../../src/helpers/AddonHelpers';
 import { Logger as log } from '../../../src/helpers/log-helper';
+import { ENV } from '@config/environments'
+import { APP_CONSTANTS as appconstants } from '../../../src/constants/app-constants';
 
 const TC_ID = "REG_TS19_TC03";
 const TC_TITLE = "Verify the Apply/Clear filter for current day and verify the list should display the records from current day only";
@@ -19,6 +21,8 @@ test.describe('REG_PriceOffered', () => {
   let priceOfferedPage: PriceOfferedPage;
   let spinnerPage: SpinnerPage;
   let helpers: AddonHelpers;
+  const credentials = ENV.getCredentials('internal');
+
 
   test.beforeEach(async ({ page }) => {
     vars = {};
@@ -35,7 +39,8 @@ test.describe('REG_PriceOffered', () => {
 
       log.step(`Step 1: Login to CORR Portal`);
       try {
-
+        vars["Username"] = credentials.username;
+        vars["Password"] = credentials.password;
         await stepGroups.stepGroup_Login_to_CORR_Portal(page, vars);
         log.stepPass(`Step 1 passed: Logged in to CORR Portal successfully`);
 
@@ -69,12 +74,12 @@ test.describe('REG_PriceOffered', () => {
         await priceOfferedPage.Filter_Dropdown1.click();
         await correspondentPortalPage.Select_Date_Range_Dropdown.click();
         await correspondentPortalPage.Current_Date_On_Filters.click();
-        helpers.getCurrentTimestamp('d-M-yyyy', 'CurrentDate', 'UTC');
+        helpers.getCurrentTimestamp(appconstants.DATE_FORMAT, 'CurrentDate', appconstants.UTC);
 
         await correspondentPortalPage.Select_Current_DateAdd_Config(vars["CurrentDate"]).click();
         await correspondentPortalPage.Apply_Button.click();
         await applyFiltersButtonPage.Apply_Filters_Button.click();
-        await spinnerPage.Spinner.waitFor({ state: 'visible' });
+        // await spinnerPage.Spinner.waitFor({ state: 'visible' });
         await spinnerPage.Spinner.waitFor({ state: 'hidden' });
         log.stepPass(`Step 4 passed: Applied current date filter from filter dropdown successfully`);
 
@@ -86,16 +91,16 @@ test.describe('REG_PriceOffered', () => {
       log.step("Step 5: Verify that after applying current date filter, the list should display the records from current day only");
       try {
         await priceOfferedPage.Date_Filter_ChipPrice_Offered_Page.waitFor({ state: 'visible' });
-        helpers.getCurrentTimestamp('yyyy/MM/dd', 'TodayDate');
+        helpers.getCurrentTimestamp(appconstants.DATE_FORMAT_YYYYMMDD, 'TodayDate');
         await expect(priceOfferedPage.Date_Filter_ChipPrice_Offered_Page).toContainText(vars["TodayDate"]);
         if (await correspondentPortalPage.Go_to_Next_Page_Button.isVisible()) /* Element Go to Next Page Button is enabled */ {
-          vars["CountofPages"] = "2";
+          vars["CountofPages"] = appconstants.TWO;
         } else {
-          vars["CountofPages"] = "1";
+          vars["CountofPages"] = appconstants.ONE;
         }
-        vars["count"] = "1";
+        vars["count"] = appconstants.ONE;
         while (parseFloat(String(vars["count"])) <= parseFloat(String(vars["CountofPages"]))) {
-          helpers.getCurrentTimestamp('MM/dd/yyyy', 'CurrentDate');
+          helpers.getCurrentTimestamp(appconstants.DATE_FORMATE_, 'CurrentDate');
           await helpers.verifyMultipleElementsHaveSameText(priceOfferedPage.Date_VErification, vars["CurrentDate"]);
           if (await correspondentPortalPage.Go_to_Next_Page_Button.isVisible()) /* Element Go to Next Page Button is enabled */ {
             await correspondentPortalPage.Go_to_Next_Page_Button.click();
@@ -133,7 +138,7 @@ test.describe('REG_PriceOffered', () => {
       await priceOfferedPage.Filter_Dropdown1.click();
       await correspondentPortalPage.Select_Date_Range_Dropdown.click();
       await correspondentPortalPage.Current_Date_On_Filters.click();
-      helpers.getCurrentTimestamp('d-M-yyyy', 'CurrentDate', 'UTC');
+      helpers.getCurrentTimestamp(appconstants.DATE_FORMAT, 'CurrentDate', appconstants.UTC);
       await correspondentPortalPage.Select_Current_DateAdd_Config(vars["CurrentDate"]).click();
       await correspondentPortalPage.Apply_Button.click();
       await applyFiltersButtonPage.Apply_Filters_Button.click();
@@ -141,18 +146,18 @@ test.describe('REG_PriceOffered', () => {
       await spinnerPage.Spinner.waitFor({ state: 'hidden' });
       await priceOfferedPage.Date_Filter_ChipPrice_Offered_Page.waitFor({ state: 'visible' });
 
-      helpers.getCurrentTimestamp('yyyy/MM/dd', 'currentDate');
+      helpers.getCurrentTimestamp(appconstants. DATE_FORMAT_YYYYMMDD, 'currentDate');
       helpers.concatenateWithSpace('Date:', vars["currentDate"], 'CurrentDateWithTextDate');
       await expect(priceOfferedPage.Date_Filter_ChipPrice_Offered_Page).toContainText(vars["CurrentDateWithTextDate"]);
 
       if (await correspondentPortalPage.Go_to_Next_Page_Button.isVisible()) /* Element Go to Next Page Button is enabled */ {
-        vars["CountofPages"] = "2";
+        vars["CountofPages"] = appconstants.TWO;
       } else {
-        vars["CountofPages"] = "1";
+        vars["CountofPages"] = appconstants.ONE;
       }
-      vars["count"] = "1";
+      vars["count"] = appconstants.ONE;
       while (parseFloat(String(vars["count"])) <= parseFloat(String(vars["CountofPages"]))) {
-        helpers.getCurrentTimestamp('MM/dd/yyyy', 'dateFormattedSecond');
+        helpers.getCurrentTimestamp(appconstants.DATE_FORMATE_, 'dateFormattedSecond');
         await helpers.verifyMultipleElementsHaveSameText(priceOfferedPage.Date_VErification, vars["dateFormattedSecond"]);
         if (await correspondentPortalPage.Go_to_Next_Page_Button.isVisible()) /* Element Go to Next Page Button is enabled */ {
           await correspondentPortalPage.Go_to_Next_Page_Button.click();

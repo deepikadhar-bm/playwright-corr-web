@@ -8,6 +8,12 @@ import { RulesAndActionsButtonPage } from '../../pages/correspondant/rules-and-a
 import { SaveAndPublishButtonPage } from '../../pages/correspondant/save-and-publish-button';
 import { SpinnerPage } from '../../pages/correspondant/spinner';
 import { StatusInactive2Page } from '../../pages/correspondant/status-inactive--2';
+import { ENV } from '@config/environments'
+import { APP_CONSTANTS as appconstants } from '../../../src/constants/app-constants';
+
+  const credentials = ENV.getCredentials('internal');
+
+
 
 export async function runPrereq_809(page: Page, vars: Record<string, string>): Promise<void> {
   const backButtonPage = new BackButtonPage(page);
@@ -18,7 +24,8 @@ export async function runPrereq_809(page: Page, vars: Record<string, string>): P
   const spinnerPage = new SpinnerPage(page);
   const statusInactive2Page = new StatusInactive2Page(page);
 
-
+  vars["Username"] = credentials.username;
+        vars["Password"] = credentials.password;
   await stepGroups.stepGroup_Login_to_CORR_Portal(page, vars);
   await stepGroups.stepGroup_Selecting_the_multiple_Company_name_Creating_a_New_Map(page, vars);
   vars["CreatedOn"] = (() => {

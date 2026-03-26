@@ -13,6 +13,8 @@ import { ThisActionWillSaveTheChangesAndMoveToNextPagePage } from '../../../src/
 import { Logger as log } from '../../../src/helpers/log-helper';
 import { ENV } from '@config/environments'
 import { testDataManager } from 'testdata/TestDataManager';
+import { APP_CONSTANTS as appconstants } from '../../../src/constants/app-constants';
+
 
 const TC_ID = "REG_TS08_TC11_CASE-04";
 const TC_TITLE = "No changes / No unidentified fields: Directly move to next screen without prompt.";
@@ -68,7 +70,7 @@ test.describe('REG_Bid Maps', () => {
       try {
         await stepGroups.stepGroup_Login_to_CORR_Portal(page, vars);
         await stepGroups.stepGroup_Smart_Mapper_from_Off_to_On(page, vars);
-        await stepGroups.stepGroup_Creation_Of_Bid_Map_Upto_Header_Mapping(page, vars);
+        await stepGroups.stepGroup_Creation_Of_Bid_Map_Upto_Header_Mapping(page, vars,"DeepikaAugBidQA_(3)_(1)_(1)_(2).xlsx");
         log.stepPass("Step 2 passed: Successfully logged in and created Bid Map up to Header Mapping.");
       } catch (error) {
         log.stepFail(page, "Step 2 failed: Unable to login, enable Smart Mapper, or create Bid Map up to Header Mapping.");
