@@ -3436,7 +3436,7 @@ export async function stepGroup_Uploading_Bid_Request_By_Selecting_both_standard
   await CorrPortalElem.Entered_Bid_Mapping_Id_New(vars["BidMappingID"]).first().click();
   // await expect(CorrPortalElem.Bid_Mapping_ID_Dropdown_1).toContainText(vars["BidMappingID"]);
   await expect(CorrPortalElem.Bid_Mapping_Id_Selected_Text).toContainText(vars["BidMappingID"]);
-  
+
   await CorrPortalElem.Pricing_Return_Time.click();
 }
 
@@ -4350,17 +4350,17 @@ export async function stepGroup_Storing_Chase_Field_and_Chase_Value_from_Enum_Pa
  * Steps: 7
  */
 export async function stepGroup_Getting_Next_Month_From_Current_Month(page: import('@playwright/test').Page, vars: Record<string, string>) {
- const Methods = new AddonHelpers(page, vars);
- Methods.getCurrentTimestamp(appconstants.MONTH_NUM_FORMAT, 'CurrentMonth', appconstants.ASIA_KOLKATA);
-if (Number(vars['CurrentMonth']) === 12) {
-  vars['NextMonth'] = appconstants.ONE;
-} else {
-  Methods.performArithmetic(vars['CurrentMonth'], 'ADDITION', '1', 'NextMonth');
-}
+  const Methods = new AddonHelpers(page, vars);
+  Methods.getCurrentTimestamp(appconstants.MONTH_NUM_FORMAT, 'CurrentMonth', appconstants.ASIA_KOLKATA);
+  if (Number(vars['CurrentMonth']) === 12) {
+    vars['NextMonth'] = appconstants.ONE;
+  } else {
+    Methods.performArithmetic(vars['CurrentMonth'], 'ADDITION', '1', 'NextMonth');
+  }
 
-if (['1','2','3','4','5','6','7','8','9'].includes(String(vars['NextMonth']))) {
-  Methods.concatenate('0', vars['NextMonth'], 'NextMonth');
-}
+  if (['1', '2', '3', '4', '5', '6', '7', '8', '9'].includes(String(vars['NextMonth']))) {
+    Methods.concatenate('0', vars['NextMonth'], 'NextMonth');
+  }
 }
 
 /**
@@ -4639,17 +4639,19 @@ export async function stepGroup_Market_Threshold(page: import('@playwright/test'
  */
 export async function stepGroup_If_Test_case_fail(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
-  if (true) /* Test Case Result is Failed */ {
-    await CorrPortalElem.Administration_Menu.click();
-    await CorrPortalElem.General_Settings.click();
-    await CorrPortalElem.Market_Thresholds.click();
-    await CorrPortalElem.Edit_Map_Button.click();
-    await CorrPortalElem.Minimum_Display_value.clear();
-    await CorrPortalElem.Minimum_Display_value.fill("1");
-    await CorrPortalElem.Maximum_Display_Value.clear();
-    await CorrPortalElem.Maximum_Display_Value.fill("120");
-    await CorrPortalElem.Update_Threshold_Button.click();
-  }
+  // if (REG_TS13_TC01testFailed) /* Test Case Result is Failed */ {
+  await CorrPortalElem.Administration_Menu.click();
+  await CorrPortalElem.General_Settings.click();
+  await CorrPortalElem.Market_Thresholds.click();
+  await CorrPortalElem.Edit_Map_Button.click();
+  await CorrPortalElem.Minimum_Display_value.clear();
+  await CorrPortalElem.Minimum_Display_value.fill(appconstants.ONE);
+  await CorrPortalElem.Maximum_Display_Value.click();
+  await CorrPortalElem.Maximum_Display_Value.clear();
+  await CorrPortalElem.Maximum_Display_Value.fill(appconstants.ONE_HUNDRED_TWEENTY);
+  await expect(CorrPortalElem.Update_Threshold_Button).toBeEnabled();
+  await CorrPortalElem.Update_Threshold_Button.click();
+  // }
 }
 
 /**
@@ -5017,7 +5019,7 @@ export async function stepGroup_Add_Early_Config_With_Current_Est_Time(page: imp
   await CorrPortalElem.Add_New_Config_Button.click();
   await CorrPortalElem.Toggle_Date_Picker_Button.click();
 
-  Methods.getCurrentTimestamp(appconstants.TIME_FORMAT_HHMMA ,'CurrentDate', appconstants.UTC);
+  Methods.getCurrentTimestamp(appconstants.DATE_FORMAT_DMYYYY, 'CurrentDate', appconstants.UTC);
   log.info('CurrentDate: ' + vars['CurrentDate']);
 
   await CorrPortalElem.Select_Current_Date_Filters_Price_Offered(vars["CurrentDate"]).click();
@@ -5383,12 +5385,12 @@ export async function stepGroup_Updating_Back_MinMaxThreshold(page: import('@pla
  * Steps: 3
  */
 export async function stepGroup_Storing_PopUpError(page: import('@playwright/test').Page, vars: Record<string, string>) {
-  const Methods=new AddonHelpers(page,vars);
+  const Methods = new AddonHelpers(page, vars);
   // vars["ExpectedPopUpError1"] = "Loan" + vars["space"] + vars["CorrLoan"] + vars["space"] + "can not be committed. Market adjuster value" + vars["space"];
-  Methods.concatenateWithSpace(appconstants.LOAN_TEXT,vars["CorrLoan"],'ExpectedPopUpError1');
-  Methods.concatenateWithSpace(vars['ExpectedPopUpError1'],appconstants.MARKET_ADJ_ERROR_TEXT,'ExpectedPopUpError1');
+  Methods.concatenateWithSpace(appconstants.LOAN_TEXT, vars["CorrLoan"], 'ExpectedPopUpError1');
+  Methods.concatenateWithSpace(vars['ExpectedPopUpError1'], appconstants.MARKET_ADJ_ERROR_TEXT, 'ExpectedPopUpError1');
   // vars["ExpectedPopUpError2"] = "is greater than market threshold value" + vars["space"] + vars["NumLowerThanMarkAdjPopup"];
-  Methods.concatenateWithSpace(appconstants.MARKET_ADJ_REASON_TEXT,vars["NumLowerThanMarkAdjPopup"],'ExpectedPopUpError2');
+  Methods.concatenateWithSpace(appconstants.MARKET_ADJ_REASON_TEXT, vars["NumLowerThanMarkAdjPopup"], 'ExpectedPopUpError2');
   log.info('ExpectedPopUpError1: ' + vars['ExpectedPopUpError1']);
   log.info('ExpectedPopUpError2: ' + vars['ExpectedPopUpError2']);
 }
@@ -5710,13 +5712,13 @@ export async function stepGroup_Verification_of_Data_from_Excel_to_UIClosed_List
   vars["RowCount"] = appconstants.ONE;
   log.info("Rows count UI:" + vars["TotalRowsCountUI"])
   while (parseFloat(String(vars["RowCount"])) <= parseFloat(String(vars["TotalRowsCountUI"]))) {
-    log.info('Iteration Row:'+vars["RowCount"])
+    log.info('Iteration Row:' + vars["RowCount"])
     vars["ColumnCountUI"] = appconstants.ONE;
     vars["IndexCountExcel"] = appconstants.ONE;
     vars["EntireRowDataExcel"] = excelHelper.readEntireRow(vars["ExportsFilePath"], 0, vars["RowCount"], "EntireRowDataExcel");
     await CorrPortalElem.Commitment_List_Text.click();
     while (parseFloat(vars["ColumnCountUI"]) <= (parseFloat(appconstants.THIRTEEN))) {
-      log.info('Iteration column:'+vars["ColumnCountUI"])
+      log.info('Iteration column:' + vars["ColumnCountUI"])
       Methods.splitStringByRegConditionWithPosition(vars["EntireRowDataExcel"], ",", vars["IndexCountExcel"], "IndividualCellValueExcel");
       vars["IndividualCellValueUI"] = await CorrPortalElem.Individual_Cell_Value_Closed_List(vars["RowCount"], vars["ColumnCountUI"]).textContent() || '';
       Methods.trimWhitespace(vars["IndividualCellValueUI"], "IndividualCellValueUI");
@@ -7009,4 +7011,67 @@ export async function stepGroup_Verification_of_Data_from_Excel_to_UI_Excluding_
       vars["CellValueInExcel"] = String(vars["CellValueInExcel"]).trim();
     }
   }
+}
+/**
+ * Step Group: Uploading Bid Request
+ * ID: 1226
+ * Steps: 24
+ */
+export async function stepGroup_Uploading_Bid_Request_copy(page: import('@playwright/test').Page, vars: Record<string, string>) {
+  const CorrPortalElem = new CorrPortalPage(page);
+  //const testData: Record<string, string> = {}; // TODO: Load from test data profile
+  //await CorrPortalElem.Upload_New_Bid_Request_Button.isEnabled();
+  await page.waitForTimeout(5000);
+  await CorrPortalElem.Upload_New_Bid_Request_Button.click();
+  await page.waitForTimeout(5000);
+  // wait for the spinner element on the page to disappear
+  await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
+  await CorrPortalElem.Select_Company_In_BidRequest.click();
+  await CorrPortalElem.Bid_Mapping_Id_Search_Input_box.fill(vars["CompanyName"]);
+  // [DISABLED] Verify that the element SelectCompany_Value has value Company Name for title and With Scrollable FALSE
+  // await expect(CorrPortalElem.SelectCompany_Value).toHaveAttribute('title', testData["Company Name"]);
+  await CorrPortalElem.SelectCompany_Value.click();
+  // [DISABLED] Verify that the element SelectCompany_Value displays text Company Name and With Scrollable FALSE
+  // await expect(CorrPortalElem.SelectCompany_Value).toContainText(testData["Company Name"]);
+  await page.waitForTimeout(2000);
+  await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
+  await page.waitForTimeout(5000);
+  // await expect(CorrPortalElem.Standard_Execution_Checkbox).toBeVisible();
+  // await expect(CorrPortalElem.Standard_Execution_Checkbox).toBeChecked();
+  if (!(await CorrPortalElem.Standard_Execution_Checkbox.isChecked())) {
+    await CorrPortalElem.Standard_Execution_Checkbox.check();
+    await page.waitForTimeout(2000);
+    log.info("Standard checkbox was not checked — checked it now");
+  }
+  await expect(CorrPortalElem.Standard_Execution_Checkbox).toBeChecked();
+  await CorrPortalElem.StandardExecution_Dropdown.selectOption({ label: "3" });
+  await CorrPortalElem.StandardExceutionType_Dropdown.waitFor({ state: 'visible' });
+  if (await CorrPortalElem.Chase_Direct_Checkbox.isChecked()) {
+    await CorrPortalElem.Chase_Direct_Checkbox.uncheck();
+  }
+  await expect(CorrPortalElem.Chase_Direct_Checkbox).not.toBeChecked();
+  //  await expect(CorrPortalElem.Chase_Direct_Checkbox).toBeVisible();
+  // await expect(CorrPortalElem.Chase_Direct_Checkbox).toBeChecked();
+  await expect(CorrPortalElem.StandardExceutionType_Dropdown).toHaveValue("3");
+  await CorrPortalElem.Bid_Mapping_ID_Dropdown.click();
+  await CorrPortalElem.Search_box_Bid_mapping_id.fill(vars["BidMappingID"]);
+  await CorrPortalElem.Bid_Mapping_ID_Dropdown_1.waitFor({ state: 'visible' });
+  await CorrPortalElem.Bid_Mapping_ID_Dropdown_1.click();
+  //await expect(CorrPortalElem.Bid_Mapping_ID_Dropdown).toContainText([vars["BidMappingID"]]);
+  await expect(CorrPortalElem.Bid_Request_Date).toBeEnabled();
+  await CorrPortalElem.Pricing_Return_Time.click();
+  // [DISABLED] Scroll down to the element Enabled_PricingReturnTime into view
+  // await CorrPortalElem.Enabled_PricingReturnTime.scrollIntoViewIfNeeded();
+  // [DISABLED] Verify that the element Enabled_PricingReturnTime is present and With Scrollable TRUE
+  // await expect(CorrPortalElem.Enabled_PricingReturnTime).toBeVisible();
+  // [DISABLED] Click on Enabled_PricingReturnTime
+  // await CorrPortalElem.Enabled_PricingReturnTime.click();
+  // [DISABLED] Verify that the current page displays text Drag and drop files here or click to browse. Allowed formats: .xls,.xlsx,.csv,.txt
+  // await expect(page.getByText("Drag and drop files here or click to browse. Allowed formats: .xls,.xlsx,.csv,.txt")).toBeVisible();
+  // [DISABLED] Upload file Bid_Valid_file.xlsx,Bid_Valid_file.xlsx using the element UploadFile [BidRequest]
+  // await CorrPortalElem.Upload_File.setInputFiles(path.resolve(__dirname, 'test-data', "Bid_Valid_file.xlsx"));
+  // [DISABLED] Verify that the element UploadBid_Button is enabled and With Scrollable FALSE
+  // await expect(CorrPortalElem.UploadBid_Button).toBeVisible();
+  // [DISABLED] Click on UploadBid_Button
+  // await CorrPortalElem.UploadBid_Button.click();
 }
