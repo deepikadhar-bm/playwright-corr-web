@@ -11,6 +11,8 @@ import { P24UnitDropdownPage } from '../../../src/pages/correspondant/p-24-unit-
 import { StatusInactivePage } from '../../../src/pages/correspondant/status-inactive-';
 import { Logger as log } from '../../../src/helpers/log-helper';
 import { ENV } from '@config/environments'
+import { APP_CONSTANTS as appconstants } from '../../../src/constants/app-constants';
+
 
 const TC_ID = "REG_TS02_TC03";
 const TC_TITLE = "Delete Should trigger a confirmation pop up. Upon Delete, On click on 'X' / 'No' The pop up should close. Upon Delete, On click on 'Yes, Proceed' should delete the Mapping."
@@ -47,7 +49,7 @@ test.describe('REG_Bid Maps', () => {
         vars["Password"] = credentials.password;
         log.info(`Username set`);
         await stepGroups.stepGroup_Login_to_CORR_Portal(page, vars);
-        await stepGroups.stepGroup_Creation_Of_Bid_Map_Upto_Header_Mapping(page, vars);
+        await stepGroups.stepGroup_Creation_Of_Bid_Map_Upto_Header_Mapping(page, vars,"DeepikaAugBidQA_(3)_(1)_(1)_(2).xlsx");
         log.stepPass("Step 1 passed: Navigated to Header Mapping page");
       } catch (error) {
         log.stepFail(page, "Step 1 failed: Login/Navigation failed");

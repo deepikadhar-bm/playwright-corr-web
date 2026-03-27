@@ -8,6 +8,8 @@ import { HeadingMappingsPage } from '../../../src/pages/correspondant/heading-ma
 import { SpinnerPage } from '../../../src/pages/correspondant/spinner';
 import { AddonHelpers } from '../../../src/helpers/AddonHelpers';
 import { Logger as log } from '../../../src/helpers/log-helper';
+import { ENV } from '@config/environments'
+import { APP_CONSTANTS as appconstants } from '../../../src/constants/app-constants';
 
 const TC_ID = "REG_TS18_TC01";
 const TC_TITLE = "Verify that the user should not be allowed to create duplicate maps and verify that if the map is deleted then the user should be able to create a new map with the same name.";
@@ -19,6 +21,7 @@ test.describe('REG_Bid Maps', () => {
   let headingMappingsPage: HeadingMappingsPage;
   let spinnerPage: SpinnerPage;
   let helpers: AddonHelpers;
+  const credentials = ENV.getCredentials('internal');
 
   test.beforeEach(async ({ page }) => {
     vars = {};
@@ -35,6 +38,8 @@ test.describe('REG_Bid Maps', () => {
     try {
       log.step("Step 1: Login to CORR Portal and verify dashboard");
       try {
+        vars["Username"] = credentials.username;
+        vars["Password"] = credentials.password;
         await stepGroups.stepGroup_Login_to_CORR_Portal(page, vars);
         await spinnerPage.Spinner.waitFor({ state: 'hidden' });
         await expect(correspondentPortalPage.Heading_Dashboard).toBeVisible();

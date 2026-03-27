@@ -14,6 +14,8 @@ import { SpinnerPage } from '../../../src/pages/correspondant/spinner';
 import { testDataManager } from 'testdata/TestDataManager';
 import { ENV } from '@config/environments'
 import { Logger as log } from '../../../src/helpers/log-helper';
+import { APP_CONSTANTS as appconstants } from '../../../src/constants/app-constants';
+
 
 const TC_ID="REG_TS08_TC10_CASE-03";
 const TC_TITLE="They have changes and they don’t have unidentified field - Message should be Note : This action will save the changes and Move to Next Page."
@@ -86,7 +88,7 @@ test.describe('REG_Bid Maps', () => {
 
       log.step("Step 3: Resolve unmapped enumeration values");
       try{
-        vars["count"]="1";
+        vars["count"]=appconstants.ONE;
         vars["ChaseValues"]=String(await chaseValuePage.Chase_Values_In_Enumration_Page.count());
         log.info(`Total Chase Values: ${vars["ChaseValues"]}`);
         log.info(`Initial count: ${vars["count"]}`);

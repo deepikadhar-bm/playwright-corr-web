@@ -8,6 +8,8 @@ import { SaveDraftExitButtonPage } from '../../../src/pages/correspondant/save-d
 import { CorrespondentPortal7Page } from '../../../src/pages/correspondant/correspondent-portal-7';
 import { ENV } from '@config/environments'
 import { Logger as log } from '../../../src/helpers/log-helper';
+import { APP_CONSTANTS as appconstants } from '../../../src/constants/app-constants';
+
 
 const TC_ID = "REG_TS02_TC07";
 const TC_TITLE = "Verify that user should be allowed to select / deselect the required fields via individual fields. Allow users to enable / disable the checkboxes / header values."
@@ -47,7 +49,7 @@ test.describe('REG_Bid Maps', () => {
 
       log.step("Step 2: Create Bid Map up to Header Mapping page");
       try {
-        await stepGroups.stepGroup_Creation_Of_Bid_Map_Upto_Header_Mapping(page, vars);
+        await stepGroups.stepGroup_Creation_Of_Bid_Map_Upto_Header_Mapping(page, vars,"DeepikaAugBidQA_(3)_(1)_(1)_(2).xlsx");
         log.stepPass("Step 2 passed: Navigated to Header Mapping page successfully");
       } catch (error) {
         log.stepFail(page, "Step 2 failed: Failed to create Bid Map up to Header Mapping");

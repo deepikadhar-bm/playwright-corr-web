@@ -149,7 +149,8 @@ export async function runPrereq_797(page: Page, vars: Record<string, string>): P
 
   await stepGroups.stepGroup_Login_to_CORR_Portal(page, vars);
   await stepGroups.stepGroup_Smart_Mapper_from_Off_to_On(page, vars);
-  await stepGroups.stepGroup_Creation_Of_Bid_Map_Upto_Header_Mapping(page, vars);
+  // await stepGroups.stepGroup_Creation_Of_Bid_Map_Upto_Header_Mapping(page, vars);
+  await stepGroups.stepGroup_Creation_Of_Bid_Map_Upto_Header_Mapping(page,vars,"DeepikaAugBidQA_(3)_(1)_(1)_(2).xlsx");
   await expect(correspondentPortalPage.Rules_and_Actions_Step_4_of_4).toBeVisible();
   vars["Count of the Bid Sample"] = String(await bidSampleFieldNamePage.Common_Xpath_For_Bid_Sample.count());
   vars["count"] = "1";

@@ -13,6 +13,8 @@ import { StatusInactivePage } from '../../../src/pages/correspondant/status-inac
 import { runPrereq_809 } from '../../../src/helpers/prereqs/prereq-809';
 import { AddonHelpers } from '../../../src/helpers/AddonHelpers';
 import { Logger as log } from '../../../src/helpers/log-helper';
+import { ENV } from '@config/environments'
+import { APP_CONSTANTS as appconstants } from '../../../src/constants/app-constants';
 
 const TC_ID = "REG_TS20_TC01";
 const TC_TITLE = "Verify in the popup that the list of companies associated with the map is displayed along with the proper date";
@@ -27,6 +29,8 @@ test.describe('REG_Bid Maps', () => {
   let statusInactive2Page: StatusInactive2Page;
   let statusInactivePage: StatusInactivePage;
   let helpers: AddonHelpers;
+  const credentials = ENV.getCredentials('internal');
+
 
   test.beforeEach(async ({ page }) => {
     vars = {};

@@ -11,7 +11,6 @@ import { runPrereq_1788 } from '../../../src/helpers/prereqs/prereq-1788';
 import { CorrPortalPage } from '@pages/correspondant/CorrPortalPage';
 import { AddonHelpers } from '@helpers/AddonHelpers';
 import { Logger as log } from '@helpers/log-helper';
-import { APP_CONSTANTS as appconstants } from '../../../src/constants/app-constants';
 import { ENV } from '@config/environments';
 import { testDataManager } from 'testdata/TestDataManager';
 
@@ -114,7 +113,7 @@ test.describe('Unassigned', () => {
 
       log.step('Uploading Bid Request file');
       try {
-        await stepGroups.stepGroup_Uploading_Bid_Request(page, vars);
+        await stepGroups.stepGroup_Uploading_Bid_Request_copy(page, vars);
         await correspondentPortalPage.Pricing_Return_Time.selectOption({ index: parseInt('2') });
         vars['ExtractedPrincingReturnTime'] = await correspondentPortalPage.Pricing_Return_Time.evaluate(el => {
           const s = el as HTMLSelectElement;

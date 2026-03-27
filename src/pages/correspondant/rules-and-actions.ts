@@ -27,8 +27,8 @@ export class RulesAndActionsPage {
     return this.page.locator("(//button[@id=\"singleSelectDropDownWithSearch\"]/parent::div[@class=\"form-control p-0 danger\"])[2]");
   }
 
-  get Category_In_Dropdown(): Locator {
-    return this.page.locator("//input[contains(@aria-label,\"$|CategoryName|\")]");
+  get_Category_In_Dropdown(CategoryName:string): Locator {
+    return this.page.locator(`//input[contains(@aria-label,\"${CategoryName}\")]`);
   }
 
   get Chase_Field_Name_Dropdown_Red_Color(): Locator {

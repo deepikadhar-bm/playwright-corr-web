@@ -6,6 +6,8 @@ import { PriceOfferedPage } from '../../../src/pages/correspondant/price-offered
 import { SpinnerPage } from '../../../src/pages/correspondant/spinner';
 import { AddonHelpers } from '../../../src/helpers/AddonHelpers';
 import { Logger as log } from '../../../src/helpers/log-helper';
+import { ENV } from '@config/environments'
+import { APP_CONSTANTS as appconstants } from '../../../src/constants/app-constants';
 
 const TC_ID = "REG_TS19_TC01";
 const TC_TITLE = "Perform search/Clear search actions and verify that the data present in the list screen";
@@ -17,6 +19,8 @@ test.describe('REG_PriceOffered', () => {
   let priceOfferedPage: PriceOfferedPage;
   let spinnerPage: SpinnerPage;
   let helpers: AddonHelpers;
+  const credentials = ENV.getCredentials('internal');
+
 
   test.beforeEach(async ({ page }) => {
     vars = {};
@@ -33,7 +37,8 @@ test.describe('REG_PriceOffered', () => {
     try {
       log.step(`Step 1: Login to CORR Portal`);
       try {
-
+        vars["Username"] = credentials.username;
+        vars["Password"] = credentials.password;
         await stepGroups.stepGroup_Login_to_CORR_Portal(page, vars);
         log.stepPass(`Step 1 passed: Logged in to CORR Portal successfully`);
 
@@ -65,12 +70,12 @@ test.describe('REG_PriceOffered', () => {
       log.step("Step 4: Perform search by Bid Request ID");
       try {
         await bidRequestsPage.Search_by_Bid_Request_ID_Field.click();
-        vars["ThreeDigitBidId"] = "874";
+        vars["ThreeDigitBidId"] = appconstants.ThreeDigitBidID;
         await bidRequestsPage.Search_by_Bid_Request_ID_Field.type(vars["ThreeDigitBidId"], { delay: 250 });
-        await spinnerPage.Spinner.waitFor({ state: 'visible', timeout: 10000 });
+        // await spinnerPage.Spinner.waitFor({ state: 'visible', timeout: 10000 });
         await spinnerPage.Spinner.waitFor({ state: 'hidden', timeout: 10000 });
-        vars["count"] = "1";
-        vars["Count"] = "1";
+        vars["count"] = appconstants.ONE;
+        vars["Count"] = appconstants.ONE;
         vars["PageCount"] = await correspondentPortalPage.Pagination_Count.textContent() || '';
         helpers.extractSubstringAfterReference(vars["PageCount"], "of ", 2, "PageCount");
         log.stepPass(`Step 4 passed: Search by Bid Request ID performed successfully`);
@@ -125,7 +130,7 @@ test.describe('REG_PriceOffered', () => {
         await spinnerPage.Spinner.waitFor({ state: 'visible', timeout: 15000 });
         await spinnerPage.Spinner.waitFor({ state: 'hidden', timeout: 10000 });
         vars["CountBidReqIdPriceOffered"] = String(await correspondentPortalPage.First_Bid_Req_Id.count());
-        vars["Count1"] = "1";
+        vars["Count1"] = appconstants.ONE;
         await helpers.verifyMultipleElementsHaveSameText(correspondentPortalPage.First_Bid_Req_Id, vars["FirstBidReqId"]);
         log.stepPass(`Step 8 passed: Search by persisted Bid Request ID performed and results verified successfully`);
       } catch (error) {
@@ -139,7 +144,7 @@ test.describe('REG_PriceOffered', () => {
         await spinnerPage.Spinner.waitFor({ state: 'visible', timeout: 15000 });
         await spinnerPage.Spinner.waitFor({ state: 'hidden', timeout: 10000 });
         vars["CountBidReqIdPriceOffered"] = String(await correspondentPortalPage.First_Bid_Req_Id.count());
-        expect(parseFloat(vars["CountBidReqIdPriceOffered"])).toBeGreaterThanOrEqual(parseFloat("2"));
+        expect(parseFloat(vars["CountBidReqIdPriceOffered"])).toBeGreaterThanOrEqual(parseFloat(appconstants.TWO));
         log.stepPass(`Step 9 passed: Search field cleared again and count of results displayed verified successfully`);
       } catch (error) {
         log.stepFail(page, `Step 9 failed: Failed to clear the search field again and verify the count of results displayed`);

@@ -10,6 +10,9 @@ import { CustomerPermissionPage } from '../../../src/pages/correspondant/custome
 import { PriceOfferedPage } from '../../../src/pages/correspondant/price-offered';
 import { StatusInactivePage } from '../../../src/pages/correspondant/status-inactive-';
 import { SpinnerPage } from '@pages/correspondant';
+import { ENV } from '@config/environments'
+import { testDataManager } from 'testdata/TestDataManager';
+import { APP_CONSTANTS as appconstants } from '../../../src/constants/app-constants';
 
 test.describe('Unassigned', () => {
   let vars: Record<string, string> = {};
@@ -20,6 +23,9 @@ test.describe('Unassigned', () => {
   let statusInactivePage: StatusInactivePage;
   let spinnerPage: SpinnerPage;
   let helpers: AddonHelpers;
+
+  const credentials = ENV.getCredentials('internal');
+
 
   test.beforeEach(async ({ page }) => {
     vars = {};
@@ -34,40 +40,20 @@ test.describe('Unassigned', () => {
 const TC_ID = 'REG_TS19_TC05';
 const TC_TITLE = 'Apply/Clear filter for a particular company and verify that the screen should display only those company bids';
 
-test(`${TC_ID} - ${TC_TITLE}`, async ({ page }) => {
-    const testData: Record<string, string> = {
-  "CompanyNameInFilters": "Fre",
-  "RequestIdfor22-2.1": "87BQ7DB5C69B",
-  "RequestIDCreated3rdScenario": "87YK9A2E0311",
-  "BidMappingID": "Deepika Aug1",
-  "RequestIdfor22-2.2": "87TS8C74F49F",
-  "RequestIDfrom13-1": "87RS88D43BB6",
-  "RequestIDfrom13-2": "578FE9EDEC6C",
-  "RequestIDfrom22-1.2": "874KBED58307",
-  "RequestIDfrom10-2": "872V960789CD",
-  "RequestIDfrom11-1": "87ZB36778D61",
-  "EditedChaseUsersTime": "3",
-  "RequestIDCreated1stScenario": "87P80EB790BD",
-  "RequestIDfrom10-3": "874WDCCDC3CE",
-  "RequestIDfrom22-3.1": "877V3BF90360",
-  "Expected Product(price offered)": "FN30",
-  "RequestIDfrom22-1.1": "877V3BF90360",
-  "RequestIDCreated2ndScenario": "87462B751677",
-  "Expected Coupon(price offered)": "3.5",
-  "Static Last Name(Pop Up Verfication)": "LN_Deepika_JULY_16_13",
-  "RequestIDfrom24-1": "87E42DCFAFE8",
-  "Company Name": "Freedom - A4187",
-  "RequestIDfrom29-1": "57EFC2170915",
-  "RequestIDfrom28-1": "87E15439E568",
-  "NO of Batches": "5",
-  "RequestIDfrom27-1": "87DEF1EBA5BD",
-  "RequestIDFrom28-2": "878S25D7D52F",
-  "StatusInFilters": "Price",
-  "RequestIDCreated4rthScenario": "87145580866E"
-}; // Profile: "Price Offered", row: 0
 
+
+  const profileName = "Price Offered";
+  const profile = testDataManager.getProfileByName(profileName);
+test(`${TC_ID} - ${TC_TITLE}`, async ({ page }) => {
+   
     log.tcStart(TC_ID, TC_TITLE);
     try {
+       if (profile && profile.data) {
+        const companyNameInFilters = profile.data[0]['CompanyNameInFilters'];
+        vars["CompanyNameInFilters"] = companyNameInFilters;
+        vars["Username"] = credentials.username;
+        vars["Password"] = credentials.password;
+      }
       log.step('Step 1: Login to CORR Portal');
       try {
         await stepGroups.stepGroup_Login_to_CORR_Portal(page, vars);
@@ -92,8 +78,8 @@ test(`${TC_ID} - ${TC_TITLE}`, async ({ page }) => {
       log.step('Step 3: Search company in filters');
       try {
         await priceOfferedPage.Search_In_Select_Company.first().click();
-        await helpers.clearAndEnterText(priceOfferedPage.Search_In_Select_Company.first(), undefined, testData["CompanyNameInFilters"]);
-        await helpers.verifyElementTextContainsCaseInsensitive(priceOfferedPage.Selected_Company.first(), undefined, testData["CompanyNameInFilters"]);
+        await helpers.clearAndEnterText(priceOfferedPage.Search_In_Select_Company.first(), undefined, vars["CompanyNameInFilters"]);
+        await helpers.verifyElementTextContainsCaseInsensitive(priceOfferedPage.Selected_Company.first(), undefined, vars["CompanyNameInFilters"]);
         vars["CountOfCompanyBeforeClearing"] = String(await priceOfferedPage.Company_Count_In_Filters.count());
         await correspondentPortalPage.Clear_Search_Button.click();
         vars["TotalCompanyCountInFilter"] = String(await priceOfferedPage.Company_Count_In_Filters.count());
@@ -146,8 +132,8 @@ test(`${TC_ID} - ${TC_TITLE}`, async ({ page }) => {
         await spinnerPage.Spinner.waitFor({ state: 'visible' });
         await spinnerPage.Spinner.waitFor({ state: 'hidden' });
         await expect(priceOfferedPage.Filtered_Company_NameChip).toBeVisible();
-        vars["Ccount"] = "1";
-        vars["count"] = "1";
+        vars["Ccount"] = appconstants.ONE;
+        vars["count"] = appconstants.ONE;
         while (parseFloat(String(vars["Ccount"])) <= parseFloat(String("2"))) {
           vars["SelectedCompanyCount"] = String(await priceOfferedPage.Company_NamePrice_Offered.count());
           while (parseFloat(String(vars["count"])) <= parseFloat(String(vars["SelectedCompanyCount"]))) {
@@ -171,17 +157,14 @@ test(`${TC_ID} - ${TC_TITLE}`, async ({ page }) => {
         await priceOfferedPage.Clear_all_ButtonPrice_Offered.click();
         await expect(priceOfferedPage.Filtered_Company_NameChip).toBeHidden();
         await correspondentPortalPage.Administration_Menu.click();
-        await page.waitForTimeout(3000);
         await correspondentPortalPage.GeneralSettings_Menu.click();
         await spinnerPage.Spinner.waitFor({ state: 'visible' });
         await spinnerPage.Spinner.waitFor({ state: 'hidden' });
         await customerPermissionPage.CustomerPermission_Menu.click();
-        await page.waitForTimeout(3000);
         await priceOfferedPage.Page_Selection.click();
         await priceOfferedPage.Number_50.click();
-        await page.waitForTimeout(3000);
-        vars["Count"] = "1";
-        vars["TotalCompanyCountCustomerPermission"] = "0";
+        vars["Count"] = appconstants.ONE;
+        vars["TotalCompanyCountCustomerPermission"] = appconstants.ZERO;
         vars["PageCount"] = await correspondentPortalPage.Pagination_Count.textContent() || '';
         vars["PageCount"] = String(vars["PageCount"]).substring(10);
         while (parseFloat(String(vars["Count"])) <= parseFloat(String(vars["PageCount"]))) {
@@ -189,7 +172,6 @@ test(`${TC_ID} - ${TC_TITLE}`, async ({ page }) => {
           vars["TotalCompanyCountCustomerPermission"] = (parseFloat(String(vars["TotalCompanyCountCustomerPermission"])) + parseFloat(String(vars["CompanyNameCount"]))).toFixed(0);
           if (await correspondentPortalPage.Go_to_Next_Page_Button_2.isEnabled()) /* Element Go to Next Page Button is enabled */ {
             await correspondentPortalPage.Go_to_Next_Page_Button_2.click();
-            await page.waitForTimeout(3000);
           }
           vars["Count"] = (parseFloat(String("1")) + parseFloat(String(vars["Count"]))).toFixed(0);
         }
