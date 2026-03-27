@@ -11,8 +11,8 @@ export class BidRequestCreationPage {
     return this.page.locator("//*[@id=\"selectBidMappingIdDropdown\"]");
   }
 
-  get Bid_Upload_Date(): Locator {
-    return this.page.locator("(//div[@class=\"col-6\" and contains(text(),\"$|CurrentDate|\")])[1]");
+  Bid_Upload_Date(CurrentDate : String): Locator {
+    return this.page.locator(`(//div[@class=\"col-6\" and contains(text(),\"${CurrentDate}\")])[1]`);
   }
 
   get Enabled_Time_New(): Locator {

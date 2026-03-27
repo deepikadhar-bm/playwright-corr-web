@@ -171,8 +171,8 @@ export class BidRequestPage {
     return this.page.locator("(//td[@data-title=\"Actions\"])[1]//button[last()]");
   }
 
-  get Delete_Early_Config_Button(): Locator {
-    return this.page.locator("(//td[@data-title='Date' and contains(text(), '$|NextBusinessDateList|')]/..//button[2])");
+  Delete_Early_Config_Button(NextBusinessDateList:String): Locator {
+    return this.page.locator(`(//td[@data-title='Date' and contains(text(), '${NextBusinessDateList}')]/..//button[2])`);
   }
 
   get Deleted(): Locator {
@@ -307,8 +307,8 @@ export class BidRequestPage {
     return this.page.locator(`((//label[text()='Select Bid Request Status']//..//div[@class="cursor-pointer py-3 text-wrap"])[position() > 1 and position() <= last()])[${Count}]`);
   }
 
-  get Individual_Uploaded_Date(): Locator {
-    return this.page.locator("(//div[contains(@aria-label,\"Uploaded Date:\")])[$|count|]");
+  Individual_Uploaded_Date(count: String): Locator {
+    return this.page.locator(`(//div[contains(@aria-label,\"Uploaded Date:\")])[${count}]`);
   }
 
   get Invalid_Error_TextDanger(): Locator {
