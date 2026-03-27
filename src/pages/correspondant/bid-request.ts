@@ -171,8 +171,8 @@ export class BidRequestPage {
     return this.page.locator("(//td[@data-title=\"Actions\"])[1]//button[last()]");
   }
 
-  get Delete_Early_Config_Button(): Locator {
-    return this.page.locator("(//td[@data-title='Date' and contains(text(), '$|NextBusinessDateList|')]/..//button[2])");
+  Delete_Early_Config_Button(NextBusinessDateList:String): Locator {
+    return this.page.locator(`(//td[@data-title='Date' and contains(text(), '${NextBusinessDateList}')]/..//button[2])`);
   }
 
   get Deleted(): Locator {

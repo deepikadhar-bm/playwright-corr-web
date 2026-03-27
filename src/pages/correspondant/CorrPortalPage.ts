@@ -719,8 +719,8 @@ export class CorrPortalPage {
     return this.page.locator("(//button[@aria-label=\"Delete Batch Time\"])[last()]");
   }
 
-  get Delete_Early_Config_Button(): Locator {
-    return this.page.locator("(//td[@data-title='Date' and contains(text(), '$|NextBusinessDateList|')]/..//button[2])");
+  Delete_Early_Config_Button(CurrentDateList:String): Locator {
+    return this.page.locator(`(//td[@data-title='Date' and contains(text(), '${CurrentDateList}')]/..//button[2])`);
   }
 
   get Delete_Enumeration_Pair(): Locator {
@@ -807,8 +807,8 @@ export class CorrPortalPage {
     return this.page.locator("//td[@data-title=\"Date\" and not(contains(text(),\"$|CurrentDateList|\"))]/..//button[@aria-label=\"Delete\"]");
   }
 
-  get Early_Config_For_Current_Date(): Locator {
-    return this.page.locator("//td[contains(text(),\" $|CurrentDateList|\")]");
+  Early_Config_For_Current_Date(CurrentDateList: String): Locator {
+    return this.page.locator(`//td[contains(text(),\" ${CurrentDateList}\")]`);
   }
 
   get Early_Config_tomorrows_Date(): Locator {
