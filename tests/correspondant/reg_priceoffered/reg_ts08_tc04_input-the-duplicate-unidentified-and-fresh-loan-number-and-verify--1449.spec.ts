@@ -9,6 +9,7 @@ import { AddonHelpers } from '@helpers/AddonHelpers';
 import { Logger as log } from '@helpers/log-helper';
 import { ENV } from '@config/environments';
 import { testDataManager } from 'testdata/TestDataManager';
+import { APP_CONSTANTS as appconstants } from '../../../src/constants/app-constants';
 
 
 const TC_ID = 'REG_TS08_TC04';
@@ -44,18 +45,10 @@ test.describe('REG_PriceOffered', () => {
 
     try {
 
-      log.step('Load test data from profile');
-      try {
-        if (profile && profile.data) {
-          vars['RequestIDCreated3rdScenario'] = profile.data[0]['RequestIDCreated3rdScenario'];
-          log.info('RequestIDCreated3rdScenario: ' + vars['RequestIDCreated3rdScenario']);
-        }
-        log.stepPass('Test data loaded from profile: ' + profileName);
-      } catch (e) {
-        await log.stepFail(page, 'Failed to load test data from profile: ' + profileName);
-        throw e;
+      if (profile && profile.data) {
+        vars['RequestIDCreated3rdScenario'] = profile.data[0]['RequestIDCreated3rdScenario'];
+        log.info('RequestIDCreated3rdScenario: ' + vars['RequestIDCreated3rdScenario']);
       }
-
       log.step('Login to Correspondent Portal');
       try {
         await stepGroups.stepGroup_Login_to_CORR_Portal(page, vars);
@@ -71,6 +64,7 @@ test.describe('REG_PriceOffered', () => {
         await correspondentPortalPage.Price_Offered_List_Dropdown.click();
         await bidRequestsPage.Search_by_Bid_Request_ID_Field.waitFor({ state: 'visible' });
         await bidRequestsPage.Search_by_Bid_Request_ID_Field.fill(vars['RequestIDCreated3rdScenario']);
+        await page.keyboard.press('Enter');
         await spinnerPage.Spinner.waitFor({ state: 'hidden' });
         await priceOfferedPage.First_bid_id.click();
         log.stepPass('Navigated to Price Offered List and opened bid: ' + vars['RequestIDCreated3rdScenario']);
@@ -82,12 +76,12 @@ test.describe('REG_PriceOffered', () => {
       log.step('Capture committed, fresh and unidentified loan numbers');
       try {
         vars['CommittedLoanNumber'] = await priceOfferedPage.First_Comitted_loan_Number.first().textContent() || '';
-        Methods.removeCharactersFromPosition(vars['CommittedLoanNumber'], '0','10', 'CommittedLoanNumber');
+        Methods.removeCharactersFromPosition(vars['CommittedLoanNumber'], '0', '10', 'CommittedLoanNumber');
         log.info('CommittedLoanNumber: ' + vars['CommittedLoanNumber']);
         vars['FreshLoanNumber'] = await priceOfferedPage.First_Loan_Num_Price_offered.first().textContent() || '';
         Methods.trimtestdata(vars['FreshLoanNumber'], 'FreshLoanNumber');
         log.info('FreshLoanNumber: ' + vars['FreshLoanNumber']);
-        Methods.removeCharactersFromPosition(vars['FreshLoanNumber'], '0','5', 'UnidentifiedLoanNumber');
+        Methods.removeCharactersFromPosition(vars['FreshLoanNumber'], '0', '5', 'UnidentifiedLoanNumber');
         log.info('UnidentifiedLoanNumber: ' + vars['UnidentifiedLoanNumber']);
         Methods.concatenateWithSpecialChar(vars['CommittedLoanNumber'], vars['FreshLoanNumber'], ',', 'CommittedFreshLoan');
         Methods.concatenateWithSpecialChar(vars['CommittedFreshLoan'], vars['UnidentifiedLoanNumber'], ',', 'CommittedFreshUnidentifiedLoan');
@@ -133,16 +127,17 @@ test.describe('REG_PriceOffered', () => {
 
       log.step('Verify error color for unidentified loan, verify class and title attributes');
       try {
-        await Methods.getCSSProperty(priceOfferedPage.Unidentified_Loantext_box_popup, 'color', 'ColorValueUnidentifiedLoan');
+        await Methods.getCSSProperty(priceOfferedPage.Unidentified_Loantext_box_popup(vars['UnidentifiedLoanNumberFromPopup']), 'color', 'ColorValueUnidentifiedLoan');
         log.info('ColorValueUnidentifiedLoan : ' + vars['ColorValueUnidentifiedLoan']);
-        if (String(vars['ColorValueUnidentifiedLoan']) === 'rgba(255, 0, 0, 1)') {
+        if (String(vars['ColorValueUnidentifiedLoan']) === 'rgb(255, 0, 0)') {
           vars['ColorValueUnidentifiedLoan'] = 'red';
-        } else {
-          vars['ColorValueUnidentifiedLoan'] = 'othercolor';
-        }
+        } 
+        // else {
+        //   vars['ColorValueUnidentifiedLoan'] = 'othercolor';
+        // }
         log.info('ColorValueUnidentifiedLoan: ' + vars['ColorValueUnidentifiedLoan']);
         Methods.verifyString(vars['ColorValueUnidentifiedLoan'], 'equals', 'red');
-        await expect(priceOfferedPage.Unidentified_Loantext_box_popup).toHaveClass('error-loan');
+        await expect(priceOfferedPage.Unidentified_Loantext_box_popup(vars['UnidentifiedLoanNumberFromPopup'])).toHaveClass('error-loan');
         log.stepPass('Unidentified loan color is red and title is error-loan');
       } catch (e) {
         await log.stepFail(page, 'Unidentified loan color or title verification failed');
@@ -151,16 +146,17 @@ test.describe('REG_PriceOffered', () => {
 
       log.step('Verify error color for duplicate loan, verify class and title attributes');
       try {
-        await Methods.getCSSProperty(priceOfferedPage.Duplicate_Loantext_box_popup, 'color', 'ColorValueDuplicateLoan');
+        await Methods.getCSSProperty(priceOfferedPage.Duplicate_Loantext_box_popup(vars['CommittedLoanNumberFromPopup']), 'color', 'ColorValueDuplicateLoan');
         log.info('ColorValueDuplicateLoan : ' + vars['ColorValueDuplicateLoan']);
-        if (String(vars['ColorValueDuplicateLoan']) === 'rgba(255, 0, 0, 1)') {
+        if (String(vars['ColorValueDuplicateLoan']) === 'rgb(255, 0, 0)') {
           vars['ColorValueDuplicateLoan'] = 'red';
-        } else {
-          vars['ColorValueDuplicateLoan'] = 'othercolor';
         }
+        //  else {
+        //   vars['ColorValueDuplicateLoan'] = 'othercolor';
+        // }
         log.info('ColorValueDuplicateLoan: ' + vars['ColorValueDuplicateLoan']);
         Methods.verifyString(vars['ColorValueDuplicateLoan'], 'equals', 'red');
-        await expect(priceOfferedPage.Duplicate_Loantext_box_popup).toHaveClass('error-loan');
+        await expect(priceOfferedPage.Duplicate_Loantext_box_popup(vars['CommittedLoanNumberFromPopup'])).toHaveClass('error-loan');
         log.stepPass('Duplicate loan color is red and title is error-loan');
       } catch (e) {
         await log.stepFail(page, 'Duplicate loan color or title verification failed');
@@ -171,11 +167,12 @@ test.describe('REG_PriceOffered', () => {
       try {
         await Methods.getCSSProperty(priceOfferedPage.color_text, 'color', 'ColorValueFreshLoan');
         log.info('ColorValueFreshLoan : ' + vars['ColorValueFreshLoan']);
-        if (String(vars['ColorValueFreshLoan']) === 'rgba(33, 37, 41, 1)') {
+        if (String(vars['ColorValueFreshLoan']) === 'rgb(33, 37, 41)') {
           vars['ColorValueFreshLoan'] = 'black';
-        } else {
-          vars['ColorValueFreshLoan'] = 'othercolor';
-        }
+        } 
+        // else {
+        //   vars['ColorValueFreshLoan'] = 'othercolor';
+        // }
         log.info('ColorValueFreshLoan: ' + vars['ColorValueFreshLoan']);
         Methods.verifyString(vars['ColorValueFreshLoan'], 'equals', 'black');
         log.stepPass('Fresh loan color is black — no error');
@@ -189,10 +186,11 @@ test.describe('REG_PriceOffered', () => {
         await expect(priceOfferedPage.Remove_errors_and_continue_Checkbox).toBeVisible();
         await priceOfferedPage.Remove_errors_and_continue_Checkbox.check();
         await expect(priceOfferedPage.Remove_errors_and_continue_Checkbox).toBeChecked();
-        await expect(chaseFieldNamePage.Add_to_Commit_Buttonpaste_loan_popup).toContainText('Add to Commit');
+        await expect(chaseFieldNamePage.Add_to_Commit_Buttonpaste_loan_popup).toContainText(appconstants.ADD_TO_COMMIT_TEXT);
         await expect(chaseFieldNamePage.Add_to_Commit_Buttonpaste_loan_popup).toBeEnabled();
         await chaseFieldNamePage.Add_to_Commit_Buttonpaste_loan_popup.click();
-        await expect(priceOfferedPage.Fresh_Loan_Num_Price_Offered_after_Error_check).toContainText(vars['FreshLoanNumber']);
+        Methods.concatenateWithSpecialChar(vars['CommittedLoanNumber'], vars['FreshLoanNumber'], ',', 'CommittedFreshLoan');
+        await expect(priceOfferedPage.Fresh_Loan_Num_Price_Offered_after_Error_check(vars['FreshLoanNumber'])).toContainText(vars['FreshLoanNumber']);
         await expect(priceOfferedPage.Selected_loan_Checkboxprice_offered_screen).toBeVisible();
         await expect(priceOfferedPage.Commit_Selected_Count_Footer_Displayprice_offered).toContainText('1');
         log.stepPass('Remove errors checked, added to commit and fresh loan selected with count 1');

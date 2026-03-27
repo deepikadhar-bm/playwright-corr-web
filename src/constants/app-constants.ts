@@ -96,8 +96,6 @@ export const APP_CONSTANTS = {
   PARTIALLYCOMMITTED: "Partially Committed",
   EXPIRED: "Expired",
   COMMITTED: "Committed",
-  COMMITMENT_IN_PROGRESS: "Commitment in progress"
+  COMMITMENT_IN_PROGRESS: "Commitment in progress",
+  ADD_TO_COMMIT_TEXT:'Add to Commit',
 };
-
-
- 
