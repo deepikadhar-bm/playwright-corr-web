@@ -205,8 +205,8 @@ export class PriceOfferedPage {
     return this.page.locator(`//tr[.//td[@data-title='Company']//div[normalize-space(text())='${CompanyName}'] and .//td[@data-title="Status"]//span[normalize-space(text())='Partially Committed' or normalize-space(text())='Price Offered']]//td[@data-title='Bid Req. ID']`);
   }
 
-  get Bid_Request_Idprice_offered(): Locator {
-    return this.page.locator("//a[contains(text(),\"$|Bid ID Price Offered|\")]");
+  Bid_Request_Idprice_offered(BidIDPriceOffered:string): Locator {
+    return this.page.locator(`//a[contains(text(),\"${BidIDPriceOffered}\")]`);
   }
 
   get Bid_Request_IDprice_offered(): Locator {
@@ -417,8 +417,8 @@ export class PriceOfferedPage {
     return this.page.locator("//div[@class=\"border-bottom p-2\"]");
   }
 
-  get Chase_Field_Value_Exe_Chase(): Locator {
-    return this.page.locator("(//div[@class=\"border-bottom p-2\" and normalize-space((text())=\"$ChaseFieldNamePopupExeChase}")]/following-sibling::div)[1]");
+  Chase_Field_Value_Exe_Chase(ChaseFieldNamePopupExeChase:string): Locator {
+    return this.page.locator(`(//div[@class=\"border-bottom p-2\" and normalize-space((text())=\"${ChaseFieldNamePopupExeChase}")]/following-sibling::div)[1]`);
   }
 
   get Chase_Field_Value_Exe_Standard(): Locator {
@@ -647,8 +647,8 @@ Column_Data_UI_DetainsScreen(IndividualHeaderUI:string): Locator {
     return this.page.locator(`//button[text()=\"${CommittedLoanNumStandard}\"]//ancestor::tr/td//div[contains(@class,\"commit-order\")]`);
   }
 
-  get CommitID(): Locator {
-    return this.page.locator("//div[text()='Commit. ID']/..//h5[text()='$|Commitment updated Num|']");
+  CommitID(CommitmentupdatedNum:string): Locator {
+    return this.page.locator(`//div[text()='Commit. ID']/..//h5[text()='${CommitmentupdatedNum}']`);
   }
 
   get Commitment_ID(): Locator {
@@ -886,8 +886,8 @@ Column_Data_UI_DetainsScreen(IndividualHeaderUI:string): Locator {
     return this.page.locator("//div[text()=\"Company\"]//following-sibling::h5");
   }
 
-  get Company_NamePrice_Offered_Page(): Locator {
-    return this.page.locator("//a[contains(text(),\"$|BidReqIdPriceOffered|\")]//ancestor::tr//td[@data-title=\"Company\"]\n ");
+  Company_NamePrice_Offered_Page(BidReqIdPriceOffered:string): Locator {
+    return this.page.locator(`//a[contains(text(),\"${BidReqIdPriceOffered}\")]//ancestor::tr//td[@data-title=\"Company\"]\n `);
   }
 
   Company_NamePrice_Offered_Screen(BidReqId:string): Locator {
@@ -1018,8 +1018,8 @@ Column_Data_UI_DetainsScreen(IndividualHeaderUI:string): Locator {
     return this.page.locator("//div[@class=\"pill rounded-pill relative\" and contains(@aria-label,\"Chip Date\")]");
   }
 
-  get Date_Price_Offered(): Locator {
-    return this.page.locator("//a[contains(text(),\"$|BidReqIdPriceOffered|\")]//ancestor::tr//td[@data-title=\"Date Price Offered\"]");
+  Date_Price_Offered(BidReqIdPriceOffered:string): Locator {
+    return this.page.locator(`//a[contains(text(),\"${BidReqIdPriceOffered}\")]//ancestor::tr//td[@data-title=\"Date Price Offered\"]`);
   }
 
   get Date_Price_Offered1price_offered_standard(): Locator {
@@ -1077,8 +1077,8 @@ Column_Data_UI_DetainsScreen(IndividualHeaderUI:string): Locator {
     return this.page.locator("//div//div[contains(text(),\"Duplicate Loan\")]/../hr/..//div//div");
   }
 
-  get Duplicate_Loantext_box_popup(): Locator {
-    return this.page.locator("//div[@role=\"textbox\"]/span[contains(text(),\"$|CommittedLoanNumber(errors found popup)|\")]");
+  Duplicate_Loantext_box_popup(CommittedLoanNumberFromPopup:string): Locator {
+    return this.page.locator(`//div[@role=\"textbox\"]/span[contains(text(),\"${CommittedLoanNumberFromPopup}\")]`);
   }
 
   get Eceution_Type_Price_Offered_Details(): Locator {
@@ -1093,8 +1093,8 @@ Column_Data_UI_DetainsScreen(IndividualHeaderUI:string): Locator {
     return this.page.locator("//button[contains(@aria-label,\"View loan details\")]");
   }
 
-  get Entered_Bid_Mapping_Id_New(): Locator {
-    return this.page.locator("//span[contains(text(),\"@|BidMappingIDNew|\")]");
+  Entered_Bid_Mapping_Id_New(BidMappingIDNew:string): Locator {
+    return this.page.locator(`//span[contains(text(),\"${BidMappingIDNew}\")]`);//parameter
   }
 
   get Error_Found_Text(): Locator {
@@ -1117,8 +1117,8 @@ Column_Data_UI_DetainsScreen(IndividualHeaderUI:string): Locator {
     return this.page.locator("//div[@id=\"price-offered-details-header\"]//*[text()=\"Execution Type\"]/..//h5");
   }
 
-  get Execution_Type_In_Screen(): Locator {
-    return this.page.locator("//a[contains(text(),\"$|BidReqIdPriceOffered|\")]//ancestor::tr//td[@data-title=\"Execution Type\"]\n ");
+  Execution_Type_In_Screen(BidReqIdPriceOffered:string): Locator {
+    return this.page.locator(`//a[contains(text(),\"${BidReqIdPriceOffered}\")]//ancestor::tr//td[@data-title=\"Execution Type\"]\n `);
   }
 
 Execution_TypeCommitment_List(BidReqId:string): Locator {
@@ -1233,8 +1233,8 @@ Execution_TypeCommitment_List(BidReqId:string): Locator {
     return this.page.locator("//input[@type=\"checkbox\" and contains(@aria-label,\"Select Freedom\")]");
   }
 
-  get Fresh_Loan_Num_Price_Offered_after_Error_check(): Locator {
-    return this.page.locator("//input[contains(@aria-label,\"Select loan\")]/../..//td[@data-title=\"Corr. Loan#\"]/div/button[text()=\"$|FreshLoanNumber(price offered table)|\"]");
+  Fresh_Loan_Num_Price_Offered_after_Error_check(FreshLoanNumber:string): Locator {
+    return this.page.locator(`//input[contains(@aria-label,\"Select loan\")]/../..//td[@data-title=\"Corr. Loan#\"]/div/button[text()=\"${FreshLoanNumber}\"]`);
   }
 
   get Fresh_Loantext_box_popup(): Locator {
@@ -1261,8 +1261,8 @@ Execution_TypeCommitment_List(BidReqId:string): Locator {
     return this.page.locator(`//button[text()=\"${UncommittedLoanNumStandard}\"]//ancestor::tr/td/div[contains(@aria-label,\"Gross price:\")]`);
   }
 
-  get Gross_price_Values(): Locator {
-    return this.page.locator("(//div[contains(@aria-label, \"Gross price\")])[$|Count1|]");
+  Gross_price_Values(Count1:string): Locator {
+    return this.page.locator(`(//div[contains(@aria-label, \"Gross price\")])[${Count1}]`);
   }
 
   get Gross_Price_Values_Count(): Locator {
@@ -1866,7 +1866,7 @@ Last_Nameprice_offered_screen_table(count1:string): Locator {
   }
 
    Price_Offered_Bid_Req_Id(PriceOfferedBidReqId: string): Locator {
-    return this.page.locator(`//a[contains(text(), ${"PriceOfferedBidReqId"})]`);
+    return this.page.locator(`//a[contains(text(), '${PriceOfferedBidReqId}')]`);
   }
 
   get Price_Offered_Company_Name_Column_Data(): Locator {
@@ -2220,16 +2220,16 @@ Select_Loan_which_is_committed_in_Standard(CommittedLoanNumber:string): Locator 
     return this.page.locator("(//div[@class=\"dropdown-overflow\"])[2]//input[@type=\"checkbox\"]");
   }
 
-  get Status_Expired(): Locator {
-    return this.page.locator("//a[contains(text(),\"$|BidReqIdPriceOffered|\")]//ancestor::tr//td[@data-title=\"Status\"]//span[text()[normalize-space() = \"Expired\"]]");
+  Status_Expired(BidReqIdPriceOffered:string): Locator {
+    return this.page.locator(`//a[contains(text(),\"${BidReqIdPriceOffered}\")]//ancestor::tr//td[@data-title=\"Status\"]//span[text()[normalize-space() = \"Expired\"]]`);
   }
 
   get Status_Filter_ChipPrice_Offered_Page(): Locator {
     return this.page.locator("//div[@class=\"pill rounded-pill relative\" and contains(@aria-label,\"Chip Status\")]");
   }
 
-  get Status_In_Screen(): Locator {
-    return this.page.locator("//a[contains(text(),\"$|BidReqIdPriceOffered|\")]//ancestor::tr//td[@data-title=\"Status\"]");
+   Status_In_Screen(BidReqIdPriceOffered:string): Locator {
+    return this.page.locator(`//a[contains(text(),\"${BidReqIdPriceOffered}\")]//ancestor::tr//td[@data-title=\"Status\"]`);
   }
 
   get Status_In_UI(): Locator {
@@ -2372,8 +2372,8 @@ Select_Loan_which_is_committed_in_Standard(CommittedLoanNumber:string): Locator 
     return this.page.locator("//div//div[contains(text(),\"Unidentified Loan\")]/../hr/..//div//div");
   }
 
-  get Unidentified_Loantext_box_popup(): Locator {
-    return this.page.locator("//div[@role=\"textbox\"]/span[contains(text(),\"$|UnidentifiedLoanNumber(errors found popup)|\")]");
+  Unidentified_Loantext_box_popup(UnidentifiedLoanNumberFromPopup:string): Locator {
+    return this.page.locator(`//div[@role=\"textbox\"]/span[contains(text(),\"${UnidentifiedLoanNumberFromPopup}\")]`);
   }
 
   get Unlocked_Loan(): Locator {
