@@ -1777,8 +1777,8 @@ export class CorrespondentPortalPage {
     return this.page.locator(`//div[@class=\"ngb-dp-month\"]//div[@aria-label='${CurrentDate}']`);
   }
 
-  get Select_Date_From_Calenderyesterday(): Locator {
-    return this.page.locator("//span[normalize-space(text())='$|YesterdaysDate|' and @class=\"custom-day\"]");
+  Select_Date_From_Calenderyesterday(YesterdaysDate : String): Locator {
+    return this.page.locator(`//span[normalize-space(text())='${YesterdaysDate}' and @class=\"custom-day\"]`);
   }
 
   get Select_Date_From_Custom_Date_Range(): Locator {
@@ -1794,7 +1794,7 @@ export class CorrespondentPortalPage {
   }
 
   get Select_Date_Range_Dropdown_Value(): Locator {
-    return this.page.locator("//button[@class=\"form-control text-dark text-start d-flex align-items-center dropdown-toggle\"]");
+    return this.page.locator("//button[@class=\"form-control text-dark text-start d-flex align-items-center dropdown-toggle\"]//span");
   }
 
   get Select_Date_Range_Dropdown1(): Locator {

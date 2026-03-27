@@ -2734,8 +2734,8 @@ export async function stepGroup_Delete_Last_Batch_Time(page: import('@playwright
   await CorrPortalElem.Delete_Batch_Time.hover();
   await expect(page.getByText("Delete Batch Time")).toBeVisible();
   await CorrPortalElem.Delete_Batch_Time.click();
-  await page.waitForLoadState('networkidle');
-  await expect(page.getByText("Delete Batch")).toBeVisible();
+  await page.waitForLoadState('load');
+  await expect(page.getByText("Delete Batch").first()).toBeVisible();
   await CorrPortalElem.Delete_batch_Button.click();
   await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
 }
@@ -2745,13 +2745,23 @@ export async function stepGroup_Delete_Last_Batch_Time(page: import('@playwright
  * ID: 1206
  * Steps: 5
  */
-export async function stepGroup_Separating_Hours_and_Minutes(page: import('@playwright/test').Page, vars: Record<string, string>) {
-  // [DISABLED] Trim white space from DeletedBatch1 and store it in a runtime DeletedBatch1
-  // vars["DeletedBatch1"] = String(vars["DeletedBatch1"]).trim();
-  vars["MinWithStandard"] = String(vars["DeletedBatch1"]).split(":")["2"] || '';
-  vars["Time_Hour"] = String(vars["DeletedBatch1"]).substring(0, String(vars["DeletedBatch1"]).length - 5);
-  vars["Time_Min"] = String(vars["MinWithStandard"]).substring(0, String(vars["MinWithStandard"]).length - 2);
-  vars["Time_Unit"] = String(vars["MinWithStandard"]).substring(2);
+export async function stepGroup_Separating_Hours_and_Minutes(
+  page: import('@playwright/test').Page,
+  vars: Record<string, string>
+) {
+  const time = String(vars["RequiredBatchTime"]).trim(); 
+
+  const [hour, minWithUnit] = time.split(":"); 
+  const [minute, unit] = minWithUnit.split(" "); 
+
+  vars["Time_Hour"] = hour;
+  log.info(`Time Hour : ${vars["Time_Hour"]}`);
+
+  vars["Time_Min"] = minute;
+  log.info(`Time Min : ${vars["Time_Min"]}`);
+
+  vars["Time_Unit"] = unit;
+  log.info(`Time Unit : ${vars["Time_Unit"]}`);
 }
 
 /**
@@ -2814,12 +2824,12 @@ export async function stepGroup_Modifying_The_Batch_Intervals(page: import('@pla
  */
 export async function stepGroup_Delete_early_config(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
-  if (true) /* Element Early Config With Current Date is visible */ {
-    await CorrPortalElem.Delete_Early_Config_Button.hover();
+  if (await CorrPortalElem.Early_Config_For_Current_Date(vars["CurrentDateList"]).isVisible()) /* Element Early Config With Current Date is visible */ {
+    await CorrPortalElem.Delete_Early_Config_Button(vars["CurrentDateList"]).hover();
     await expect(page.getByText("Delete")).toBeVisible();
-    await CorrPortalElem.Delete_Early_Config_Button.click();
+    await CorrPortalElem.Delete_Early_Config_Button(vars["CurrentDateList"]).click();
     await CorrPortalElem.Yes_Delete_ButtonEarly_config.click();
-    await CorrPortalElem.Early_Config_For_Current_Date.waitFor({ state: 'hidden' });
+    await CorrPortalElem.Early_Config_For_Current_Date(vars["CurrentDateList"]).waitFor({ state: 'hidden' });
   }
 }
 
@@ -2852,10 +2862,10 @@ export async function stepGroup_Modifying_Batch_Intervals_For_next_bussiness_day
     const p = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
     return fmt.replace('yyyy', p.year || '').replace('yy', (p.year || '').slice(-2)).replace('MM', p.month || '').replace('dd', p.day || '').replace('HH', String(d.getHours()).padStart(2, '0')).replace('hh', p.hour || '').replace('mm', p.minute || '').replace('ss', p.second || '').replace('a', p.dayPeriod || '').replace(/M(?!M)/g, String(parseInt(p.month || '0'))).replace(/d(?!d)/g, String(parseInt(p.day || '0'))).replace(/h(?!h)/g, String(parseInt(p.hour || '0')));
   })();
-  vars["Time_Minute"] = String(vars["Time_Min"]).split(":")["2"] || '';
+  vars["Time_Minute"] = String(vars["Time_Min"]).split(":")["1"] || '';
   await CorrPortalElem.StartTime_In_Minutes.fill(vars["Time_Minute"]);
-  await CorrPortalElem.Time_Interval.fill(testData["Time Interval"]);
-  await CorrPortalElem.No_Of_Batches.fill(testData["NO of Batches"]);
+  await CorrPortalElem.Time_Interval.fill(vars["Time Interval"]);
+  await CorrPortalElem.No_Of_Batches.fill(vars["NO of Batches"]);
   await expect(CorrPortalElem.On_Radio_button_in_Bid_Request).toBeEnabled();
   await CorrPortalElem.Off_Radio_Standard_Edit_Permissions_Popup.check();
   await expect(CorrPortalElem.Off_Radio_Standard_Edit_Permissions_Popup).toBeVisible();
@@ -3596,10 +3606,10 @@ export async function stepGroup_Verifying_the_second_accordian_table_from_excel_
  */
 export async function stepGroup_Navigating_To_Bid_Request_Config(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
-  await page.waitForLoadState('networkidle');
+  await page.waitForLoadState('load');
   await CorrPortalElem.Administration_Menu.click();
   await CorrPortalElem.General_Settings.click();
-  await page.waitForLoadState('networkidle');
+  await page.waitForLoadState('load');
   await CorrPortalElem.Bid_Request_Config_Menu.click();
   await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
 }

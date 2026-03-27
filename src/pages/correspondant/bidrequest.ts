@@ -27,8 +27,8 @@ export class BidrequestPage {
     return this.page.locator("(//div[@class=\"tooltip-inner\"]//div[@class=\"text-secondary\"])[$|count2|]");
   }
 
-  get Edited_Batch(): Locator {
-    return this.page.locator("(//div[@class=\"card-body\"]//*[text()=\"$|LastBeforeBatchTime|\"])");
+  Edited_Batch(LastBeforeBatchTime: String): Locator {
+    return this.page.locator(`(//div[@class=\"card-body\"]//*[text()=\"${LastBeforeBatchTime}\"])`);
   }
 
   Filtered_Lastmonth_Uploaded_Date(lastMonth: string): Locator {

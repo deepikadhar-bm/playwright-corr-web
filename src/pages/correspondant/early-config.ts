@@ -11,8 +11,8 @@ export class EarlyConfigPage {
     return this.page.locator("//td[@data-title=\"Last Batch\" and contains(text(),\"$|TimeHourMin|\")]");
   }
 
-  get Current_Date(): Locator {
-    return this.page.locator("//div[@aria-label=\"$|CurrentDateCalender|\"]");
+  Current_Date(CurrentDateCalender:String): Locator {
+    return this.page.locator(`//div[@aria-label=\"${CurrentDateCalender}\"]`);
   }
 
   get Date_Picker(): Locator {
@@ -51,12 +51,12 @@ export class EarlyConfigPage {
     return this.page.locator("//td[@data-title=\"Date\" and not(contains(text(),\"$|CurrentDateList|\"))]/..//button[@aria-label=\"Delete\"]");
   }
 
-  get Early_Config_For_Current_Date(): Locator {
-    return this.page.locator("//td[contains(text(),\" $|CurrentDateList|\")]");
+  Early_Config_For_Current_Date(CurrentDateList:String): Locator {
+    return this.page.locator(`//td[contains(text(),\" ${CurrentDateList}\")]`);
   }
 
-  get Early_Config_For_Next_business_day(): Locator {
-    return this.page.locator("//td[contains(text(),\" $|NextBusinessDateList|\")]");
+  Early_Config_For_Next_business_day(NextBusinessDateList:String): Locator {
+    return this.page.locator(`//td[contains(text(),\" ${NextBusinessDateList}\")]`);
   }
 
   get Early_Configtomorrows_Date(): Locator {
@@ -87,8 +87,8 @@ export class EarlyConfigPage {
     return this.page.locator("//select[@title=\"Select month\"]");
   }
 
-  get Next_Business_Date(): Locator {
-    return this.page.locator("//div[@aria-label=\"$|NextBusinessDateCalender1|\" or @aria-label=\"$|NextBusinessDateCalender2|\"]");
+  Next_Business_Date(NextBusinessDateCalender1:String,NextBusinessDateCalender2:String ): Locator {
+    return this.page.locator(`//div[@aria-label=\"${NextBusinessDateCalender1}\" or @aria-label=\"${NextBusinessDateCalender2}\"]`);
   }
 
   get Real_time_On_Radio_Button(): Locator {
