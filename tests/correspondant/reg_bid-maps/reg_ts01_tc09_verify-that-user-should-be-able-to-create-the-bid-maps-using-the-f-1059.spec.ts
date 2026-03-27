@@ -15,6 +15,12 @@ import { RulesAndActionsButtonPage } from '../../../src/pages/correspondant/rule
 import { SaveAndPublishButtonPage } from '../../../src/pages/correspondant/save-and-publish-button';
 import { SpinnerPage } from '../../../src/pages/correspondant/spinner';
 import { testDataManager } from 'testdata/TestDataManager';
+import { ENV } from '@config/environments'
+import { Logger as log } from '../../../src/helpers/log-helper';
+import { APP_CONSTANTS as appconstants } from '../../../src/constants/app-constants';
+
+const TC_ID = "REG_TS01_TC09";
+const TC_TITLE = "Verify that user should be able to create the bid maps using the file extension csv"
 
 test.describe('REG_Bid Maps', () => {
   let vars: Record<string, string> = {};
@@ -30,6 +36,7 @@ test.describe('REG_Bid Maps', () => {
   let rulesAndActionsButtonPage: RulesAndActionsButtonPage;
   let saveAndPublishButtonPage: SaveAndPublishButtonPage;
   let spinnerPage: SpinnerPage;
+  const credentials = ENV.getCredentials('internal');
 
   test.beforeEach(async ({ page }) => {
     vars = {};
@@ -47,78 +54,108 @@ test.describe('REG_Bid Maps', () => {
     spinnerPage = new SpinnerPage(page);
   });
 
-  const profileName = "Enum Type Values";//2
+  const profileName = "Enum Type Values";
   const profile = testDataManager.getProfileByName(profileName);
-  if (profile && profile.data) {
-    profile.data.forEach((dataRow, index) => {
-      test(`REG_TS01_TC09_Verify that user should be able to create the bid maps using the file extenstion csv ${index + 1}`, async ({ page }) => {
-        const vars: Record<string, string> = {
-          "Enum Type": dataRow["Enum Type"],
-        };
+  const profileName1 = "Bid_Maps";
+  const profile1 = testDataManager.getProfileByName(profileName1);
 
-
+  test(`${TC_ID} - ${TC_TITLE}`, async ({ page }) => {
+    log.tcStart(TC_ID, TC_TITLE);
+    try {
+      log.step("Step 1: Prepare data and login");
+      try {
+        if (profile1 && profile1.data && profile1.data.length > 0) {
+          vars["Rule Name"] = profile1.data[0]['Rule Name'];
+          vars["BidField"] = profile1.data[0]['BidField'];
+          vars["BidEnumeratedTapeValue"] = profile1.data[0]['BidEnumeratedTapeValue'];
+          vars["Username"] = credentials.username;
+          vars["Password"] = credentials.password;
+          log.info(`Rule Name: ${vars["Rule Name"]}`);
+          log.info(`BidField: ${vars["BidField"]}`);
+        }
         await stepGroups.stepGroup_Login_to_CORR_Portal(page, vars);
         await stepGroups.stepGroup_Smart_Mapper_from_Off_to_On(page, vars);
-        await stepGroups.stepGroup_Creation_Of_Bid_Map_Upto_Header_Mapping(page, vars);
-        vars["EnumValues"] = "Loan Purpose";
+        await stepGroups.stepGroup_Creation_Of_Bid_Map_Upto_Header_Mapping(page, vars, "BidMAP_Happy_Flow_Csv.csv");
+        log.stepPass("Step 1 passed");
+      } catch (error) {
+        log.stepFail(page, "Step 1 failed");
+        throw error;
+      }
 
+      log.step("Step 2: Prepare enum values");
+      try {
+        vars["EnumValues"] = appconstants.LOAN_PURPOSE;
+        if (profile && profile.data && profile.data.length > 0) {
+          profile.data.forEach((dataRow: Record<string, string>) => {
+            vars["EnumValues"] = dataRow["Enum Type"] + "," + vars["EnumValues"];
+          });
+        }
+        log.info(`EnumValues: ${vars["EnumValues"]}`);
+        log.stepPass("Step 2 passed");
+      } catch (error) {
+        log.stepFail(page, "Step 2 failed");
+        throw error;
+      }
 
-        vars["EnumValues"] = String(vars["EnumValues"]);// Remove trailing comma if exists
-
+      log.step("Step 3: Perform enumeration mapping");
+      try {
+        await headerMappingPage.MappedChaseFieldName.first().waitFor({ state: 'visible' });
         vars["MappedChaseFieldCount"] = String(await headerMappingPage.MappedChaseFieldName.count());
-        vars["count"] = "1";
-        vars["ChaseEnumValue"] = "sample";
+        vars["count"] = appconstants.ONE;
+        vars["ChaseEnumValue"] = appconstants.SAMPLE;
+        log.info(`MappedChaseFieldCount: ${vars["MappedChaseFieldCount"]}`);
+        log.info(`Initial count: ${vars["count"]}`);
         while (parseFloat(String(vars["count"])) < parseFloat(String(vars["MappedChaseFieldCount"]))) {
-          vars["ChaseName"] = await headerMappingPage.Individual_Mapped_Chase_Name.evaluate(el => { const s = el as HTMLSelectElement; return s.options[s.selectedIndex]?.text || ''; });
+          vars["ChaseName"] = await headerMappingPage.get_Individual_Mapped_Chase_Name(vars["count"]).evaluate(el => { const s = el as HTMLSelectElement; return s.options[s.selectedIndex]?.text || ''; });
           if (String(vars["EnumValues"]).includes(String(vars["ChaseName"]))) {
             vars["ChaseEnumValue"] = String(vars["ChaseName"]) + "," + String(vars["ChaseEnumValue"]);
-            vars["CorrespondentBidName"] = await headerMappingPage.Correspondent_Bid_sample_name.textContent() || '';
+            vars["CorrespondentBidName"] = await headerMappingPage.get_Correspondent_Bid_sample_name(vars["count"]).textContent() || '';
             await enumerationMappingButtonPage.Enumeration_Mapping_Button.click();
             await bidmapPage.Yes_Proceed_Button_Text.click();
             await rulesAndActionsButtonPage.Rules_and_Actions_Button.waitFor({ state: 'visible' });
-            await expect(enumerationMappingPage.Bid_Sample_Name_Field_Enumeration_Mapping).toContainText(vars["CorrespondentBidName"]);
+            await expect(enumerationMappingPage.get_Bid_Sample_Name_Field_Enumeration_Mapping(vars["ChaseName"])).toContainText(vars["CorrespondentBidName"]);
             await correspondentPortalPage.Header_Mapping1.click();
             await spinnerPage.Spinner.waitFor({ state: 'hidden' });
           }
           vars["count"] = (parseFloat(String("1")) + parseFloat(String(vars["count"]))).toFixed(0);
         }
-        // [DISABLED] Store Mortgage Types in BidFieldName
-        // vars["BidFieldName"] = "Mortgage Types";
-        // [DISABLED] Store Mortgage Limit in ChaseFieldValue
-        // vars["ChaseFieldValue"] = "Mortgage Limit";
-        // [DISABLED] Select option by text ChaseFieldValue in the Required Bid Field list
-        // await headerMappingPage.Required_Bid_Field.selectOption({ label: vars["ChaseFieldValue"] });
-        // [DISABLED] Store Product Name in BidFieldName
-        // vars["BidFieldName"] = "Product Name";
-        // [DISABLED] Store Mortgage Types in ChaseFieldValue
-        // vars["ChaseFieldValue"] = "Mortgage Types";
-        // [DISABLED] Select option by text ChaseFieldValue in the Required Bid Field list
-        // await headerMappingPage.Required_Bid_Field.selectOption({ label: vars["ChaseFieldValue"] });
-        // [DISABLED] Store Street in BidFieldName
-        // vars["BidFieldName"] = "Street";
-        // [DISABLED] Store Street in ChaseFieldValue
-        // vars["ChaseFieldValue"] = "Street";
-        // [DISABLED] Select option by text ChaseFieldValue in the Required Bid Field list
-        // await headerMappingPage.Required_Bid_Field.selectOption({ label: vars["ChaseFieldValue"] });
+        log.stepPass("Step 3 passed");
+      } catch (error) {
+        log.stepFail(page, "Step 3 failed");
+        throw error;
+      }
+
+      log.step("Step 4: Validate enumeration results");
+      try {
         await enumerationMappingButtonPage.Enumeration_Mapping_Button.click();
-        if (true) /* Element Yes Proceed Button is visible */ {
+        if (await bidmapPage.Yes_Proceed_Button_Text.isVisible()) /* Element Yes Proceed Button is visible */ {
           await bidmapPage.Yes_Proceed_Button_Text.click();
         }
-        if (true) /* Element Proceed with Saving Button is visible */ {
+        if (await proceedWithSavingButtonPage.Proceed_with_Saving_Button.isVisible()) /* Element Proceed with Saving Button is visible */ {
           await proceedWithSavingButtonPage.Proceed_with_Saving_Button.click();
         }
         vars["ChaseEnumNamesCount[Enumeration]"] = String(await enumerationMappingPage.Chase_Enum_Names.count());
-        vars["count1"] = "1";
+        vars["count1"] = appconstants.ONE;
+        log.info(`ChaseEnumNamesCount: ${vars["ChaseEnumNamesCount[Enumeration]"]}`);
+        log.info(`Initial count1: ${vars["count1"]}`);
         while (parseFloat(String(vars["count1"])) <= parseFloat(String(vars["ChaseEnumNamesCount[Enumeration]"]))) {
-          vars["ChaseName"] = await chaseFieldNamePage.Chase_Field_Name_common_one_Field.inputValue() || '';
-          expect(String(vars["ChaseEnumValue"])).toBe(vars["ChaseName"]);
+          vars["ChaseName"] = (await chaseFieldNamePage.get_Chase_Field_Name_common_one_Field(vars["count1"]).textContent())?.trim() || '';
+          expect(String(vars["ChaseEnumValue"])).toContain(vars["ChaseName"]);
           vars["count1"] = (parseFloat(String("1")) + parseFloat(String(vars["count1"]))).toFixed(0);
         }
+        log.stepPass("Step 4 passed");
+      } catch (error) {
+        log.stepFail(page, "Step 4 failed");
+        throw error;
+      }
+
+      log.step("Step 5: Add rules, actions and publish");
+      try {
         await rulesAndActionsButtonPage.Rules_and_Actions_Button.click();
-        if (true) /* Element Yes Proceed Button is visible */ {
+        if (await bidmapPage.Yes_Proceed_Button_Text.isVisible()) /* Element Yes Proceed Button is visible */ {
           await bidmapPage.Yes_Proceed_Button_Text.click();
         }
-        if (true) /* Element Proceed with Saving Button is visible */ {
+        if (await proceedWithSavingButtonPage.Proceed_with_Saving_Button.isVisible()) /* Element Proceed with Saving Button is visible */ {
           await proceedWithSavingButtonPage.Proceed_with_Saving_Button.click();
         }
         await spinnerPage.Spinner.waitFor({ state: 'hidden' });
@@ -128,10 +165,20 @@ test.describe('REG_Bid Maps', () => {
         await expect(rulesAndActionsButtonPage.Condition_BidTape1).toContainText(vars["RuleBidTapeValue"]);
         // [DISABLED] Verify that the element Action Chase Field Name 1 display value ChaseFieldNameonAddActions and With Scrollable FALSE
         // await expect(actionruleheaderPage.Action_Chase_Field_Name_1).toHaveValue(vars["ChaseFieldNameonAddActions"]);
-        await expect(actionruleheaderPage.Action_Chase_Field_Name_1).toContainText(vars["ChaseFieldNameonAddActions"]);
+        await expect(actionruleheaderPage.Action_Chase_Field_Name_1).toContainText(vars["ChaseFiledNameonAddActions"]);
         await saveAndPublishButtonPage.Save_and_Publish_Button.click();
-        await expect(mapNameFieldInBidMapsPage.Bid_Map_Name_Field_In_Row).toBeVisible();
-      });
-    });
-  }
+        await expect(mapNameFieldInBidMapsPage.get_Bid_Map_Name_Field_In_Row(vars["BidMap"])).toBeVisible();
+        log.stepPass("Step 5 passed");
+      } catch (error) {
+        log.stepFail(page, "Step 5 failed");
+        throw error;
+      }
+
+      log.tcEnd('PASS');
+    } catch (error) {
+      log.captureOnFailure(page, TC_ID, error);
+      log.tcEnd('FAIL');
+      throw error;
+    }
+  });
 });

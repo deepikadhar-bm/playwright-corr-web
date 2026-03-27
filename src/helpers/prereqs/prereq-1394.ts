@@ -111,7 +111,8 @@ const credentials = ENV.getCredentials('internal'); // 2
     // ── Step 6: Upload Bid Request ────────────────────────────────
     log.step('Uploading Bid Request file');
     try {
-      await stepGroups.stepGroup_Uploading_Bid_Request(page, vars);
+      // await stepGroups.stepGroup_Uploading_Bid_Request(page, vars);
+      await stepGroups.stepGroup_Uploading_Bid_Request_copy(page, vars);
       await correspondentPortalPage.Pricing_Return_Time.selectOption({ index: parseInt("2") });
       vars["ExtractedPrincingReturnTime"] = await correspondentPortalPage.Pricing_Return_Time.evaluate(el => {
         const s = el as HTMLSelectElement;

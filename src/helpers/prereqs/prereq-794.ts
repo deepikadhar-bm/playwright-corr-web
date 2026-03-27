@@ -8,6 +8,8 @@ import { runPrereq_775 } from './prereq-775';
 import { ENV } from '@config/environments'
 import { testDataManager } from 'testdata/TestDataManager';
 import { Logger as log } from '../../../src/helpers/log-helper';
+import { APP_CONSTANTS as appconstants } from '../../../src/constants/app-constants';
+
 
 
 
@@ -52,7 +54,7 @@ export async function runPrereq_794(page: Page, vars: Record<string, string>): P
       await correspondentPortalPage.Update_Header_Button.click();
       await expect(nameCantBeEmptyPage.Name_cant_be_empty).toBeVisible();
       await correspondentPortal4Page.Custom_Header.pressSequentially(vars["Chase Field Name"]);
-      await correspondentPortalPage.Chase_Field_Name.selectOption({ index: parseInt("11") });
+      await correspondentPortalPage.Chase_Field_Name.selectOption({ index: parseInt(appconstants.ELEVEN) });
       await correspondentPortalPage.Update_Header_Button.click();
       await expect(headerMappingPage.Chase_Field_Name_Text_Field.last()).toBeVisible();
       log.stepPass("Prereq 794 - Header mapping edited and verified successfully.");

@@ -6,7 +6,6 @@ import { runPrereq_1394 } from '../../../src/helpers/prereqs/prereq-1394';
 import { AddonHelpers } from '@helpers/AddonHelpers';
 import { Logger as log } from '@helpers/log-helper';
 import { APP_CONSTANTS as appconstants } from '../../../src/constants/app-constants';
-import { ENV } from '@config/environments';
 import { testDataManager } from 'testdata/TestDataManager';
 
 
@@ -19,12 +18,10 @@ test.describe('REG_PriceOffered', () => {
   let priceOfferedPage: PriceOfferedPage;
   let spinnerPage: SpinnerPage;
   let Methods: AddonHelpers;
-  const credentials = ENV.getCredentials('internal');
 
+  
   test.beforeEach(async ({ page }) => {
     vars = {};
-    vars['Username'] = credentials.username;
-    vars['Password'] = credentials.password;
     await runPrereq_1394(page, vars);
     correspondentPortalPage = new CorrespondentPortalPage(page);
     priceOfferedPage = new PriceOfferedPage(page);
@@ -51,7 +48,6 @@ test.describe('REG_PriceOffered', () => {
         await page.keyboard.press('Enter');
         await spinnerPage.Spinner.waitFor({ state: 'hidden' });
         await priceOfferedPage.Price_Offered_Bid_Req_Id(vars['PriceOfferedBidReqId']).first().click();
-        // await page.waitForLoadState('load');
         await priceOfferedPage.Check_UncommittedLoanNum1.first().waitFor({ state: 'visible' });
         await priceOfferedPage.Check_UncommittedLoanNum1.first().check();
         vars['UncommittedLoanNum1'] = await priceOfferedPage.Uncommitted_LoanNum1.first().textContent() || '';
@@ -133,46 +129,21 @@ test.describe('REG_PriceOffered', () => {
         vars['count'] = appconstants.ONE;
         while (parseFloat(String(vars['count'])) <= parseFloat(String(vars['CountOfCommittedLoans']))) {
           log.info('Processing committed loan row: ' + vars['count']);
-
           await expect(priceOfferedPage.CommittedLoan_Locked_Icon(vars['count'])).toBeVisible();
-
           vars['LockedLoanCommitOrder'] = await priceOfferedPage.Locked_Loan_CommitOrder(vars['count']).textContent() || '';
-          Methods.trimtestdata(vars['LockedLoanCommitOrder'], 'LockedLoanCommitOrder');
-
           vars['CorrLoanTable'] = await priceOfferedPage.Corr_Loan_price_offered_table(vars['count']).textContent() || '';
-          Methods.trimtestdata(vars['CorrLoanTable'], 'CorrLoanTable');
-
           vars['LastNameTable'] = await priceOfferedPage.Last_Nameprice_offered_table(vars['count']).textContent() || '';
-          Methods.trimtestdata(vars['LastNameTable'], 'LastNameTable');
-
           vars['LoanAmountTable'] = await priceOfferedPage.Loan_Amountprice_offered_table(vars['count']).textContent() || '';
-          Methods.trimtestdata(vars['LoanAmountTable'], 'LoanAmountTable');
-
           vars['IntRateTable'] = await priceOfferedPage.Int_Rateprice_offered_table(vars['count']).textContent() || '';
-          Methods.trimtestdata(vars['IntRateTable'], 'IntRateTable');
-
           vars['RefSecProdTable'] = await priceOfferedPage.Ref_Sec_Prodprice_offered_table(vars['count']).textContent() || '';
-          Methods.trimtestdata(vars['RefSecProdTable'], 'RefSecProdTable');
-
           vars['RefSecPriceTable'] = await priceOfferedPage.Ref_Sec_Priceprice_offered_table(vars['count']).textContent() || '';
-          Methods.trimtestdata(vars['RefSecPriceTable'], 'RefSecPriceTable');
-
           vars['GrossPriceTable'] = await priceOfferedPage.Gross_Priceprice_offered_table(vars['count']).textContent() || '';
-          Methods.trimtestdata(vars['GrossPriceTable'], 'GrossPriceTable');
-
           vars['HedgeRatioTable'] = await priceOfferedPage.Hedge_Ratioprice_offered_table(vars['count']).textContent() || '';
-          Methods.trimtestdata(vars['HedgeRatioTable'], 'HedgeRatioTable');
-
           vars['MarkAdjTable'] = await priceOfferedPage.Mark_Adjprice_offered_table(vars['count']).textContent() || '';
-          Methods.trimtestdata(vars['MarkAdjTable'], 'MarkAdjTable');
-
           vars['CurrGrossTable'] = await priceOfferedPage.Curr_Grossprice_offered_table(vars['count']).textContent() || '';
-          Methods.trimtestdata(vars['CurrGrossTable'], 'CurrGrossTable');
-
-          log.info('Row ' + vars['count'] + ' — CorrLoan: ' + vars['CorrLoanTable'] + ' | CommitOrder: ' + vars['LockedLoanCommitOrder']);
+          log.info('Sucessfully stored the locked loan details row:'+vars['count']);
 
           testDataManager.updatePartialProfileDataByDataIndex(profileName, {
-            'Locked Loan':         'Yes',
             'Commitment Order':    vars['LockedLoanCommitOrder'],
             'Corr Loan Num':       vars['CorrLoanTable'],
             'Last Name':           vars['LastNameTable'],
@@ -230,7 +201,6 @@ test.describe('REG_PriceOffered', () => {
       log.step('Click locked committed loans tab and verify action buttons visible');
       try {
         await priceOfferedPage.LockedCommitted_Loans_2.click();
-        // await page.waitForLoadState('load');
         await expect(priceOfferedPage.Paste_Loans_ButtonPrice_Offered_Page).not.toBeVisible();
         await expect(priceOfferedPage.Commit_Selected_1_Dropdown).not.toBeVisible();
         log.stepPass('Locked committed loans tab verified — Paste Loans and Commit Selected buttons visible');

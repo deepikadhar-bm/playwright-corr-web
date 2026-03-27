@@ -22,6 +22,8 @@ import { AddonHelpers } from '../../../src/helpers/AddonHelpers';
 import { testDataManager } from 'testdata/TestDataManager';
 import { uploadFile } from '../../../src/helpers/file-helpers';
 import { Logger as log } from '../../../src/helpers/log-helper';
+import { APP_CONSTANTS as appconstants } from '../../../src/constants/app-constants';
+import { ENV } from '@config/environments'
 
 const TC_ID = "REG_TS01_TC04";
 const TC_TITLE = "Verify that if user selects two companies A and B and if company A has both exe type and company B has only chase exe type, then user should be able to view only chase exe type in the dropdown";
@@ -45,6 +47,7 @@ test.describe('REG_Bid Maps', () => {
   let statusInactive2Page: StatusInactive2Page;
   let statusInactivePage: StatusInactivePage;
   let helpers: AddonHelpers;
+  const credentials = ENV.getCredentials('internal');
 
   test.beforeEach(async ({ page }) => {
     vars = {};
@@ -74,110 +77,17 @@ test.describe('REG_Bid Maps', () => {
     log.tcStart(TC_ID, TC_TITLE);
 
     try {
-    // const testData: Record<string, string> = {
-    //   "Execution Type": "CHASE_DIRECT",
-    //   "UniqueColHeader/Enum": "TsSearchUniqueColHeaderEnum",
-    //   "Save and Move to Next Page": "Save and Move to Next Page",
-    //   "CSS Attribute": "2px solid rgb(227, 82, 5)",
-    //   "Used Headers": "Show Used Headers",
-    //   "2-4 Unit": "2-4 Unit",
-    //   "Search Map Input": "Deepika Aug1",
-    //   "Chase_Field_Name1": "Mortgage Type",
-    //   "Rule Name": "Rule 1",
-    //   "Unidentified Headers": "Show Unidentified Headers",
-    //   "Operations": "GREATER",
-    //   "BidFields.": "DTI",
-    //   "Search Fields": "hii",
-    //   "Operator 2 Symbol": ">",
-    //   "Time Interval": "05",
-    //   "Unidentified Enumerations": "Show Unidentified Enumerations",
-    //   "Show All Enumerations": "Show All Enumerations",
-    //   "Unidentfied and Save Message": "You have unidentified fields.  This action will save the changes and Move to Next Page.",
-    //   "BidField": "FICO Score",
-    //   "Search_Map": "Deepika Aug",
-    //   "CustomHeader": "Header 02",
-    //   "New Rule Name": "New Rule",
-    //   "Assigned Companies1": "Wik1C BeuLD MoJbr CoEmy LLpoJ",
-    //   "Unique Chase Value1": "AndoverBirchDrive1",
-    //   "Company name 2": "Wik1C BeuLD MoJbr CoEmy LLpoJ  - A2964",
-    //   "Bid Field": "Base Loan Amount",
-    //   "Chase  Values": "False",
-    //   "ChaseValue": "Attached",
-    //   "Unused Enumerations": "Show Unused Enumerations",
-    //   "Reason For Cancellation": "To Be Cancelled",
-    //   "Reason For Deletion": "To Be Deleted",
-    //   "ChaseValues.": "False",
-    //   "Chase_Field_Name": "Mortgage Limit",
-    //   "Header Mapping": "Show All Headers",
-    //   "Chase Field Name": "Amortization Type",
-    //   "ChaseFieldName": "Appraised Value",
-    //   "UniqueBidEnumTapeValue": "852345",
-    //   "BidEnumeratedTapeValue": "800",
-    //   "Chase Fields Name": "Amortization Type, Appraised Value, Attachment Type, Aus List, Borrower First Name, Borrower Last Name, Buy Down, CLTV, City, DTI, Fico, First Time Home Buyer, First Time Homebuyer Credit Fee Waiver, Impound Types, Income Ami Ratio, Ineligible, Interest Only, LTV, Loan Amount, Loan Number, Loan Purpose, Loan Term, Monthly Income, Mortgage Limit, Mortgage Types, Note Rate, Number Of Unit, Occupancy Type, Product Name, Property Type, Property Valuation Type, Purchase Price, State, Street, Subordinate Loan Amount, TPO, Total Loan Amount, Unpaid Principal Balance, Zip",
-    //   "Unique Chase Field Name": "Street",
-    //   "Chase Value": "Fixed rate",
-    //   "Search_Input": "TS_SEARCHMAP21",
-    //   "Unused Headers": "Show Unused Headers",
-    //   "Upload File Text Verification": "Drag and drop files here or click to browse. Allowed formats: .xls,.xlsx,.csv,.txt",
-    //   "Bid Enumerated Tape Value": "80",
-    //   "Search Field Company Name": "Wik1C",
-    //   "Create Map": "Testsigma_04/03/2025/",
-    //   "Custom Header": "Header01",
-    //   "Investment (NOO)": "Investment (NOO)",
-    //   "PropertyValuation": "1004Desktop",
-    //   "ImportRuleName": "TEst",
-    //   "Action Save message": "This action will save the changes and Move to Next Page",
-    //   "SearchFields": "Hii",
-    //   "Start Time in Minutes": "31",
-    //   "Execution Type1": "STANDARD",
-    //   "BidEnumeratedTapeValue - Block 2": "Fixed",
-    //   "UniqueColumnHeaderSearch": "TsSearchUniqueColumnHeader",
-    //   "Start Time in Hour": "8",
-    //   "UniqueWhenBidFieldSearch": "TsSearchWhenBidField",
-    //   "WhenBidFieldName - Block 2": "Amortization Type",
-    //   "EmptyChaseFieldName": "Select",
-    //   "WhenBidFieldValue-3": "Appraised Value",
-    //   "Unique Chase Value": "AndoverBirchDrive",
-    //   "BidFields": "CLTV",
-    //   "Loan Purpose": "Refinance (R&T)",
-    //   "Advanced Search": "Fico",
-    //   "ChaseFieldNames": "Aus List",
-    //   "NO of Batches": "05",
-    //   "CompanyName3": "American Pacific  - A4257",
-    //   "Operator": "LESS_OR_EQUAL",
-    //   "SelectingChaseFieldName": "7",
-    //   "UpdatedBidEnumeratedTapeValue": "SAIKAT_18_FEB_002",
-    //   "Search Input": "Test",
-    //   "Company name 1": "Freedom",
-    //   "Operator 3": "CONTAINS",
-    //   "Expected Company Name": "Freedom",
-    //   "Operation2": "GREATER",
-    //   "Operation1": "LESS",
-    //   "Operator - Block 2": "GREATER",
-    //   "Bid Tape Value": "Fixed",
-    //   "Search Field": "free",
-    //   "Created Map Id": "Testsigma_05/07/2025/20:55:58",
-    //   "Rule Name(Updated)": "UP Rule 1",
-    //   "Operator 1 Symbol": "<",
-    //   "UniqueChaseValueSearch": "TsSearchChaseValue",
-    //   "Import Rule": "Testsigma_02/23/2026/01:02:39",
-    //   "Duplicated Rule Name": "Rule 2",
-    //   "Condition Bid Field": "FICO Score",
-    //   "BidEnumeraedTapeValue - 3": "425000",
-    //   "Chasevalues": "Variable rate",
-    //   "DeleteId": "Testsigma_05/05/2025/16:23:13",
-    //   "UpdatedWhenBidFieldName": "Correspondent Loan Number",
-    //   "Unidentified fields Message": "You have unidentified fields do you want to proceed further.",
-    //   "UniqueBidEnumTapeSearch": "TsSearchBidEnumTape",
-    //   "Unidentified Fields Error Message": "You have unidentified fields.",
-    //   "UniqueRuleNameSearch": "TsSearchUniqueRuleName"
-    // }; // Profile: "Bid_Maps", row: 0
-
-      const testData: Record<string, string> = {};
       if (profile && profile.data) {
         const uploadText = profile.data[0]['Upload File Text Verification'];
         vars["Upload File Text Verification"] = uploadText;
-        testData["Execution Type"] = profile.data[0]['Execution Type'];
+        vars["Execution Type"] = profile.data[0]['Execution Type'];
+        const companyName1 = profile.data[0]['CompanyName1'];
+        vars["Company name 1"] = companyName1;
+        const companyName2 = profile.data[0]['CompanyName2'];
+        vars["Company name 2"] = companyName2;
+
+        vars["Username"] = credentials.username;
+        vars["Password"] = credentials.password;
       }
 
       log.step("Step 1: Login to CORR Portal");
@@ -216,7 +126,7 @@ test.describe('REG_Bid Maps', () => {
       try {
         await correspondentPortalPage.Add_New_Mapping_Button.click();
         await expect(headingCreateNewMapPage.Create_New_Map).toBeVisible();
-        helpers.getCurrentTimestamp('dd/MM/yyyy/HH:mm:ss', 'CurrentDate');
+        helpers.getCurrentTimestamp(appconstants.DATE_FORMAT_SLASH, 'CurrentDate');
         helpers.concatenate('Testsigma_', vars['CurrentDate'], 'Create New Map');
         await correspondentPortalPage.Create_New_Map_Field.fill(vars["Create New Map"]);
         vars["BidMap"] = await correspondentPortalPage.Create_New_Map_Field.inputValue() || '';
@@ -277,8 +187,8 @@ test.describe('REG_Bid Maps', () => {
         await correspondentPortalPage.Dropdown_selection_2.hover();
         await correspondentPortalPage.Dropdown_selection_2.click();
         await correspondentPortalPage.Dropdown_selection_2.hover();
-        await correspondentPortalPage.Dropdown_selection_2.selectOption({ label: testData["Execution Type"] });
-        await expect(correspondentPortalPage.Dropdown_selection_2).toHaveValue(testData["Execution Type"]);
+        await correspondentPortalPage.Dropdown_selection_2.selectOption({ label: vars["Execution Type"] });
+        await expect(correspondentPortalPage.Dropdown_selection_2).toHaveValue(vars["Execution Type"]);
         log.stepPass("Step 7 passed: Single company selected and execution type set successfully");
       } catch (error) {
         log.stepFail(page, "Step 7 failed: Failed to select single company or set execution type");
@@ -329,10 +239,9 @@ test.describe('REG_Bid Maps', () => {
       try {
         await expect(page.getByText(vars["SecondCompanyName"])).not.toBeVisible();
         await expect(correspondentPortalPage.More_companies).toContainText("2");
-        await correspondentPortalPage.More_companies.hover();
+        // await correspondentPortalPage.More_companies.hover();
         await expect(correspondentPortalPage.Dropdown_selection_2).toHaveValue('');
         await p1MoreButtonPage._1_more_Button.click();
-        await page.waitForLoadState('networkidle');
         log.stepPass("Step 10 passed: Company visibility and more button verified successfully");
       } catch (error) {
         log.stepFail(page, "Step 10 failed: Failed to verify company visibility or more button");
@@ -344,7 +253,6 @@ test.describe('REG_Bid Maps', () => {
         vars["Added On Bid Map"] = await correspondentPortalPage.Added_On.textContent() || '';
         expect(String(vars["Added On"])).toBe(vars["Added On Bid Map"]);
         await correspondentPortalPage.close_pop_up_bid_request_details.click();
-        await page.waitForLoadState('networkidle');
         await correspondentPortalPage.Save_Draft_Button1.click();
         await spinnerPage.Spinner.waitFor({ state: 'hidden' });
         await expect(newMapNameInputPage.New_Map_Name_Input).toBeEditable();

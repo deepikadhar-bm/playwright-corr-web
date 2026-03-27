@@ -15,6 +15,12 @@ import { MapNameFieldInBidMapsPage } from '../../../src/pages/correspondant/map-
 import { RulesAndActionsButtonPage } from '../../../src/pages/correspondant/rules-and-actions-button';
 import { SaveDraftExitButtonPage } from '../../../src/pages/correspondant/save-draft-exit-button';
 import { SpinnerPage } from '../../../src/pages/correspondant/spinner';
+import { testDataManager } from 'testdata/TestDataManager';
+import { ENV } from '@config/environments'
+import { Logger as log } from '../../../src/helpers/log-helper';
+
+const TC_ID = "REG_TS14_TC02";
+const TC_TITLE = "Verify that when the user performs the \\\"Save Draft and Exit\\\" action on each screen, a draft version is saved, and the user is redirected to the bid map list screen.[Enumeration Mapping]"
 
 test.describe('REG_Bid Maps', () => {
   let vars: Record<string, string> = {};
@@ -31,6 +37,7 @@ test.describe('REG_Bid Maps', () => {
   let rulesAndActionsButtonPage: RulesAndActionsButtonPage;
   let saveDraftExitButtonPage: SaveDraftExitButtonPage;
   let spinnerPage: SpinnerPage;
+  const credentials = ENV.getCredentials('internal');
 
   test.beforeEach(async ({ page }) => {
     vars = {};
@@ -49,45 +56,111 @@ test.describe('REG_Bid Maps', () => {
     spinnerPage = new SpinnerPage(page);
   });
 
-  test('REG_TS14_TC02_Verify that when the user performs the \\\"Save Draft and Exit\\\" action on each screen, a draft version is saved, and the user is redirected to the bid map list screen.[Enumeration Mapping', async ({ page }) => {
-    await stepGroups.stepGroup_Login_to_CORR_Portal(page, vars);
-    await stepGroups.stepGroup_Smart_Mapper_from_Off_to_On(page, vars);
-    await stepGroups.stepGroup_Creation_Of_Bid_Map_Upto_Header_Mapping(page, vars);
-    await enumerationMappingButtonPage.Enumeration_Mapping_Button.click();
-    await correspondentPortalPage.Yes_Proceed_Button.click();
-    await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-    await expect(rulesAndActionsButtonPage.Rules_and_Actions_Button).toBeVisible();
-    await stepGroups.stepGroup_Adding_Field_In_Enumeration_Mapping(page, vars);
-    vars["NewFieldChaseValue"] = await enumerationMappingPage.Added_Chase_Value_Dropdown.evaluate(el => { const s = el as HTMLSelectElement; return s.options[s.selectedIndex]?.text || ''; });
-    await stepGroups.stepGroup_Editing_In_Enumeration_Mapping_Screen(page, vars);
-    await stepGroups.stepGroup_Delete_In_Enumeration_Mapping(page, vars);
-    await headerMappingPage.First_Header_Checkbox.check();
-    await expect(headerMappingPage.First_Header_Checkbox).toBeVisible();
-    vars["FirstBidSampleName"] = await enumerationMappingPage.First_Bid_Sample_Name_In_Enumeration.textContent() || '';
-    await actionruleheaderPage.Second_Header_Checkbox.check();
-    await expect(actionruleheaderPage.Second_Header_Checkbox).toBeVisible();
-    vars["SecondBidSampleName"] = await enumerationMappingPage.Second_Bid_Sample_Name_In_Enumeration.textContent() || '';
-    await saveDraftExitButtonPage.Save_Draft_Exit_Button.click();
-    await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-    await mapNameFieldInBidMapsPage.Bid_Map_Name_Field_In_Row.waitFor({ state: 'visible' });
-    await mapNameFieldInBidMapsPage.Bid_Map_Name_Field_In_Row.click();
-    await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-    await mapHeadersButtonPage.Map_Headers_Button.click();
-    await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-    await enumerationMappingButtonPage.Enumeration_Mapping_Button.click();
-    await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-    await correspondentPortalPage.Yes_Proceed_Button.click();
-    await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-    vars["NewFieldChaseValueAfterSaveDraftExit"] = await advanceSearchPage.New_Field_Chase_Dropdown.evaluate(el => { const s = el as HTMLSelectElement; return s.options[s.selectedIndex]?.text || ''; });
-    expect(String(vars["NewFieldChaseValue"])).toBe(vars["NewFieldChaseValueAfterSaveDraftExit"]);
-    await expect(bidMapsPage.Edited_Chase_Value_After_Save_new).toHaveValue(vars["EditedChaseValue"]);
-    await expect(enumerationMappingPage.Deleted_Field_In_Enumeration).toBeVisible();
-    await expect(enumertionPage.Bid_Sample_Name_1).toBeVisible();
-    await expect(enumerationMappingPage.Bid_Sample_Name_2).toBeVisible();
-    await enumertionPage.Bid_Sample_Name_1.uncheck();
-    await expect(enumertionPage.Bid_Sample_Name_1).toBeVisible();
-    await stepGroups.stepGroup_Save_Draft_Exit_Action_and_Navigate_from_new_map_to_enumerat(page, vars);
-    await expect(enumertionPage.Bid_Sample_Name_1).toBeVisible();
-    await expect(enumerationMappingPage.Bid_Sample_Name_2).toBeVisible();
+  test(`${TC_ID} - ${TC_TITLE}`, async ({ page }) => {
+    log.tcStart(TC_ID, TC_TITLE);
+    try {
+      log.step("Step 1: Login and navigate to Enumeration Mapping");
+      try {
+        vars["Username"] = credentials.username;
+        vars["Password"] = credentials.password;
+        log.info(`Username set`);
+        await stepGroups.stepGroup_Login_to_CORR_Portal(page, vars);
+        await stepGroups.stepGroup_Smart_Mapper_from_Off_to_On(page, vars);
+        await stepGroups.stepGroup_Creation_Of_Bid_Map_Upto_Header_Mapping(page, vars, "DeepikaAugBidQA_(3)_(1)_(1)_(2).xlsx");
+        await enumerationMappingButtonPage.Enumeration_Mapping_Button.click();
+        await correspondentPortalPage.Yes_Proceed_Button.click();
+        await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+        await expect(rulesAndActionsButtonPage.Rules_and_Actions_Button).toBeVisible();
+        log.stepPass("Step 1 passed");
+      } catch (error) {
+        log.stepFail(page, "Step 1 failed");
+        throw error;
+      }
+
+      log.step("Step 2: Perform add/edit/delete operations in Enumeration Mapping");
+      try {
+        await stepGroups.stepGroup_Adding_Field_In_Enumeration_Mapping(page, vars);
+        vars["NewFieldChaseValue"] = await enumerationMappingPage.Added_Chase_Value_Dropdown.evaluate(el => { const s = el as HTMLSelectElement; return s.options[s.selectedIndex]?.text || ''; });
+        log.info(`NewFieldChaseValue: ${vars["NewFieldChaseValue"]}`);
+        await stepGroups.stepGroup_Editing_In_Enumeration_Mapping_Screen(page, vars);
+        await stepGroups.stepGroup_Delete_In_Enumeration_Mapping(page, vars);
+        log.stepPass("Step 2 passed");
+      } catch (error) {
+        log.stepFail(page, "Step 2 failed");
+        throw error;
+      }
+
+      log.step("Step 3: Select headers and save draft");
+      try {
+        await headerMappingPage.First_Header_Checkbox.check();
+        await expect(headerMappingPage.First_Header_Checkbox).toBeVisible();
+        vars["FirstBidSampleName"] = await enumerationMappingPage.First_Bid_Sample_Name_In_Enumeration.textContent() || '';
+        await actionruleheaderPage.Second_Header_Checkbox.check();
+        await expect(actionruleheaderPage.Second_Header_Checkbox).toBeVisible();
+        vars["SecondBidSampleName"] = await enumerationMappingPage.Second_Bid_Sample_Name_In_Enumeration.textContent() || '';
+        log.info(`FirstBidSampleName: ${vars["FirstBidSampleName"]}`);
+        log.info(`SecondBidSampleName: ${vars["SecondBidSampleName"]}`);
+        await saveDraftExitButtonPage.Save_Draft_Exit_Button.click();
+        await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+        log.stepPass("Step 3 passed");
+      } catch (error) {
+        log.stepFail(page, "Step 3 failed");
+        throw error;
+      }
+
+      log.step("Step 4: Reopen and validate saved draft data");
+      try {
+        await mapNameFieldInBidMapsPage.get_Bid_Map_Name_Field_In_Row(vars["CreateNewMap"]).waitFor({ state: 'visible' });
+        await mapNameFieldInBidMapsPage.get_Bid_Map_Name_Field_In_Row(vars["CreateNewMap"]).click();
+        await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+        await mapHeadersButtonPage.Map_Headers_Button.click();
+        await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+        await enumerationMappingButtonPage.Enumeration_Mapping_Button.click();
+        await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+        await correspondentPortalPage.Yes_Proceed_Button.click();
+        await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+        vars["NewFieldChaseValueAfterSaveDraftExit"] = await advanceSearchPage.New_Field_Chase_Dropdown.evaluate(el => { const s = el as HTMLSelectElement; return s.options[s.selectedIndex]?.text || ''; });
+        log.info(`NewFieldChaseValueAfterSaveDraftExit: ${vars["NewFieldChaseValueAfterSaveDraftExit"]}`);
+        expect(String(vars["NewFieldChaseValue"])).toBe(vars["NewFieldChaseValueAfterSaveDraftExit"]);
+
+        // await enumertionPage.Bid_Sample_Name_1.uncheck();
+        // await expect(enumertionPage.Bid_Sample_Name_1).toBeVisible();
+        // await stepGroups.stepGroup_Save_Draft_Exit_Action_and_Navigate_from_new_map_to_enumerat(page, vars);
+        // await expect(enumertionPage.Bid_Sample_Name_1).toBeVisible();
+        // await expect(enumerationMappingPage.Bid_Sample_Name_2).toBeVisible();
+
+        await expect(bidMapsPage.get_Edited_Chase_Value_After_Save_new(vars["EditedChaseFieldName"])).toHaveValue(vars["EditedChaseValue"]);
+        await expect(enumerationMappingPage.get_Deleted_Field_In_Enumeration(vars["BidTapeValueforBeforeDeleted"])).not.toBeVisible();
+        await expect(enumertionPage.get_Bid_Sample_Name_1(vars["FirstBidSampleName"])).toBeChecked();
+        await expect(enumerationMappingPage.get_Bid_Sample_Name_2(vars["SecondBidSampleName"])).toBeChecked();
+        log.stepPass("Step 4 passed");
+      } catch (error) {
+        log.stepFail(page, "Step 4 failed");
+        throw error;
+      }
+
+      log.step("Step 5: Modify selection and validate after save draft exit");
+      try {
+        await enumertionPage.get_Bid_Sample_Name_1(vars["FirstBidSampleName"]).uncheck();
+        await expect(enumertionPage.get_Bid_Sample_Name_1(vars["FirstBidSampleName"])).not.toBeChecked();
+
+        // await correspondentPortalPage.Save_Draft_Button1.click();
+        // await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+        await stepGroups.stepGroup_Save_Draft_Exit_Action_and_Navigate_from_new_map_to_enumerat(page, vars);
+
+        await expect(enumertionPage.get_Bid_Sample_Name_1(vars["FirstBidSampleName"])).not.toBeChecked();
+        await expect(enumerationMappingPage.get_Bid_Sample_Name_2(vars["SecondBidSampleName"])).toBeChecked();
+        log.stepPass("Step 5 passed");
+      } catch (error) {
+        log.stepFail(page, "Step 5 failed");
+        throw error;
+      }
+
+      log.tcEnd('PASS');
+    } catch (error) {
+      log.captureOnFailure(page, TC_ID, error);
+      log.tcEnd('FAIL');
+      throw error;
+    }
   });
 });

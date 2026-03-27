@@ -26,16 +26,16 @@ export class CommitmentListPage {
     return this.page.locator(`//td[@data-title=\"Company\"]//div[normalize-space(text())=\"${CompanyName}\"] //ancestor::tr //td[@data-title=\"Bid Request ID\"] //div[not(contains(normalize-space(text()),\"${BidReqId1}\"))]`);
   }
 
-  get CaseSensitiveXpath(): Locator {
-    return this.page.locator("//h5[text()='$|CommitID|']/ancestor::div[@id=\"accordionHeader\"]/following-sibling::div//tbody//tr//td[@data-title=\"Corr. Loan#\"]//button[contains(translate(text()'ABCDEFGHIJKLMNOPQRSTUVWXYZ''abcdefghijklmnopqrstuvwxyz'),translate('$|CorrespondentLoanNumber|', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'))]\n");
+  CaseSensitiveXpath(CommitID:string,CorrespondentLoanNumber:string): Locator {
+    return this.page.locator(`//h5[text()='${CommitID}']/ancestor::div[@id=\"accordionHeader\"]/following-sibling::div//tbody//tr//td[@data-title=\"Corr. Loan#\"]//button[contains(translate(text()'ABCDEFGHIJKLMNOPQRSTUVWXYZ''abcdefghijklmnopqrstuvwxyz'),translate('${CorrespondentLoanNumber}', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'))]\n`);
   }
 
   get Chase_Loan_Button(): Locator {
     return this.page.locator("//div[@aria-label=\"Sort by Chase Loan#\"]");
   }
 
-  get Chase_Loan_Num(): Locator {
-    return this.page.locator("//button[text()=\"$|CommittedCorrLoan|\"]//ancestor::tr//td[@data-title=\"Chase Loan#\"]");
+  Chase_Loan_Num(CommittedCorrLoan:string): Locator {
+    return this.page.locator(`//button[text()=\"${CommittedCorrLoan}\"]//ancestor::tr//td[@data-title=\"Chase Loan#\"]`);
   }
 
   get Chase_Loan_Number_DropdownCommitment_List_Page(): Locator {
@@ -85,8 +85,8 @@ export class CommitmentListPage {
 Column_Count_UICommitted_Loans1(count: string): Locator {
   return this.page.locator(`(//table)[1]//tbody//tr[${count}]//td[ not(descendant::input[@type='checkbox']) and not(descendant::div[contains(@class,'commit-order')])]`);
   }
-  get Column_Count_UILocked_Loans(): Locator {
-    return this.page.locator("(//span[contains(@class,\"fa fas fa-lock lock-icon\")])[$|count|]//ancestor::tr//td[@data-title][position() >2 and position()!= 4 and position()!= 12]");
+  Column_Count_UILocked_Loans(count:string): Locator {
+    return this.page.locator(`(//span[contains(@class,\"fa fas fa-lock lock-icon\")])[${count}]//ancestor::tr//td[@data-title][position() >2 and position()!= 4 and position()!= 12]`);
   }
 
   get Comm_Date_column(): Locator {
@@ -165,8 +165,8 @@ Column_Count_UICommitted_Loans1(count: string): Locator {
     return this.page.locator(`//td[@data-title="Comm. Loans"]//div[not(contains(text(),'1'))]//ancestor::tr//td[@data-title="Comm. ID"]`);
   }
 
-  get Commitment_IDSame_Loan_Num(): Locator {
-    return this.page.locator("//td[@data-title=\"Bid Request ID\"]//div[normalize-space(text())=\"$|BidReqIdCommitmentList|\"]//ancestor::tr//td[@data-title=\"Comm. ID\"]//a[normalize-space(text())=\"$|CommitmentIDPriceOffered|\"]");
+  Commitment_IDSame_Loan_Num(BidReqIdCommitmentList:string,CommitmentIDPriceOffered:string): Locator {
+    return this.page.locator(`//td[@data-title=\"Bid Request ID\"]//div[normalize-space(text())=\"${BidReqIdCommitmentList}\"]//ancestor::tr//td[@data-title=\"Comm. ID\"]//a[normalize-space(text())=\"${CommitmentIDPriceOffered}\"]`);
   }
 
   get Commitment_IDSearch_Dropdown(): Locator {
@@ -213,12 +213,12 @@ Column_Count_UICommitted_Loans1(count: string): Locator {
     return this.page.locator("//div[contains(text(),\"Commitment Order\")]//parent::a[contains(@class,\"disabled\")]");
   }
 
-  get Commitment_OrderLatest_Committed_Loan(): Locator {
-    return this.page.locator("//button[text()=\"$|CommittedCorrLoan|\"]//ancestor::tr//div[@class=\"commit-order\"]");
+  Commitment_OrderLatest_Committed_Loan(CommittedCorrLoan:string): Locator {
+    return this.page.locator(`//button[text()=\"${CommittedCorrLoan}\"]//ancestor::tr//div[@class=\"commit-order\"]`);
   }
 
-  get Commitment_OrderUncommitted_Loan(): Locator {
-    return this.page.locator("//div[text()=\"$|CommitID|\"]//preceding-sibling::div[contains(text(),\"Commitment Order\")]\n");
+   Commitment_OrderUncommitted_Loan(CommitID:string): Locator {
+    return this.page.locator(`//div[text()=\"${CommitID}\"]//preceding-sibling::div[contains(text(),\"Commitment Order\")]\n`);
   }
 
   get Commitment_Time_List_Details_ScreenLatest(): Locator {
@@ -229,12 +229,12 @@ Column_Count_UICommitted_Loans1(count: string): Locator {
     return this.page.locator("(//div[@class=\"modal-body\"]//div)[2]");
   }
 
-  get Committed_Corr_Loan_Num(): Locator {
-    return this.page.locator("//button[text()=\"$|CommittedCorrLoan|\"]");
+  Committed_Corr_Loan_Num(CommittedCorrLoan:string): Locator {
+    return this.page.locator(`//button[text()=\"${CommittedCorrLoan}\"]`);
   }
 
-  get Committed_Corr_Loan_Number(): Locator {
-    return this.page.locator("//button[\"$|CommittedCorrLoan|\"]");
+  Committed_Corr_Loan_Number(CommittedCorrLoan:string): Locator {
+    return this.page.locator(`//button[\"${CommittedCorrLoan}\"]`);
   }
 
   get Committed_Date(): Locator {
@@ -249,8 +249,8 @@ Column_Count_UICommitted_Loans1(count: string): Locator {
     return this.page.locator("//td[@data-title=\"Execution Type\"]");
   }
 
-  get Committed_Loan_Commitment_Order(): Locator {
-    return this.page.locator("//button[text()=\"$|CommittedCorrLoan|\"]//ancestor::tr//div[@class=\"commit-order\"]");
+  Committed_Loan_Commitment_Order(CommittedCorrLoan:string): Locator {
+    return this.page.locator(`//button[text()=\"${CommittedCorrLoan}\"]//ancestor::tr//div[@class=\"commit-order\"]`);
   }
 
   Committed_Loan_Locked_iconCommitment_List(CorrLoanNum:string): Locator {
@@ -345,8 +345,8 @@ Column_Count_UICommitted_Loans1(count: string): Locator {
     return this.page.locator("//h5[text()=\"Download file\"]");
   }
 
-  get Duplicate_CorrLoan_Number(): Locator {
-    return this.page.locator("//button[text()=\"$|CommittedCorrLoan|\"]");
+  Duplicate_CorrLoan_Number(CommittedCorrLoan:string): Locator {
+    return this.page.locator(`//button[text()=\"${CommittedCorrLoan}\"]`);
   }
 
   get Enter_minimum_display_value_in_percentage(): Locator {
@@ -429,12 +429,12 @@ Column_Count_UICommitted_Loans1(count: string): Locator {
     return this.page.locator("(//table)[1]//div[contains(@aria-label,\"Sort by\")]");
   }
 
-  get Hedge_RatioCommitment_List(): Locator {
-    return this.page.locator("//button[text()=\"$|CommittedCorrLoan|\"]//ancestor::tr//td[@data-title=\"Hedge Ratio\"]  ");
+  Hedge_RatioCommitment_List(CommittedCorrLoan:string): Locator {
+    return this.page.locator(`//button[text()=\"${CommittedCorrLoan}\"]//ancestor::tr//td[@data-title=\"Hedge Ratio\"]  `);
   }
 
-  get Individual_Cell_Data_UILocked_Loans(): Locator {
-    return this.page.locator("((//span[contains(@class,\"fa fas fa-lock lock-icon\")])[$|count|]//ancestor::tr//td[@data-title][position() >2 and position()!= 4 and position()!= 12])[$|Count|]");
+  Individual_Cell_Data_UILocked_Loans(count:string,Count:string): Locator {
+    return this.page.locator(`((//span[contains(@class,\"fa fas fa-lock lock-icon\")])[${count}]//ancestor::tr//td[@data-title][position() >2 and position()!= 4 and position()!= 12])[${Count}]`);
   }
 
   Individual_Cell_Data_UITotal_Loans_Tab(count:string,Count:string): Locator {
@@ -448,16 +448,16 @@ Column_Count_UICommitted_Loans1(count: string): Locator {
 
   return this.page.locator(`((//table)[1]//tbody//tr[${count}]//td[ not(descendant::input[@type='checkbox']) and not(descendant::div[contains(@class,'commit-order')])])[${Count}]`);
   }
-  get Individual_Cell_ValueClosed_List(): Locator {
-    return this.page.locator("(//tr[contains(@class,'row')][$|RowCount|]//td[position() >= 2 and position() <= 14])[$|ColumnCountUI|]");
+  Individual_Cell_ValueClosed_List(RowCount:string,ColumnCountUI:string): Locator {
+    return this.page.locator(`(//tr[contains(@class,'row')][${RowCount}]//td[position() >= 2 and position() <= 14])[${ColumnCountUI}]`);
   }
 
-  get Individual_Chase_Value_Total_LoansPopup(): Locator {
-    return this.page.locator("(//div[@class=\"border-bottom p-2\" and contains(text(),\"$|ChaseFieldNamePopupTotalLoans|\")]/following-sibling::div)[1]");
+  Individual_Chase_Value_Total_LoansPopup(ChaseFieldNamePopupTotalLoans:string): Locator {
+    return this.page.locator(`(//div[@class=\"border-bottom p-2\" and contains(text(),\"${ChaseFieldNamePopupTotalLoans}\")]/following-sibling::div)[1]`);
   }
 
-  get Individual_Chase_ValueTotal_Committed_Loans_Popup(): Locator {
-    return this.page.locator("(//div[@class=\"border-bottom p-2\" and contains(text(),\"$|ChaseFieldNamePopupTotalCommittedLoans|\")]/following-sibling::div)[1]\n");
+  Individual_Chase_ValueTotal_Committed_Loans_Popup(ChaseFieldNamePopupTotalCommittedLoans:string): Locator {
+    return this.page.locator(`(//div[@class=\"border-bottom p-2\" and contains(text(),\"${ChaseFieldNamePopupTotalCommittedLoans}\")]/following-sibling::div)[1]\n`);
   }
 
   Individual_Column_Data_UI(RowCount:string,ColumnCountUI:string): Locator {
@@ -476,8 +476,8 @@ Column_Count_UICommitted_Loans1(count: string): Locator {
     return this.page.locator(`(//td[@data-title=\"Comm. ID\"]//a)[${count}]`);
   }
 
-  get Individual_Corr_Loan_Num(): Locator {
-    return this.page.locator("(//td[@data-title=\"Corr. Loan#\"]//button[1])[$|RowCount|]");
+   Individual_Corr_Loan_Num(RowCount:string): Locator {
+    return this.page.locator(`(//td[@data-title=\"Corr. Loan#\"]//button[1])[${RowCount}]`);
   }
 
   Individual_Header_Name_UIClosed_List(Count:string): Locator {
@@ -488,12 +488,12 @@ Column_Count_UICommitted_Loans1(count: string): Locator {
     return this.page.locator(`((//div[contains(@aria-label,\"Sort by\")])[position() != 2 and position() != 10])[${count}]`);
   }
 
-  get Individual_Headers_Commitment_List(): Locator {
-    return this.page.locator("((//div[contains(@aria-label,\"Sort by\")])[position() <= 13])[$|Count|]");
+  Individual_Headers_Commitment_List(Count:string): Locator {
+    return this.page.locator(`((//div[contains(@aria-label,\"Sort by\")])[position() <= 13])[${Count}]`);
   }
 
-  get Individual_Headers_Commitment_ListClosed(): Locator {
-    return this.page.locator("((//div[contains(@aria-label,\"Sort by\")])[position() <= 13])[$|Count|]");
+  Individual_Headers_Commitment_ListClosed(Count:string): Locator {
+    return this.page.locator(`((//div[contains(@aria-label,\"Sort by\")])[position() <= 13])[${Count}]`);
   }
 
   get Individual_Mark_Adjust(): Locator {
@@ -505,8 +505,8 @@ Column_Count_UICommitted_Loans1(count: string): Locator {
     return this.page.locator(`(//button[contains(@aria-label, \"Set page size to\")])[${count}]`);
   }
 
-  get Interest_RateCommitment_List(): Locator {
-    return this.page.locator("//button[text()=\"$|CommittedCorrLoan|\"]//ancestor::tr//td[@data-title=\"Int. Rate\"]");
+  Interest_RateCommitment_List(CommittedCorrLoan:string): Locator {
+    return this.page.locator(`//button[text()=\"${CommittedCorrLoan}\"]//ancestor::tr//td[@data-title=\"Int. Rate\"]`);
   }
 
   get Interest_RateHeader_Name(): Locator {
@@ -557,8 +557,8 @@ Column_Count_UICommitted_Loans1(count: string): Locator {
     return this.page.locator("//span[contains(@class,\"fa fas fa-lock lock-icon\")]//ancestor::tr[@role=\"row\"]");
   }
 
-  get Mark_AdjCommitment_List(): Locator {
-    return this.page.locator("//button[text()=\"$|CommittedCorrLoan|\"]//ancestor::tr//td[@data-title=\"Mark Adj\"]");
+   Mark_AdjCommitment_List(CommittedCorrLoan:string): Locator {
+    return this.page.locator(`//button[text()=\"${CommittedCorrLoan}\"]//ancestor::tr//td[@data-title=\"Mark Adj\"]`);
   }
 
   get Market_ValueCommitment_List(): Locator {
@@ -617,12 +617,12 @@ Column_Count_UICommitted_Loans1(count: string): Locator {
     return this.page.locator("//div[@aria-label=\"Sort by Ref Sec Prod.\"]");
   }
 
-  get Reference_Security_PriceCommitment_List(): Locator {
-    return this.page.locator("//button[text()=\"$|CommittedCorrLoan|\"]//ancestor::tr//td[@data-title=\"Ref Sec Price\"]  ");
+  Reference_Security_PriceCommitment_List(CommittedCorrLoan:string): Locator {
+    return this.page.locator(`//button[text()=\"${CommittedCorrLoan}\"]//ancestor::tr//td[@data-title=\"Ref Sec Price\"]  `);
   }
 
-  get Reference_SecurityCommitment_List(): Locator {
-    return this.page.locator("//button[text()=\"$|CommittedCorrLoan|\"]//ancestor::tr//td[@data-title=\"Ref Sec Prod.\"]");
+   Reference_SecurityCommitment_List(CommittedCorrLoan:string): Locator {
+    return this.page.locator(`//button[text()=\"${CommittedCorrLoan}\"]//ancestor::tr//td[@data-title=\"Ref Sec Prod.\"]`);
   }
 
   Req_CarrLoan_Num(CommitID: string, CorrespondentLoanNumber: string): Locator {
@@ -633,8 +633,8 @@ Column_Count_UICommitted_Loans1(count: string): Locator {
     return this.page.locator("(//button[contains(@class,\"btn bg-transparent text-primary\")])[1]");
   }
 
-  get Req_Committed_Loan_Num(): Locator {
-    return this.page.locator("//button[text()=\"$|CommittedCorrLoan|\"]");
+  Req_Committed_Loan_Num(CommittedCorrLoan:string): Locator {
+    return this.page.locator(`//button[text()=\"${CommittedCorrLoan}\"]`);
   }
 
   get Req_Loan_NumCommitment_List(): Locator {
@@ -777,8 +777,8 @@ Column_Count_UICommitted_Loans1(count: string): Locator {
     return this.page.locator("//input[normalize-space(@aria-label)=\"Select all for\" and @type=\"checkbox\"]");
   }
 
-  get Select_Current_Date_Filters_Committed_List(): Locator {
-    return this.page.locator("//div[@class=\"ngb-dp-month\"]//div[@aria-label=\"$|CurrentDate|\"]");
+  Select_Current_Date_Filters_Committed_List(CurrentDate:string): Locator {
+    return this.page.locator(`//div[@class=\"ngb-dp-month\"]//div[@aria-label=\"${CurrentDate}\"]`);
   }
 
   get Select_Loan_Num2(): Locator {

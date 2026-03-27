@@ -21,6 +21,8 @@ import { ThisActionWillSaveTheChangesAndMoveToNextPagePage } from '../../../src/
 import { uploadFile } from '../../../src/helpers/file-helpers';
 import { Logger as log } from '../../../src/helpers/log-helper';
 import { ENV } from '@config/environments';
+import { APP_CONSTANTS as appconstants } from '../../../src/constants/app-constants';
+
 
 const TC_ID = "REG_TS08_TC06_CASE-3";
 const TC_TITLE = "Verify that user should be allowed to input the required value for the chase value in the dropdown (for now verify for product code value, loan term).";
@@ -114,9 +116,9 @@ test.describe('REG_Bid Maps', () => {
       try {
         await correspondentPortalPage.Product_Name_Dropdown.click();
         await expect(correspondentPortal7Page.Search_Field_in_Enumeration_Mapping).toBeVisible();
-        await correspondentPortal7Page.Search_Field_in_Enumeration_Mapping.fill("Hii");
+        await correspondentPortal7Page.Search_Field_in_Enumeration_Mapping.fill(appconstants.Hii);
         await correspondentPortal7Page.Select_Button_in_Enumeration_Mapping.click();
-        await expect(p1MoreButtonPage.Product_Name_in_Enumeration_Mapping).toContainText("Hii");
+        await expect(p1MoreButtonPage.Product_Name_in_Enumeration_Mapping).toContainText(appconstants.Hii);
         log.stepPass("Step 4 passed: Product Name Chase Value selected successfully.");
       } catch (error) {
         log.stepFail(page, "Step 4 failed: Unable to input or verify Product Name Chase Value.");
@@ -141,9 +143,9 @@ test.describe('REG_Bid Maps', () => {
       try {
         await statusInactive2Page.Loan_Term_Dropdown.click();
         await expect(statusInactive2Page.Loan_Term_Search_TextField).toBeVisible();
-        await statusInactive2Page.Loan_Term_Search_TextField.fill("hey");
+        await statusInactive2Page.Loan_Term_Search_TextField.fill(appconstants.Hey);
         await p1morePage.Loan_Term_Select.click();
-        await expect(p1morePage.Loan_Term_Chase_Value).toContainText("hey");
+        await expect(p1morePage.Loan_Term_Chase_Value).toContainText(appconstants.Hey);
         await rulesAndActionsButtonPage.Rules_and_Actions_Button.click();
         await expect(statusInactivePage.You_have_unidentified_Fields_This_action_will_save_and_Move_to_Next_Page).toBeVisible();
         await proceedWithSavingButtonPage.Proceed_with_Saving_Button.click();

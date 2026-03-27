@@ -7,8 +7,8 @@ import { Page, Locator } from '@playwright/test';
 export class MapNamePage {
   constructor(private page: Page) { }
 
-  get Active_Map_Name(): Locator {
-    return this.page.locator("//button[normalize-space(text())='$|Create New Map|']//..//..//span[text()='ACTIVE']");
+  get_Active_Map_Name(CreateNewMap:string): Locator {
+    return this.page.locator(`//button[normalize-space(text())='${CreateNewMap}']//..//..//span[text()='ACTIVE']`);
   }
 
   get Added_On(): Locator {
