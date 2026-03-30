@@ -67,6 +67,13 @@ export class GeneralSettingPage {
     return this.page.locator("//div[@role=\"listbox\"]/div[2]/button[2]");
   }
 
+   get Bulk_Batch_Timing_Config_option(): Locator {
+    return this.page.getByRole('option', { name: 'Bulk Batch Timing Config' });
+   }
+
+  Selected_Config(SelectedConfig:String ): Locator {
+ return this.page.getByRole('option', { name: `${SelectedConfig}`, exact: true });
+  }
   get First_User_Name_UI(): Locator {
     return this.page.locator("//td[@data-title=\"Username\"]");
   }
@@ -99,6 +106,9 @@ export class GeneralSettingPage {
     return this.page.locator("//button[@aria-label=\"Toggle dropdown\"]//div[contains(text(),\"Select Config Type\")]");
   }
 
+  get Select_Conf_Type_Toggel_Dropdown():Locator{
+    return this.page.getByRole('button', { name: 'Toggle dropdown' });
+  }
   get Standard_On_RadioGlobal_Restriction(): Locator {
     return this.page.locator("//input[@id='dynamicPricing-select-on']");
   }
