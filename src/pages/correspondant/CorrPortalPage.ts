@@ -479,12 +479,12 @@ export class CorrPortalPage {
     return this.page.locator("//tr[contains(@class,\"row\")]//button[contains(@class,\"btn bg-transparent text-primary\")][1]");
   }
 
-  get Checked_header_1(): Locator {
-    return this.page.locator("//div[@class=\"flex-grow-1\" and text()=\"$|FirstCheckedBidName|\"]");
+  Checked_header_1(FirstCheckedBidName: string): Locator {
+    return this.page.locator(`//div[@class="flex-grow-1" and text()="${FirstCheckedBidName}"]`);
   }
 
-  get Checked_header_2(): Locator {
-    return this.page.locator("//div[@class=\"flex-grow-1\" and text()=\"$|SecondCheckedBidName|\"]");
+   Checked_header_2(SecondCheckedBidName: string): Locator {
+    return this.page.locator(`//div[@class="flex-grow-1" and text()="${SecondCheckedBidName}"]`);
   }
 
   get Close_Advance_Search_Pop_up_Button(): Locator {
@@ -1044,7 +1044,10 @@ export class CorrPortalPage {
   }
 
   get Header_Mapping_Dropdown(): Locator {
-    return this.page.locator("//select[contains(normalize-space(),\"Select Show All Headers Show Unidentified Headers (10) Show Unused Headers Show Used Headers\")]");
+    // return this.page.locator("//select[contains(normalize-space(),\"Select Show All Headers Show Unidentified Headers (10) Show Unused Headers Show Used Headers\")]");
+  // return this.page.locator("//app-single-select-dropdown[@aria-label='Header Status Dropdown']//select");
+  // return this.page.getByRole('region', { name: 'Page Actions' }).getByLabel('Default dropdown selection');
+  return this.page.getByRole('region', { name: 'Page Actions' }).getByLabel('Default dropdown selection');
   }
 
   get Header_Mapping_Show_Unidentified_Header(): Locator {
