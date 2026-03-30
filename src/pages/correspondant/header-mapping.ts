@@ -39,12 +39,12 @@ export class HeaderMappingPage {
     return this.page.locator("//fieldset//select[@class=\"form-select\"]");
   }
 
-  get Checked_header_1(): Locator {
-    return this.page.locator("//div[@class=\"flex-grow-1\" and text()=\"$|FirstCheckedBidName|\"]");
+   Checked_header_1(FirstCheckedBidName: string): Locator {
+    return this.page.locator(`//div[@class="flex-grow-1" and text()="${FirstCheckedBidName}"]`);
   }
 
-  get Checked_header_2(): Locator {
-    return this.page.locator("//div[@class=\"flex-grow-1\" and text()=\"$|SecondCheckedBidName|\"]");
+   Checked_header_2(SecondCheckedBidName: string): Locator {
+    return this.page.locator(`//div[@class="flex-grow-1" and text()="${SecondCheckedBidName}"]`);
   }
 
   get_Correspondent_Bid_sample_name(count: string): Locator {

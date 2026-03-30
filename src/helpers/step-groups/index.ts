@@ -544,24 +544,12 @@ export async function stepGroup_Verification_Header_Mapping_Smart_Mapper_On_to_O
  */
 export async function stepGroup_Show_Unidentified_Headers(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
-  const testData: Record<string, string> = {}; // TODO: Load from test data profile
-  await CorrPortalElem.Header_Mapping_Dropdown.selectOption({ label: testData["Unidentified Headers"] });
-  await page.waitForLoadState('networkidle');
-  expect(await CorrPortalElem.All_Select_in_header.textContent() || '').toContain(String("Select"));
-  // [DISABLED] Element Bid_Sample_Field_Name_in_Header_Mapping is visible
-  // await expect(CorrPortalElem.Bid_Sample_Field_Name_in_Header_Mapping).toBeVisible();
-  // [DISABLED] Store the count of elements identified by locator Bid_Sample_Field_Name in Header Mapping into a variable BidSamleField
-  // vars["BidSamleField"] = String(await CorrPortalElem.Bid_Sample_Field_Name_in_Header_Mapping.count());
-  // [DISABLED] Store 2 in Headercount
-  // vars["Headercount"] = "2";
-  // [DISABLED] Verify that the element Header Mapping Show Unidentified Header displays text (10) and With Scrollable FALSE
-  // await expect(CorrPortalElem.Header_Mapping_Show_Unidentified_Header).toContainText("(10)");
-  // [DISABLED] Verify if Headercount <= BidSampleField
-  // while (parseFloat(String(vars["Headercount"])) <= parseFloat(String(vars["BidSampleField"])))
-  // [DISABLED] Verify that the Header Mapping for Unidentified Headers. list has option with text Select selected and With Scrollable FALSE
-  // await expect(CorrPortalElem.Header_Mapping_for_Unidentified_Headers).toHaveValue("Select");
-  // [DISABLED] Perform addition on 1 and Headercount and store the result inside a Headercount considering 0 decimal places
-  // vars["Headercount"] = (parseFloat(String("1")) + parseFloat(String(vars["Headercount"]))).toFixed(0);
+  const Methods = new AddonHelpers(page, vars);
+  console.log("Unidentified Headers: ", vars["Unidentified Headers"]);
+  await CorrPortalElem.Header_Mapping_Dropdown.selectOption({ value: vars["Unidentified Headers"] });
+  const selectText=" Select";
+  selectText.trim();
+  await Methods.verifySelectedOptionInMultipleDropdowns(CorrPortalElem.All_Select_in_header, undefined, "contains", selectText.trim());
 }
 
 /**
@@ -572,20 +560,15 @@ export async function stepGroup_Show_Unidentified_Headers(page: import('@playwri
 export async function stepGroup_Show_Unused_Headers(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
   const testData: Record<string, string> = {}; // TODO: Load from test data profile
-  await CorrPortalElem.Header_Mapping_Dropdown.selectOption({ label: testData["Unused Headers"] });
-  await page.waitForLoadState('networkidle');
-  await expect(CorrPortalElem.Checked_header_1).toBeVisible();
-  await expect(CorrPortalElem.Checked_header_2).toBeVisible();
+  await CorrPortalElem.Header_Mapping_Dropdown.isVisible();
+  await CorrPortalElem.Header_Mapping_Dropdown.click();
+  await page.waitForTimeout(2000);
+  await CorrPortalElem.Header_Mapping_Dropdown.selectOption({ value: vars["Unused Headers"] });
+  await expect(CorrPortalElem.Checked_header_1(vars["FirstCheckedBidName"])).not.toBeVisible();
+  await expect(CorrPortalElem.Checked_header_2(vars["SecondCheckedBidName"])).not.toBeVisible();
   vars["BidSampleFieldCount"] = String(await CorrPortalElem.Bid_Sample_Field_Name_in_Header_Mapping.count());
   expect(String(vars["BidSampleFieldCount"])).toBe(vars["UncheckedHeadersCount"]);
-  // [DISABLED] Store 2 in Count
-  // vars["Count"] = "2";
-  // [DISABLED] Verify if Count <= BidSampleField
-  // while (parseFloat(String(vars["Count"])) <= parseFloat(String(vars["BidSampleField"])))
-  // [DISABLED] Verify that the element Show All Headers in Header Mappings. is present and With Scrollable FALSE
-  // await expect(CorrPortalElem.Show_All_Headers_in_Header_Mappings).toBeVisible();
-  // [DISABLED] Perform addition on 1 and Count and store the result inside a Count considering 0 decimal places
-  // vars["Count"] = (parseFloat(String("1")) + parseFloat(String(vars["Count"]))).toFixed(0);
+  
 }
 
 /**
