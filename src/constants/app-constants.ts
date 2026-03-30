@@ -24,6 +24,7 @@ export const APP_CONSTANTS = {
   FIFTEEN: "15",
   THIRTEEN: "13",
   FIVE: "5",
+  FOUR:"4",
   THREE: "3",
   DOLLAR_SYMBOL: "$",
   PERCENTAGE_SYMBOL: "%",
@@ -100,6 +101,7 @@ export const APP_CONSTANTS = {
   COMMITTED: "Committed",
   COMMITMENT_IN_PROGRESS: "Commitment in progress",
   ADD_TO_COMMIT_TEXT:'Add to Commit',
+  
   COMMITMENT_AMOUNT_TEXT:"Commitment Amount:",
   CORR_NAME_WITHCCODE:'Correspondent Name (Ccode):',
   USER_NAME_TEXT:'User Name:',

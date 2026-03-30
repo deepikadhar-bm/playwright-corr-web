@@ -1,6 +1,7 @@
 import * as XLSX from 'xlsx';
 import * as fs from 'fs';
 import * as path from 'path';
+import { Logger as log } from '../../src/helpers/log-helper';
 
 // ─────────────────────────────────────────────────────────────────────────────
 //  Types
@@ -1018,6 +1019,7 @@ export function getAllRowCount(filePath: string, sheetIndex: number = 0): number
   const validRows = rows.filter((r) =>r.some((c) => c !== null && c !== ''));
   return validRows.length;
 }
+//used to read the entire excel row using row index
 export function readEntireRow(
   filePath: string,
   sheetIndex: string | number,
@@ -1052,6 +1054,46 @@ export function readEntireRow(
     .join(',');
 
   console.log(`[readEntireRow] Row ${rowIdx} data: ${result}`);
+  return result;
+}
+
+/**
+ * Fetches all values from a specific column based on its index.
+ * Useful for validating list data or checking specific fields across all records.
+ * * @param filePath - Path to the Excel file
+ * @param sheetIndex - 0-based index of the sheet (e.g., 0 or "0")
+ * @param colIndex - 0-based index of the column to fetch (e.g., 2 for column 'C')
+ * @returns A comma-separated string of column values
+ */
+export function readEntireColumnByColIndex(
+  filePath: string,
+  colIndex: string | number,
+  sheetIndex: string | number = 0 
+): string {
+  const wb = XLSX.readFile(path.resolve(filePath), { cellDates: true });
+
+  const sheetIdx = typeof sheetIndex === 'string' ? parseInt(sheetIndex, 10) : sheetIndex;
+  const columnIdx = typeof colIndex === 'string' ? parseInt(colIndex, 10) : colIndex;
+
+  if (isNaN(sheetIdx)) throw new Error(`Invalid Sheet index: ${sheetIndex}`);
+  const sheetName = wb.SheetNames[sheetIdx];
+  if (!sheetName) throw new Error(`Sheet index ${sheetIdx} not found.`);
+
+  const sheet = wb.Sheets[sheetName];
+  const rows: any[][] = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: null });
+  
+  const result = rows
+    .map(row => row[columnIdx])
+    // FIX: Filter out null, undefined, and empty strings 
+    // to prevent trailing "null,null,null" in your logs and assertions
+    .filter(cell => cell !== null && cell !== undefined && String(cell).trim() !== '')
+    .map(cell => {
+      if (String(cell).trim() === 'N/A') return 'N/A';
+      return String(cell).trim();
+    })
+    .join(',');
+
+  log.info(`[readEntireColumn] Extracted Column ${columnIdx} data: ${result}`);
   return result;
 }
 //read the excel value by using col and row index with sheet index
@@ -1161,4 +1203,28 @@ export function writeCellByColAndRowIndex(
   const tempPath = resolved + '.tmp';
   XLSX.writeFile(wb, tempPath, { bookType: 'xlsx' });
   fs.renameSync(tempPath, resolved);
+}
+/**
+ * Returns the count of non-empty cells for a specific row (0-based).
+ */
+export function getNonEmptyCellCountPerRow(
+  filePath: string,
+  rowIndex: number,
+  sheetName?: string
+): number {
+  const wb = XLSX.readFile(path.resolve(filePath), { cellDates: true });
+  const sheet = resolveSheet(wb, sheetName);
+  
+  // header: 1 returns a 2D array [row][column]
+  const rows: any[][] = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: null });
+  const targetRow = rows[rowIndex];
+
+  if (!targetRow) return 0;
+
+  // Filters out null, undefined, and empty/whitespace strings
+  return targetRow.filter(cell => 
+    cell !== null && 
+    cell !== undefined && 
+    String(cell).trim() !== ''
+  ).length;
 }
