@@ -609,6 +609,7 @@ export class AddonHelpers {
   //   addMinutesToDatetime('10:30 AM', 'h:mm a', 1, 'h:mm a', 'Result') → '10:31 AM'
   //   addMinutesToDatetime('3/17/25 10:30 AM', 'M/d/yy h:mm a', 5, 'M/d/yy h:mm a', 'Result')
   // ==========================================================================
+  
   addMinutesToDatetime(
     inputDatetime: string, inputFormat: string, minutes: number,
     outputFormat: string, varName: string
@@ -1382,5 +1383,19 @@ generateRandomInteger(
   this.vars[targetVar] = String(result);
 
   log.info(`[${METHOD}] Random integer between ${minVal} and ${maxVal} = "${result}" stored in "${targetVar}"`);
+}
+
+/**
+ * Replaces a character/special character/string with another character/special character/string
+ * @param inputVar - The input variable value to perform replacement on
+ * @param findChar - The character/string to find and replace
+ * @param replaceChar - The character/string to replace with
+ * @param storeVar - The variable name to store the result in
+ */
+replaceExistingCharacter(inputVar: string, findChar: string, replaceChar: string, storeVar: string): void {
+  log.info(`Replacing '${findChar}' with '${replaceChar}' in: ${inputVar}`);
+  const result = String(inputVar).split(findChar).join(replaceChar);
+  this.vars[storeVar] = result;
+  log.info(`Stored result in '${storeVar}': ${result}`);
 }
 }
