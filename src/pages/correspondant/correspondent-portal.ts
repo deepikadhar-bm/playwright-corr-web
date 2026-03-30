@@ -1916,6 +1916,9 @@ export class CorrespondentPortalPage {
   get Show_All_Headers(): Locator {
     return this.page.locator("//select[@id=\"id\"]");
   }
+  get Show_All_Headers_field():Locator{
+return this.page.getByRole('region', { name: 'Page Actions' }).getByLabel('Default dropdown selection');
+  }
 
   get Show_All_Headers_in_Header_Mappings(): Locator {
     return this.page.locator("//div[@class=\"gap-2 header-grid-layout\"]/../..//div[@class=\"flex-grow-1\"]");
