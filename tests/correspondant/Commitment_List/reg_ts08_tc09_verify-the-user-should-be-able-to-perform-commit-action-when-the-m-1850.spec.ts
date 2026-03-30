@@ -68,7 +68,7 @@ test.describe('Commitment List - TS_2', () => {
         await spinnerPage.Spinner.waitFor({ state: 'hidden' });
         await priceOfferedPage.BidRequestIDPrice_Offered_New(vars['BidReqId']).click();
         await correspondentPortalPage.Get_Price_Button.click();
-        await priceOfferedPage.Back_To_Commitment_List.waitFor({ state: 'visible' });
+        await priceOfferedPage.BackTo_PriceofferedPage.waitFor({ state: 'visible' });
         await priceOfferedPage.Check_the_Loan_Num.first().waitFor({ state: 'visible' });
         vars['FirstMarkAdjValue'] = await correspondentPortalPage.First_Market_adjustment_Value.first().textContent() || '';
         Methods.trimtestdata(vars['FirstMarkAdjValue'], 'FirstMarkAdjValue');
@@ -118,11 +118,12 @@ test.describe('Commitment List - TS_2', () => {
         await correspondentPortalPage.Commitments_Side_Menu.click();
         await correspondentPortalPage.Price_Offered_List_Dropdown.click();
         await correspondentPortalPage.Search_By_Bid_Request_ID_Input.fill(vars['BidReqId']);
+        await page.keyboard.press('Enter');
         await spinnerPage.Spinner.waitFor({ state: 'hidden' });
         await priceOfferedPage.BidRequestIDPrice_Offered_New(vars['BidReqId']).click();
         await correspondentPortalPage.Get_Price_Button.waitFor({ state: 'visible' });
         await correspondentPortalPage.Get_Price_Button.click();
-        await commitmentListPage.Individual_Mark_Adjust.waitFor({ state: 'visible' });
+        await commitmentListPage.Individual_Mark_Adjust.first().waitFor({ state: 'visible' });
         await stepGroups.stepGroup_Verifying_MarkAdjValue(page, vars);
         log.stepPass('Mark adjustment values verified after threshold update');
       } catch (e) {

@@ -69,31 +69,19 @@ test.describe('Commitment List - TS_2', () => {
         vars['count'] = appconstants.ONE;
         const dataList = profile?.data as Record<string, any>[];
         for (let i = 0; i < Number(vars['TotalLoans']); i++) {
-          log.info('verification of row data:' + vars['count'])
+          log.info('verification of row data:' + vars['count']);
           vars['CorrLoanNum'] = dataList[i]['Corr Loan Num'];
-          // log.info('Corr Loan Num'+':'+vars['count']+'-' +vars['CorrLoanNum']);
           vars['LockedLoan'] = dataList[i]['Locked Loan'];
-          // log.info('Locked Loan status' +':'+vars['count']+'-'+ vars['LockedLoan']);
           vars['CommitmentOrder'] = dataList[i]['Commitment Order'];
-          // log.info('CommitmentOrder' +':'+vars['count']+'-' + vars['CommitmentOrder']);
           vars['LastName'] = dataList[i]['Last Name'];
-          // log.info('Last Name'+':'+vars['count']+ '-' + vars['LastName']);
           vars['LoanAmount'] = dataList[i]['Loan Amount'];
-          // log.info('Loan Amount'  +':'+vars['count']+'-'+ vars['LoanAmount']);
           vars['InterestRate'] = dataList[i]['Interest Rate'];
-          // log.info('Interest Rate'  +':'+vars['count']+'-' + vars['InterestRate']);
           vars['RefSecProd'] = dataList[i]['Ref Sec Prod'];
-          // log.info('Ref Sec Prod '  +':'+vars['count']+'-'+ vars['RefSecProd']);
           vars['RefSecPrice'] = dataList[i]['Ref Sec Price'];
-          // log.info('Ref Sec Price ' +':'+vars['count']+'-' + vars['RefSecPrice']);
           vars['GrossPrice'] = dataList[i]['Gross Price'];
-          // log.info('Gross Price'  +':'+vars['count']+'-'+ vars['GrossPrice']);
           vars['HedgeRatio'] = dataList[i]['Hedge Ratio'];
-          // log.info('Hedge Ratio'  +':'+vars['count']+'-'+ vars['HedgeRatio']);
           vars['MarkAdj'] = dataList[i]['Mark Adj'];
-          // log.info('Mark Adj'  +':'+vars['count']+'-'+ vars['MarkAdj']);
           vars['CurrentGrossPrice'] = dataList[i]['Current Gross Price'];
-          // log.info('Current Gross Price'  +':'+vars['count']+'-'+ vars['CurrentGrossPrice']);
           if (String(vars['LockedLoan']) === 'Yes') {
             await expect(commitmentListPage.Committed_Loan_Locked_iconCommitment_List(vars['CorrLoanNum'])).toBeVisible();
             await expect(commitmentListPage.Commitment_OrderCommitment_List_Details(vars['CorrLoanNum'])).toContainText(vars['CommitmentOrder']);
