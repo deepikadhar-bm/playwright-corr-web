@@ -545,7 +545,7 @@ export async function stepGroup_Verification_Header_Mapping_Smart_Mapper_On_to_O
 export async function stepGroup_Show_Unidentified_Headers(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
   const Methods = new AddonHelpers(page, vars);
-  console.log("Unidentified Headers: ", vars["Unidentified Headers"]);
+  log.info("Unidentified Headers: "+ vars["Unidentified Headers"]);
   await CorrPortalElem.Header_Mapping_Dropdown.selectOption({ value: vars["Unidentified Headers"] });
   const selectText=" Select";
   selectText.trim();
