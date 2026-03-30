@@ -76,10 +76,8 @@ test.describe('Unassigned', () => {
       try {
         vars["BidReqId"] = await commitmentListPage.Second_Bid_Request_IdCommitment_List.textContent() || '';
         Methods.trimtestdata(vars["BidReqId"], "BidReqId");
-        // vars["BidReqId"] ="87SC341DE28A";
         vars["CommitmentID"] = await commitmentListPage.Second_Commitment_IDCommitment_List.textContent() || '';
         Methods.trimtestdata(vars["CommitmentID"], "CommitmentID");
-        // vars["CommitmentID"] ="870Y937B";
         log.stepPass(`Successfully stored BidReqId: ${vars["BidReqId"]} and CommitmentID: ${vars["CommitmentID"]}`);
       } catch (e) {
         log.stepFail(page, 'Failed to store BidReqId and CommitmentID');
@@ -94,7 +92,7 @@ test.describe('Unassigned', () => {
         await priceOfferedPage.Price_Offered_Text.waitFor({ state: 'visible' });
         await expect(priceOfferedPage.Price_Offered_Text).toBeVisible();
         await bidRequestsPage.Search_by_Bid_Request_ID_Field.type(vars["BidReqId"]);
-        await correspondentPortalPage.Search_By_Bid_Request_ID_Input.press('Enter');
+         await page.keyboard.press('Enter');
         await spinnerPage.Spinner.waitFor({ state: 'hidden' });
         await priceOfferedPage.BidRequestIDPrice_Offered_New(vars["BidReqId"]).click();
         await priceOfferedPage.Reference_Month.waitFor({ state: 'visible' });
@@ -178,10 +176,10 @@ test.describe('Unassigned', () => {
       try {
         const profileName = 'Cover Letter Details Closed List';
         vars["SplitCount"] = appconstants.ONE;
-        for (let count = 0; count < 11; count++) {
+        for (let count = 1; count <=11; count++) {
           Methods.splitStringByRegConditionWithPosition(vars["AllCoverLetterDetailsUI"], ";", vars["SplitCount"], "IndividualCoverLetterDetailsUI");
           Methods.trimtestdata(vars["IndividualCoverLetterDetailsUI"], "IndividualCoverLetterDetailsUI");
-          testDataManager.updateProfileData1(profileName, { ChaseInfo: vars["IndividualCoverLetterDetailsUI"] }, count);
+          testDataManager.updatePartialProfileDataByDataIndex(profileName, { ChaseInfo: vars["IndividualCoverLetterDetailsUI"] }, count);
           Methods.MathematicalOperation(vars["SplitCount"], "+", "1", "SplitCount");
         }
         log.stepPass('Successfully stored all cover letter details into TestDataProfile');
