@@ -159,7 +159,7 @@ test.describe('Commitment List - TS_2', () => {
         Methods.trimtestdata(vars['NoOfLoansAfter'], 'NoOfLoansAfter');
         log.info('NoOfLoansBefore: ' + vars['NoOfLoansBefore']);
         log.info('NoOfLoansAfter: ' + vars['NoOfLoansAfter']);
-        Methods.verifyString(vars['NoOfLoansBefore'], 'equals', vars['NoOfLoansAfter']);
+        Methods.verifyComparison(vars['NoOfLoansBefore'], '<', vars['NoOfLoansAfter']);
         log.stepPass('Loan count verified unchanged after commit attempt. Count: ' + vars['NoOfLoansAfter']);
       } catch (e) {
         await log.stepFail(page, 'Commit failed or loan count mismatch after commit attempt');

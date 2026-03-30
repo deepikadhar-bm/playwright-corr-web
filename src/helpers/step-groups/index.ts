@@ -5496,13 +5496,15 @@ export async function stepGroup_Storing_PopUpError(page: import('@playwright/tes
  */
 export async function stepGroup_Verifying_MarkAdjValue(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
+  const Methods =new AddonHelpers(page, vars);
   vars["UncommittedLoansCount"] = String(await CorrPortalElem.Not_Committed_Loans_Count.count());
-  vars["count"] = "1";
+  vars["count"] = appconstants.ONE;
   while (parseFloat(String(vars["count"])) <= parseFloat(String(vars["UncommittedLoansCount"]))) {
-    vars["IndividualMarkAdjValue"] = await CorrPortalElem.Individual_Mark_Adjust_Value_Fresh_Loans.textContent() || '';
-    vars["IndividualMarkAdjValue"] = String(vars["IndividualMarkAdjValue"]).trim();
-    expect(String(vars["IndividualMarkAdjValue"])).toBe("-");
-    vars["count"] = (parseFloat(String(vars["count"])) + parseFloat(String("1"))).toFixed(0);
+    vars["IndividualMarkAdjValue"] = await CorrPortalElem.Individual_Mark_Adjust_Value_Fresh_Loans(vars['count']).textContent() || '';
+    Methods.trimtestdata(vars["IndividualMarkAdjValue"],'IndividualMarkAdjValue');
+    expect(Methods.verifyString(vars["IndividualMarkAdjValue"],'equals','-'));
+    Methods.MathematicalOperation(vars["count"],'+',1,'count');
+
   }
 }
 
@@ -5927,9 +5929,9 @@ export async function stepGroup_Verification_of_Loan_Level_Pricing_Details(page:
         Methods.splitStringByRegConditionWithPosition(vars['EntireRowDataHeaderNamesExcel'], ',', vars['HeaderSplit'], 'HeaderNameExcel');
         Methods.splitStringByRegConditionWithPosition(vars['EntireRowDetailsExcel'], ',', vars['SplitCount'], 'IndividualColumnDataExcel');
 
-        if (String(vars['HeaderNameExcel']).includes('Loan Amount')) {
+        if (String(vars['HeaderNameExcel']).includes(appconstants.LOAN_AMOUNT)) {
           Methods.countCharacter(vars['IndividualColumnDataUI'], ',', 'CountofCama1');
-          vars['count1'] = '1';
+          vars['count1'] = appconstants.ONE;
           while (parseFloat(String(vars['count1'])) <= parseFloat(String(vars['CountofCama1']))) {
             Methods.MathematicalOperation(vars['SplitCount'], '+', '1', 'SplitCount');
             Methods.splitStringByRegConditionWithPosition(vars['EntireRowDetailsExcel'], ',', vars['SplitCount'], 'IndividualColumnDataExcel2');

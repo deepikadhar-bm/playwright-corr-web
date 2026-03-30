@@ -62,7 +62,9 @@ export const APP_CONSTANTS = {
   TIME_FORMAT_HHMMA: 'hh:mma',
   DATE_FORMAT_MDYY: "M/d/yy",
   DATE_FORMAT_DDMMYYYY: "dd-MM-yyyy",
+  DATE_FORMAT1_MMDDYYYY:'MM-dd-yyyy',
   TIME_FORMAT1_HHMMA: "hh:mm a",
+  TIME_FORMAT_HHMM:'hh:mm',
   TIME_FORMAT_HMMA: "h:mm a",
   BID_REQUEST_HEADER: "BidReq.ID",
   BID_REQUEST_HEADER_EXCEL: "BidRequestID",
@@ -98,4 +100,8 @@ export const APP_CONSTANTS = {
   COMMITTED: "Committed",
   COMMITMENT_IN_PROGRESS: "Commitment in progress",
   ADD_TO_COMMIT_TEXT:'Add to Commit',
+  COMMITMENT_AMOUNT_TEXT:"Commitment Amount:",
+  CORR_NAME_WITHCCODE:'Correspondent Name (Ccode):',
+  USER_NAME_TEXT:'User Name:',
+  CHASE_CORR_TEXT:'Chase Correspondent',
 };

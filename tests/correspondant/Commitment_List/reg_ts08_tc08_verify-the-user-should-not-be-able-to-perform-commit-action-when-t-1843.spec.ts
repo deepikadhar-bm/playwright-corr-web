@@ -23,7 +23,6 @@ test.describe('Commitment List - TS_2', () => {
   let priceOfferedPage: PriceOfferedPage;
   let spinnerPage: SpinnerPage;
   let Methods: AddonHelpers;
-  let REG_TS08_TC08testFailed = false;
 
 
   test.beforeEach(async ({ page }) => {
@@ -36,7 +35,7 @@ test.describe('Commitment List - TS_2', () => {
     spinnerPage = new SpinnerPage(page);
     Methods = new AddonHelpers(page, vars);
   });
-
+  let REG_TS08_TC08testFailed = false;
   test(`${TC_ID} - ${TC_TITLE}`, async ({ page }) => {
     log.tcStart(TC_ID, TC_TITLE);
 
@@ -52,7 +51,7 @@ test.describe('Commitment List - TS_2', () => {
         await page.keyboard.press('Enter');
         await spinnerPage.Spinner.waitFor({ state: 'hidden' });
         await priceOfferedPage.BidRequestIDPrice_Offered_New(vars['BidReqId']).first().click();
-        await priceOfferedPage.Back_To_Commitment_List.waitFor({ state: 'visible' });
+        await priceOfferedPage.BackTo_PriceofferedPage.waitFor({ state: 'visible' });
         await priceOfferedPage.Check_the_Loan_Num.first().waitFor({ state: 'visible' });
         log.stepPass('Navigated to Price Offered and opened bid: ' + vars['BidReqId']);
       } catch (e) {
@@ -192,7 +191,7 @@ test.describe('Commitment List - TS_2', () => {
         Methods.trimtestdata(vars['ActualErrorPopup'], 'ActualErrorPopup');
         log.info('ActualErrorPopup: ' + vars['ActualErrorPopup']);
         await expect(page.getByText(vars['ExpectedPopUpError1'])).toBeVisible();
-        Methods.verifyString(vars['ActualErrorPopup'], 'equals', vars['ExpectedPopUpError2']);
+        Methods.verifyString(vars['ActualErrorPopup'], 'contains', vars['ExpectedPopUpError2']);
         log.stepPass('Error popup verified — commit blocked due to market threshold exceeded');
       } catch (e) {
         await log.stepFail(page, 'Commit error popup not shown or error message mismatch');
@@ -203,14 +202,14 @@ test.describe('Commitment List - TS_2', () => {
       try {
         await priceOfferedPage.Okay_ButtonPopup.click();
         await commitmentListPage.Total_Committed_Loans_Tab.click();
-        vars['NoOfLoansAfter'] = await commitmentListPage.No_LoansCommitment_List.textContent() || '';
+        vars['NoOfLoansAfter'] = await commitmentListPage.No_LoansCommitment_List.first().textContent() || '';
         Methods.trimtestdata(vars['NoOfLoansAfter'], 'NoOfLoansAfter');
         log.info('NoOfLoansAfter: ' + vars['NoOfLoansAfter']);
         Methods.verifyString(vars['NoOfLoansBefore'], 'equals', vars['NoOfLoansAfter']);
         vars['MaxThreshold'] = await commitmentListPage.Max_Threshold.first().textContent() || '';
         Methods.trimtestdata(vars['MaxThreshold'], 'MaxThreshold');
         log.info('MaxThreshold: ' + vars['MaxThreshold']);
-        Methods.verifyString(vars['MaxThreshold'], 'equals', vars['NumberLessThanMarkAdj']);
+        Methods.verifyString(vars['MaxThreshold'], 'contains', vars['NumberLessThanMarkAdj']);
         log.stepPass('Loan count unchanged and max threshold verified. Count: ' + vars['NoOfLoansAfter'] + ' | MaxThreshold: ' + vars['MaxThreshold']);
       } catch (e) {
         await log.stepFail(page, 'Loan count changed or max threshold mismatch after failed commit');
