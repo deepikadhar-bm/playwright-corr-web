@@ -9,21 +9,12 @@ if (process.env.USE_CI_ENV !== 'true') {
   }
 }
 
-// Validation function to ensure variables are defined
-const validate = (val: string | undefined, key: string) => {
-  if (!val) {
-    console.warn(`Missing required environment variable: ${key}`);
-    return '';
-  }
-  return val;
-};
-
-// Ensure critical variables are present
+// Ensure critical variables are present and throw an error if any are missing with a clear message about which ones are missing
 const required = ['CORR_QA_URL', 'INTERNAL_USERNAME', 'INTERNAL_PASSWORD', 'USERNAME', 'EXTERNAL_PASSWORD', 'EXTERNAL_USERNAME'];
-required.forEach((key) => {
-  validate(process.env[key], key);
-});
-
+const missingVars = required.filter(key => !process.env[key]);
+if (missingVars.length > 0) {
+  throw new Error(`Missing required env vars: ${missingVars.join(', ')}`);
+}
 export type UserType = 'internal' | 'external' | 'user_group';
 
 export interface UserCredentials {
@@ -54,5 +45,4 @@ export const ENV = {
     TO: process.env.EMAIL_TO || '',
   }
 };
-
 
