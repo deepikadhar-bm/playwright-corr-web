@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import * as stepGroups from '../../../src/helpers/step-groups';
 import { BidRequestsPage } from '../../../src/pages/correspondant/bid-requests';
 import { ChaseFieldNamePage } from '../../../src/pages/correspondant/chase-field-name';
 import { CorrespondentPortalPage } from '../../../src/pages/correspondant/correspondent-portal';
@@ -8,12 +9,10 @@ import { runPrereq_1394 } from '../../../src/helpers/prereqs/prereq-1394';
 import { AddonHelpers } from '@helpers/AddonHelpers';
 import { Logger as log } from '@helpers/log-helper';
 import { APP_CONSTANTS as appconstants } from '../../../src/constants/app-constants';
-import { testDataManager } from 'testdata/TestDataManager';
 
 
-const TC_ID = 'REG_TS27_TC01';
-const TC_TITLE = 'Verify that once the commitment cut off time is passed the status with "Price offered" should get updated to "expired"';
-
+const TC_ID = 'REG_TS27_TC02';
+const TC_TITLE = 'Verify that once the commitment cut off time is passed the status with "Partially Committed" should get updated to "expired"';
 
 test.describe('REG_PriceOffered', () => {
 
@@ -24,8 +23,7 @@ test.describe('REG_PriceOffered', () => {
   let priceOfferedPage: PriceOfferedPage;
   let spinnerPage: SpinnerPage;
   let Methods: AddonHelpers;
-  let REG_TS27_TC01testFailed = false;
-  const profileName = 'Price Offered';
+  let REG_TS27_TC02testFailed = false;
 
   test.beforeEach(async ({ page }) => {
     vars = {};
@@ -43,7 +41,7 @@ test.describe('REG_PriceOffered', () => {
 
     try {
 
-      log.step('Navigate to Price Offered and verify initial status is "Price Offered"');
+      log.step('Navigate to Price Offered, commit a fresh loan and verify status is "Partially Committed"');
       try {
         vars['BidReqIdPriceOffered'] = vars['RequestIDDetails'];
         log.info('Bid Request ID: ' + vars['BidReqIdPriceOffered']);
@@ -52,13 +50,17 @@ test.describe('REG_PriceOffered', () => {
         await bidRequestsPage.Search_by_Bid_Request_ID_Field.fill(vars['BidReqIdPriceOffered']);
         await page.keyboard.press('Enter');
         await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+        await priceOfferedPage.Bid_Req_IdPrice_Offered_Page(vars['BidReqIdPriceOffered']).waitFor({ state: 'visible' });
+        await stepGroups.stepGroup_Commits_an_Fresh_Loan_Num(page, vars);
+        await priceOfferedPage.BackTo_PriceofferedPage.click();
+        await spinnerPage.Spinner.waitFor({ state: 'hidden' });
         vars['BidStatusPriceOffered'] = await priceOfferedPage.Bid_Status_Price_OfferedExe_Type1(vars['BidReqIdPriceOffered']).textContent() || '';
         Methods.trimtestdata(vars['BidStatusPriceOffered'], 'BidStatusPriceOffered');
         log.info('Bid Status (before): ' + vars['BidStatusPriceOffered']);
-        Methods.verifyString(vars['BidStatusPriceOffered'], 'equals', appconstants.PRICEOFFERED_STATUS);
-        log.stepPass('Initial status verified as "Price Offered"');
+        Methods.verifyString(vars['BidStatusPriceOffered'], 'equals', appconstants.PARTIALLYCOMMITTED_STATUS);
+        log.stepPass('Status verified as "Partially Committed"');
       } catch (e) {
-        await log.stepFail(page, 'Failed to verify initial "Price Offered" status');
+        await log.stepFail(page, 'Failed to verify "Partially Committed" status');
         throw e;
       }
 
@@ -75,13 +77,13 @@ test.describe('REG_PriceOffered', () => {
         Methods.getCurrentTimestamp(appconstants.TIME_FORMAT_HHMMA, 'CurrentEstTime', appconstants.AMERICA_NEW_YORK);
         Methods.addMinutesToDatetime(vars['CurrentEstTime'], appconstants.TIME_FORMAT_HHMMA, 3, appconstants.TIME_FORMAT_HHMMA, 'CurrentEstTime');
         log.info('Commit cut-off time (EST +3 min): ' + vars['CurrentEstTime']);
-        Methods.getLastCharacters(vars['CurrentEstTime'], '2', 'TimeStandard');
+        Methods.getLastCharacters(vars['CurrentEstTime'], '2', 'ClockFormat');
         Methods.removeCharactersFromPosition(vars['CurrentEstTime'], '0', '2', 'CurrentEstTime');
-        log.info('Time standard: ' + vars['TimeStandard']);
+        log.info('Clock format: ' + vars['ClockFormat']);
         log.info('Cut-off time value: ' + vars['CurrentEstTime']);
         await chaseFieldNamePage.CommitCutOffTime.type(vars['CurrentEstTime']);
         await correspondentPortalPage.Time_Standard_Dropdown.click();
-        await correspondentPortalPage.Time_Standard_Dropdown.selectOption({ label: vars['TimeStandard'] });
+        await correspondentPortalPage.Time_Standard_Dropdown.selectOption({ label: vars['ClockFormat'] });
         await expect(correspondentPortalPage.Save_Config_Button).toBeEnabled();
         await correspondentPortalPage.Save_Config_Button.click();
         log.stepPass('Early close cut-off time configured successfully');
@@ -90,14 +92,14 @@ test.describe('REG_PriceOffered', () => {
         throw e;
       }
 
-      log.step('Wait for status to update to "Expired"');
+      log.step('Wait for status to update to "Committed"');
       try {
         await correspondentPortalPage.Commitments_Side_Menu.click();
         await correspondentPortalPage.Price_Offered_List_Dropdown.click();
         await bidRequestsPage.Search_by_Bid_Request_ID_Field.fill(vars['BidReqIdPriceOffered']);
         await page.keyboard.press('Enter');
         await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-        while (!(await priceOfferedPage.Status_Expired(vars['BidReqIdPriceOffered']).isVisible())) {
+        while (!(await priceOfferedPage.Committed_StatusPrice_Offered_List(vars['BidReqIdPriceOffered']).isVisible())) {
           await page.reload();
           await spinnerPage.Spinner.waitFor({ state: 'hidden' });
           await bidRequestsPage.Search_by_Bid_Request_ID_Field.fill(vars['BidReqIdPriceOffered']);
@@ -107,10 +109,10 @@ test.describe('REG_PriceOffered', () => {
         vars['BidStatusPriceOffered'] = await priceOfferedPage.Bid_Status_Price_OfferedExe_Type1(vars['BidReqIdPriceOffered']).textContent() || '';
         Methods.trimtestdata(vars['BidStatusPriceOffered'], 'BidStatusPriceOffered');
         log.info('Bid Status (after): ' + vars['BidStatusPriceOffered']);
-        Methods.verifyString(vars['BidStatusPriceOffered'], 'equals', appconstants.EXPIRED_STATUS);
-        log.stepPass('Status updated to "Expired" successfully');
+        Methods.verifyString(vars['BidStatusPriceOffered'], 'equals', appconstants.COMMITTED_STATUS);
+        log.stepPass('Status updated to "Committed" successfully');
       } catch (e) {
-        await log.stepFail(page, 'Status did not update to "Expired"');
+        await log.stepFail(page, 'Status did not update to "Committed"');
         throw e;
       }
 
@@ -126,7 +128,6 @@ test.describe('REG_PriceOffered', () => {
           await spinnerPage.Spinner.waitFor({ state: 'hidden' });
           await expect(page.getByText('No result')).toBeVisible();
         }
-        testDataManager.updateProfileData(profileName, { 'RequestIDfrom27-1': vars['BidReqIdPriceOffered'] });
         log.stepPass('Early close config deleted successfully');
       } catch (e) {
         await log.stepFail(page, 'Failed to delete early close config');
@@ -138,32 +139,32 @@ test.describe('REG_PriceOffered', () => {
     } catch (e) {
       await log.captureOnFailure(page, TC_ID, e);
       log.tcEnd('FAIL');
-      REG_TS27_TC01testFailed = true;
+      REG_TS27_TC02testFailed = true;
       throw e;
     }
-    });
-    //After steps
-    test.afterEach(async ({ page }) => {
-      log.afterTestSteps(TC_ID, REG_TS27_TC01testFailed);
-      try {
-        log.step('Executing after-test steps: Navigate back to Other Config and delete Early Close Config to restore original state');
-        if (REG_TS27_TC01testFailed) {
-          await correspondentPortalPage.Administration_Menu.click();
-          await correspondentPortalPage.GeneralSettings_Menu.click();
-          await correspondentPortalPage.Early_Close_Config.click();
-          if (await correspondentPortalPage.Delete_ButtonEarly_Conf.isVisible()) {
-            await correspondentPortalPage.Delete_ButtonEarly_Conf.click();
-            await correspondentPortalPage.Yes_Delete_ButtonEarly_config.click();
-            await page.reload();
-            await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-            await expect(page.getByText("No result")).toBeVisible();
-          }
-        }
-        
-        log.stepPass('After-test steps executed successfully. Early Close Config deleted and original state restored');
-      } catch (e) {
-        await log.stepFail(page, 'Failed to delete Early Close Config and restore original state');
-        throw e;
-      }
-    });
   });
+
+  test.afterEach(async ({ page }) => {
+    log.afterTestSteps(TC_ID, REG_TS27_TC02testFailed);
+    try {
+      log.step('Executing after-test steps: Navigate back to Other Config and delete Early Close Config to restore original state');
+
+      if (REG_TS27_TC02testFailed) {
+        await correspondentPortalPage.Administration_Menu.click();
+        await correspondentPortalPage.GeneralSettings_Menu.click();
+        await correspondentPortalPage.Early_Close_Config.click();
+        if (await correspondentPortalPage.Delete_ButtonEarly_Conf.isVisible()) {
+          await correspondentPortalPage.Delete_ButtonEarly_Conf.click();
+          await correspondentPortalPage.Yes_Delete_ButtonEarly_config.click();
+          await page.reload();
+          await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+          await expect(page.getByText('No result')).toBeVisible();
+        }
+      }
+      log.stepPass('After-test steps executed successfully. Early Close Config deleted and original state restored');
+    } catch (e) {
+      await log.stepFail(page, 'Failed to delete Early Close Config and restore original state');
+      throw e;
+    }
+  });
+});

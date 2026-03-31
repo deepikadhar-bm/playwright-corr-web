@@ -7154,3 +7154,41 @@ export async function stepGroup_Uploading_Bid_Request_copy(page: import('@playwr
   // [DISABLED] Click on UploadBid_Button
   // await CorrPortalElem.UploadBid_Button.click();
 }
+
+export async function stepGroup_Uploading_Bid_Request_By_Selecting_both_standard_and_chase_t_COPY(page: import('@playwright/test').Page, vars: Record<string, string>) {
+  const CorrPortalElem = new CorrPortalPage(page);
+  const testData: Record<string, string> = {}; // TODO: Load from test data profile
+  await CorrPortalElem.Select_Company_In_BidRequest.click();
+  await CorrPortalElem.Bid_Mapping_Id_Search_Input_box.fill(vars["CompanyName"]);
+  await CorrPortalElem.SelectCompany_Value.waitFor({ state: 'visible' });
+  await expect(CorrPortalElem.SelectCompany_Value).toContainText(vars["CompanyName"]);
+  await CorrPortalElem.SelectCompany_Value.click();
+  await expect(CorrPortalElem.Standard_Execution_Checkbox).toBeVisible();
+   if (!(await CorrPortalElem.Standard_Execution_Checkbox.isChecked())) {
+    await CorrPortalElem.Standard_Execution_Checkbox.check();
+    await page.waitForTimeout(2000);
+    log.info("Standard checkbox was not checked — checked it now");
+  }
+   
+  await expect(CorrPortalElem.Standard_Execution_Checkbox).toBeChecked();
+  await CorrPortalElem.StandardExecution_Dropdown.selectOption({ label: "3" });
+  await expect(CorrPortalElem.StandardExceutionType_Dropdown).toHaveValue("3");
+  // await CorrPortalElem.Chase_Direct_Checkbox.check();
+  if (!(await CorrPortalElem.Chase_Direct_Checkbox.isChecked())) {
+    await CorrPortalElem.Chase_Direct_Checkbox.check();
+    await page.waitForTimeout(2000);
+    log.info("Chase checkbox was not checked — checked it now");
+  }
+  await expect(CorrPortalElem.Chase_Direct_Checkbox).toBeVisible();
+  await expect(CorrPortalElem.Chase_Direct_Checkbox).toBeChecked();
+  await CorrPortalElem.Chase_Direct_Dropdown_Upload_Bidrequest.selectOption({ index: parseInt("1") });
+  await CorrPortalElem.Bid_Mapping_ID_Dropdown.click();
+  await CorrPortalElem.Search_box_Bid_mapping_id.fill(vars["BidMappingID"]);
+  await page.waitForTimeout(3000);
+  //await CorrPortalElem.Entered_Bid_Mapping_Id_New.waitFor({ state: 'visible' });
+  await CorrPortalElem.Entered_Bid_Mapping_Id_New(vars["BidMappingID"]).first().click();
+  // await expect(CorrPortalElem.Bid_Mapping_ID_Dropdown_1).toContainText(vars["BidMappingID"]);
+  await expect(CorrPortalElem.Bid_Mapping_Id_Selected_Text).toContainText(vars["BidMappingID"]);
+
+  await CorrPortalElem.Pricing_Return_Time.click();
+}
