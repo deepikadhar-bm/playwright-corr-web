@@ -10,7 +10,7 @@ if (process.env.USE_CI_ENV !== 'true') {
 }
 
 // Ensure critical variables are present and throw an error if any are missing with a clear message about which ones are missing
-const required = ['CORR_QA_URL', 'INTERNAL_USERNAME', 'INTERNAL_PASSWORD', 'USERNAME', 'EXTERNAL_PASSWORD', 'EXTERNAL_USERNAME'];
+const required = ['CORR_QA_URL', 'PASSWORD','INTERNAL_USERNAME', 'INTERNAL_PASSWORD', 'USERNAME', 'EXTERNAL_PASSWORD', 'EXTERNAL_USERNAME'];
 const missingVars = required.filter(key => !process.env[key]);
 if (missingVars.length > 0) {
   throw new Error(`Missing required env vars: ${missingVars.join(', ')}`);
