@@ -112,7 +112,8 @@ export async function runPrereq_1389(page: Page, vars: Record<string, string>): 
     // ── Step 6: Upload Bid Request ────────────────────────────────────
     log.step('Uploading Bid Request by selecting both Standard and Chase templates');
     try {
-      await stepGroups.stepGroup_Uploading_Bid_Request_By_Selecting_both_standard_and_chase_t(page, vars);
+      // await stepGroups.stepGroup_Uploading_Bid_Request_By_Selecting_both_standard_and_chase_t(page, vars);
+      await stepGroups.stepGroup_Uploading_Bid_Request_By_Selecting_both_standard_and_chase_t_COPY(page, vars);
       await correspondentPortalPage.Pricing_Return_Time.selectOption({ index: parseInt("2") });
       vars["ExtractedPrincingReturnTime"] = await correspondentPortalPage.Pricing_Return_Time.evaluate(el => { const s = el as HTMLSelectElement; return s.options[s.selectedIndex]?.text || ''; });
       await correspondentPortalPage.Upload_File.setInputFiles([path.resolve(__dirname, '..', '..', '..', 'uploads', 'Bid_file_success_error_newly_updated (12).xlsx')]);
