@@ -103,6 +103,7 @@ test.describe('REG_PriceOffered', () => {
       }
       log.tcEnd('PASS');
     }
+    
     catch (e) {
       await log.captureOnFailure(page, TC_ID, e);
       log.tcEnd('FAIL');
