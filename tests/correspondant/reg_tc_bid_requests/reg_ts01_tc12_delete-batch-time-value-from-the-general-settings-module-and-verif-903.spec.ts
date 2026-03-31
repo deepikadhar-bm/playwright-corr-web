@@ -128,7 +128,7 @@ test.describe('REG_TC_Bid_Requests', () => {
 
         await deleteBatchTimePage.Delete_Batch_Time.click();
         page.waitForTimeout(2000);
-        page.pause();
+       // page.pause();
         await deletebatchbuttonPage.Delete_batch_Button.waitFor({state: 'visible'});
         await spinnerPage.Spinner.waitFor({ state: 'hidden' });
 

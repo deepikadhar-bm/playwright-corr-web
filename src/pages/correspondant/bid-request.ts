@@ -7,12 +7,12 @@ import { Page, Locator } from '@playwright/test';
 export class BidRequestPage {
   constructor(private page: Page) {}
 
-  get Added_Batch_1(): Locator {
-    return this.page.locator("(//div[@class=\"card-body\"]//*[text()=\"$|DeletedBatchTime1|\"])[last()]");
+  Added_Batch_1(DeletedBatchTime1:String): Locator {
+    return this.page.locator(`(//div[@class=\"card-body\"]//*[text()=\"${DeletedBatchTime1}\"])[last()]`);
   }
 
-  get Added_Batch_2(): Locator {
-    return this.page.locator("(//div[@class=\"card-body\"]//*[text()=\"$|DeletedBatchTime2|\"])[last()]");
+  Added_Batch_2(DeletedBatchTime2:String): Locator {
+    return this.page.locator(`(//div[@class=\"card-body\"]//*[text()=\"${DeletedBatchTime2}\"])[last()]`);
   }
 
   get All_Bid_Request_Status(): Locator {

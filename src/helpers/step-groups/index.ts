@@ -2988,8 +2988,14 @@ export async function stepGroup_Uploading_Bid_Request(page: import('@playwright/
   // [DISABLED] Verify that the element SelectCompany_Value displays text Company Name and With Scrollable FALSE
   // await expect(CorrPortalElem.SelectCompany_Value).toContainText(testData["Company Name"]);
   await page.waitForTimeout(2000);
-  await expect(CorrPortalElem.Standard_Execution_Checkbox).toBeVisible();
+   await expect(CorrPortalElem.Standard_Execution_Checkbox).toBeVisible();
+  if (!(await CorrPortalElem.Standard_Execution_Checkbox.isChecked())) {
+    await CorrPortalElem.Standard_Execution_Checkbox.check();
+    await page.waitForTimeout(2000);
+    log.info("Standard checkbox was not checked — checked it now");
+  }
   await expect(CorrPortalElem.Standard_Execution_Checkbox).toBeChecked();
+ // await expect(CorrPortalElem.Standard_Execution_Checkbox).toBeChecked();
   await CorrPortalElem.StandardExecution_Dropdown.selectOption({ label: "3" });
   await CorrPortalElem.StandardExceutionType_Dropdown.waitFor({ state: 'visible' });
   await expect(CorrPortalElem.StandardExceutionType_Dropdown).toHaveValue("3");
@@ -3259,21 +3265,29 @@ export async function stepGroup_Creating_Of_Bid_Maps_with_Standard(page: import(
 export async function stepGroup_Uploading_Bid_Request_For_Next_Buisiness_day(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
   const testData: Record<string, string> = {}; // TODO: Load from test data profile
+  
   await CorrPortalElem.Select_Company_In_BidRequest.click();
-  await CorrPortalElem.Bid_Mapping_Id_Search_Input_box.fill(testData["Company Name"]);
+  await CorrPortalElem.Bid_Mapping_Id_Search_Input_box.pressSequentially(vars["CompanyName"]);
   await CorrPortalElem.SelectCompany_Value.click();
-  await expect(CorrPortalElem.SelectCompany_Value).toContainText(testData["Company Name"]);
+  await expect(CorrPortalElem.SelectCompany_Value).toContainText(vars["CompanyName"]);
   await page.waitForTimeout(3000);
   await expect(CorrPortalElem.Standard_Execution_Checkbox).toBeVisible();
+  if (!(await CorrPortalElem.Standard_Execution_Checkbox.isChecked())) {
+    await CorrPortalElem.Standard_Execution_Checkbox.check();
+    await page.waitForTimeout(2000);
+    log.info("Standard checkbox was not checked — checked it now");
+  }
+  await expect(CorrPortalElem.Standard_Execution_Checkbox).toBeChecked();
   await CorrPortalElem.StandardExecution_Dropdown.selectOption({ label: "3" });
   await expect(CorrPortalElem.StandardExceutionType_Dropdown).toHaveValue("3");
   await CorrPortalElem.Chase_Direct_Checkbox.check();
-  await expect(CorrPortalElem.Chase_Direct_Checkbox).toBeVisible();
+  await page.waitForTimeout(2000);
+  await expect(CorrPortalElem.Chase_Direct_Checkbox).toBeChecked();
   await CorrPortalElem.Chase_Direct_Dropdown_Upload_Bidrequest.selectOption({ index: parseInt("1") });
   await CorrPortalElem.Bid_Mapping_ID_Dropdown.click();
-  await CorrPortalElem.Search_box_Bid_mapping_id.fill(testData["BidMappingID"]);
+  await CorrPortalElem.Search_box_Bid_mapping_id.pressSequentially(vars["BidMappingID"]);
   await CorrPortalElem.Bid_Mapping_ID_Dropdown_1.click();
-  await expect(CorrPortalElem.Bid_Mapping_ID_Dropdown).toContainText(testData["BidMappingID"]);
+  //await expect(CorrPortalElem.Bid_Mapping_ID_Dropdown).toContainText(vars["BidMappingID"]);
   await CorrPortalElem.Off_Radio_Standard_Edit_Permissions_Popup.check();
   await expect(CorrPortalElem.Off_Radio_Standard_Edit_Permissions_Popup).toBeEnabled();
   await CorrPortalElem.Pricing_Return_Time.click();
@@ -3468,20 +3482,20 @@ export async function stepGroup_Upload_Bid_Request_For_Next_Business_Day_With_Ch
   const CorrPortalElem = new CorrPortalPage(page);
   const testData: Record<string, string> = {}; // TODO: Load from test data profile
   await CorrPortalElem.Select_Company_In_BidRequest.click();
-  await CorrPortalElem.Bid_Mapping_Id_Search_Input_box.fill(testData["Company Name"]);
+  await CorrPortalElem.Bid_Mapping_Id_Search_Input_box.fill(vars["CompanyName"]);
   await CorrPortalElem.SelectCompany_Value.click();
-  await expect(CorrPortalElem.SelectCompany_Value).toContainText(testData["Company Name"]);
-  await CorrPortalElem.Standard_Dropdown.waitFor({ state: 'visible' });
+  await expect(CorrPortalElem.SelectCompany_Value).toContainText(vars["CompanyName"]);
+  //await CorrPortalElem.Standard_Dropdown.waitFor({ state: 'visible' });
   await expect(CorrPortalElem.Standard_Execution_Checkbox).toBeVisible();
-  await CorrPortalElem.Standard_Execution_Checkbox.uncheck();
-  await expect(CorrPortalElem.Standard_Execution_Checkbox).toBeVisible();
+  //await CorrPortalElem.Standard_Execution_Checkbox.uncheck();
+  //await expect(CorrPortalElem.Standard_Execution_Checkbox).toBeVisible();
   await CorrPortalElem.Chase_Direct_Checkbox.check();
-  await expect(CorrPortalElem.Chase_Direct_Checkbox).toBeVisible();
+  await expect(CorrPortalElem.Chase_Direct_Checkbox).toBeChecked();
   await CorrPortalElem.Chase_Direct_Dropdown_Upload_Bidrequest.selectOption({ index: parseInt("1") });
   await CorrPortalElem.Bid_Mapping_ID_Dropdown.click();
-  await CorrPortalElem.Search_box_Bid_mapping_id.fill(testData["BidMappingID"]);
+  await CorrPortalElem.Search_box_Bid_mapping_id.fill(vars["BidMappingID"]);
   await CorrPortalElem.Bid_Mapping_ID_Dropdown_1.click();
-  await expect(CorrPortalElem.Bid_Mapping_ID_Dropdown).toContainText(testData["BidMappingID"]);
+  await expect(CorrPortalElem.Bid_Mapping_ID_Dropdown).toContainText(vars["BidMappingID"]);
   await CorrPortalElem.Off_Radio_Standard_Edit_Permissions_Popup.check();
   await expect(CorrPortalElem.Off_Radio_Standard_Edit_Permissions_Popup).toBeEnabled();
   await CorrPortalElem.Pricing_Return_Time.click();

@@ -11,12 +11,12 @@ export class BidRequestListPage {
     return this.page.locator(`//button[contains(text(),\"${RequestIDDetails}\")]/../..//td[@data-title=\"Status\"]`);
   }
 
-  get Company_Name_From_List(): Locator {
-    return this.page.locator("//button[contains(text(),\"$|RequestIDDetails|\")]/../..//td[@data-title=\"Company\"]");
+  Company_Name_From_List(RequestIDDetails:String): Locator {
+    return this.page.locator(`//button[contains(text(),\"${RequestIDDetails}\")]/../..//td[@data-title=\"Company\"]`);
   }
 
-  get Execution_type_from_List(): Locator {
-    return this.page.locator("//button[contains(text(),\"$|RequestIDDetails|\")]/../..//td[@data-title=\"Execution Type\"]");
+  Execution_type_from_List(RequestIDDetails:String): Locator {
+    return this.page.locator(`//button[contains(text(),\"${RequestIDDetails}\")]/../..//td[@data-title=\"Execution Type\"]`);
   }
 
   get Filtered_Status_BidRequest_ID_ChaseDirect(): Locator {
@@ -51,8 +51,8 @@ export class BidRequestListPage {
     return this.page.locator("//button[contains(text(),\"$|RequestIdFromDetails|\")]");
   }
 
-  get Requested_date_from_List(): Locator {
-    return this.page.locator("//button[contains(text(),\"$|RequestIDDetails|\")]/../..//td[@data-title=\"Requested\"]");
+  Requested_date_from_List(RequestIDDetails:String): Locator {
+    return this.page.locator(`//button[contains(text(),\"${RequestIDDetails}\")]/../..//td[@data-title=\"Requested\"]`);
   }
 
   get Required_Company_Checkbox_filter(): Locator {
@@ -71,8 +71,8 @@ export class BidRequestListPage {
     return this.page.locator("((//select[@aria-label=\"Dropdown selection\"]//option)[position() > 1 and position() <= last()])[$|count|]");
   }
 
-  get Uploaded_date_from_list(): Locator {
-    return this.page.locator("//button[contains(text(),\"$|RequestIDDetails|\")]/../..//td[@data-title=\"Uploaded\"]");
+  Uploaded_date_from_list(RequestIDDetails:String): Locator {
+    return this.page.locator(`//button[contains(text(),\"${RequestIDDetails}\")]/../..//td[@data-title=\"Uploaded\"]`);
   }
 
 }
