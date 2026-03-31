@@ -221,10 +221,12 @@ export class CorrPortalPage {
     return this.page.locator(`//td[@data-title=\"Map Name\"]//button[text()=\" ${CreateNewMap} \"]`);
   }
 
+  // get Bid_Mapping_ID_Dropdown(): Locator {
+  //   return this.page.locator("//div[text()[normalize-space() = \"Select Mapping\"]]");
+  // }
   get Bid_Mapping_ID_Dropdown(): Locator {
-    return this.page.locator("//div[text()[normalize-space() = \"Select Mapping\"]]");
-  }
-
+  return this.page.locator('//*[@id="selectBidMappingIdDropdown"]//div[contains(@class,"text-start")]');
+}
   get Bid_Mapping_ID_Dropdown_1(): Locator {
     return this.page.locator("//span[text()[normalize-space() =\"Deepika Aug1\"]]");
   }

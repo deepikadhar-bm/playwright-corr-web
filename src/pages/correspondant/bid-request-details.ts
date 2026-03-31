@@ -43,8 +43,8 @@ export class BidRequestDetailsPage {
     return this.page.locator("//div[@class=\"modal-header\"]/div/h5");
   }
 
-  get Bid_Value_From_list(): Locator {
-    return this.page.locator("//button[contains(text(),\"$|RequestIDDetails|\")]/../..//td[@data-title=\"Bid Value\"]");
+  Bid_Value_From_list(RequestIDDetails:String): Locator {
+    return this.page.locator(`//button[contains(text(),\"${RequestIDDetails}\")]/../..//td[@data-title=\"Bid Value\"]`);
   }
 
   get Bid_Value_from_Table_Header_2(): Locator {
@@ -71,8 +71,8 @@ export class BidRequestDetailsPage {
     return this.page.locator("//label[text()=\"Bid Requested Date\"]");
   }
 
-  get Ccode_From_List(): Locator {
-    return this.page.locator("//button[contains(text(),\"$|RequestIDDetails|\")]/../..//td[@data-title=\"CCode\"]");
+  Ccode_From_List(RequestIDDetails:String): Locator {
+    return this.page.locator(`//button[contains(text(),\"${RequestIDDetails}\")]/../..//td[@data-title=\"CCode\"]`);
   }
 
   get ChaseFields_Count_Popup_Loan_Details(): Locator {
@@ -195,12 +195,12 @@ export class BidRequestDetailsPage {
     return this.page.locator(`(//div[text()=\" Execution Type \"]/..//h5)[${count}]`);
   }
 
-  get Expected_Execution_Type_Parsed_Row(): Locator {
-    return this.page.locator("//h5[contains(@aria-label,\"Execution Type\") and text()=\" SF($|SelectedLockTerm|d) \"]");
+Expected_Execution_Type_Parsed_Row(SelectedLockTerm: string): Locator {
+    return this.page.locator(`//h5[contains(@aria-label,"Execution Type") and text()=" dynamicPricing(${SelectedLockTerm}d) "]`);
   }
 
-  get Expected_Execution_Type_Parsed_rowcd(): Locator {
-    return this.page.locator("//h5[contains(@aria-label,\"Execution Type\") and text()=\" CD($|SelectedLockTerm|d) \"]");
+  Expected_Execution_Type_Parsed_rowcd(SelectedLockTerm: string): Locator {
+    return this.page.locator(`//h5[contains(@aria-label,"Execution Type") and text()=" CD(${SelectedLockTerm}d) "]`);
   }
 
   get First_Download_Icon(): Locator {
