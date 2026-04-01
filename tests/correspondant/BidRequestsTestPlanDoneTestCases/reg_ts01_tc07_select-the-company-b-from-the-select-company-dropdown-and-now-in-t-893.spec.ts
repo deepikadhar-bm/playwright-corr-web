@@ -9,7 +9,7 @@ import { SelectDropdownPage } from '../../../src/pages/correspondant/select-drop
 import { SpinnerPage } from '../../../src/pages/correspondant/spinner';
 import { StatusInactivePage } from '../../../src/pages/correspondant/status-inactive-';
 import { UploadNewBidRequestButtonPage } from '../../../src/pages/correspondant/upload-new-bid-request-button';
-import { runPrereq_892 } from '../../../src/helpers/prereqs/prereq-892';
+import { runPrereq_892 } from '../../../src/helpers/prereqs/PreReqBidRequests/prereq-892';
 import { BidRequestDetailsPage } from '../../../src/pages/correspondant/bid-request-details';
 import { ENV } from '@config/environments';
 import { Logger as log } from '../../../src/helpers/log-helper';

@@ -1419,6 +1419,9 @@ export class CorrespondentPortalPage {
   get Off_Radio_StandardEdit_Permissions_Popup(): Locator {
     return this.page.locator("(//input[@type=\"radio\"])[2]");
   }
+  get Next_Business_Day_Radio_Button(): Locator {
+    return this.page.locator("(//input[@type=\"radio\"])[2]");
+  }
 
   get OK_ButtonCommitment_List(): Locator {
     return this.page.locator("//span[text()[normalize-space() = \"OK\"]]");

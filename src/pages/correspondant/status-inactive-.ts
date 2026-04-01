@@ -47,8 +47,8 @@ export class StatusInactivePage {
     return this.page.locator("//span[text()[normalize-space() = \"Back\"]]");
   }
 
-  get BatchTime(): Locator {
-    return this.page.locator("(//h6[@class=\"card-subtitle text-body-secondary flex-grow-1 mb-0\"]/../..//h5)[$|BatchNum|]");
+  BatchTime(BatchNum: string): Locator {
+    return this.page.locator(`(//h6[@class=\"card-subtitle text-body-secondary flex-grow-1 mb-0\"]/../..//h5)[${BatchNum}]`);
   }
 
   get Below_Dropdown_First_company(): Locator {

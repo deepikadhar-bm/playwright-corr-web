@@ -231,7 +231,7 @@ test.describe('REG_TC_Bid_Requests', () => {
         //await expect(bidrequestCreationPage.dropdownPanel).toBeVisible();
         //page.pause();
         // page.waitForTimeout(2000);
-        page.pause();
+        //page.pause();
         await expect(correspondentPortalPage.Pricing_Return_Time.locator(`option[value="${vars["BufferedThirdBatchTimeFromLast"]}"]`)).not.toBeAttached();
         log.info(`BufferedThirdBatchTimeFromLast : ${vars["BufferedThirdBatchTimeFromLast"]} is not visible`);
         await expect(correspondentPortalPage.Pricing_Return_Time.locator(`option[value="${vars["BufferedLastBeforeBatchTime"]}"]`)).not.toBeAttached();
