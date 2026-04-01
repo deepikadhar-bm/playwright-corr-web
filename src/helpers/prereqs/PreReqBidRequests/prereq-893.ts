@@ -1,16 +1,16 @@
 import type { Page } from '@playwright/test';
 import { expect } from '@playwright/test';
-import { BidRequestCreationPage } from '../../pages/correspondant/bid-request-creation';
-import { CorrespondentPortalPage } from '../../pages/correspondant/correspondent-portal';
-import { SelectDropdownPage } from '../../pages/correspondant/select-dropdown';
-import { SpinnerPage } from '../../pages/correspondant/spinner';
-import { StatusInactivePage } from '../../pages/correspondant/status-inactive-';
-import { UploadNewBidRequestButtonPage } from '../../pages/correspondant/upload-new-bid-request-button';
+import { BidRequestCreationPage } from '../../../pages/correspondant/bid-request-creation';
+import { CorrespondentPortalPage } from '../../../pages/correspondant/correspondent-portal';
+import { SelectDropdownPage } from '../../../pages/correspondant/select-dropdown';
+import { SpinnerPage } from '../../../pages/correspondant/spinner';
+import { StatusInactivePage } from '../../../pages/correspondant/status-inactive-';
+import { UploadNewBidRequestButtonPage } from '@pages/correspondant/upload-new-bid-request-button';
 import { runPrereq_892 } from './prereq-892';
 import { ENV } from '@config/environments';
-import { Logger as log } from '../../../src/helpers/log-helper';
+import { Logger as log } from '../../../../src/helpers/log-helper';
 import { testDataManager } from 'testdata/TestDataManager';
-import { BidRequestDetailsPage } from '../../../src/pages/correspondant/bid-request-details';
+import { BidRequestDetailsPage } from '../../../../src/pages/correspondant/bid-request-details';
 
 export async function runPrereq_893(page: Page, vars: Record<string, string>): Promise<void> {
   await runPrereq_892(page, vars);
