@@ -6,7 +6,7 @@ import * as stepGroups from '../../../src/helpers/step-groups';
 import { BidRequestPage } from '../../../src/pages/correspondant/bid-request';
 import { BidRequestsPage } from '../../../src/pages/correspondant/bid-requests';
 import { PriceOfferedPage } from '../../../src/pages/correspondant/price-offered';
-import { runPrereq_1085 } from '../../../src/helpers/prereqs/prereq-1085';
+import { runPrereq_1085 } from '../../../src/helpers/prereqs/PreReqBidRequests/prereq-1085';
 import { Logger as log } from '../../../src/helpers/log-helper';
 
 const TC_ID = 'REG_TS34_TC09';
