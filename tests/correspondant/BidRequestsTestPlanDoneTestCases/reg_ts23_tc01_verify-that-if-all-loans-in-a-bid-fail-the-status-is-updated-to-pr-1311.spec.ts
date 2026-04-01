@@ -11,6 +11,7 @@ import { SpinnerPage } from '../../../src/pages/correspondant/spinner';
 import { CorrPortalPage } from '@pages/correspondant/CorrPortalPage';
 import { ENV } from '@config/environments';
 import { Logger as log } from '../../../src/helpers/log-helper';
+import { testDataManager } from 'testdata/TestDataManager';
 
 const TC_ID = 'REG_TS23_TC01';
 const TC_TITLE = 'Verify that if all loans in a bid fail, the status is updated to \\\"Processing Failed,\\\" and the bid cannot be submitted for pricing.';
@@ -48,6 +49,23 @@ test.describe('REG_TC_Bid_Requests', () => {
         const credentials = ENV.getCredentials('internal');
         vars["Username"] = credentials.username;
         vars["Password"] = credentials.password;
+
+         const profileName = 'Bid Requests'; // TDP sheet name
+                const profile = testDataManager.getProfileByName(profileName);
+                if (profile && profile.data) {
+                  
+                  const CompanyName = profile.data[0]['Company Name'];
+                  vars["CompanyName"] = CompanyName;
+                  const BidMappingID = profile.data[0]['BidMappingID'];
+                  vars["BidMappingID"] = BidMappingID;
+                  const profile2 = testDataManager.getProfileByName("Administration_Bulk Batch Timing");
+                  if (profile2 && profile2.data) {
+                    const TimeInterval = profile2.data[0]['Time Interval'];  // row 0, column name
+                    vars["Time Interval"] = TimeInterval;
+                    const NoOfBatches = profile2.data[0]['NO of Batches'];
+                    vars["NO of Batches"] = NoOfBatches;                  // store in vars
+                  }
+                }
         log.stepPass('Credentials loaded successfully');
       } catch (e) {
         await log.stepFail(page, 'Loading credentials failed');

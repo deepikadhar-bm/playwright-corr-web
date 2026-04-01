@@ -1,14 +1,14 @@
 import type { Page } from '@playwright/test';
 import { expect } from '@playwright/test';
-import * as stepGroups from '../step-groups';
-import { ApplyFiltersButtonPage } from '../../pages/correspondant/apply-filters-button';
-import { BidRequestPage } from '../../pages/correspondant/bid-request';
-import { BidRequestsPage } from '../../pages/correspondant/bid-requests';
-import { CorrespondentPortalPage } from '../../pages/correspondant/correspondent-portal';
-import { PriceOfferedPage } from '../../pages/correspondant/price-offered';
-import { SpinnerPage } from '../../pages/correspondant/spinner';
-import { Logger as log } from '../../../src/helpers/log-helper';
-import { ENV } from '../../../src/config/environments';
+import * as stepGroups from '../../step-groups';
+import { ApplyFiltersButtonPage } from '../../../pages/correspondant/apply-filters-button';
+import { BidRequestPage } from '../../../pages/correspondant/bid-request';
+import { BidRequestsPage } from '../../../pages/correspondant/bid-requests';
+import { CorrespondentPortalPage } from '../../../pages/correspondant/correspondent-portal';
+import { PriceOfferedPage } from '../../../pages/correspondant/price-offered';
+import { SpinnerPage } from '../../../pages/correspondant/spinner';
+import { Logger as log } from '../../../../src/helpers/log-helper';
+import { ENV } from '../../../../src/config/environments';
 import { testDataManager } from 'testdata/TestDataManager';
 import { AddonHelpers } from '@helpers/AddonHelpers';
 
