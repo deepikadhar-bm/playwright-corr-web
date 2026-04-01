@@ -2,10 +2,10 @@ import { test, expect } from '@playwright/test';
 import { CommitmentListPage } from '../../../src/pages/correspondant/commitment-list';
 import { CorrespondentPortalPage } from '../../../src/pages/correspondant/correspondent-portal';
 import { PriceOfferedPage } from '../../../src/pages/correspondant/price-offered';
-import { runPrereq_1774 } from '../../../src/helpers/prereqs/prereq-1774';
+// import { runPrereq_1774 } from '../../../src/helpers/prereqs/prereq-1774';
 import { AddonHelpers } from '@helpers/AddonHelpers';
 import { Logger as log } from '@helpers/log-helper';
-import { APP_CONSTANTS as appconstants } from '../../../src/constants/app-constants';
+import { runPrereq_1774 } from '@helpers/prereqs/Commitment_List-Pre-requites/prereq-1774';
 
 
 const TC_ID = 'REG_TS06_TC03';
