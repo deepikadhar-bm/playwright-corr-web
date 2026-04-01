@@ -13,6 +13,8 @@ import { CorrPortalPage } from '@pages/correspondant/CorrPortalPage';
 import { Logger as log } from '../log-helper';
 import { ENV } from '@config/environments';
 import { testDataManager } from 'testdata/TestDataManager';
+import { FILE_CONSTANTS as fileconstants } from '../../../src/constants/file-constants';
+
 
 const TC_ID = 'PREREQ_1787(REG_TS06_TC01.1)';
 const TC_TITLE = 'Create a new Bid Request and submit for pricing to get the Price Offered status.';
@@ -107,14 +109,18 @@ const credentials = ENV.getCredentials('internal'); // 2
     // ── Step 6: Upload Bid Request ────────────────────────────────
     log.step('Uploading Bid Request file');
     try {
-      await stepGroups.stepGroup_Uploading_Bid_Request(page, vars);
+      // await stepGroups.stepGroup_Uploading_Bid_Request(page, vars);
+      await stepGroups.stepGroup_Uploading_Bid_Request_copy(page, vars);
       await correspondentPortalPage.Pricing_Return_Time.selectOption({ index: parseInt("2") });
       vars["ExtractedPrincingReturnTime"] = await correspondentPortalPage.Pricing_Return_Time.evaluate(el => {
         const s = el as HTMLSelectElement;
         return s.options[s.selectedIndex]?.text || '';
       });
       await correspondentPortalPage.Upload_File.setInputFiles([
-        path.resolve(__dirname, '..', '..', '..', 'uploads', 'Bid_file_success_error_newly_updated_(6)_(1).xlsx')
+        // path.resolve(__dirname, '..', '..', '..', 'uploads', 'Bid_file_success_error_newly_updated_(6)_(1).xlsx')
+        path.resolve(__dirname, '../../../uploads', fileconstants.BID_FILE_4LOANS)
+
+        
       ]);
       await expect(correspondentPortalPage.UploadBid_Button).toBeVisible();
       await expect(correspondentPortalPage.UploadBid_Button).toBeEnabled();

@@ -7,12 +7,15 @@ import { BidRequestPage } from '../../../src/pages/correspondant/bid-request';
 import { BidRequestsPage } from '../../../src/pages/correspondant/bid-requests';
 import { CorrespondentPortalPage } from '../../../src/pages/correspondant/correspondent-portal';
 import { SpinnerPage } from '../../../src/pages/correspondant/spinner';
-import { runPrereq_1788 } from '../../../src/helpers/prereqs/prereq-1788';
+// import { runPrereq_1788 } from '../../../src/helpers/prereqs/prereq-1788';
+import { runPrereq_1788 } from '@helpers/prereqs/Commitment_List-Pre-requites/prereq-1788';
 import { CorrPortalPage } from '@pages/correspondant/CorrPortalPage';
 import { AddonHelpers } from '@helpers/AddonHelpers';
 import { Logger as log } from '@helpers/log-helper';
 import { ENV } from '@config/environments';
 import { testDataManager } from 'testdata/TestDataManager';
+import { FILE_CONSTANTS as fileconstants } from '../../../src/constants/file-constants';
+
 
 
 const TC_ID = 'REG_TS06_TC01.1';
@@ -113,6 +116,7 @@ test.describe('Unassigned', () => {
 
       log.step('Uploading Bid Request file');
       try {
+        // await stepGroups.stepGroup_Uploading_Bid_Request(page, vars);
         await stepGroups.stepGroup_Uploading_Bid_Request_copy(page, vars);
         await correspondentPortalPage.Pricing_Return_Time.selectOption({ index: parseInt('2') });
         vars['ExtractedPrincingReturnTime'] = await correspondentPortalPage.Pricing_Return_Time.evaluate(el => {
@@ -120,7 +124,8 @@ test.describe('Unassigned', () => {
           return s.options[s.selectedIndex]?.text || '';
         });
         await correspondentPortalPage.Upload_File.setInputFiles([
-          path.resolve(__dirname, '..', '..', '..', 'uploads', 'Bid_file_success_error_newly_updated_(6)_(1).xlsx')
+          // path.resolve(__dirname, '..', '..', '..', 'uploads', 'Bid_file_success_error_newly_updated_(6)_(1).xlsx')
+          path.resolve(__dirname, '../../../uploads', fileconstants.BID_FILE_4LOANS)
         ]);
         await expect(correspondentPortalPage.UploadBid_Button).toBeVisible();
         await expect(correspondentPortalPage.UploadBid_Button).toBeEnabled();

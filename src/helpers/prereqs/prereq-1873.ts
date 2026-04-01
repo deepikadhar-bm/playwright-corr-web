@@ -284,7 +284,7 @@ export async function runPrereq_1873(page: Page, vars: Record<string, string>): 
       Methods.verifyString(vars['CommittedDateUI'], 'contains', vars['CreationDatePopup']);
       await commitmentListPage.Download_Commitment_Letter1(vars['FileNamePopup']).waitFor({ state: 'visible' });
       Methods.getCurrentTimestamp(appconstants.PATH_DATEFORMAT, 'TimeStamp', appconstants.ASIA_KOLKATA);
-      await commitmentListPage.Download_Commitment_Letter1(vars['FileNamePopup']).hover();
+      // await commitmentListPage.Download_Commitment_Letter1(vars['FileNamePopup']).hover();
       const [download] = await Promise.all([
         page.waitForEvent('download'),
         commitmentListPage.Download_Commitment_Letter1(vars['FileNamePopup']).evaluate(el => (el as HTMLElement).click())
@@ -293,6 +293,7 @@ export async function runPrereq_1873(page: Page, vars: Record<string, string>): 
       vars['ActualDownloadedFileName1'] = vars['TimeStamp'] + '_' + download.suggestedFilename();
       vars['FilePath'] = path.join(vars['DownloadDir'], vars['ActualDownloadedFileName1']);
       await download.saveAs(vars['FilePath']);
+      vars['ActualDownloadedFileName1'] = download.suggestedFilename();
       log.info('DownloadedFileName: ' + vars['ActualDownloadedFileName1']);
       if (String(vars['ActualDownloadedFileName1']).includes(String(vars['ExpectedFileName']))) {
         log.info('Downloaded file name matched ExpectedFileName: ' + vars['ExpectedFileName']);
