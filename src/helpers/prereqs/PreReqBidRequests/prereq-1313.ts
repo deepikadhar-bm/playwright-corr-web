@@ -1,15 +1,15 @@
 import type { Page } from '@playwright/test';
 import { expect } from '@playwright/test';
 import path from 'path';
-import * as stepGroups from '../step-groups';
-import { BidRequestDetailsPage } from '../../pages/correspondant/bid-request-details';
-import { BidRequestListPage } from '../../pages/correspondant/bid-request-list';
-import { BidRequestPage } from '../../pages/correspondant/bid-request';
-import { BidRequestsPage } from '../../pages/correspondant/bid-requests';
-import { CorrespondentPortalPage } from '../../pages/correspondant/correspondent-portal';
-import { SpinnerPage } from '../../pages/correspondant/spinner';
+import * as stepGroups from '../../step-groups';
+import { BidRequestDetailsPage } from '../../../pages/correspondant/bid-request-details';
+import { BidRequestListPage } from '../../../pages/correspondant/bid-request-list';
+import { BidRequestPage } from '../../../pages/correspondant/bid-request';
+import { BidRequestsPage } from '../../../pages/correspondant/bid-requests';
+import { CorrespondentPortalPage } from '../../../pages/correspondant/correspondent-portal';
+import { SpinnerPage } from '../../../pages/correspondant/spinner';
 import { ENV } from '@config/environments';
-import { Logger as log } from '../../../src/helpers/log-helper';
+import { Logger as log } from '../../../../src/helpers/log-helper';
 import { CorrPortalPage } from '@pages/correspondant/CorrPortalPage';
 import { testDataManager } from 'testdata/TestDataManager';
 

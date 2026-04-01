@@ -1,11 +1,11 @@
 import type { Page } from '@playwright/test';
 import { expect } from '@playwright/test';
-import * as stepGroups from '../step-groups';
-import { CorrespondentPortalPage } from '../../pages/correspondant/correspondent-portal';
-import { SpinnerPage } from '../../pages/correspondant/spinner';
-import { StatusInactivePage } from '../../pages/correspondant/status-inactive-';
+import * as stepGroups from '../../step-groups';
+import { CorrespondentPortalPage } from '../../../pages/correspondant/correspondent-portal';
+import { SpinnerPage } from '../../../pages/correspondant/spinner';
+import { StatusInactivePage } from '../../../pages/correspondant/status-inactive-';
 import { testDataManager } from 'testdata/TestDataManager';
-import { Logger as log } from '../log-helper';
+import { Logger as log } from '../../log-helper';
 import { ENV } from '@config/environments';
 
 export async function runPrereq_896(page: Page, vars: Record<string, string>): Promise<void> {
