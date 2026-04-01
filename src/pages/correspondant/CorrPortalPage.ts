@@ -657,8 +657,8 @@ export class CorrPortalPage {
     return this.page.locator(`//button[text()=\"${CommittedCorrLoan}\"]//ancestor::tr//td[@data-title=\"Curr Gross\"]`);
   }
 
-  get Curr_Gross_price_offered_screen_table(): Locator {
-    return this.page.locator("(//table//td[@data-title=\"Curr Gross\"])[$|count1|]");
+  Curr_Gross_price_offered_screen_table(count1: string): Locator {
+    return this.page.locator(`(//table//td[@data-title=\"Curr Gross\"])[${count1}]`);
   }
 
   Curr_Market_Value_Commitment_List(CommittedCorrLoan: string): Locator {
@@ -1033,8 +1033,11 @@ export class CorrPortalPage {
     return this.page.locator(`//button[text()=\"${CommittedCorrLoan}\"]//ancestor::tr//td[@data-title=\"Gross Price\"]`);
   }
 
-  get Gross_Price_price_offered_screen_table(): Locator {
-    return this.page.locator("( //table[@aria-label=\"Data Table\"]//tr[@role=\"row\"]//td[@data-title=\"Gross Price\"]/div)[$|count1|]");
+  // Gross_Price_price_offered_screen_table(count1: string): Locator {
+  //   return this.page.locator(`( //table[@aria-label=\"Data Table\"]//tr[@role=\"row\"]//td[@data-title=\"Gross Price\"]/div)[${count1}]`);
+  // }
+   Gross_Price_price_offered_screen_table(count1: string): Locator {
+    return this.page.locator(`(//tr[@role=\"row\"]//td[@data-title=\"Gross Price\"]/div)[${count1}]`);
   }
 
   get Header_Mapping(): Locator {
@@ -1084,8 +1087,11 @@ export class CorrPortalPage {
     return this.page.locator(`//button[text()=\"${CommittedCorrLoan}\"]//ancestor::tr//td[@data-title=\"Hedge Ratio\"]`);
   }
 
-  get Hedge_Ratio_price_offered_screen_table(): Locator {
-    return this.page.locator("( //table[@aria-label=\"Data Table\"]//tr[@role=\"row\"]//td[@data-title=\"Hedge Ratio\"]/div)[$|count1|]");
+  // Hedge_Ratio_price_offered_screen_table(count1: string): Locator {
+  //   return this.page.locator(`( //table[@aria-label=\"Data Table\"]//tr[@role=\"row\"]//td[@data-title=\"Hedge Ratio\"]/div)[${count1}]`);
+  // }
+   Hedge_Ratio_price_offered_screen_table(count1: string): Locator {
+    return this.page.locator(`(//tr[@role=\"row\"]//td[@data-title=\"Hedge Ratio\"]/div)[${count1}]`);
   }
 
   get IF_Bid_Field_Dropdown_new(): Locator {
@@ -1213,8 +1219,11 @@ export class CorrPortalPage {
     return this.page.locator("//span[text()[normalize-space() = \"Insert Header\"]]");
   }
 
-  get Int_Rate_price_offered_screen_table(): Locator {
-    return this.page.locator("( //table[@aria-label=\"Data Table\"]//tr[@role=\"row\"]//td[@data-title=\"Int. Rate\"])[$|count1|]");
+  //  Int_Rate_price_offered_screen_table(count1: string): Locator {
+  //   return this.page.locator(`( //table[@aria-label=\"Data Table\"]//tr[@role=\"row\"]//td[@data-title=\"Int. Rate\"])[${count1}]`);
+  // }
+  Int_Rate_price_offered_screen_table(count1: string): Locator {
+    return this.page.locator(`(//tr[@role=\"row\"]//td[@data-title=\"Int. Rate\"])[${count1}]`);
   }
 
   Interest_Rate_Commitment_List(CommittedCorrLoan: string): Locator {
@@ -1325,8 +1334,8 @@ export class CorrPortalPage {
     return this.page.locator(`//button[text()=\"${CommittedCorrLoan}\"]//ancestor::tr//td[@data-title=\"Mark Adj\"]`);
   }
 
-  get Mark_Adj_price_offered_screen_table(): Locator {
-    return this.page.locator("(//table//td[@data-title=\"Mark Adj\"])[$|count1|]");
+  Mark_Adj_price_offered_screen_table(count1: string): Locator {
+    return this.page.locator(`(//table//td[@data-title=\"Mark Adj\"])[${count1}]`);
   }
 
   get Market_Thresholds(): Locator {
@@ -1489,8 +1498,11 @@ export class CorrPortalPage {
     return this.page.locator("//form[@aria-labelledby=\"executionDetailsHeader\"]/div[4]/div[1]/div[1]/input[1]");
   }
 
-  get Ref_Sec_Price_price_offered_screen_table(): Locator {
-    return this.page.locator("( //table[@aria-label=\"Data Table\"]//tr[@role=\"row\"]//td[@data-title=\"Ref Sec Price\"]/div)[$|count1|]");
+  // get Ref_Sec_Price_price_offered_screen_table(): Locator {
+  //   return this.page.locator("( //table[@aria-label=\"Data Table\"]//tr[@role=\"row\"]//td[@data-title=\"Ref Sec Price\"]/div)[$|count1|]");
+  // }
+   Ref_Sec_Price_price_offered_screen_table(count1:string): Locator {
+    return this.page.locator(`(//tr[@role="row"]//td[@data-title="Ref Sec Price"]/div)[${count1}]`);
   }
 
   Reference_Security_Commitment_List(CommittedCorrLoan: string): Locator {

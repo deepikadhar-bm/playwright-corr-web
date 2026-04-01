@@ -4562,38 +4562,64 @@ export async function stepGroup_Uploading_bid_for_American_Pacific_Company(page:
  */
 export async function stepGroup_Price_offered_Details_Screen_Verification_Price_details_and_(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
-  vars["CurrentMarketValue"] = await CorrPortalElem.Current_Market_price_offered.textContent() || '';
-  vars["CurrentMarketValue"] = String(vars["CurrentMarketValue"]).trim();
-  // TODO: Regex verification with empty pattern
-  // Action: Verify if the text CurrentMarketValue matches the pattern ^\d+\.\d{3}$
-  vars["CurrentMarketDiffValue"] = await CorrPortalElem.Current_Market_Diff_price_offered.textContent() || '';
-  vars["CurrentMarketDiffValue"] = String(vars["CurrentMarketDiffValue"]).trim();
-  // TODO: Regex verification with empty pattern
-  // Action: Verify if the text CurrentMarketDiffValue matches the pattern ^[+-]?\d+\.\d{3}$
-  vars["count1"] = "1";
-  vars["TotalRowsCountValue"] = String(await CorrPortalElem.All_Bid_Request_ID_Rows_price_offered_screen1.count());
-  while (parseFloat(String(vars["count1"])) <= parseFloat(String(vars["TotalRowsCountValue"]))) {
-    vars["IntRateValue"] = await CorrPortalElem.Int_Rate_price_offered_screen_table.textContent() || '';
-    vars["IntRateValue"] = String(vars["IntRateValue"]).trim();
-    // TODO: Regex verification with empty pattern
-    // Action: Verify if the text IntRateValue matches the pattern ^\d+\.\d{3}\%$
-    vars["RefSecPriceValue"] = await CorrPortalElem.Ref_Sec_Price_price_offered_screen_table.textContent() || '';
-    vars["RefSecPriceValue"] = String(vars["RefSecPriceValue"]).trim();
-    // TODO: Regex verification with empty pattern
-    // Action: Verify if the text RefSecPriceValue matches the pattern ^\d+\.\d{3}$
-    vars["GrossPriceValue"] = await CorrPortalElem.Gross_Price_price_offered_screen_table.textContent() || '';
-    vars["GrossPriceValue"] = String(vars["GrossPriceValue"]).trim();
-    // TODO: Regex verification with empty pattern
-    // Action: Verify if the text GrossPriceValue matches the pattern ^\d+\.\d{3}$
-    vars["HedgeRatioValue"] = await CorrPortalElem.Hedge_Ratio_price_offered_screen_table.textContent() || '';
-    vars["HedgeRatioValue"] = String(vars["HedgeRatioValue"]).trim();
-    // TODO: Regex verification with empty pattern
-    // Action: Verify if the text HedgeRatioValue matches the pattern ^\d+\.\d{3}$
-    vars["MarkAdjValue"] = await CorrPortalElem.Mark_Adj_price_offered_screen_table.textContent() || '';
-    vars["MarkAdjValue"] = String(vars["MarkAdjValue"]).trim();
-    // TODO: Regex verification with empty pattern
-    // Action: Verify if the text MarkAdjValue matches the pattern ^[+-]?\d+\.\d{3}$
-    vars["CurrGrossValue"] = await CorrPortalElem.Curr_Gross_price_offered_screen_table.textContent() || '';
+  const Methods = new AddonHelpers(page, vars);
+
+  log.step('Verify Current Market and Current Market Diff values in Price Offered details screen');
+  try {
+    vars["CurrentMarketValue"] = await CorrPortalElem.Current_Market_price_offered.textContent() || '';
+    Methods.trimWhitespace(vars["CurrentMarketValue"], 'CurrentMarketValue');
+    log.info('CurrentMarketValue: ' + vars['CurrentMarketValue']);
+    await Methods.verifyTextMatchesPattern(vars["CurrentMarketValue"], '^\\d+\\.\\d{3}$');
+
+    vars["CurrentMarketDiffValue"] = await CorrPortalElem.Current_Market_Diff_price_offered.textContent() || '';
+    Methods.trimWhitespace(vars["CurrentMarketDiffValue"], 'CurrentMarketDiffValue');
+    log.info('CurrentMarketDiffValue: ' + vars['CurrentMarketDiffValue']);
+    await Methods.verifyTextMatchesPattern(vars["CurrentMarketDiffValue"], '^[+-]?\\d+\\.\\d{3}$');
+    log.stepPass('Current Market and Current Market Diff values match expected pattern');
+  } catch (e) {
+    log.stepFail(page, 'Current Market or Current Market Diff value verification failed');
+    throw e;
+  }
+
+  log.step('Verify table row values — IntRate, RefSecPrice, GrossPrice, HedgeRatio, MarkAdj, CurrGross');
+  try {
+    vars["count1"] = appconstants.ONE;
+    vars["TotalRowsCountValue"] = String(await CorrPortalElem.All_Bid_Request_ID_Rows_price_offered_screen1.count());
+    log.info('TotalRowsCountValue: ' + vars['TotalRowsCountValue']);
+
+    while (parseFloat(vars["count1"]) <= parseFloat(vars["TotalRowsCountValue"])) {
+      log.info('Verifying Row: ' + vars['count1']);
+
+      vars["IntRateValue"] = await CorrPortalElem.Int_Rate_price_offered_screen_table(vars['count1']).textContent() || '';
+      Methods.trimWhitespace(vars["IntRateValue"], 'IntRateValue');
+      await Methods.verifyTextMatchesPattern(vars["IntRateValue"], '^\\d+\\.\\d{3}\\%$');
+
+      vars["RefSecPriceValue"] = await CorrPortalElem.Ref_Sec_Price_price_offered_screen_table(vars['count1']).textContent() || '';
+      Methods.trimWhitespace(vars["RefSecPriceValue"], 'RefSecPriceValue');
+      await Methods.verifyTextMatchesPattern(vars["RefSecPriceValue"], '^\\d+\\.\\d{3}$');
+
+      vars["GrossPriceValue"] = await CorrPortalElem.Gross_Price_price_offered_screen_table(vars['count1']).textContent() || '';
+      Methods.trimWhitespace(vars["GrossPriceValue"], 'GrossPriceValue');
+      await Methods.verifyTextMatchesPattern(vars["GrossPriceValue"], '^\\d+\\.\\d{3}$');
+
+      vars["HedgeRatioValue"] = await CorrPortalElem.Hedge_Ratio_price_offered_screen_table(vars['count1']).textContent() || '';
+      Methods.trimWhitespace(vars["HedgeRatioValue"], 'HedgeRatioValue');
+      await Methods.verifyTextMatchesPattern(vars["HedgeRatioValue"], '^\\d+\\.\\d{3}$');
+
+      vars["MarkAdjValue"] = await CorrPortalElem.Mark_Adj_price_offered_screen_table(vars['count1']).textContent() || '';
+      Methods.trimWhitespace(vars["MarkAdjValue"], 'MarkAdjValue');
+      await Methods.verifyTextMatchesPattern(vars["MarkAdjValue"], '^[+-]?\\d+\\.\\d{3}$');
+
+      vars["CurrGrossValue"] = await CorrPortalElem.Curr_Gross_price_offered_screen_table(vars['count1']).textContent() || '';
+      Methods.trimWhitespace(vars["CurrGrossValue"], 'CurrGrossValue');
+      await Methods.verifyTextMatchesPattern(vars["CurrGrossValue"], '^\\d+\\.\\d{3}$');
+
+      Methods.MathematicalOperation(vars["count1"], '+', 1, 'count1');
+    }
+    log.stepPass('All table row values verified successfully');
+  } catch (e) {
+    log.stepFail(page, 'Table row value verification failed');
+    throw e;
   }
 }
 
