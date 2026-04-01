@@ -4,7 +4,9 @@ import { CommitmentListPage } from '../../../src/pages/correspondant/commitment-
 import { CorrespondentPortalPage } from '../../../src/pages/correspondant/correspondent-portal';
 import { PriceOfferedPage } from '../../../src/pages/correspondant/price-offered';
 import { SpinnerPage } from '../../../src/pages/correspondant/spinner';
-import { runPrereq_1746 } from '../../../src/helpers/prereqs/prereq-1746';
+// import { runPrereq_1746 } from '../../../src/helpers/prereqs/prereq-1746';
+import { runPrereq_1746 } from '../../../src/helpers/prereqs/Commitment_List-Pre-requites/prereq-1746';
+
 import { AddonHelpers } from '../../../src/helpers/AddonHelpers';
 import { Logger as log } from '../../../src/helpers/log-helper';
 import { APP_CONSTANTS as appconstants } from '../../../src/constants/app-constants';
