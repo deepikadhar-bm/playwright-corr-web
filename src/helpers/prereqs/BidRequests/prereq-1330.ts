@@ -1,13 +1,13 @@
 import type { Page } from '@playwright/test';
 import { expect } from '@playwright/test';
-import * as stepGroups from '../step-groups';
-import { BidRequestPage } from '../../pages/correspondant/bid-request';
-import { BidRequestsPage } from '../../pages/correspondant/bid-requests';
-import { CorrespondentPortalPage } from '../../pages/correspondant/correspondent-portal';
-import { SpinnerPage } from '../../pages/correspondant/spinner';
+import * as stepGroups from '../../step-groups';
+import { BidRequestPage } from '../../../pages/correspondant/bid-request';
+import { BidRequestsPage } from '../../../pages/correspondant/bid-requests';
+import { CorrespondentPortalPage } from '../../../pages/correspondant/correspondent-portal';
+import { SpinnerPage } from '../../../pages/correspondant/spinner';
 import { ENV } from '@config/environments';
-import { Logger as log } from '../../../src/helpers/log-helper';
-import { APP_CONSTANTS as appconstants } from '../../../src/constants/app-constants';
+import { Logger as log } from '../../../../src/helpers/log-helper';
+import { APP_CONSTANTS as appconstants } from '../../../../src/constants/app-constants';
 const TC_ID = 'PREREQ-1330';
 const TC_TITLE = 'Verify that entering 3 or more digits in the search input displays bid records that match the entered values.';
 export async function runPrereq_1330(page: Page, vars: Record<string, string>): Promise<void> {

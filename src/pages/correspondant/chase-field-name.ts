@@ -223,8 +223,8 @@ export class ChaseFieldNamePage {
     return this.page.locator("(//label[text()=\" When Bid Field \"]/../../../..//select)[3]");
   }
 
-  get Option_in_PricingReturn_Dropdown(): Locator {
-    return this.page.locator("//option[contains(text(),\"$|BatchTime|\")]");
+  Option_in_PricingReturn_Dropdown(BatchTime: string): Locator {
+    return this.page.locator(`//option[contains(text(), "${BatchTime}")]`);
   }
 
   get Product_Category(): Locator {
