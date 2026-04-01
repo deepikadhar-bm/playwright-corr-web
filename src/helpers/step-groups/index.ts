@@ -2868,11 +2868,16 @@ export async function stepGroup_Modifying_Batch_Intervals_For_Passed_Time(page: 
   const testData: Record<string, string> = {}; // TODO: Load from test data profile
   await CorrPortalElem.Modify_Batch_Intervals_Button.click();
   await expect(page.getByText("Edit Batch Timing")).toBeVisible();
-  vars[""] = (() => {
-    const d = new Date('2000-01-01 ' + String(''));
-    d.setMinutes(d.getMinutes() - parseInt(String('')));
-    return d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
-  })();
+  vars["EstTimeMinusOneHour"] = (() => {
+  const d = new Date();
+  d.setHours(d.getHours() - 1);
+  return new Intl.DateTimeFormat('en-US', {
+    timeZone: "America/New_York",
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: true
+  }).format(d);
+})();
   await stepGroup_Separting_Hours_and_minutes_In_Time_For_passed_time(page, vars);
   // [DISABLED] Pick the current date hh by location UTC-04:00 and store into a variable Time_Hour
   // vars["Time_Hour"] = (() => {
@@ -2899,8 +2904,8 @@ export async function stepGroup_Modifying_Batch_Intervals_For_Passed_Time(page: 
   // vars["Time_Minute"] = String(vars["Time_Min"]).split(":")["2"] || '';
   await CorrPortalElem.StartTime_In_Minutes.fill(vars["Time_Min"]);
   await stepGroup_selecting_time_unit_bulk_batch(page, vars);
-  await CorrPortalElem.Time_Interval.fill(testData["Time Interval"]);
-  await CorrPortalElem.No_Of_Batches.fill(testData["NO of Batches"]);
+  await CorrPortalElem.Time_Interval.fill(vars["Time Interval"]);
+  await CorrPortalElem.No_Of_Batches.fill(vars["NO of Batches"]);
   await expect(CorrPortalElem.On_Radio_button_in_Bid_Request).toBeEnabled();
   await CorrPortalElem.Modify_Batch_Button.click();
   await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
@@ -2914,8 +2919,8 @@ export async function stepGroup_Modifying_Batch_Intervals_For_Passed_Time(page: 
  * Steps: 4
  */
 export async function stepGroup_Separting_Hours_and_minutes_In_Time_For_passed_time(page: import('@playwright/test').Page, vars: Record<string, string>) {
-  vars["MinWithStandard"] = String(vars["PassedTime"]).split(":")["2"] || '';
-  vars["Time_Hour"] = String(vars["PassedTime"]).substring(0, String(vars["PassedTime"]).length - 6);
+  vars["MinWithStandard"] = String(vars["EstTimeMinusOneHour"]).split(":")["1"] || '';
+  vars["Time_Hour"] = String(vars["EstTimeMinusOneHour"]).substring(0, String(vars["EstTimeMinusOneHour"]).length - 6);
   vars["Time_Min"] = String(vars["MinWithStandard"]).substring(0, String(vars["MinWithStandard"]).length - 3);
   vars["Time_Unit"] = String(vars["MinWithStandard"]).substring(3);
 }
@@ -3264,6 +3269,7 @@ export async function stepGroup_Creating_Of_Bid_Maps_with_Standard(page: import(
  */
 export async function stepGroup_Uploading_Bid_Request_For_Next_Buisiness_day(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
+  const correspondentPortalPage = new CorrespondentPortalPage(page);
   const testData: Record<string, string> = {}; // TODO: Load from test data profile
   
   await CorrPortalElem.Select_Company_In_BidRequest.click();
@@ -3288,8 +3294,10 @@ export async function stepGroup_Uploading_Bid_Request_For_Next_Buisiness_day(pag
   await CorrPortalElem.Search_box_Bid_mapping_id.pressSequentially(vars["BidMappingID"]);
   await CorrPortalElem.Bid_Mapping_ID_Dropdown_1.click();
   //await expect(CorrPortalElem.Bid_Mapping_ID_Dropdown).toContainText(vars["BidMappingID"]);
-  await CorrPortalElem.Off_Radio_Standard_Edit_Permissions_Popup.check();
-  await expect(CorrPortalElem.Off_Radio_Standard_Edit_Permissions_Popup).toBeEnabled();
+  // await CorrPortalElem.Off_Radio_Standard_Edit_Permissions_Popup.check();
+  // await expect(CorrPortalElem.Off_Radio_Standard_Edit_Permissions_Popup).toBeEnabled();
+  await correspondentPortalPage.Next_Business_Day_Radio_Button.check();
+  await expect(correspondentPortalPage.Next_Business_Day_Radio_Button).toBeChecked();
   await CorrPortalElem.Pricing_Return_Time.click();
 }
 
@@ -3364,6 +3372,7 @@ export async function stepGroup_Getting_Next_Bussiness_day_by_handling_weekend(p
  * Steps: 19
  */
 export async function stepGroup_Modifying_The_Batch_Intervals_For_Next_bussiness_day_with_on(page: import('@playwright/test').Page, vars: Record<string, string>) {
+  const correspondentPortalPage = new CorrespondentPortalPage(page);
   const CorrPortalElem = new CorrPortalPage(page);
   const testData: Record<string, string> = {}; // TODO: Load from test data profile
   await CorrPortalElem.Modify_Batch_Intervals_Button.click();
@@ -3382,7 +3391,8 @@ export async function stepGroup_Modifying_The_Batch_Intervals_For_Next_bussiness
     d.setMinutes(d.getMinutes() + parseInt(String("60")));
     return d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true }); // Format: hh:mm a
   })();
-  await stepGroup_Separating_Hours_and_minutes_In_timeOne_hour_prior(page, vars);
+  //await stepGroup_Separating_Hours_and_minutes_In_timeOne_hour_prior(page, vars);
+   await stepGroup_Separating_Hours_and_minutes_In_time_Current_EST_time(page, vars);
   // [DISABLED] Pick the current date hh by location UTC-04:00 and store into a variable Time_Hour
   // vars["Time_Hour"] = (() => {
   //   const d = new Date();
@@ -3393,7 +3403,7 @@ export async function stepGroup_Modifying_The_Batch_Intervals_For_Next_bussiness
   //   const p = Object.fromEntries(parts.map(({type, value}) => [type, value]));
   //   return fmt.replace('yyyy', p.year || '').replace('yy', (p.year||'').slice(-2)).replace('MM', p.month || '').replace('dd', p.day || '').replace('HH', String(d.getHours()).padStart(2,'0')).replace('hh', p.hour || '').replace('mm', p.minute || '').replace('ss', p.second || '').replace('a', p.dayPeriod || '').replace(/M(?!M)/g, String(parseInt(p.month||'0'))).replace(/d(?!d)/g, String(parseInt(p.day||'0'))).replace(/h(?!h)/g, String(parseInt(p.hour||'0')));
   // })();
-  await CorrPortalElem.StartTime_In_Hour.fill(vars["Time_Hour"]);
+  await CorrPortalElem.StartTime_In_Hour.pressSequentially(vars["Time_Hour"]);
   // [DISABLED] Pick the current date hh:mm by location UTC-04:00 and store into a variable Time_Min
   // vars["Time_Min"] = (() => {
   //   const d = new Date();
@@ -3406,12 +3416,12 @@ export async function stepGroup_Modifying_The_Batch_Intervals_For_Next_bussiness
   // })();
   // [DISABLED] Split the Time_Min with the : and store the value from the 2 in the Time_Minute
   // vars["Time_Minute"] = String(vars["Time_Min"]).split(":")["2"] || '';
-  await CorrPortalElem.StartTime_In_Minutes.fill(vars["Time_Min"]);
+  await CorrPortalElem.StartTime_In_Minutes.pressSequentially(vars["Time_Min"]);
   await stepGroup_selecting_time_unit_bulk_batch(page, vars);
-  await CorrPortalElem.Time_Interval.fill(testData["Time Interval"]);
-  await CorrPortalElem.No_Of_Batches.fill(testData["NO of Batches"]);
-  await CorrPortalElem.Off_Radio_Standard_Edit_Permissions_Popup.check();
-  await expect(CorrPortalElem.Off_Radio_Standard_Edit_Permissions_Popup).toBeEnabled();
+  await CorrPortalElem.Time_Interval.pressSequentially(vars["Time Interval"]);
+  await CorrPortalElem.No_Of_Batches.pressSequentially(vars["NO of Batches"]);
+  await correspondentPortalPage.Next_Business_Day_Radio_Button.check();
+  await expect(correspondentPortalPage.Next_Business_Day_Radio_Button).toBeChecked();
   await CorrPortalElem.Modify_Batch_Button.click();
   await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
   await expect(CorrPortalElem.Modified_batch_timings_successfully_Message).toBeVisible();
