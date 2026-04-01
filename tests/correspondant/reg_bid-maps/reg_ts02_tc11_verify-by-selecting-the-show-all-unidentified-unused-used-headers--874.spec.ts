@@ -36,7 +36,7 @@ test.describe('REG_Bid Maps', () => {
   const profileName = "Bid_Maps";
   const profile = testDataManager.getProfileByName(profileName);
 
-  test.only(`${TC_ID} - ${TC_TITLE}`, async ({ page }) => {
+  test(`${TC_ID} - ${TC_TITLE}`, async ({ page }) => {
     log.tcStart(TC_ID, TC_TITLE);
     try {
 

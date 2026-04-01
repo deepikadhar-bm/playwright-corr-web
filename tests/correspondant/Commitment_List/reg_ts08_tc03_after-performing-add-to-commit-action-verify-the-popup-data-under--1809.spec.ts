@@ -4,13 +4,13 @@ import { CommitmentListPage } from '../../../src/pages/correspondant/commitment-
 import { CorrespondentPortalPage } from '../../../src/pages/correspondant/correspondent-portal';
 import { PriceOfferedPage } from '../../../src/pages/correspondant/price-offered';
 import { SpinnerPage } from '../../../src/pages/correspondant/spinner';
-import { runPrereq_1833 } from '../../../src/helpers/prereqs/prereq-1833';
+// import { runPrereq_1833 } from '../../../src/helpers/prereqs/prereq-1833';
+import { runPrereq_1833 } from '@helpers/prereqs/Commitment_List-Pre-requites/prereq-1833';
 import { AddonHelpers } from '@helpers/AddonHelpers';
 import { Logger as log } from '@helpers/log-helper';
 import { testDataManager } from 'testdata/TestDataManager';
 import { APP_CONSTANTS as appconstants } from '../../../src/constants/app-constants';
-import { ENV } from '@config/environments';
-import * as stepGroups from '../../../src/helpers/step-groups';
+
 
 
 
@@ -26,13 +26,10 @@ test.describe('Unassigned', () => {
   let priceOfferedPage: PriceOfferedPage;
   let spinnerPage: SpinnerPage;
   let Methods: AddonHelpers;
-  const credentials = ENV.getCredentials('internal');
 
   test.beforeEach(async ({ page }) => {
     vars = {};
-    vars['Username'] = credentials.username;
-    vars['Password'] = credentials.password;
-    // await runPrereq_1833(page, vars);
+    await runPrereq_1833(page, vars);
     bidRequestDetailsPage = new BidRequestDetailsPage(page);
     commitmentListPage = new CommitmentListPage(page);
     correspondentPortalPage = new CorrespondentPortalPage(page);
@@ -43,19 +40,15 @@ test.describe('Unassigned', () => {
 
   test(`${TC_ID} - ${TC_TITLE}`, async ({ page }) => {
     log.tcStart(TC_ID, TC_TITLE);
-vars['BidReqId']='87XL2DC433F7';
-vars['CommittedCorrLoan']='TestSigma_26-03-2026_SC1_99_682';
     try {
-     await stepGroups.stepGroup_Login_to_CORR_Portal(page, vars);//1
+
       log.step('Navigate to Commitment List and open commitment');
       try {
-        // await priceOfferedPage.Back_To_Commitment_List.click();
+        await priceOfferedPage.Back_To_Commitment_List.click();
         await spinnerPage.Spinner.waitFor({ state: 'hidden' });
         if (await commitmentListPage.Search_Cancel_Button.isVisible()) {
           await commitmentListPage.Search_Cancel_Button.click();
         }
-        await correspondentPortalPage.Commitments_Side_Menu.click();//2
-        await commitmentListPage.Committed_List_Dropdown.click();//3
         
         await priceOfferedPage.Search_Dropdown.type(vars['BidReqId']);
         await priceOfferedPage.Search_Dropdown.click();

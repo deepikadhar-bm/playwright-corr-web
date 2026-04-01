@@ -201,7 +201,7 @@ function resolveCellResult(cell: XLSX.CellObject | undefined): CellResult {
 
   // ── Date / timestamp ──────────────────────────────────────────────────────
   if (xlType === 'd' || cell.w?.match(/^\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4}/) ||
-      (xlType === 'n' && cell.z && /[yYmMdDhHsS]/.test(String(cell.z)))) {
+    (xlType === 'n' && cell.z && /[yYmMdDhHsS]/.test(String(cell.z)))) {
     const dateVal = xlType === 'd'
       ? (cell.v as Date)
       : XLSX.SSF.is_date(cell.z ?? '')
@@ -952,7 +952,7 @@ export function getCellByPosition(
 
   // ── Build cell address (e.g. colNumber=3, rowNumber=2 → "C2") ─────────────
   const colLetter = XLSX.utils.encode_col(colNumber - 1);   // encode_col is 0-based
-  const cellAddr  = `${colLetter}${rowNumber}`;             // rowNumber is already 1-based
+  const cellAddr = `${colLetter}${rowNumber}`;             // rowNumber is already 1-based
 
   const cell = sheet[cellAddr];
 
@@ -981,7 +981,7 @@ export function getRowDataWithCommaSeperator(
 ): string {
   const wb = XLSX.readFile(path.resolve(filePath), { cellDates: true });
   const sheet = resolveSheet(wb, sheetName);
-  
+
   // Convert sheet to 2D array: [[A1, B1], [A2, B2]]
   const rows: any[][] = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: "" });
 
@@ -990,7 +990,7 @@ export function getRowDataWithCommaSeperator(
       `Row index ${rowIndex} is out of range. Total rows (including header): ${rows.length}`
     );
   }
-  
+
   // Map row values to string and join with commas
   return rows[rowIndex].map(cell => String(cell).trim()).join(", ");
 }
@@ -998,25 +998,38 @@ export function getRowDataWithCommaSeperator(
 
 export function getAllRowCount(filePath: string, sheetIndex: number = 0): number {
   const wb = loadWorkbook(filePath);
- 
-  // Validate sheet index
+
   if (sheetIndex < 0 || sheetIndex >= wb.SheetNames.length) {
     throw new Error(
       `Invalid sheet index ${sheetIndex}. Total sheets available: ${wb.SheetNames.length}`
     );
   }
- 
+
   const sheetName = wb.SheetNames[sheetIndex];
   const sheet = wb.Sheets[sheetName];
- 
+
+  // Use raw sheet ref range to get actual used rows
   const rows: unknown[][] = XLSX.utils.sheet_to_json(sheet, {
     header: 1,
     defval: null,
     blankrows: false,
   });
- 
-  // Count only rows having at least one non-empty cell
-  const validRows = rows.filter((r) =>r.some((c) => c !== null && c !== ''));
+
+  // Strict filter — match Java POI behavior which ignores:
+  // 1. fully null rows
+  // 2. rows with only whitespace
+  // 3. rows with only empty strings
+  // 4. rows where every cell is null/undefined/empty after trim
+  const validRows = rows.filter((r) => {
+    const nonEmptyCells = r.filter((c) => {
+      if (c === null || c === undefined) return false;
+      if (typeof c === 'string' && c.trim() === '') return false;
+      return true;
+    });
+    return nonEmptyCells.length > 0;
+  });
+
+  log.info(`getAllRowCount: total parsed rows=${rows.length}, valid rows=${validRows.length}`);
   return validRows.length;
 }
 //used to read the entire excel row using row index
@@ -1053,7 +1066,7 @@ export function readEntireRow(
     })
     .join(',');
 
-  console.log(`[readEntireRow] Row ${rowIdx} data: ${result}`);
+  log.info(`[readEntireRow] Row ${rowIdx} data: ${result}`);
   return result;
 }
 
@@ -1068,7 +1081,7 @@ export function readEntireRow(
 export function readEntireColumnByColIndex(
   filePath: string,
   colIndex: string | number,
-  sheetIndex: string | number = 0 
+  sheetIndex: string | number = 0
 ): string {
   const wb = XLSX.readFile(path.resolve(filePath), { cellDates: true });
 
@@ -1081,7 +1094,7 @@ export function readEntireColumnByColIndex(
 
   const sheet = wb.Sheets[sheetName];
   const rows: any[][] = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: null });
-  
+
   const result = rows
     .map(row => row[columnIdx])
     // FIX: Filter out null, undefined, and empty strings 
@@ -1175,12 +1188,12 @@ export function writeCellByColAndRowIndex(
   }
 
   const sheetIdx = typeof sheetIndex === 'string' ? parseInt(sheetIndex, 10) : sheetIndex;
-  const rowIdx   = typeof rowIndex   === 'string' ? parseInt(rowIndex,   10) : rowIndex;
-  const colIdx   = typeof colIndex   === 'string' ? parseInt(colIndex,   10) : colIndex;
+  const rowIdx = typeof rowIndex === 'string' ? parseInt(rowIndex, 10) : rowIndex;
+  const colIdx = typeof colIndex === 'string' ? parseInt(colIndex, 10) : colIndex;
 
   if (isNaN(sheetIdx)) throw new Error(`Sheet index "${sheetIndex}" is not a valid number`);
-  if (isNaN(rowIdx))   throw new Error(`Row index "${rowIndex}" is not a valid number`);
-  if (isNaN(colIdx))   throw new Error(`Column index "${colIndex}" is not a valid number`);
+  if (isNaN(rowIdx)) throw new Error(`Row index "${rowIndex}" is not a valid number`);
+  if (isNaN(colIdx)) throw new Error(`Column index "${colIndex}" is not a valid number`);
 
   const wb = XLSX.readFile(resolved, { cellDates: true, cellNF: true });
 
@@ -1191,10 +1204,10 @@ export function writeCellByColAndRowIndex(
   }
 
   const sheetName = wb.SheetNames[sheetIdx];
-  const sheet     = wb.Sheets[sheetName];
+  const sheet = wb.Sheets[sheetName];
 
   const colLetter = XLSX.utils.encode_col(colIdx);
-  const cellAddr  = `${colLetter}${rowIdx + 1}`;
+  const cellAddr = `${colLetter}${rowIdx + 1}`;
 
   setCellValue(sheet, cellAddr, value, cellType);
 
@@ -1214,7 +1227,7 @@ export function getNonEmptyCellCountPerRow(
 ): number {
   const wb = XLSX.readFile(path.resolve(filePath), { cellDates: true });
   const sheet = resolveSheet(wb, sheetName);
-  
+
   // header: 1 returns a 2D array [row][column]
   const rows: any[][] = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: null });
   const targetRow = rows[rowIndex];
@@ -1222,9 +1235,9 @@ export function getNonEmptyCellCountPerRow(
   if (!targetRow) return 0;
 
   // Filters out null, undefined, and empty/whitespace strings
-  return targetRow.filter(cell => 
-    cell !== null && 
-    cell !== undefined && 
+  return targetRow.filter(cell =>
+    cell !== null &&
+    cell !== undefined &&
     String(cell).trim() !== ''
   ).length;
 }
