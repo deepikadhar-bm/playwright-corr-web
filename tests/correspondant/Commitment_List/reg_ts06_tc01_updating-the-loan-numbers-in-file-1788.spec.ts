@@ -4,7 +4,7 @@ import * as excelHelper from '../../../src/helpers/excel-helpers';
 import { AddonHelpers } from '@helpers/AddonHelpers';
 import { Logger as log } from '@helpers/log-helper';
 import { APP_CONSTANTS as appconstants } from '../../../src/constants/app-constants';
-import { ENV } from '@config/environments';
+import { FILE_CONSTANTS as fileconstants } from '../../../src/constants/file-constants';
 
 
 const TC_ID = 'REG_TS06_TC01';
@@ -13,12 +13,10 @@ const TC_TITLE = 'Updating the Loan Numbers In File';
 test.describe('Unassigned', () => {
   let vars: Record<string, string> = {};
   let Methods: AddonHelpers;
-  const credentials = ENV.getCredentials('internal');
+
 
   test.beforeEach(async ({ page }) => {
     vars = {};
-    vars['Username'] = credentials.username;
-    vars['Password'] = credentials.password;
     Methods = new AddonHelpers(page, vars);
   });
 
@@ -29,7 +27,7 @@ test.describe('Unassigned', () => {
 
       log.step('Generate base loan number string from current date');
       try {
-        const filePath = path.resolve(__dirname, '../../../uploads/Bid_file_success_error_newly_updated_(6)_(1).xlsx');
+        const filePath = path.resolve(__dirname, '../../../uploads', fileconstants.BID_FILE_4LOANS);
         vars['FilePath'] = filePath;
         log.info('File path: ' + vars['FilePath']);
         Methods.getCurrentTimestamp(appconstants.DATE_FORMAT_DDMMYYYY, 'CurrentDate', appconstants.UTC);
