@@ -1819,22 +1819,22 @@
     "testDataName": "bulk batch to bid request",
     "data": [
       {
-        "batch time": "08:50 AM"
+        "batch time": "08:41 AM"
       },
       {
-        "batch time": "08:55 AM"
+        "batch time": "08:47 AM"
       },
       {
-        "batch time": "09:00 AM"
+        "batch time": "08:53 AM"
+      },
+      {
+        "batch time": "08:59 AM"
       },
       {
         "batch time": "09:05 AM"
       },
       {
-        "batch time": "09:10 AM"
-      },
-      {
-        "batch time": "12:24 PM"
+        "batch time": "09:11 AM"
       }
     ],
     "createdById": 24,

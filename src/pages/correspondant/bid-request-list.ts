@@ -59,8 +59,8 @@ export class BidRequestListPage {
     return this.page.locator("//input[@type=\"checkbox\" and contains(@aria-label,\"@|Company Name|\")]");
   }
 
-  get Respective_Bid_Cancel_Button_list(): Locator {
-    return this.page.locator("//button[contains(text(),\"$|RequestIDDetails|\")]/../..//button[@aria-label=\"Cancel Bid Request\"]");
+  Respective_Bid_Cancel_Button_list(RequestIDDetails: string): Locator {
+    return this.page.locator(`//button[contains(text(),\"${RequestIDDetails}\")]/../..//button[@aria-label=\"Cancel Bid Request\"]`);
   }
 
   Select_Date_From_CalenderCurrent_date(CurrentDate:String): Locator {
