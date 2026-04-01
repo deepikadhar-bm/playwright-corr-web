@@ -1277,8 +1277,11 @@ Execution_TypeCommitment_List(BidReqId:string): Locator {
     return this.page.locator("//div[@aria-label=\"Sort by Gross Price\"]");
   }
 
+  // Gross_Priceprice_offered_screen_table(count1:string): Locator {
+  //   return this.page.locator(`( //table[@aria-label=\"Data Table\"]//tr[@role=\"row\"]//td[@data-title=\"Gross Price\"]/div)[${count1}]`);
+  // }
   Gross_Priceprice_offered_screen_table(count1:string): Locator {
-    return this.page.locator(`( //table[@aria-label=\"Data Table\"]//tr[@role=\"row\"]//td[@data-title=\"Gross Price\"]/div)[${count1}]`);
+    return this.page.locator(`(//tr[@role=\"row\"]//td[@data-title=\"Gross Price\"]/div)[${count1}]`);
   }
 
   Gross_Priceprice_offered_table(count:string): Locator {
@@ -1321,10 +1324,12 @@ Execution_TypeCommitment_List(BidReqId:string): Locator {
     return this.page.locator("//div[@aria-label=\"Sort by Hedge Ratio\"]");
   }
 
-  gHedge_Ratioprice_offered_screen_table(count1:string): Locator {
-    return this.page.locator(`( //table[@aria-label=\"Data Table\"]//tr[@role=\"row\"]//td[@data-title=\"Hedge Ratio\"]/div)[${count1}]`);
+  // Hedge_Ratioprice_offered_screen_table(count1:string): Locator {
+  //   return this.page.locator(`( //table[@aria-label=\"Data Table\"]//tr[@role=\"row\"]//td[@data-title=\"Hedge Ratio\"]/div)[${count1}]`);
+  // }
+  Hedge_Ratioprice_offered_screen_table(count1:string): Locator {
+    return this.page.locator(`(//tr[@role=\"row\"]//td[@data-title=\"Hedge Ratio\"]/div)[${count1}]`);
   }
-
  Hedge_Ratioprice_offered_table(count:string): Locator {
     return this.page.locator(`(//div[@aria-label=\"Locked loan\"]/ancestor::tr//div[contains(@aria-label, \"Hedge ratio\")])[${count}]`);
   }
@@ -1404,9 +1409,11 @@ Execution_TypeCommitment_List(BidReqId:string): Locator {
   IndividualCompany(count: string): Locator {
     return this.page.locator(`(//td[@data-title="Company"])[${count}]`);
   }
-
+  // Int_Rateprice_offered_screen_table(count1:string): Locator {
+  //   return this.page.locator(`( //table[@aria-label=\"Data Table\"]//tr[@role=\"row\"]//td[@data-title=\"Int. Rate\"])[${count1}]`);
+  // }
   Int_Rateprice_offered_screen_table(count1:string): Locator {
-    return this.page.locator(`( //table[@aria-label=\"Data Table\"]//tr[@role=\"row\"]//td[@data-title=\"Int. Rate\"])[${count1}]`);
+    return this.page.locator(`(//tbody//td[@data-title='Int. Rate'])[${count1}]`);
   }
 
   Int_Rateprice_offered_table(count:string): Locator {
@@ -1913,8 +1920,11 @@ Last_Nameprice_offered_screen_table(count1:string): Locator {
     return this.page.locator("//div[@aria-label=\"Sort by Ref Sec Price\"]");
   }
 
-  Ref_Sec_Priceprice_offered_screen_table(count1:string): Locator {
-    return this.page.locator(`( //table[@aria-label=\"Data Table\"]//tr[@role=\"row\"]//td[@data-title=\"Ref Sec Price\"]/div)[${count1}]`);
+  // Ref_Sec_Priceprice_offered_screen_table(count1:string): Locator {
+  //   return this.page.locator(`( //table[@aria-label=\"Data Table\"]//tr[@role=\"row\"]//td[@data-title=\"Ref Sec Price\"]/div)[${count1}]`);
+  // }
+   Ref_Sec_Priceprice_offered_screen_table(count1:string): Locator {
+    return this.page.locator(`(//tr[@role=\"row\"]//td[@data-title=\"Ref Sec Price\"]/div)[${count1}]`);
   }
 
   Ref_Sec_Priceprice_offered_table(count:string): Locator {

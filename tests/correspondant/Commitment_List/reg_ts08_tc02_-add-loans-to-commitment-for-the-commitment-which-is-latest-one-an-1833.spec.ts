@@ -3,7 +3,8 @@ import { CommitmentListPage } from '../../../src/pages/correspondant/commitment-
 import { CorrespondentPortalPage } from '../../../src/pages/correspondant/correspondent-portal';
 import { PriceOfferedPage } from '../../../src/pages/correspondant/price-offered';
 import { SpinnerPage } from '../../../src/pages/correspondant/spinner';
-import { runPrereq_1795 } from '../../../src/helpers/prereqs/prereq-1795';
+// import { runPrereq_1795 } from '../../../src/helpers/prereqs/prereq-1795';
+import { runPrereq_1795 } from '@helpers/prereqs/Commitment_List-Pre-requites/prereq-1795';
 import { AddonHelpers } from '@helpers/AddonHelpers';
 import { Logger as log } from '@helpers/log-helper';
 import { APP_CONSTANTS as appconstants } from '../../../src/constants/app-constants';

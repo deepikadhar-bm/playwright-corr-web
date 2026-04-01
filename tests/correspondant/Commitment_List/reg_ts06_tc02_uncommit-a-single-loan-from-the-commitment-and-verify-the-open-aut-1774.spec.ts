@@ -4,11 +4,11 @@ import { CommitmentListPage } from '../../../src/pages/correspondant/commitment-
 import { CorrespondentPortalPage } from '../../../src/pages/correspondant/correspondent-portal';
 import { PriceOfferedPage } from '../../../src/pages/correspondant/price-offered';
 import { SpinnerPage } from '../../../src/pages/correspondant/spinner';
-import { runPrereq_1787 } from '../../../src/helpers/prereqs/prereq-1787';
+// import { runPrereq_1787 } from '../../../src/helpers/prereqs/prereq-1787';
+import { runPrereq_1787 } from '@helpers/prereqs/Commitment_List-Pre-requites/prereq-1787';
 import { AddonHelpers } from '@helpers/AddonHelpers';
 import { Logger as log } from '@helpers/log-helper';
 import { APP_CONSTANTS as appconstants } from '../../../src/constants/app-constants';
-import { ENV } from '@config/environments';
 
 
 const TC_ID = 'REG_TS06_TC02';

@@ -609,7 +609,7 @@ export class AddonHelpers {
   //   addMinutesToDatetime('10:30 AM', 'h:mm a', 1, 'h:mm a', 'Result') → '10:31 AM'
   //   addMinutesToDatetime('3/17/25 10:30 AM', 'M/d/yy h:mm a', 5, 'M/d/yy h:mm a', 'Result')
   // ==========================================================================
-  
+
   addMinutesToDatetime(
     inputDatetime: string, inputFormat: string, minutes: number,
     outputFormat: string, varName: string
@@ -731,38 +731,38 @@ export class AddonHelpers {
   // 36. Verify testdata 1 with testdata2
   // ==========================================================================
   verifyString(
-  testData: string,
-  condition: 'contains' | 'notContains' | 'equals' | 'notEquals',
-  testData1: string
-): void {
-  const METHOD = 'verifyString';
-  try {
-    // Guard: fail immediately if the expected value is empty or blank
-    // Prevents false positives — e.g. "anyString".includes("") is always true in JS
-    if (testData1 === null || testData1 === undefined || testData1.trim() === '') {
-      throw new Error(`Expected value is empty or blank. Received: "${testData1}"`);
+    testData: string,
+    condition: 'contains' | 'notContains' | 'equals' | 'notEquals',
+    testData1: string
+  ): void {
+    const METHOD = 'verifyString';
+    try {
+      // Guard: fail immediately if the expected value is empty or blank
+      // Prevents false positives — e.g. "anyString".includes("") is always true in JS
+      if (testData1 === null || testData1 === undefined || testData1.trim() === '') {
+        throw new Error(`Expected value is empty or blank. Received: "${testData1}"`);
+      }
+      if (testData === null || testData === undefined || testData.trim() === '') {
+        throw new Error(`Expected value is empty or blank. Received: "${testData}"`);
+      }
+
+      const conditions: Record<string, { result: boolean; pass: string; fail: string }> = {
+        contains: { result: testData.includes(testData1), pass: `"${testData}" contains "${testData1}"`, fail: `"${testData}" does not contain "${testData1}"` },
+        notContains: { result: !testData.includes(testData1), pass: `"${testData}" does not contain "${testData1}"`, fail: `"${testData}" unexpectedly contains "${testData1}"` },
+        equals: { result: testData === testData1, pass: `"${testData}" equals "${testData1}"`, fail: `"${testData}" does not equal "${testData1}"` },
+        notEquals: { result: testData !== testData1, pass: `"${testData}" does not equal "${testData1}"`, fail: `"${testData}" unexpectedly equals "${testData1}"` },
+      };
+
+      const check = conditions[condition];
+      if (!check) throw new Error(`Invalid condition "${condition}"`);
+      if (!check.result) throw new Error(check.fail);
+
+      log.pass(`[${METHOD}] ${check.pass}`);
+    } catch (e) {
+      log.fail(`[${METHOD}] verifyString | "${testData}" ${condition} "${testData1}" | Error: ${e instanceof Error ? e.message : String(e)}`);
+      throw (e instanceof Error ? e : new Error(String(e)));
     }
-     if (testData === null || testData === undefined || testData.trim() === '') {
-      throw new Error(`Expected value is empty or blank. Received: "${testData}"`);
-    }
-
-    const conditions: Record<string, { result: boolean; pass: string; fail: string }> = {
-      contains:    { result: testData.includes(testData1),  pass: `"${testData}" contains "${testData1}"`,              fail: `"${testData}" does not contain "${testData1}"` },
-      notContains: { result: !testData.includes(testData1), pass: `"${testData}" does not contain "${testData1}"`,      fail: `"${testData}" unexpectedly contains "${testData1}"` },
-      equals:      { result: testData === testData1,        pass: `"${testData}" equals "${testData1}"`,                fail: `"${testData}" does not equal "${testData1}"` },
-      notEquals:   { result: testData !== testData1,        pass: `"${testData}" does not equal "${testData1}"`,        fail: `"${testData}" unexpectedly equals "${testData1}"` },
-    };
-
-    const check = conditions[condition];
-    if (!check) throw new Error(`Invalid condition "${condition}"`);
-    if (!check.result) throw new Error(check.fail);
-
-    log.pass(`[${METHOD}] ${check.pass}`);
-  } catch (e) {
-    log.fail(`[${METHOD}] verifyString | "${testData}" ${condition} "${testData1}" | Error: ${e instanceof Error ? e.message : String(e)}`);
-    throw (e instanceof Error ? e : new Error(String(e)));
   }
-}
   // ==========================================================================
   // 37. Get character by index → store in vars
   // ==========================================================================
@@ -893,31 +893,31 @@ export class AddonHelpers {
  * Usage:
  *   Methods.verifyTestdataIgnoreCase(vars['HeaderUI'], 'contains', vars['HeaderExcel']);
  */
-verifyTestdataIgnoreCase(
-  textData1: string,
-  matchType: 'equals' | 'contains',
-  textData2: string
-): void {
-  const METHOD = 'verifyTestdataIgnoreCase';
-  const actual   = textData1.trim().toLowerCase();
-  const expected = textData2.trim().toLowerCase();
+  verifyTestdataIgnoreCase(
+    textData1: string,
+    matchType: 'equals' | 'contains',
+    textData2: string
+  ): void {
+    const METHOD = 'verifyTestdataIgnoreCase';
+    const actual = textData1.trim().toLowerCase();
+    const expected = textData2.trim().toLowerCase();
 
-  if (!expected) {
-    log.fail(`[${METHOD}] Expected value is empty or blank for comparison with "${textData1}" | Error: Empty expected value`);
-    throw new Error(`Empty expected value`);
+    if (!expected) {
+      log.fail(`[${METHOD}] Expected value is empty or blank for comparison with "${textData1}" | Error: Empty expected value`);
+      throw new Error(`Empty expected value`);
+    }
+
+    const isMatch = matchType === 'equals'
+      ? actual === expected
+      : actual.includes(expected);
+
+    if (isMatch) {
+      log.pass(`[${METHOD}] "${textData1}" ${matchType} "${textData2}" (case-insensitive)`);
+    } else {
+      log.fail(`[${METHOD}] "${textData1}" does not ${matchType} "${textData2}" (case-insensitive)`);
+      throw new Error(`Expected "${textData1}" to ${matchType} "${textData2}" (case-insensitive)`);
+    }
   }
-
-  const isMatch = matchType === 'equals'
-    ? actual === expected
-    : actual.includes(expected);
-
-  if (isMatch) {
-    log.pass(`[${METHOD}] "${textData1}" ${matchType} "${textData2}" (case-insensitive)`);
-  } else {
-    log.fail(`[${METHOD}] "${textData1}" does not ${matchType} "${textData2}" (case-insensitive)`);
-    throw new Error(`Expected "${textData1}" to ${matchType} "${textData2}" (case-insensitive)`);
-  }
-}
   //count the substrings
   countCharacter(text: string, character: string, varName: string): void {
     const METHOD = 'countCharacter';
@@ -1135,18 +1135,18 @@ verifyTestdataIgnoreCase(
  *   Methods.splitByWhiteSpace(vars['LastCommittedBid'], '2', 'LastCommittedBidPeriod');
  */
   splitByWhiteSpace(value: string, position: string, targetVar: string): void {
-  try {
-    const parts = String(value).split(' ');
-    const index = parseInt(position, 10);
-    const result = parts[index] !== undefined ? parts[index] : '';
-    this.vars[targetVar] = result;
-    log.info(`splitByWhiteSpace | Input: "${value}" | Position: ${position} | Result: "${result}" | StoredIn: ${targetVar}`);
-  } catch (e) {
-    log.error(`splitByWhiteSpace failed | Input: "${value}" | Position: ${position} | Error: ${e}`);
-    throw e;
+    try {
+      const parts = String(value).split(' ');
+      const index = parseInt(position, 10);
+      const result = parts[index] !== undefined ? parts[index] : '';
+      this.vars[targetVar] = result;
+      log.info(`splitByWhiteSpace | Input: "${value}" | Position: ${position} | Result: "${result}" | StoredIn: ${targetVar}`);
+    } catch (e) {
+      log.error(`splitByWhiteSpace failed | Input: "${value}" | Position: ${position} | Error: ${e}`);
+      throw e;
+    }
   }
-}
-// ─── Random Generators ─────────────────────────────────────────────────────
+  // ─── Random Generators ─────────────────────────────────────────────────────
 
   /**
    * Generates a random number with the specified number of digits
@@ -1190,212 +1190,226 @@ verifyTestdataIgnoreCase(
     log.info(`generateRandomString | Length: ${length} | Result: "${result}" | StoredIn: ${targetVar}`);
   }
 
-/**
- * Gets a CSS property value of an element and stores it into a target variable.
- *
- * @param locator    - Playwright Locator of the element
- * @param property   - CSS property name (e.g. 'color', 'background-color', 'font-size')
- * @param targetVar  - Variable name to store the result in vars
- *
- * Usage:
- *   await Methods.getCSSProperty(priceOfferedPage.Duplicate_Loantext_box_popup, 'color', 'ColorValueDuplicateLoan');
- *   log.info('ColorValueDuplicateLoan: ' + vars['ColorValueDuplicateLoan']);
- */
-async getCSSProperty(
-  locator: Locator,
-  property: string,
-  targetVar: string
-): Promise<void> {
-  const METHOD = 'getCSSProperty';
+  /**
+   * Gets a CSS property value of an element and stores it into a target variable.
+   *
+   * @param locator    - Playwright Locator of the element
+   * @param property   - CSS property name (e.g. 'color', 'background-color', 'font-size')
+   * @param targetVar  - Variable name to store the result in vars
+   *
+   * Usage:
+   *   await Methods.getCSSProperty(priceOfferedPage.Duplicate_Loantext_box_popup, 'color', 'ColorValueDuplicateLoan');
+   *   log.info('ColorValueDuplicateLoan: ' + vars['ColorValueDuplicateLoan']);
+   */
+  async getCSSProperty(
+    locator: Locator,
+    property: string,
+    targetVar: string
+  ): Promise<void> {
+    const METHOD = 'getCSSProperty';
 
-  if (!property || property.trim() === '') {
-    log.fail(`[${METHOD}] CSS property name is empty or blank | Error: Empty property`);
-    throw new Error(`Empty CSS property name`);
-  }
-
-  if (!targetVar || targetVar.trim() === '') {
-    log.fail(`[${METHOD}] Target variable name is empty or blank | Error: Empty targetVar`);
-    throw new Error(`Empty target variable name`);
-  }
-
-  const value: string = await locator.evaluate(
-    (el: HTMLElement, prop: string) => window.getComputedStyle(el).getPropertyValue(prop),
-    property
-  );
-
-  this.vars[targetVar] = value.trim();
-  log.pass(`[${METHOD}] CSS property "${property}" = "${this.vars[targetVar]}" stored in "${targetVar}"`);
-}
-/**
- * Calculates the time difference between two timestamps and stores the result in a target variable.
- *
- * @param timestamp1  - First timestamp string (e.g. vars['CurrentTime'])
- * @param timestamp2  - Second timestamp string (e.g. vars['CommitTime'])
- * @param unit        - Unit of result: 'HOURS' | 'MINUTES' | 'SECONDS' | 'HH:MM:SS' | 'HH:MM'
- * @param targetVar   - Variable name to store the result in vars
- *
- * Usage:
- *   Methods.calculateTimeDifference(vars['CurrentTime'], vars['CommitTime'], 'HOURS', 'TimeDiff');
- *   Methods.calculateTimeDifference(vars['CurrentTime'], vars['CommitTime'], 'MINUTES', 'TimeDiff');
- *   Methods.calculateTimeDifference(vars['CurrentTime'], vars['CommitTime'], 'HH:MM:SS', 'TimeDiff');
- *   Methods.calculateTimeDifference(vars['CurrentTime'], vars['CommitTime'], 'HH:MM', 'TimeDiff');
- */
-calculateTimeDifference(
-  timestamp1: string,
-  timestamp2: string,
-  unit: 'HOURS' | 'MINUTES' | 'SECONDS' | 'HH:MM:SS' | 'HH:MM',
-  targetVar: string
-): void {
-  const METHOD = 'calculateTimeDifference';
-
-  if (!timestamp1 || timestamp1.trim() === '') {
-    log.info(`[${METHOD}] timestamp1 is empty or blank`);
-    throw new Error(`Empty timestamp1`);
-  }
-
-  if (!timestamp2 || timestamp2.trim() === '') {
-    log.info(`[${METHOD}] timestamp2 is empty or blank`);
-    throw new Error(`Empty timestamp2`);
-  }
-
-  if (!targetVar || targetVar.trim() === '') {
-    log.info(`[${METHOD}] Target variable name is empty or blank`);
-    throw new Error(`Empty target variable name`);
-  }
-
-  const parseTime = (input: string): number => {
-    const fullDate = new Date(input);
-    if (!isNaN(fullDate.getTime())) return fullDate.getTime();
-
-    const match = input.trim().match(/^(\d{1,2}):(\d{2})\s?(AM|PM)$/i);
-    if (match) {
-      let hours = parseInt(match[1], 10);
-      const minutes = parseInt(match[2], 10);
-      const meridian = match[3].toUpperCase();
-
-      if (meridian === 'PM' && hours !== 12) hours += 12;
-      if (meridian === 'AM' && hours === 12) hours = 0;
-
-      const now = new Date();
-      now.setHours(hours, minutes, 0, 0);
-      return now.getTime();
+    if (!property || property.trim() === '') {
+      log.error(`[${METHOD}] CSS property name is empty or blank | Error: Empty property`);
+      throw new Error(`Empty CSS property name`);
     }
 
-    return NaN;
-  };
-
-  const date1 = parseTime(timestamp1);
-  const date2 = parseTime(timestamp2);
-
-  if (isNaN(date1)) {
-    log.info(`[${METHOD}] timestamp1 "${timestamp1}" is not a valid date`);
-    throw new Error(`Invalid timestamp1: "${timestamp1}"`);
-  }
-
-  if (isNaN(date2)) {
-    log.info(`[${METHOD}] timestamp2 "${timestamp2}" is not a valid date`);
-    throw new Error(`Invalid timestamp2: "${timestamp2}"`);
-  }
-
-  const diffMs = Math.abs(date1 - date2);
-  const diffSecs = Math.floor(diffMs / 1000);
-  const diffMins = Math.floor(diffMs / (1000 * 60));
-  const diffHrs = Math.floor(diffMs / (1000 * 60 * 60));
-
-  let result: string;
-
-  switch (unit) {
-    case 'HOURS':
-      result = String(diffHrs);
-      break;
-    case 'MINUTES':
-      result = String(diffMins);
-      break;
-    case 'SECONDS':
-      result = String(diffSecs);
-      break;
-    case 'HH:MM:SS': {
-      const hh = String(Math.floor(diffMs / (1000 * 60 * 60))).padStart(2, '0');
-      const mm = String(Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60))).padStart(2, '0');
-      const ss = String(Math.floor((diffMs % (1000 * 60)) / 1000)).padStart(2, '0');
-      result = `${hh}:${mm}:${ss}`;
-      break;
+    if (!targetVar || targetVar.trim() === '') {
+      log.error(`[${METHOD}] Target variable name is empty or blank | Error: Empty targetVar`);
+      throw new Error(`Empty target variable name`);
     }
-    case 'HH:MM': {
-      const hh = String(Math.floor(diffMs / (1000 * 60 * 60))).padStart(2, '0');
-      const mm = String(Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60))).padStart(2, '0');
-      result = `${hh}:${mm}`;
-      break;
+
+    const value: string = await locator.evaluate(
+      (el: HTMLElement, prop: string) => window.getComputedStyle(el).getPropertyValue(prop),
+      property
+    );
+
+    this.vars[targetVar] = value.trim();
+    log.info(`[${METHOD}] CSS property "${property}" = "${this.vars[targetVar]}" stored in "${targetVar}"`);
+  }
+  /**
+   * Calculates the time difference between two timestamps and stores the result in a target variable.
+   *
+   * @param timestamp1  - First timestamp string (e.g. vars['CurrentTime'])
+   * @param timestamp2  - Second timestamp string (e.g. vars['CommitTime'])
+   * @param unit        - Unit of result: 'HOURS' | 'MINUTES' | 'SECONDS' | 'HH:MM:SS' | 'HH:MM'
+   * @param targetVar   - Variable name to store the result in vars
+   *
+   * Usage:
+   *   Methods.calculateTimeDifference(vars['CurrentTime'], vars['CommitTime'], 'HOURS', 'TimeDiff');
+   *   Methods.calculateTimeDifference(vars['CurrentTime'], vars['CommitTime'], 'MINUTES', 'TimeDiff');
+   *   Methods.calculateTimeDifference(vars['CurrentTime'], vars['CommitTime'], 'HH:MM:SS', 'TimeDiff');
+   *   Methods.calculateTimeDifference(vars['CurrentTime'], vars['CommitTime'], 'HH:MM', 'TimeDiff');
+   */
+  calculateTimeDifference(
+    timestamp1: string,
+    timestamp2: string,
+    unit: 'HOURS' | 'MINUTES' | 'SECONDS' | 'HH:MM:SS' | 'HH:MM',
+    targetVar: string
+  ): void {
+    const METHOD = 'calculateTimeDifference';
+
+    if (!timestamp1 || timestamp1.trim() === '') {
+      log.info(`[${METHOD}] timestamp1 is empty or blank`);
+      throw new Error(`Empty timestamp1`);
     }
-    default:
-      log.info(`[${METHOD}] Invalid unit "${unit}"`);
-      throw new Error(`Invalid unit: "${unit}"`);
+
+    if (!timestamp2 || timestamp2.trim() === '') {
+      log.info(`[${METHOD}] timestamp2 is empty or blank`);
+      throw new Error(`Empty timestamp2`);
+    }
+
+    if (!targetVar || targetVar.trim() === '') {
+      log.info(`[${METHOD}] Target variable name is empty or blank`);
+      throw new Error(`Empty target variable name`);
+    }
+
+    const parseTime = (input: string): number => {
+      const fullDate = new Date(input);
+      if (!isNaN(fullDate.getTime())) return fullDate.getTime();
+
+      const match = input.trim().match(/^(\d{1,2}):(\d{2})\s?(AM|PM)$/i);
+      if (match) {
+        let hours = parseInt(match[1], 10);
+        const minutes = parseInt(match[2], 10);
+        const meridian = match[3].toUpperCase();
+
+        if (meridian === 'PM' && hours !== 12) hours += 12;
+        if (meridian === 'AM' && hours === 12) hours = 0;
+
+        const now = new Date();
+        now.setHours(hours, minutes, 0, 0);
+        return now.getTime();
+      }
+
+      return NaN;
+    };
+
+    const date1 = parseTime(timestamp1);
+    const date2 = parseTime(timestamp2);
+
+    if (isNaN(date1)) {
+      log.info(`[${METHOD}] timestamp1 "${timestamp1}" is not a valid date`);
+      throw new Error(`Invalid timestamp1: "${timestamp1}"`);
+    }
+
+    if (isNaN(date2)) {
+      log.info(`[${METHOD}] timestamp2 "${timestamp2}" is not a valid date`);
+      throw new Error(`Invalid timestamp2: "${timestamp2}"`);
+    }
+
+    const diffMs = Math.abs(date1 - date2);
+    const diffSecs = Math.floor(diffMs / 1000);
+    const diffMins = Math.floor(diffMs / (1000 * 60));
+    const diffHrs = Math.floor(diffMs / (1000 * 60 * 60));
+
+    let result: string;
+
+    switch (unit) {
+      case 'HOURS':
+        result = String(diffHrs);
+        break;
+      case 'MINUTES':
+        result = String(diffMins);
+        break;
+      case 'SECONDS':
+        result = String(diffSecs);
+        break;
+      case 'HH:MM:SS': {
+        const hh = String(Math.floor(diffMs / (1000 * 60 * 60))).padStart(2, '0');
+        const mm = String(Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60))).padStart(2, '0');
+        const ss = String(Math.floor((diffMs % (1000 * 60)) / 1000)).padStart(2, '0');
+        result = `${hh}:${mm}:${ss}`;
+        break;
+      }
+      case 'HH:MM': {
+        const hh = String(Math.floor(diffMs / (1000 * 60 * 60))).padStart(2, '0');
+        const mm = String(Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60))).padStart(2, '0');
+        result = `${hh}:${mm}`;
+        break;
+      }
+      default:
+        log.info(`[${METHOD}] Invalid unit "${unit}"`);
+        throw new Error(`Invalid unit: "${unit}"`);
+    }
+
+    this.vars[targetVar] = result;
+    log.info(`[${METHOD}] Time difference between "${timestamp1}" and "${timestamp2}" in ${unit} = "${result}" stored in "${targetVar}"`);
+  }
+  /**
+   * Generates a random integer between min and max (inclusive) and stores in targetVar.
+   *
+   * @param min        - Minimum value (inclusive)
+   * @param max        - Maximum value (inclusive)
+   * @param targetVar  - Variable name to store the result in vars
+   *
+   * Usage:
+   *   Methods.generateRandomInteger('3', '6', 'RandomInteger');
+   *   // vars['RandomInteger'] could be '3', '4', '5', or '6'
+   *
+   *   Methods.generateRandomInteger('1', '100', 'RandomNumber');
+   *   // vars['RandomNumber'] could be any integer from 1 to 100
+   */
+  generateRandomInteger(
+    min: string | number,
+    max: string | number,
+    targetVar: string
+  ): void {
+    const METHOD = 'generateRandomInteger';
+
+    const minVal = typeof min === 'string' ? parseInt(min, 10) : min;
+    const maxVal = typeof max === 'string' ? parseInt(max, 10) : max;
+
+    if (isNaN(minVal)) {
+      log.info(`[${METHOD}] Min value "${min}" is not a valid integer`);
+      throw new Error(`Invalid min value: "${min}"`);
+    }
+
+    if (isNaN(maxVal)) {
+      log.info(`[${METHOD}] Max value "${max}" is not a valid integer`);
+      throw new Error(`Invalid max value: "${max}"`);
+    }
+
+    if (minVal > maxVal) {
+      log.info(`[${METHOD}] Min (${minVal}) must be less than or equal to Max (${maxVal})`);
+      throw new Error(`Min (${minVal}) is greater than Max (${maxVal})`);
+    }
+
+    if (!targetVar || targetVar.trim() === '') {
+      log.info(`[${METHOD}] Target variable name is empty or blank`);
+      throw new Error(`Empty target variable name`);
+    }
+
+    const result = Math.floor(Math.random() * (maxVal - minVal + 1)) + minVal;
+    this.vars[targetVar] = String(result);
+
+    log.info(`[${METHOD}] Random integer between ${minVal} and ${maxVal} = "${result}" stored in "${targetVar}"`);
   }
 
-  this.vars[targetVar] = result;
-  log.info(`[${METHOD}] Time difference between "${timestamp1}" and "${timestamp2}" in ${unit} = "${result}" stored in "${targetVar}"`);
-}
-/**
- * Generates a random integer between min and max (inclusive) and stores in targetVar.
- *
- * @param min        - Minimum value (inclusive)
- * @param max        - Maximum value (inclusive)
- * @param targetVar  - Variable name to store the result in vars
- *
- * Usage:
- *   Methods.generateRandomInteger('3', '6', 'RandomInteger');
- *   // vars['RandomInteger'] could be '3', '4', '5', or '6'
- *
- *   Methods.generateRandomInteger('1', '100', 'RandomNumber');
- *   // vars['RandomNumber'] could be any integer from 1 to 100
- */
-generateRandomInteger(
-  min: string | number,
-  max: string | number,
-  targetVar: string
-): void {
-  const METHOD = 'generateRandomInteger';
-
-  const minVal = typeof min === 'string' ? parseInt(min, 10) : min;
-  const maxVal = typeof max === 'string' ? parseInt(max, 10) : max;
-
-  if (isNaN(minVal)) {
-    log.info(`[${METHOD}] Min value "${min}" is not a valid integer`);
-    throw new Error(`Invalid min value: "${min}"`);
+  /**
+   * Replaces a character/special character/string with another character/special character/string
+   * @param inputVar - The input variable value to perform replacement on
+   * @param findChar - The character/string to find and replace
+   * @param replaceChar - The character/string to replace with
+   * @param storeVar - The variable name to store the result in
+   */
+  replaceExistingCharacter(inputVar: string, findChar: string, replaceChar: string, storeVar: string): void {
+    log.info(`Replacing '${findChar}' with '${replaceChar}' in: ${inputVar}`);
+    const result = String(inputVar).split(findChar).join(replaceChar);
+    this.vars[storeVar] = result;
+    log.info(`Stored result in '${storeVar}': ${result}`);
   }
-
-  if (isNaN(maxVal)) {
-    log.info(`[${METHOD}] Max value "${max}" is not a valid integer`);
-    throw new Error(`Invalid max value: "${max}"`);
+  async verifyTextMatchesPattern(
+    value: string,
+    pattern: string
+  ): Promise<void> {
+    const METHOD = 'verifyTextMatchesPattern';
+    try {
+      if (!value || value.trim() === '') throw new Error(`Value is empty or undefined`);
+      const regex = new RegExp(pattern);
+      const trimmed = value.trim();
+      const matched = regex.test(trimmed);
+      if (!matched) throw new Error(`Value "${trimmed}" does NOT match pattern "${pattern}"`);
+      log.pass(`[${METHOD}] Value "${trimmed}" matches pattern "${pattern}"`);
+    } catch (e) { log.fail(`[${METHOD}] Pattern [${pattern}] | Error: ${e instanceof Error ? e.message : String(e)}`); throw (e instanceof Error ? e : new Error(String(e))); }
   }
-
-  if (minVal > maxVal) {
-    log.info(`[${METHOD}] Min (${minVal}) must be less than or equal to Max (${maxVal})`);
-    throw new Error(`Min (${minVal}) is greater than Max (${maxVal})`);
-  }
-
-  if (!targetVar || targetVar.trim() === '') {
-    log.info(`[${METHOD}] Target variable name is empty or blank`);
-    throw new Error(`Empty target variable name`);
-  }
-
-  const result = Math.floor(Math.random() * (maxVal - minVal + 1)) + minVal;
-  this.vars[targetVar] = String(result);
-
-  log.info(`[${METHOD}] Random integer between ${minVal} and ${maxVal} = "${result}" stored in "${targetVar}"`);
-}
-
-/**
- * Replaces a character/special character/string with another character/special character/string
- * @param inputVar - The input variable value to perform replacement on
- * @param findChar - The character/string to find and replace
- * @param replaceChar - The character/string to replace with
- * @param storeVar - The variable name to store the result in
- */
-replaceExistingCharacter(inputVar: string, findChar: string, replaceChar: string, storeVar: string): void {
-  log.info(`Replacing '${findChar}' with '${replaceChar}' in: ${inputVar}`);
-  const result = String(inputVar).split(findChar).join(replaceChar);
-  this.vars[storeVar] = result;
-  log.info(`Stored result in '${storeVar}': ${result}`);
-}
 }
