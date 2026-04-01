@@ -51,8 +51,8 @@ export class BidRequestsPage {
     return this.page.locator("//table[@aria-label=\"Data Table\"]//td[@data-title=\"#Loans / #Errors\"]//div");
   }
 
-  get LoansErrorStatus_From_List(): Locator {
-    return this.page.locator("//button[contains(text(),\"$|RequestIDDetails|\")]/../..//td[@data-title=\"#Loans / #Errors\"]");
+  LoansErrorStatus_From_List(RequestIDDetails:String): Locator {
+    return this.page.locator(`//button[contains(text(),\"${RequestIDDetails}\")]/../..//td[@data-title=\"#Loans / #Errors\"]`);
   }
 
   get MapNameFromUI(): Locator {
