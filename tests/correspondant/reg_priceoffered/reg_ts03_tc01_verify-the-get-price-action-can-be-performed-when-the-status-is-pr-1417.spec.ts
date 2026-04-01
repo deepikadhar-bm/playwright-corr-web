@@ -8,8 +8,6 @@ import { AddonHelpers } from '../../../src/helpers/AddonHelpers';
 import { APP_CONSTANTS as appconstants } from '../../../src/constants/app-constants';
 import { Logger as log } from '../../../src/helpers/log-helper';
 import { testDataManager } from 'testdata/TestDataManager';
-import { ENV } from '@config/environments';
-import * as stepGroups from '../../../src/helpers/step-groups';
 
 
 const TC_ID = 'REG_TS03_TC01';
@@ -25,7 +23,7 @@ test.describe('REG_PriceOffered', () => {
 
   test.beforeEach(async ({ page }) => {
     vars = {};
-    // await runPrereq_1394(page, vars);
+    await runPrereq_1394(page, vars);
     bidRequestsPage = new BidRequestsPage(page);
     correspondentPortalPage = new CorrespondentPortalPage(page);
     priceOfferedPage = new PriceOfferedPage(page);
@@ -37,11 +35,6 @@ test.describe('REG_PriceOffered', () => {
 
   test(`${TC_ID} - ${TC_TITLE}`, async ({ page }) => {
     log.tcStart(TC_ID, TC_TITLE);
-    vars = {};
-    const credentials = ENV.getCredentials('internal');
-    vars['Username'] = credentials.username;
-    vars['Password'] = credentials.password;
-    await stepGroups.stepGroup_Login_to_CORR_Portal(page, vars);//1
     try {
 
       log.step('Navigate to Price Offered and search by Bid Request ID');
@@ -51,7 +44,6 @@ test.describe('REG_PriceOffered', () => {
         await spinnerPage.Spinner.waitFor({ state: 'hidden' });
         await expect(priceOfferedPage.Price_Offered_Text).toBeVisible();
         await expect(bidRequestsPage.Search_by_Bid_Request_ID_Field).toBeVisible();
-        vars["RequestIDDetails"] = "872W28B0BE69";
         await bidRequestsPage.Search_by_Bid_Request_ID_Field.fill(vars["RequestIDDetails"]);
         await page.keyboard.press('Enter');
         await spinnerPage.Spinner.waitFor({ state: 'hidden' });
@@ -82,7 +74,8 @@ test.describe('REG_PriceOffered', () => {
         log.info('TotalRowCountInPriceOffered: ' + vars['TotalRowCountInPriceOffered']);
 
         while (parseFloat(vars["count1"]) <= parseFloat(vars["TotalRowCountInPriceOffered"])) {
-          log.info('verification Row: ' + vars['count1']);
+          log.info('Verifying Row: ' + vars['count1']);
+
           vars["IntRateValue"] = await priceOfferedPage.Int_Rateprice_offered_screen_table(vars['count1']).textContent() || '';
           Methods.trimWhitespace(vars["IntRateValue"], 'IntRateValue');
           await Methods.verifyTextMatchesPattern(vars["IntRateValue"], '^\\d+\\.\\d{3}\\%$');
@@ -145,6 +138,7 @@ test.describe('REG_PriceOffered', () => {
         log.info('TotalRowCountInPriceOffered: ' + vars['TotalRowCountInPriceOffered']);
 
         while (parseFloat(vars["count1"]) <= parseFloat(vars["TotalRowCountInPriceOffered"])) {
+          log.info('Verifying Row: ' + vars['count1']);
 
           vars["IntRateValue"] = await priceOfferedPage.Int_Rateprice_offered_screen_table(vars['count1']).textContent() || '';
           Methods.trimWhitespace(vars["IntRateValue"], 'IntRateValue');
