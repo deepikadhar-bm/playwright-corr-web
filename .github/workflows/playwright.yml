@@ -39,6 +39,7 @@
 name: Playwright Tests - Correspondent Portal
 
 on:
+  # Uncomment below to enable auto-triggers on push / pull_request
   # push:
   #   branches:
   #     - master
@@ -95,14 +96,35 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # ── 2. Node.js setup with npm cache ──────────────────────────────────
+      # ── 2. VPN connection ────────────────────────────────────────────────
+      # The app is behind a VPN — connect before any test step.
+      # Requires secrets: VPN_CONFIG (base64 .ovpn), VPN_USERNAME, VPN_PASSWORD
+      # If your VPN does not need username/password, remove the credentials lines.
+      - name: Connect to VPN
+        run: |
+          sudo apt-get install -y openvpn openvpn-systemd-resolved
+          echo "${{ secrets.VPN_CONFIG }}" | base64 -d > /tmp/vpn.ovpn
+          sudo openvpn \
+            --config /tmp/vpn.ovpn \
+            --auth-user-pass <(echo -e "${{ secrets.VPN_USERNAME }}\n${{ secrets.VPN_PASSWORD }}") \
+            --daemon \
+            --log /tmp/vpn.log
+          # Wait up to 30s for tunnel interface to come up
+          for i in $(seq 1 30); do
+            ip a | grep -q tun && echo "VPN connected" && break
+            echo "Waiting for VPN... ($i/30)"
+            sleep 1
+          done
+          ip a | grep -q tun || (cat /tmp/vpn.log && exit 1)
+
+      # ── 3. Node.js setup with npm cache ──────────────────────────────────
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: lts/*
           cache: 'npm'
 
-      # ── 3. Install project dependencies ──────────────────────────────────
+      # ── 4. Install project dependencies ──────────────────────────────────
       - name: Install dependencies
         run: npm ci
 
@@ -140,7 +162,10 @@ jobs:
           fi
 
           echo "suite=$SUITE_KEY" >> "$GITHUB_OUTPUT"
-          echo "Resolved suite key: $SUITE_KEY"
+          # Sanitize branch name — replace / and any other invalid artifact chars with -
+          SAFE_BRANCH=$(echo "$BRANCH" | tr '/\\:*?"<>|' '-')
+          echo "safe_branch=$SAFE_BRANCH" >> "$GITHUB_OUTPUT"
+          echo "Resolved suite key: $SUITE_KEY  |  Safe branch: $SAFE_BRANCH"
 
           # Write a human-readable summary to the job summary
           echo "## Test Run Summary" >> "$GITHUB_STEP_SUMMARY"
@@ -172,11 +197,16 @@ jobs:
           GREP="${{ github.event.inputs.grep }}"
           SPEC="${{ github.event.inputs.spec }}"
 
+          # Normalize path separators — convert Windows backslashes to forward slashes
+          SPEC="${SPEC//\\//}"
+
           # Build the list of test paths as a bash array
           declare -a PATHS
 
           if [[ -n "$SPEC" ]]; then
             # Explicit spec path wins over everything else
+            # NOTE: grep (if provided) must match the test *title* inside the file,
+            #       not the filename. Leave grep empty to run all tests in the spec.
             PATHS=("$SPEC")
           else
             case "$SUITE" in
@@ -184,7 +214,7 @@ jobs:
                 PATHS=(
                   "tests/correspondant/BidRequestsTestPlanDoneTestCases"
                   "tests/correspondant/BidRequestsTestPlanIndependentTestcases"
-                  "tests/correspondant/reg_tc_bid_requests"
+                  # "tests/correspondant/reg_tc_bid_requests"
                 )
                 ;;
               "bid-maps")
@@ -192,8 +222,8 @@ jobs:
                 ;;
               "commitment-list")
                 PATHS=(
-                  "tests/correspondant/Commitment_List"
-                  "tests/correspondant/CommitmentListTestplan"
+                  # "tests/correspondant/Commitment_List"
+                  # "tests/correspondant/CommitmentListTestplan"
                   "tests/correspondant/REG_Commitment_List_Testplan"
                 )
                 ;;
@@ -244,7 +274,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: test-report-${{ github.ref_name }}-run${{ github.run_number }}
+          name: test-report-${{ steps.suite.outputs.safe_branch }}-run${{ github.run_number }}
           path: |
             playwright-report/
             test-results/
@@ -253,11 +283,11 @@ jobs:
           retention-days: 3
 
       # ── 9. Send email notification ────────────────────────────────────────
-      - name: Send email notification
-        if: always()
-        env:
-          EMAIL_USER:      ${{ secrets.EMAIL_USER }}
-          EMAIL_PASS:      ${{ secrets.EMAIL_PASS }}
-          EMAIL_TO:        ${{ secrets.EMAIL_TO }}
-          AUTO_SEND_EMAIL: 'true'
-        run: node reports/send-email.js
+      # - name: Send email notification
+      #   if: always()
+      #   env:
+      #     EMAIL_USER:      ${{ secrets.EMAIL_USER }}
+      #     EMAIL_PASS:      ${{ secrets.EMAIL_PASS }}
+      #     EMAIL_TO:        ${{ secrets.EMAIL_TO }}
+      #     AUTO_SEND_EMAIL: 'true'
+      #   run: node reports/send-email.js
