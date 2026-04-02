@@ -6,7 +6,7 @@ import * as stepGroups from '../../../src/helpers/step-groups';
 import { BidRequestPage } from '../../../src/pages/correspondant/bid-request';
 import { BidRequestsPage } from '../../../src/pages/correspondant/bid-requests';
 import { SpinnerPage } from '../../../src/pages/correspondant/spinner';
-import { runPrereq_1330 } from '../../../src/helpers/prereqs/PreReqBidRequests/prereq-1330';
+import { runPrereq_1330 } from '../../../src/helpers/prereqs/BidRequests/prereq-1330';
 import { Logger as log } from '../../../src/helpers/log-helper';
 const TC_ID    = 'REG_TS35_TC02';
 const TC_TITLE = 'Verify the clear search functionality for Search Through Id Input';
