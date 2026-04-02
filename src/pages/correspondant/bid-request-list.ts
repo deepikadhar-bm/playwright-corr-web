@@ -55,8 +55,8 @@ export class BidRequestListPage {
     return this.page.locator(`//button[contains(text(),\"${RequestIDDetails}\")]/../..//td[@data-title=\"Requested\"]`);
   }
 
-  get Required_Company_Checkbox_filter(): Locator {
-    return this.page.locator("//input[@type=\"checkbox\" and contains(@aria-label,\"@|Company Name|\")]");
+  Required_Company_Checkbox_filter(CompanyName: string): Locator {
+    return this.page.locator(`//input[@type="checkbox" and contains(@aria-label,"${CompanyName}")]`);
   }
 
   Respective_Bid_Cancel_Button_list(RequestIDDetails: string): Locator {

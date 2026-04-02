@@ -3010,7 +3010,7 @@ export async function stepGroup_Uploading_Bid_Request(page: import('@playwright/
   await CorrPortalElem.Bid_Mapping_ID_Dropdown_1.click();
   //await expect(CorrPortalElem.Bid_Mapping_ID_Dropdown).toContainText([vars["BidMappingID"]]);
   await expect(CorrPortalElem.Bid_Request_Date).toBeEnabled();
-  await CorrPortalElem.Pricing_Return_Time.click();
+  await CorrPortalElem.Pricing_Return_Time.click({force: true});
   // [DISABLED] Scroll down to the element Enabled_PricingReturnTime into view
   // await CorrPortalElem.Enabled_PricingReturnTime.scrollIntoViewIfNeeded();
   // [DISABLED] Verify that the element Enabled_PricingReturnTime is present and With Scrollable TRUE
