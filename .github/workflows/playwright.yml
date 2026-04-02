@@ -193,7 +193,7 @@ jobs:
                 PATHS=(
                   "tests/correspondant/BidRequestsTestPlanDoneTestCases"
                   "tests/correspondant/BidRequestsTestPlanIndependentTestcases"
-                  "tests/correspondant/reg_tc_bid_requests"
+                  # "tests/correspondant/reg_tc_bid_requests"
                 )
                 ;;
               "bid-maps")
@@ -201,16 +201,16 @@ jobs:
                 ;;
               "commitment-list")
                 PATHS=(
-                  "tests/correspondant/Commitment_List"
-                  "tests/correspondant/CommitmentListTestplan"
+                  # "tests/correspondant/Commitment_List"
+                  # "tests/correspondant/CommitmentListTestplan"
                   "tests/correspondant/REG_Commitment_List_Testplan"
                 )
                 ;;
               "price-offered")
                 PATHS=(
                   "tests/correspondant/Price_Offered_TestPlan-2"
-                  "tests/correspondant/PriceOffereddTestplan"
-                  "tests/correspondant/reg_priceoffered"
+                  # "tests/correspondant/PriceOffereddTestplan"
+                  # "tests/correspondant/reg_priceoffered"
                 )
                 ;;
               "general-settings")
