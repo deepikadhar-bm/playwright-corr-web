@@ -39,20 +39,20 @@
 name: Playwright Tests - Correspondent Portal
 
 on:
-  push:
-    branches:
-      - master
-      - main
-      - 'feature/**'
-      - 'fix/**'
-      - 'release/**'        # release branches
-      - 'hotfix/**'         # hotfix branches
-      - 'dev'               # shared dev branch
-      - 'deepika/**'        # personal/private branches — replace with your GitHub username
-  pull_request:
-    branches:
-      - master
-      - main
+  # push:
+  #   branches:
+  #     - master
+  #     - main
+  #     - 'feature/**'
+  #     - 'fix/**'
+  #     - 'release/**'        # release branches
+  #     - 'hotfix/**'         # hotfix branches
+  #     - 'dev'               # shared dev branch
+  #     - 'deepika/**'        # personal/private branches — replace with your GitHub username
+  # pull_request:
+  #   branches:
+  #     - master
+  #     - main
   workflow_dispatch:
     inputs:
       test_suite:
