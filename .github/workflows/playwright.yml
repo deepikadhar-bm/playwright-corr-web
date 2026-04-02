@@ -176,11 +176,16 @@ jobs:
           GREP="${{ github.event.inputs.grep }}"
           SPEC="${{ github.event.inputs.spec }}"
 
+          # Normalize path separators — convert Windows backslashes to forward slashes
+          SPEC="${SPEC//\\//}"
+
           # Build the list of test paths as a bash array
           declare -a PATHS
 
           if [[ -n "$SPEC" ]]; then
             # Explicit spec path wins over everything else
+            # NOTE: grep (if provided) must match the test *title* inside the file,
+            #       not the filename. Leave grep empty to run all tests in the spec.
             PATHS=("$SPEC")
           else
             case "$SUITE" in
