@@ -9,7 +9,7 @@ import { ChaseFieldNamePage } from '../../../src/pages/correspondant/chase-field
 import { CorrespondentPortalPage } from '../../../src/pages/correspondant/correspondent-portal';
 import { SpinnerPage } from '../../../src/pages/correspondant/spinner';
 import { UploadNewBidRequestButtonPage } from '../../../src/pages/correspondant/upload-new-bid-request-button';
-import { runPrereq_896 } from '../../../src/helpers/prereqs/PreReqBidRequests/prereq-896';
+import { runPrereq_896 } from '../../../src/helpers/prereqs/BidRequests/prereq-896';
 import { ENV } from '@config/environments';
 import { Logger as log } from '../../../src/helpers/log-helper';
 import { CorrPortalPage } from '@pages/correspondant/CorrPortalPage';
