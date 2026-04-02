@@ -325,8 +325,8 @@ export class PriceOfferedPage {
     return this.page.locator(`//td[@data-title=\"Execution Type\"]//div[not(contains(text(),\"${ExecutionTypePriceOfferedPage}\"))]//ancestor::tr//td[@data-title=\"Bid Req. ID\"]`);
   }
 
-  get BidRequesIdPartially_or_Committed(): Locator {
-    return this.page.locator("//a[contains(text(),\"$|BidRequestID|\")]");
+   BidRequesIdPartially_or_Committed(BidRequestID:string): Locator {
+    return this.page.locator(`//a[contains(text(),\"${BidRequestID}\")]`);
   }
 
   get BidRequest_IDPriceOffered(): Locator {
@@ -481,8 +481,8 @@ export class PriceOfferedPage {
     return this.page.locator("(//table[@aria-label=\"Data Table\"]//tr[@role=\"row\"]//input[@type=\"checkbox\"])[position()>=3 and position()<=last()]");
   }
 
-  get Checked_Checkbox_Count_From_Second_Checkbox2price_offered_screen(): Locator {
-    return this.page.locator("((//table[@aria-label=\"Data Table\"]//tr[@role=\"row\"]//input[@type=\"checkbox\"])[position()>=3 and position()<=last()])[$|count1|]");
+  Checked_Checkbox_Count_From_Second_Checkbox2price_offered_screen(count1: string): Locator {
+    return this.page.locator(`((//table[@aria-label=\"Data Table\"]//tr[@role=\"row\"]//input[@type=\"checkbox\"])[position()>=3 and position()<=last()])[${count1}]`);
   }
 
   get Checked_Company(): Locator {

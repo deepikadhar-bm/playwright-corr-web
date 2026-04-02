@@ -1,20 +1,24 @@
-// [PREREQ-APPLIED]
-// [POM-APPLIED]
 import { test, expect } from '@playwright/test';
-import path from 'path';
-import * as stepGroups from '../../../src/helpers/step-groups';
 import { BidRequestsPage } from '../../../src/pages/correspondant/bid-requests';
 import { CorrespondentPortalPage } from '../../../src/pages/correspondant/correspondent-portal';
 import { GeneralSettingPage } from '../../../src/pages/correspondant/general-setting';
 import { SpinnerPage } from '../../../src/pages/correspondant/spinner';
 import { runPrereq_1421 } from '../../../src/helpers/prereqs/prereq-1421';
+import { AddonHelpers } from '../../../src/helpers/AddonHelpers';
+import { Logger as log } from '../../../src/helpers/log-helper';
+import { APP_CONSTANTS as appconstants } from '../../../src/constants/app-constants';
 
-test.describe('Unassigned', () => {
+
+const TC_ID = 'REG_TS04_TC02';
+const TC_TITLE = 'Verify that once we update the timer value then the same should be reflected here upon click on get price button';
+
+test.describe('REG_PriceOffered', () => {
   let vars: Record<string, string> = {};
   let bidRequestsPage: BidRequestsPage;
   let correspondentPortalPage: CorrespondentPortalPage;
   let generalSettingPage: GeneralSettingPage;
   let spinnerPage: SpinnerPage;
+  let Methods: AddonHelpers;
 
   test.beforeEach(async ({ page }) => {
     vars = {};
@@ -23,53 +27,141 @@ test.describe('Unassigned', () => {
     correspondentPortalPage = new CorrespondentPortalPage(page);
     generalSettingPage = new GeneralSettingPage(page);
     spinnerPage = new SpinnerPage(page);
+    Methods = new AddonHelpers(page, vars);
   });
 
-  test('REG_TS04_TC02_Verify that once we update the timer value then the same should be reflected here upon click on get price button', async ({ page }) => {
+  test(`${TC_ID} - ${TC_TITLE}`, async ({ page }) => {
+    log.tcStart(TC_ID, TC_TITLE);
+    try {
 
-    await correspondentPortalPage.Administration_Menu.click();
-    await correspondentPortalPage.GeneralSettings_Menu.click();
-    await generalSettingPage.Commitment_Timer_General_Settings.click();
-    await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-    vars["MinutesSettings"] = await correspondentPortalPage.Internal_User_Minutes_Input.inputValue() || '';
-    vars["NewMinToEnter"] = String(Math.floor(Math.random() * (4 - 1 + 1)) + 1);
-    while (String(vars["NewMinToEnter"]) === String(vars["MinutesSettings"])) {
-      vars["NewMinToEnter"] = String(Math.floor(Math.random() * (4 - 1 + 1)) + 1);
+      log.step('Navigate to General Settings and capture current Commitment Timer minutes');
+      try {
+        await correspondentPortalPage.Administration_Menu.click();
+        await correspondentPortalPage.GeneralSettings_Menu.click();
+        await generalSettingPage.Commitment_Timer_General_Settings.click();
+        await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+        vars["MinutesSettings"] = await correspondentPortalPage.Internal_User_Minutes_Input.inputValue() || '';
+        Methods.trimtestdata(vars["MinutesSettings"], 'MinutesSettings');
+        log.info('MinutesSettings (current): ' + vars['MinutesSettings']);
+        log.stepPass('Current Commitment Timer minutes captured from General Settings successfully');
+      } catch (e) {
+        log.stepFail(page, 'Failed to capture current Commitment Timer minutes from General Settings');
+        throw e;
+      }
+
+      log.step('Generate a new unique random timer value different from the current setting');
+      try {
+        Methods.generateRandomInteger('1', '4', 'NewMinToEnter');
+        while (vars["NewMinToEnter"] === vars["MinutesSettings"]) {
+          Methods.generateRandomInteger('1', '4', 'NewMinToEnter');
+        }
+        log.info('NewMinToEnter: ' + vars['NewMinToEnter']);
+        log.stepPass('New unique random timer value generated successfully');
+      } catch (e) {
+        log.stepFail(page, 'Failed to generate a new unique random timer value');
+        throw e;
+      }
+
+      log.step('Update Commitment Timer with new value and save');
+      try {
+         await correspondentPortalPage.Internal_User_Minutes_Input.click();
+        await correspondentPortalPage.Internal_User_Minutes_Input.clear();
+        await correspondentPortalPage.Internal_User_Minutes_Input.type(vars["NewMinToEnter"]);
+        vars["MinutesSettings"] = await correspondentPortalPage.Internal_User_Minutes_Input.inputValue() || '';
+        Methods.trimtestdata(vars["MinutesSettings"], 'MinutesSettings');
+        log.info('MinutesSettings (updated): ' + vars['MinutesSettings']);
+        await expect(correspondentPortalPage.Save_Changes_Button).toBeEnabled();
+        await correspondentPortalPage.Save_Changes_Button.click();
+        await page.waitForTimeout(2000);
+        Methods.performArithmetic(vars["MinutesSettings"], "SUBTRACTION", "1", "startMin", 0);
+        log.info('startMin: ' + vars['startMin']);
+        log.stepPass('Commitment Timer updated and saved successfully');
+      } catch (e) {
+        log.stepFail(page, 'Failed to update or save Commitment Timer value');
+        throw e;
+      }
+
+      log.step('Navigate to Price Offered and search by Bid Request ID');
+      try {
+        await correspondentPortalPage.Commitments_Side_Menu.click();
+        await correspondentPortalPage.Price_Offered_List_Dropdown.click();
+        await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+        await bidRequestsPage.Search_by_Bid_Request_ID_Field.fill(vars["RequestIDDetails"]);
+        await page.keyboard.press('Enter');
+        await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+        await correspondentPortalPage.First_Bid_Request_ID.click();
+        await page.waitForTimeout(2000);
+        log.stepPass('Navigated to Price Offered and Bid Request ID found successfully');
+      } catch (e) {
+        log.stepFail(page, 'Failed to navigate to Price Offered or search by Bid Request ID');
+        throw e;
+      }
+
+      log.step('Trigger Get Price action and capture Remaining Time');
+      try {
+        await correspondentPortalPage.Get_Price_Button.click();
+        await correspondentPortalPage.Remaining_Time_Price_Offered.waitFor({ state: 'visible' });
+        vars["RemainingTime"] = await correspondentPortalPage.Remaining_Time_Price_Offered.textContent() || '';
+        Methods.trimtestdata(vars["RemainingTime"], 'RemainingTime');
+        log.info('RemainingTime: ' + vars['RemainingTime']);
+        log.stepPass('Get Price action triggered and Remaining Time captured successfully');
+      } catch (e) {
+        log.stepFail(page, 'Failed to trigger Get Price action or capture Remaining Time');
+        throw e;
+      }
+
+      log.step('Parse Remaining Time and build expected timer values');
+      try {
+        vars["MinSettings"] = vars["MinutesSettings"];
+        Methods.performArithmetic(vars["MinSettings"], "SUBTRACTION", "1", "startMin", 0);
+
+        // Split "Xm:YYs" by ":" → position 0 = "Xm", position 1 = "YYs"
+        Methods.splitBySpecialChar(vars["RemainingTime"], ':', '0', 'MinTimePriceOffered');
+        Methods.splitBySpecialChar(vars["RemainingTime"], ':', '1', 'SecondsTimePriceOffered');
+
+        // Build expected minute strings e.g. "5m" and "4m"
+        Methods.concatenate(vars["MinSettings"], 'm', 'ExpectedMinTime');
+        Methods.concatenate(vars["startMin"], 'm', 'ExpectedMinTimeMinus1');
+
+        // Extract first and second digit from seconds part e.g. "59s" → "5", "9"
+        Methods.splitRangeOfCharacters(vars["SecondsTimePriceOffered"], 0, 1, 'FirstDigitSeconds');
+        Methods.splitRangeOfCharacters(vars["SecondsTimePriceOffered"], 1, 2, 'SecondDigitSeconds');
+
+        log.info('MinTimePriceOffered: ' + vars['MinTimePriceOffered']);
+        log.info('ExpectedMinTime: ' + vars['ExpectedMinTime']);
+        log.info('ExpectedMinTimeMinus1: ' + vars['ExpectedMinTimeMinus1']);
+        log.info('SecondsTimePriceOffered: ' + vars['SecondsTimePriceOffered']);
+        log.info('FirstDigitSeconds: ' + vars['FirstDigitSeconds']);
+        log.info('SecondDigitSeconds: ' + vars['SecondDigitSeconds']);
+        log.stepPass('Remaining Time parsed and expected timer values built successfully');
+      } catch (e) {
+        log.stepFail(page, 'Failed to parse Remaining Time or build expected timer values');
+        throw e;
+      }
+
+      log.step('Verify Remaining Time reflects the updated timer value from General Settings');
+      try {
+        if (vars["MinTimePriceOffered"] === vars["ExpectedMinTime"]) {
+          log.info('Timer is at full minute — verifying seconds are 00');
+          Methods.verifyString(vars["FirstDigitSeconds"], 'equals', appconstants.ZERO);
+          Methods.verifyString(vars["SecondDigitSeconds"], 'equals', appconstants.ZERO);
+        } else {
+          log.info('Timer has ticked — verifying minute is one less and seconds start with 5');
+          Methods.verifyString(vars["MinTimePriceOffered"], 'equals', vars["ExpectedMinTimeMinus1"]);
+          Methods.verifyString(vars["FirstDigitSeconds"], 'equals', appconstants.FIVE);
+        }
+        await Methods.verifyTextMatchesPattern(vars["RemainingTime"], '^\\d+m:\\d{2}s$');
+        log.stepPass('Remaining Time verified successfully — timer reflects updated General Settings value');
+      } catch (e) {
+        log.stepFail(page, 'Remaining Time verification failed — timer does not reflect updated General Settings value');
+        throw e;
+      }
+
+      log.tcEnd('PASS');
+    } catch (e) {
+      await log.captureOnFailure(page, TC_ID, e);
+      log.tcEnd('FAIL');
+      throw e;
     }
-    await correspondentPortalPage.Internal_User_Minutes_Input.clear();
-    await correspondentPortalPage.Internal_User_Minutes_Input.fill(vars["NewMinToEnter"]);
-    vars["MinutesSettings"] = await correspondentPortalPage.Internal_User_Minutes_Input.inputValue() || '';
-    await correspondentPortalPage.Save_Changes_Button.waitFor({ state: 'visible' });
-    await correspondentPortalPage.Save_Changes_Button.click();
-    await page.waitForLoadState('networkidle');
-    vars["startMin"] = (parseFloat(String(vars["MinutesSettings"])) - parseFloat(String("1"))).toFixed(0);
-    await correspondentPortalPage.Commitments_Side_Menu.click();
-    await correspondentPortalPage.Price_Offered_List_Dropdown.click();
-    await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-    await bidRequestsPage.Search_by_Bid_Request_ID_Field.fill(vars["RequestIDDetails"]);
-    await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-    await correspondentPortalPage.First_Bid_Request_ID.click();
-    await page.waitForLoadState('networkidle');
-    await correspondentPortalPage.Get_Price_Button.click();
-    await correspondentPortalPage.Remaining_Time_Price_Offered.waitFor({ state: 'visible' });
-    vars["RemainingTime"] = await correspondentPortalPage.Remaining_Time_Price_Offered.textContent() || '';
-    vars["RemainingTime"] = String(vars["RemainingTime"]).trim();
-    vars["MinSettings"] = vars["MinutesSettings"];
-    vars["startMin"] = (parseFloat(String(vars["MinSettings"])) - parseFloat(String("1"))).toFixed(0);
-    vars["MinTimePriceOffered"] = String(vars["RemainingTime"]).split(":")["1"] || '';
-    vars["ExpectedMinTime"] = String(vars["MinSettings"]) + String("m");
-    vars["ExpectedMinTimeMinus1"] = String(vars["startMin"]) + String("m");
-    vars["SecondsTimePriceOffered"] = String(vars["RemainingTime"]).split(":")["2"] || '';
-    vars["FirstDigitSeconds"] = String(vars["SecondsTimePriceOffered"]).substring(0, String(vars["SecondsTimePriceOffered"]).length - 2);
-    vars["SecondDigitSeconds"] = String(vars["SecondsTimePriceOffered"]).substring(1, String(vars["SecondsTimePriceOffered"]).length - 1);
-    vars["CharSeconds"] = String(vars["SecondsTimePriceOffered"]).substring(2);
-    if (String(vars["MinTimePriceOffered"]) === String(vars["ExpectedMinTime"])) {
-      expect(String(vars["FirstDigitSeconds"])).toBe("0");
-      expect(String(vars["SecondDigitSeconds"])).toBe("0");
-    } else {
-      expect(String(vars["MinTimePriceOffered"])).toBe(vars["ExpectedMinTimeMinus1"]);
-      expect(String(vars["FirstDigitSeconds"])).toBe("5");
-    }
-    expect(String(vars["RemainingTime"])).toMatch(/^\d+m:\d{2}s$/);
   });
 });
