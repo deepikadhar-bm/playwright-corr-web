@@ -39,6 +39,7 @@
 name: Playwright Tests - Correspondent Portal
 
 on:
+  # Uncomment below to enable auto-triggers on push / pull_request
   # push:
   #   branches:
   #     - master
@@ -140,7 +141,10 @@ jobs:
           fi
 
           echo "suite=$SUITE_KEY" >> "$GITHUB_OUTPUT"
-          echo "Resolved suite key: $SUITE_KEY"
+          # Sanitize branch name — replace / and any other invalid artifact chars with -
+          SAFE_BRANCH=$(echo "$BRANCH" | tr '/\\:*?"<>|' '-')
+          echo "safe_branch=$SAFE_BRANCH" >> "$GITHUB_OUTPUT"
+          echo "Resolved suite key: $SUITE_KEY  |  Safe branch: $SAFE_BRANCH"
 
           # Write a human-readable summary to the job summary
           echo "## Test Run Summary" >> "$GITHUB_STEP_SUMMARY"
@@ -244,7 +248,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: test-report-${{ github.ref_name }}-run${{ github.run_number }}
+          name: test-report-${{ steps.suite.outputs.safe_branch }}-run${{ github.run_number }}
           path: |
             playwright-report/
             test-results/
@@ -253,11 +257,11 @@ jobs:
           retention-days: 3
 
       # ── 9. Send email notification ────────────────────────────────────────
-      - name: Send email notification
-        if: always()
-        env:
-          EMAIL_USER:      ${{ secrets.EMAIL_USER }}
-          EMAIL_PASS:      ${{ secrets.EMAIL_PASS }}
-          EMAIL_TO:        ${{ secrets.EMAIL_TO }}
-          AUTO_SEND_EMAIL: 'true'
-        run: node reports/send-email.js
+      # - name: Send email notification
+      #   if: always()
+      #   env:
+      #     EMAIL_USER:      ${{ secrets.EMAIL_USER }}
+      #     EMAIL_PASS:      ${{ secrets.EMAIL_PASS }}
+      #     EMAIL_TO:        ${{ secrets.EMAIL_TO }}
+      #     AUTO_SEND_EMAIL: 'true'
+      #   run: node reports/send-email.js
