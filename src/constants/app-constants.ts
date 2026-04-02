@@ -106,5 +106,9 @@ export const APP_CONSTANTS = {
   CORR_NAME_WITHCCODE:'Correspondent Name (Ccode):',
   USER_NAME_TEXT:'User Name:',
   CHASE_CORR_TEXT:'Chase Correspondent',
-  COMMIT_POPUP_SUCCESS_MESSAGE_PRICEOFFERED:`Selecting "Yes, Commit" is confirmation of entering a Mandatory Commitment along with the pair-off risks associated with not meeting the conditions of the commitment.`,
+  COMMIT_POPUP_SUCCESS_MESSAGE_PRICEOFFERED:`Selecting “Yes, Commit” is confirmation of entering a Mandatory Commitment along with the pair-off risks associated with not meeting the conditions of the commitment.`,
+  UPDATED_SUCCESSFULLY_TEXT_POPUP: "updated successfully",
+  COMMIT_SELECTED_LOANS_TEXT_POPUP: "Commit Selected Loans",
+  REMAINING_TIME_TEXT:"Remaining Time",
+  SELECTED_LOAN_AMOUNT_TEXT:"Selected Loan Amt",
 };

@@ -10,7 +10,7 @@ import { CorrespondentPortalPage } from '../../../src/pages/correspondant/corres
 import { SpinnerPage } from '../../../src/pages/correspondant/spinner';
 import { StatusInactivePage } from '../../../src/pages/correspondant/status-inactive-';
 import { UploadNewBidRequestButtonPage } from '../../../src/pages/correspondant/upload-new-bid-request-button';
-import { runPrereq_1202 } from '../../../src/helpers/prereqs/PreReqBidRequests/prereq-1202';
+import { runPrereq_1202 } from '../../../src/helpers/prereqs/BidRequests/prereq-1202';
 import { testDataManager } from 'testdata/TestDataManager';
 import { Logger as log } from '../../../src/helpers/log-helper';
 

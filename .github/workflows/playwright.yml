@@ -1,0 +1,293 @@
+# ============================================================
+# Playwright Tests — Correspondent Portal
+# ============================================================
+# REQUIRED GITHUB SECRETS (Settings → Secrets → Actions):
+#
+#   App / Auth
+#   ----------
+#   CORR_QA_URL           — Correspondent portal base URL
+#   USERNAME              — user_group user login
+#   PASSWORD              — user_group user password
+#   INTERNAL_USERNAME     — Internal user login
+#   INTERNAL_PASSWORD     — Internal user password
+#   EXTERNAL_USERNAME     — External user login
+#   EXTERNAL_PASSWORD     — External user password
+#
+#   Email notifications
+#   -------------------
+#   EMAIL_USER            — Gmail address to send from
+#   EMAIL_PASS            — Gmail app password
+#   EMAIL_TO              — Recipient email address(es)
+#
+# BRANCH → TEST SUITE ROUTING (auto-detected on push)
+# ──────────────────────────────────────────────────────
+#   master / main              → Full regression (all tests)
+#   feature/**bid-request**    → Bid Requests suites
+#   feature/**bid-maps**       → Bid Maps suite
+#   feature/**commit**         → Commitment List suites
+#   feature/**price**          → Price Offered suites
+#   feature/**settings**       → General Settings suite
+#   feature/**dashboard**      → Dashboard suite
+#   feature/**user-group**     → User Groups suite
+#   feature/**testsuite**      → TestSuits directory
+#   fix/**                     → Same keyword rules as feature/**
+#   (no keyword match)         → Full regression
+#
+# Manual dispatch lets you override suite, TC keyword, or spec path.
+# ============================================================
+
+name: Playwright Tests - Correspondent Portal
+
+on:
+  # Uncomment below to enable auto-triggers on push / pull_request
+  # push:
+  #   branches:
+  #     - master
+  #     - main
+  #     - 'feature/**'
+  #     - 'fix/**'
+  #     - 'release/**'        # release branches
+  #     - 'hotfix/**'         # hotfix branches
+  #     - 'dev'               # shared dev branch
+  #     - 'deepika/**'        # personal/private branches — replace with your GitHub username
+  # pull_request:
+  #   branches:
+  #     - master
+  #     - main
+  workflow_dispatch:
+    inputs:
+      test_suite:
+        description: 'Test suite to run (overrides branch detection)'
+        required: false
+        default: 'all'
+        type: choice
+        options:
+          - all
+          - bid-requests
+          - bid-maps
+          - commitment-list
+          - price-offered
+          - general-settings
+          - dashboard
+          - user-groups
+          - test-suits
+      grep:
+        description: 'TC keyword filter — e.g. TC01  or  smoke  (optional)'
+        required: false
+        default: ''
+      spec:
+        description: 'Specific spec file path — overrides test_suite if set'
+        required: false
+        default: ''
+
+# Cancel any in-progress run for the same branch to avoid wasting CI minutes
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: '${{ github.ref_name }}'
+    timeout-minutes: 120
+    runs-on: ubuntu-latest
+
+    steps:
+      # ── 1. Checkout ──────────────────────────────────────────────────────
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # ── 2. VPN connection ────────────────────────────────────────────────
+      # The app is behind a VPN — connect before any test step.
+      # Requires secrets: VPN_CONFIG (base64 .ovpn), VPN_USERNAME, VPN_PASSWORD
+      # If your VPN does not need username/password, remove the credentials lines.
+      - name: Connect to VPN
+        run: |
+          sudo apt-get install -y openvpn openvpn-systemd-resolved
+          echo "${{ secrets.VPN_CONFIG }}" | base64 -d > /tmp/vpn.ovpn
+          sudo openvpn \
+            --config /tmp/vpn.ovpn \
+            --auth-user-pass <(echo -e "${{ secrets.VPN_USERNAME }}\n${{ secrets.VPN_PASSWORD }}") \
+            --daemon \
+            --log /tmp/vpn.log
+          # Wait up to 30s for tunnel interface to come up
+          for i in $(seq 1 30); do
+            ip a | grep -q tun && echo "VPN connected" && break
+            echo "Waiting for VPN... ($i/30)"
+            sleep 1
+          done
+          ip a | grep -q tun || (cat /tmp/vpn.log && exit 1)
+
+      # ── 3. Node.js setup with npm cache ──────────────────────────────────
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+          cache: 'npm'
+
+      # ── 4. Install project dependencies ──────────────────────────────────
+      - name: Install dependencies
+        run: npm ci
+
+      # ── 4. Install only Chromium (used by correspondant project) ─────────
+      - name: Install Playwright browsers
+        run: npx playwright install chromium --with-deps
+
+      # ── 5. Detect which suite to run ─────────────────────────────────────
+      - name: Detect test suite
+        id: suite
+        run: |
+          BRANCH="${{ github.ref_name }}"
+          EVENT="${{ github.event_name }}"
+          MANUAL_SUITE="${{ github.event.inputs.test_suite }}"
+          SUITE_KEY="all"
+
+          if [[ "$EVENT" == "workflow_dispatch" && "$MANUAL_SUITE" != "all" && -n "$MANUAL_SUITE" ]]; then
+            SUITE_KEY="$MANUAL_SUITE"
+            echo "Source: manual dispatch"
+          else
+            # Lowercase branch name for case-insensitive keyword matching
+            B="${BRANCH,,}"
+
+            if   [[ "$B" =~ (bid[-_]map|bidmap) ]];             then SUITE_KEY="bid-maps"
+            elif [[ "$B" =~ (bid[-_]req|bidrequests|bid[-_]tc) ]]; then SUITE_KEY="bid-requests"
+            elif [[ "$B" =~ (commit) ]];                          then SUITE_KEY="commitment-list"
+            elif [[ "$B" =~ (price) ]];                           then SUITE_KEY="price-offered"
+            elif [[ "$B" =~ (setting) ]];                         then SUITE_KEY="general-settings"
+            elif [[ "$B" =~ (dash) ]];                            then SUITE_KEY="dashboard"
+            elif [[ "$B" =~ (user[-_]group|usergroup) ]];         then SUITE_KEY="user-groups"
+            elif [[ "$B" =~ (testsuite|test[-_]suit) ]];          then SUITE_KEY="test-suits"
+            fi
+
+            echo "Source: branch '$BRANCH'"
+          fi
+
+          echo "suite=$SUITE_KEY" >> "$GITHUB_OUTPUT"
+          # Sanitize branch name — replace / and any other invalid artifact chars with -
+          SAFE_BRANCH=$(echo "$BRANCH" | tr '/\\:*?"<>|' '-')
+          echo "safe_branch=$SAFE_BRANCH" >> "$GITHUB_OUTPUT"
+          echo "Resolved suite key: $SUITE_KEY  |  Safe branch: $SAFE_BRANCH"
+
+          # Write a human-readable summary to the job summary
+          echo "## Test Run Summary" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Field | Value |" >> "$GITHUB_STEP_SUMMARY"
+          echo "|-------|-------|" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Branch | \`$BRANCH\` |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Suite | \`$SUITE_KEY\` |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Trigger | \`$EVENT\` |" >> "$GITHUB_STEP_SUMMARY"
+
+      # ── 6. Run tests ──────────────────────────────────────────────────────
+      - name: Run Playwright tests
+        env:
+          USE_CI_ENV: 'true'
+          # App environment
+          CORR_QA_URL:          ${{ secrets.CORR_QA_URL }}
+          USERNAME:             ${{ secrets.USERNAME }}
+          PASSWORD:             ${{ secrets.PASSWORD }}
+          INTERNAL_USERNAME:    ${{ secrets.INTERNAL_USERNAME }}
+          INTERNAL_PASSWORD:    ${{ secrets.INTERNAL_PASSWORD }}
+          EXTERNAL_USERNAME:    ${{ secrets.EXTERNAL_USERNAME }}
+          EXTERNAL_PASSWORD:    ${{ secrets.EXTERNAL_PASSWORD }}
+          # Email (needed by qa-reporter during run)
+          EMAIL_USER:           ${{ secrets.EMAIL_USER }}
+          EMAIL_PASS:           ${{ secrets.EMAIL_PASS }}
+          EMAIL_TO:             ${{ secrets.EMAIL_TO }}
+        run: |
+          SUITE="${{ steps.suite.outputs.suite }}"
+          GREP="${{ github.event.inputs.grep }}"
+          SPEC="${{ github.event.inputs.spec }}"
+
+          # Normalize path separators — convert Windows backslashes to forward slashes
+          SPEC="${SPEC//\\//}"
+
+          # Build the list of test paths as a bash array
+          declare -a PATHS
+
+          if [[ -n "$SPEC" ]]; then
+            # Explicit spec path wins over everything else
+            # NOTE: grep (if provided) must match the test *title* inside the file,
+            #       not the filename. Leave grep empty to run all tests in the spec.
+            PATHS=("$SPEC")
+          else
+            case "$SUITE" in
+              "bid-requests")
+                PATHS=(
+                  "tests/correspondant/BidRequestsTestPlanDoneTestCases"
+                  "tests/correspondant/BidRequestsTestPlanIndependentTestcases"
+                  # "tests/correspondant/reg_tc_bid_requests"
+                )
+                ;;
+              "bid-maps")
+                PATHS=("tests/correspondant/reg_bid-maps")
+                ;;
+              "commitment-list")
+                PATHS=(
+                  # "tests/correspondant/Commitment_List"
+                  # "tests/correspondant/CommitmentListTestplan"
+                  "tests/correspondant/REG_Commitment_List_Testplan"
+                )
+                ;;
+              "price-offered")
+                PATHS=(
+                  "tests/correspondant/Price_Offered_TestPlan-2"
+                  "tests/correspondant/PriceOffereddTestplan"
+                  "tests/correspondant/reg_priceoffered"
+                )
+                ;;
+              "general-settings")
+                PATHS=("tests/correspondant/reg_general-settings")
+                ;;
+              "dashboard")
+                PATHS=("tests/correspondant/Dash_Board")
+                ;;
+              "user-groups")
+                PATHS=("tests/correspondant/User Groups")
+                ;;
+              "test-suits")
+                PATHS=("tests/correspondant/TestSuits")
+                ;;
+              *)
+                # "all" — pass no path so Playwright uses testDir from config
+                PATHS=()
+                ;;
+            esac
+          fi
+
+          # Assemble final command
+          CMD=(npx playwright test --project=correspondant)
+          CMD+=("${PATHS[@]}")
+
+          if [[ -n "$GREP" ]]; then
+            CMD+=(--grep "$GREP")
+          fi
+
+          echo "Running: ${CMD[*]}"
+          "${CMD[@]}"
+
+      # ── 7. Generate ZIP report (always runs even on failure) ──────────────
+      - name: Generate report ZIP
+        if: always()
+        run: node reports/generate-report.js
+
+      # ── 8. Upload artifacts — kept for 3 days ────────────────────────────
+      - name: Upload test artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-report-${{ steps.suite.outputs.safe_branch }}-run${{ github.run_number }}
+          path: |
+            playwright-report/
+            test-results/
+            logs/
+            reports/html-reports-zip/
+          retention-days: 3
+
+      # ── 9. Send email notification ────────────────────────────────────────
+      # - name: Send email notification
+      #   if: always()
+      #   env:
+      #     EMAIL_USER:      ${{ secrets.EMAIL_USER }}
+      #     EMAIL_PASS:      ${{ secrets.EMAIL_PASS }}
+      #     EMAIL_TO:        ${{ secrets.EMAIL_TO }}
+      #     AUTO_SEND_EMAIL: 'true'
+      #   run: node reports/send-email.js

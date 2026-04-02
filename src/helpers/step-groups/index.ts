@@ -545,9 +545,9 @@ export async function stepGroup_Verification_Header_Mapping_Smart_Mapper_On_to_O
 export async function stepGroup_Show_Unidentified_Headers(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
   const Methods = new AddonHelpers(page, vars);
-  log.info("Unidentified Headers: "+ vars["Unidentified Headers"]);
+  log.info("Unidentified Headers: " + vars["Unidentified Headers"]);
   await CorrPortalElem.Header_Mapping_Dropdown.selectOption({ value: vars["Unidentified Headers"] });
-  const selectText=" Select";
+  const selectText = " Select";
   selectText.trim();
   await Methods.verifySelectedOptionInMultipleDropdowns(CorrPortalElem.All_Select_in_header, undefined, "contains", selectText.trim());
 }
@@ -568,7 +568,7 @@ export async function stepGroup_Show_Unused_Headers(page: import('@playwright/te
   await expect(CorrPortalElem.Checked_header_2(vars["SecondCheckedBidName"])).not.toBeVisible();
   vars["BidSampleFieldCount"] = String(await CorrPortalElem.Bid_Sample_Field_Name_in_Header_Mapping.count());
   expect(String(vars["BidSampleFieldCount"])).toBe(vars["UncheckedHeadersCount"]);
-  
+
 }
 
 /**
@@ -1211,7 +1211,7 @@ export async function stepGroup_Editing_Header_Mapping(page: import('@playwright
   await CorrPortalElem.Edit_icon_in_Header_Mapping.click();
   await expect(CorrPortalElem.Update_Header).toBeVisible();
   // await CorrPortalElem.Chase_Field_Name.selectOption({ label: vars["Chase_Field_Name"] });
-    // await CorrPortalElem.CLM_Field_Name.click();
+  // await CorrPortalElem.CLM_Field_Name.click();
   await CorrPortalElem.CLM_Field_Name.selectOption({ label: vars["Chase_Field_Name"] });
   // vars["UpdatedChaseFieldNameHeaderMapping"] = await CorrPortalElem.Chase_Field_Name.evaluate(el => { const s = el as HTMLSelectElement; return s.options[s.selectedIndex]?.text || ''; });
   vars["UpdatedChaseFieldNameHeaderMapping"] = await CorrPortalElem.CLM_Field_Name.evaluate(el => { const s = el as HTMLSelectElement; return s.options[s.selectedIndex]?.text || ''; });
@@ -2732,10 +2732,10 @@ export async function stepGroup_Separating_Hours_and_Minutes(
   page: import('@playwright/test').Page,
   vars: Record<string, string>
 ) {
-  const time = String(vars["RequiredBatchTime"]).trim(); 
+  const time = String(vars["RequiredBatchTime"]).trim();
 
-  const [hour, minWithUnit] = time.split(":"); 
-  const [minute, unit] = minWithUnit.split(" "); 
+  const [hour, minWithUnit] = time.split(":");
+  const [minute, unit] = minWithUnit.split(" ");
 
   vars["Time_Hour"] = hour;
   log.info(`Time Hour : ${vars["Time_Hour"]}`);
@@ -2869,15 +2869,15 @@ export async function stepGroup_Modifying_Batch_Intervals_For_Passed_Time(page: 
   await CorrPortalElem.Modify_Batch_Intervals_Button.click();
   await expect(page.getByText("Edit Batch Timing")).toBeVisible();
   vars["EstTimeMinusOneHour"] = (() => {
-  const d = new Date();
-  d.setHours(d.getHours() - 1);
-  return new Intl.DateTimeFormat('en-US', {
-    timeZone: "America/New_York",
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: true
-  }).format(d);
-})();
+    const d = new Date();
+    d.setHours(d.getHours() - 1);
+    return new Intl.DateTimeFormat('en-US', {
+      timeZone: "America/New_York",
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true
+    }).format(d);
+  })();
   await stepGroup_Separting_Hours_and_minutes_In_Time_For_passed_time(page, vars);
   // [DISABLED] Pick the current date hh by location UTC-04:00 and store into a variable Time_Hour
   // vars["Time_Hour"] = (() => {
@@ -2993,14 +2993,14 @@ export async function stepGroup_Uploading_Bid_Request(page: import('@playwright/
   // [DISABLED] Verify that the element SelectCompany_Value displays text Company Name and With Scrollable FALSE
   // await expect(CorrPortalElem.SelectCompany_Value).toContainText(testData["Company Name"]);
   await page.waitForTimeout(2000);
-   await expect(CorrPortalElem.Standard_Execution_Checkbox).toBeVisible();
+  await expect(CorrPortalElem.Standard_Execution_Checkbox).toBeVisible();
   if (!(await CorrPortalElem.Standard_Execution_Checkbox.isChecked())) {
     await CorrPortalElem.Standard_Execution_Checkbox.check();
     await page.waitForTimeout(2000);
     log.info("Standard checkbox was not checked — checked it now");
   }
   await expect(CorrPortalElem.Standard_Execution_Checkbox).toBeChecked();
- // await expect(CorrPortalElem.Standard_Execution_Checkbox).toBeChecked();
+  // await expect(CorrPortalElem.Standard_Execution_Checkbox).toBeChecked();
   await CorrPortalElem.StandardExecution_Dropdown.selectOption({ label: "3" });
   await CorrPortalElem.StandardExceutionType_Dropdown.waitFor({ state: 'visible' });
   await expect(CorrPortalElem.StandardExceutionType_Dropdown).toHaveValue("3");
@@ -3187,7 +3187,7 @@ export async function stepGroup_Creating_Of_Bid_Maps(page: import('@playwright/t
   // })();
   // vars["Create New Map"] = new Date().toLocaleDateString('en-US') /* format: MM/dd/yyyy/HH:mm:ss */;
   // vars["Create New Map"] = "Testsigma_" + vars["Create New Map"];
-    // vars["CreateNewMap"] = "Testsigma_" + vars["CreateNewMap"];
+  // vars["CreateNewMap"] = "Testsigma_" + vars["CreateNewMap"];
   helpers.getCurrentTimestamp(appconstants.MONTH_FORMAT_SLASH, "Current Date", appconstants.ASIA_KOLKATA);
   helpers.concatenate(appconstants.Testsigma_, vars["Current Date"], "Create New Map"); /* format: MM/dd/yyyy/HH:mm:ss */;
   // await CorrPortalElem.Create_New_Map_Field.fill(vars["CreateNewMap"]);
@@ -3271,7 +3271,7 @@ export async function stepGroup_Uploading_Bid_Request_For_Next_Buisiness_day(pag
   const CorrPortalElem = new CorrPortalPage(page);
   const correspondentPortalPage = new CorrespondentPortalPage(page);
   const testData: Record<string, string> = {}; // TODO: Load from test data profile
-  
+
   await CorrPortalElem.Select_Company_In_BidRequest.click();
   await CorrPortalElem.Bid_Mapping_Id_Search_Input_box.pressSequentially(vars["CompanyName"]);
   await CorrPortalElem.SelectCompany_Value.click();
@@ -3392,7 +3392,7 @@ export async function stepGroup_Modifying_The_Batch_Intervals_For_Next_bussiness
     return d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true }); // Format: hh:mm a
   })();
   //await stepGroup_Separating_Hours_and_minutes_In_timeOne_hour_prior(page, vars);
-   await stepGroup_Separating_Hours_and_minutes_In_time_Current_EST_time(page, vars);
+  await stepGroup_Separating_Hours_and_minutes_In_time_Current_EST_time(page, vars);
   // [DISABLED] Pick the current date hh by location UTC-04:00 and store into a variable Time_Hour
   // vars["Time_Hour"] = (() => {
   //   const d = new Date();
@@ -4471,28 +4471,29 @@ export async function stepGroup_Getting_Next_Month_From_Current_Month(page: impo
  */
 export async function stepGroup_Verifying_the_Time_Count_Down_In_Price_Offered_Details_Scree(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
+  const Methods = new AddonHelpers(page, vars);
+
   await CorrPortalElem.Get_Price_Button_price_offered.click();
   await CorrPortalElem.Remaining_Time_Price_Offered.waitFor({ state: 'visible' });
   vars["RemainingTime"] = await CorrPortalElem.Remaining_Time_Price_Offered.textContent() || '';
-  vars["RemainingTime"] = String(vars["RemainingTime"]).trim();
+  Methods.trimWhitespace(vars["RemainingTime"], 'RemainingTime');
   vars["MinSettings"] = vars["MinutesSettings"];
-  vars["startMin"] = (parseFloat(String(vars["MinSettings"])) - parseFloat(String("1"))).toFixed(0);
-  vars["MinTimePriceOffered"] = String(vars["RemainingTime"]).split(":")["1"] || '';
-  vars["ExpectedMinTime"] = String(vars["MinSettings"]) + String("m");
-  vars["ExpectedMinTimeMinus1"] = String(vars["startMin"]) + String("m");
-  vars["SecondsTimePriceOffered"] = String(vars["RemainingTime"]).split(":")["2"] || '';
-  vars["FirstDigitSeconds"] = String(vars["SecondsTimePriceOffered"]).substring(0, String(vars["SecondsTimePriceOffered"]).length - 2);
-  vars["SecondDigitSeconds"] = String(vars["SecondsTimePriceOffered"]).substring(1, String(vars["SecondsTimePriceOffered"]).length - 1);
-  vars["CharSeconds"] = String(vars["SecondsTimePriceOffered"]).substring(2);
+  Methods.performArithmetic(vars["MinutesSettings"], "SUBTRACTION", "1", "startMin", 0);
+  Methods.splitBySpecialChar(vars["RemainingTime"], ':', '0', 'MinTimePriceOffered');
+  Methods.concatenate(vars["MinSettings"], 'm', 'ExpectedMinTime');
+  Methods.concatenate(vars["startMin"], 'm', 'ExpectedMinTimeMinus1');
+  Methods.splitBySpecialChar(vars["RemainingTime"], ':', '1', 'SecondsTimePriceOffered');
+  Methods.removeCharactersFromPosition(vars["SecondsTimePriceOffered"], '0', '2', 'FirstDigitSeconds');
+  Methods.removeCharactersFromPosition(vars["SecondsTimePriceOffered"], '1', '1', 'SecondDigitSeconds');
+  Methods.removeCharactersFromPosition(vars["SecondsTimePriceOffered"], '2', '0', 'CharSeconds');
   if (String(vars["MinTimePriceOffered"]) === String(vars["ExpectedMinTime"])) {
-    expect(String(vars["FirstDigitSeconds"])).toBe("0");
-    expect(String(vars["SecondDigitSeconds"])).toBe("0");
+    Methods.verifyString(vars["FirstDigitSeconds"], 'equals', appconstants.ZERO);
+    Methods.verifyString(vars["SecondDigitSeconds"], 'equals', appconstants.ZERO);
   } else {
-    expect(String(vars["MinTimePriceOffered"])).toBe(vars["ExpectedMinTimeMinus1"]);
-    expect(String(vars["FirstDigitSeconds"])).toBe("5");
+    expect(Methods.verifyString(vars["MinTimePriceOffered"], 'equals', vars["ExpectedMinTimeMinus1"]));
+    expect(Methods.verifyString(vars["FirstDigitSeconds"], 'equals', appconstants.FIVE));
   }
-  // TODO: Regex verification with empty pattern
-  // Action: Verify if the text RemainingTime matches the pattern ^\d+m:\d{2}s$
+  await Methods.verifyTextMatchesPattern(vars["RemainingTime"], '^\\d+m:\\d{2}s$');
 }
 
 /**
@@ -4566,12 +4567,12 @@ export async function stepGroup_Price_offered_Details_Screen_Verification_Price_
 
   log.step('Verify Current Market and Current Market Diff values in Price Offered details screen');
   try {
-    vars["CurrentMarketValue"] = await CorrPortalElem.Current_Market_price_offered.textContent() || '';
+    vars["CurrentMarketValue"] = await CorrPortalElem.Current_Market_price_offered.first().textContent() || '';
     Methods.trimWhitespace(vars["CurrentMarketValue"], 'CurrentMarketValue');
     log.info('CurrentMarketValue: ' + vars['CurrentMarketValue']);
     await Methods.verifyTextMatchesPattern(vars["CurrentMarketValue"], '^\\d+\\.\\d{3}$');
 
-    vars["CurrentMarketDiffValue"] = await CorrPortalElem.Current_Market_Diff_price_offered.textContent() || '';
+    vars["CurrentMarketDiffValue"] = await CorrPortalElem.Current_Market_Diff_price_offered.first().textContent() || '';
     Methods.trimWhitespace(vars["CurrentMarketDiffValue"], 'CurrentMarketDiffValue');
     log.info('CurrentMarketDiffValue: ' + vars['CurrentMarketDiffValue']);
     await Methods.verifyTextMatchesPattern(vars["CurrentMarketDiffValue"], '^[+-]?\\d+\\.\\d{3}$');
@@ -4630,13 +4631,15 @@ export async function stepGroup_Price_offered_Details_Screen_Verification_Price_
  */
 export async function stepGroup_Editing_the_Chase_Users_Time_Under_General_Settings(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
+  const Methods = new AddonHelpers(page, vars);
   vars["MinutesSettings"] = await CorrPortalElem.Internal_User_Minutes_Input.inputValue() || '';
-  vars["NewMinToEnter"] = String(Math.floor(Math.random() * (4 - 1 + 1)) + 1);
+  Methods.generateRandomInteger('1', '4', 'NewMinToEnter');
   while (String(vars["NewMinToEnter"]) === String(vars["MinutesSettings"])) {
-    vars["NewMinToEnter"] = String(Math.floor(Math.random() * (4 - 1 + 1)) + 1);
+    Methods.generateRandomInteger('1', '4', 'NewMinToEnter');
   }
+  await CorrPortalElem.Internal_User_Minutes_Input.click();
   await CorrPortalElem.Internal_User_Minutes_Input.clear();
-  await CorrPortalElem.Internal_User_Minutes_Input.fill(vars["NewMinToEnter"]);
+  await CorrPortalElem.Internal_User_Minutes_Input.type(vars["NewMinToEnter"]);
 }
 
 /**
@@ -5529,14 +5532,14 @@ export async function stepGroup_Storing_PopUpError(page: import('@playwright/tes
  */
 export async function stepGroup_Verifying_MarkAdjValue(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
-  const Methods =new AddonHelpers(page, vars);
+  const Methods = new AddonHelpers(page, vars);
   vars["UncommittedLoansCount"] = String(await CorrPortalElem.Not_Committed_Loans_Count.count());
   vars["count"] = appconstants.ONE;
   while (parseFloat(String(vars["count"])) <= parseFloat(String(vars["UncommittedLoansCount"]))) {
     vars["IndividualMarkAdjValue"] = await CorrPortalElem.Individual_Mark_Adjust_Value_Fresh_Loans(vars['count']).textContent() || '';
-    Methods.trimtestdata(vars["IndividualMarkAdjValue"],'IndividualMarkAdjValue');
-    expect(Methods.verifyString(vars["IndividualMarkAdjValue"],'equals','-'));
-    Methods.MathematicalOperation(vars["count"],'+',1,'count');
+    Methods.trimtestdata(vars["IndividualMarkAdjValue"], 'IndividualMarkAdjValue');
+    expect(Methods.verifyString(vars["IndividualMarkAdjValue"], 'equals', '-'));
+    Methods.MathematicalOperation(vars["count"], '+', 1, 'count');
 
   }
 }
@@ -7214,12 +7217,12 @@ export async function stepGroup_Uploading_Bid_Request_By_Selecting_both_standard
   await expect(CorrPortalElem.SelectCompany_Value).toContainText(vars["CompanyName"]);
   await CorrPortalElem.SelectCompany_Value.click();
   await expect(CorrPortalElem.Standard_Execution_Checkbox).toBeVisible();
-   if (!(await CorrPortalElem.Standard_Execution_Checkbox.isChecked())) {
+  if (!(await CorrPortalElem.Standard_Execution_Checkbox.isChecked())) {
     await CorrPortalElem.Standard_Execution_Checkbox.check();
     await page.waitForTimeout(2000);
     log.info("Standard checkbox was not checked — checked it now");
   }
-   
+
   await expect(CorrPortalElem.Standard_Execution_Checkbox).toBeChecked();
   await CorrPortalElem.StandardExecution_Dropdown.selectOption({ label: "3" });
   await expect(CorrPortalElem.StandardExceutionType_Dropdown).toHaveValue("3");

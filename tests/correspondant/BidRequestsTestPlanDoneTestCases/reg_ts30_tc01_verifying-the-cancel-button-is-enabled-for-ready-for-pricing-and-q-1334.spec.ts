@@ -6,7 +6,7 @@ import * as stepGroups from '../../../src/helpers/step-groups';
 import { BidRequestDetailsPage } from '../../../src/pages/correspondant/bid-request-details';
 import { BidRequestListPage } from '../../../src/pages/correspondant/bid-request-list';
 import { SpinnerPage } from '../../../src/pages/correspondant/spinner';
-import { runPrereq_1313 } from '../../../src/helpers/prereqs/PreReqBidRequests/prereq-1313';
+import { runPrereq_1313 } from '../../../src/helpers/prereqs/BidRequests/prereq-1313';
 import { Logger as log } from '../../../src/helpers/log-helper';
 
 const TC_ID = 'REG_TS30_TC01';

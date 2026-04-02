@@ -9,8 +9,7 @@ import { AddonHelpers } from '../../../src/helpers/AddonHelpers';
 import { APP_CONSTANTS as appconstants } from '../../../src/constants/app-constants';
 import { Logger as log } from '../../../src/helpers/log-helper';
 import { testDataManager } from 'testdata/TestDataManager';
-import { ENV } from '@config/environments';
-import * as stepGroups from '../../../src/helpers/step-groups';
+
 
 
 const TC_ID = 'PREREQ_1417(REG_TS03_TC01)';
@@ -25,12 +24,9 @@ export async function runPrereq_1417(page: Page, vars: Record<string, string>): 
   const spinnerPage = new SpinnerPage(page);
   const Methods = new AddonHelpers(page, vars);
   const profileName = 'Price Offered';
-  const credentials = ENV.getCredentials('internal');
-      vars['Username'] = credentials.username;
-    vars['Password'] = credentials.password;
+
 
   log.tcStart(TC_ID, TC_TITLE);
-  await stepGroups.stepGroup_Login_to_CORR_Portal(page, vars);
   try {
 
     log.step('Navigate to Price Offered and search by Bid Request ID');
@@ -101,6 +97,7 @@ export async function runPrereq_1417(page: Page, vars: Record<string, string>): 
 
     log.step('Trigger Get Price action and wait for price to load');
     try {
+      await expect(correspondentPortalPage.Get_Price_Button).toBeEnabled();
       await correspondentPortalPage.Get_Price_Button.click();
       await page.waitForTimeout(2000);
       await priceOfferedPage.Remaining_Timeprice_offered.waitFor({ state: 'visible' });

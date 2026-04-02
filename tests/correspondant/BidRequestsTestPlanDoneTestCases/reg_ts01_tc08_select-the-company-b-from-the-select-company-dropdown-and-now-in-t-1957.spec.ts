@@ -21,7 +21,7 @@ import { SpinnerPage } from '../../../src/pages/correspondant/spinner';
 import { StatusInactivePage } from '../../../src/pages/correspondant/status-inactive-';
 import { ThisActionWillSaveTheChangesAndMoveToNextPagePage } from '../../../src/pages/correspondant/this-action-will-save-the-changes-and-move-to-next-page';
 import { UploadNewBidRequestButtonPage } from '../../../src/pages/correspondant/upload-new-bid-request-button';
-import { runPrereq_893 } from '../../../src/helpers/prereqs/PreReqBidRequests/prereq-893';
+import { runPrereq_893 } from '../../../src/helpers/prereqs/BidRequests/prereq-893';
 import { Logger as log } from '../../../src/helpers/log-helper';
 import { testDataManager } from 'testdata/TestDataManager';
 import { BidRequestDetailsPage } from '../../../src/pages/correspondant/bid-request-details';

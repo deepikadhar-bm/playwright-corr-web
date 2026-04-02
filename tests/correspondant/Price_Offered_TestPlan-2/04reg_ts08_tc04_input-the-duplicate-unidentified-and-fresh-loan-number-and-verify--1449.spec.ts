@@ -191,8 +191,9 @@ test.describe('REG_PriceOffered', () => {
         await chaseFieldNamePage.Add_to_Commit_Buttonpaste_loan_popup.click();
         Methods.concatenateWithSpecialChar(vars['CommittedLoanNumber'], vars['FreshLoanNumber'], ',', 'CommittedFreshLoan');
         await expect(priceOfferedPage.Fresh_Loan_Num_Price_Offered_after_Error_check(vars['FreshLoanNumber'])).toContainText(vars['FreshLoanNumber']);
-        await expect(priceOfferedPage.Selected_loan_Checkboxprice_offered_screen).toBeVisible();
-        await expect(priceOfferedPage.Commit_Selected_Count_Footer_Displayprice_offered).toContainText('1');
+        await expect(priceOfferedPage.Selected_loan_Checkboxprice_offered_screen.first()).toBeVisible();
+        await expect(priceOfferedPage.Selected_loan_Checkboxprice_offered_screen.first()).toBeChecked();
+        await expect(priceOfferedPage.Commit_Selected_Count_Footer_Displayprice_offered).toContainText(appconstants.ONE);
         log.stepPass('Remove errors checked, added to commit and fresh loan selected with count 1');
       } catch (e) {
         await log.stepFail(page, 'Failed to remove errors and proceed with commit or fresh loan not selected');
