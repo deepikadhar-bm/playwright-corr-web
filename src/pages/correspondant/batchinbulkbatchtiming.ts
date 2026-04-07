@@ -35,8 +35,8 @@ export class BatchinbulkbatchtimingPage {
     return this.page.locator("//div[@class=\"col\"]//div//h5");
   }
 
-  get Extracted_Batch_Timing2(): Locator {
-    return this.page.locator("(//div[@class=\"col\"]//div//h5)[$|count|]");
+  Extracted_Batch_Timing2(count: string): Locator {
+    return this.page.locator(`(//div[@class="col"]//div//h5)[${count}]`);
   }
 
   get Last_Before_Batch_Time(): Locator {

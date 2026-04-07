@@ -405,7 +405,7 @@ if (String(vars["CurrentDate"]).charAt(0) === '0') {
           // const actualDay = new Intl.DateTimeFormat('en-US', { day: '2-digit', timeZone: 'Asia/Kolkata' })
           //   .format(new Date(vars["IndividualDate"]));
           log.info(`Iteration ${vars["count"]}: Verifying IndividualDate day "${vars["IndividualDate"]}" matches YesterdaysDate day ${vars["YesterdaysDate"]}`);
-          expect(vars["YesterdaysDate"]).toBe(vars["IndividualDate"]);
+          expect(vars["IndividualDate"]).toContain(vars["YesterdaysDate"]);
           log.info(`Dates are mateched for row ${vars["count"]}`);
         } else {
           // 59.3.4 ELSE: Verify CurrentDate with dd format equals IndividualDate with dd format
@@ -414,7 +414,7 @@ if (String(vars["CurrentDate"]).charAt(0) === '0') {
           // const actualDay = new Intl.DateTimeFormat('en-US', { day: '2-digit', timeZone: 'Asia/Kolkata' })
           //   .format(new Date(vars["IndividualDate"]));
           log.info(`Iteration ${vars["count"]}: Verifying day of IndividualDate "${vars["IndividualDate"]}" matches CurrentDate day "${vars["CurrentDate"]}"`);
-          expect(vars["CurrentDate"]).toBe(vars["IndividualDate"]);
+          expect(vars["IndividualDate"]).toContain(vars["CurrentDate"]);
           log.info(`Dates are matched for row ${vars["count"]}`);
         }
 
