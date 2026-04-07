@@ -18,5 +18,13 @@ export class BidRequestUploadPage {
   get Third_Option_Pricing_Dropdown(): Locator {
     return this.page.locator("(//*[@id=\"pricingReturnTimeDropdown\"]//option[not(contains(text(),\"Select\"))])[3]");
   }
-
+   get Disabled_Options_Pricing_Dropdown(): Locator {
+    return this.page.locator("(//*[@id=\"pricingReturnTimeDropdown\"]//option[@aria-disabled=\"true\"])");
+  }
+  get Enabled_Options_Pricing_Dropdown(): Locator {
+    return this.page.locator("(//*[@id=\"pricingReturnTimeDropdown\"]//option[@aria-disabled=\"false\"])");
+  }
+   get Options_Pricing_Dropdown(): Locator {
+    return this.page.locator("//*[@id='pricingReturnTimeDropdown']//select//option[@aria-disabled]");
+  }
 }

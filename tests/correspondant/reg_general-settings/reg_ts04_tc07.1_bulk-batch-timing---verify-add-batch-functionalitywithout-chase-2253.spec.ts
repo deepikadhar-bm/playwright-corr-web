@@ -1,6 +1,4 @@
-// [POM-APPLIED]
 import { test, expect } from '@playwright/test';
-import path from 'path';
 import * as stepGroups from '../../../src/helpers/step-groups';
 import { BatchinbulkbatchtimingPage } from '../../../src/pages/correspondant/batchinbulkbatchtiming';
 import { BidrequestCreationPage } from '../../../src/pages/correspondant/bidrequest-creation';
@@ -10,6 +8,14 @@ import { SpinnerPage } from '../../../src/pages/correspondant/spinner';
 import { StatusInactive2Page } from '../../../src/pages/correspondant/status-inactive--2';
 import { StatusInactivePage } from '../../../src/pages/correspondant/status-inactive-';
 import { UploadNewBidRequestButtonPage } from '../../../src/pages/correspondant/upload-new-bid-request-button';
+import { Logger as log } from '@helpers/log-helper';
+import { ENV } from '@config/environments';
+import { AddonHelpers } from '@helpers/AddonHelpers';
+import { APP_CONSTANTS as appconstants } from '../../../src/constants/app-constants';
+
+
+const TC_ID = 'REG_TS04_TC07.1';
+const TC_TITLE = 'Bulk Batch Timing - Verify Add batch functionality(Without Chase)';
 
 test.describe('REG_General Settings', () => {
   let vars: Record<string, string> = {};
@@ -21,9 +27,13 @@ test.describe('REG_General Settings', () => {
   let statusInactive2Page: StatusInactive2Page;
   let statusInactivePage: StatusInactivePage;
   let uploadNewBidRequestButtonPage: UploadNewBidRequestButtonPage;
+  const credentials = ENV.getCredentials('internal');
+  let Methods: AddonHelpers;
 
   test.beforeEach(async ({ page }) => {
     vars = {};
+    vars['Username'] = credentials.username;
+    vars['Password'] = credentials.password;
     batchinbulkbatchtimingPage = new BatchinbulkbatchtimingPage(page);
     bidrequestCreationPage = new BidrequestCreationPage(page);
     correspondentPortalPage = new CorrespondentPortalPage(page);
@@ -32,100 +42,103 @@ test.describe('REG_General Settings', () => {
     statusInactive2Page = new StatusInactive2Page(page);
     statusInactivePage = new StatusInactivePage(page);
     uploadNewBidRequestButtonPage = new UploadNewBidRequestButtonPage(page);
+    Methods = new AddonHelpers(page, vars);
   });
 
-  test('REG_TS04_TC07.1_Bulk Batch Timing - Verify Add batch functionality(Without Chase)', async ({ page }) => {
-    await stepGroups.stepGroup_Login_to_CORR_Portal(page, vars);
-    await stepGroups.stepGroup_Navigating_to_Bulk_Batch_Timing(page, vars);
-    await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-    await expect(page.getByText("Bulk Batch Timing")).toBeVisible();
-    vars["LastBeforeBatchTime"] = await batchinbulkbatchtimingPage.Last_Before_Batch_Time.textContent() || '';
-    vars["BatchTime(FewMinAdded)"] = (() => {
-      const d = new Date('2000-01-01 ' + String(vars["LastBeforeBatchTime"]));
-      d.setMinutes(d.getMinutes() + parseInt(String("2")));
-      return d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true }); // Format: hh:mm a
-    })();
-    vars["AddedBatchTime"] = vars["BatchTime(FewMinAdded)"];
-    // [DISABLED] Trim white space from DeletedBatch1 and store it in a runtime DeletedBatch1
-    // vars["DeletedBatch1"] = String(vars["DeletedBatch1"]).trim();
-    vars["MinWithStandard"] = String(vars["BatchTime(FewMinAdded)"]).split(":")["2"] || '';
-    vars["Time_Hour"] = String(vars["BatchTime(FewMinAdded)"]).substring(0, String(vars["BatchTime(FewMinAdded)"]).length - 6);
-    vars["Time_Min"] = String(vars["MinWithStandard"]).substring(0, String(vars["MinWithStandard"]).length - 3);
-    vars["Time_Unit"] = String(vars["MinWithStandard"]).substring(3);
-    await correspondentPortalPage.Add_A_Batch_Button.click();
-    await expect(page.getByText("Add a Batch")).toBeVisible();
-    // [DISABLED] Pick the current date hh by location UTC-04:00 and store into a variable Time_Hour
-    // vars["Time_Hour"] = (() => {
-    //   const d = new Date();
-    //   const opts: Intl.DateTimeFormatOptions = { timeZone: "UTC-04:00" };
-    //   const fmt = "hh";
-    //   // Map Java date format to Intl parts
-    //   const parts = new Intl.DateTimeFormat('en-US', { ...opts, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }).formatToParts(d);
-    //   const p = Object.fromEntries(parts.map(({type, value}) => [type, value]));
-    //   return fmt.replace('yyyy', p.year || '').replace('yy', (p.year||'').slice(-2)).replace('MM', p.month || '').replace('dd', p.day || '').replace('HH', String(d.getHours()).padStart(2,'0')).replace('hh', p.hour || '').replace('mm', p.minute || '').replace('ss', p.second || '').replace('a', p.dayPeriod || '').replace(/M(?!M)/g, String(parseInt(p.month||'0'))).replace(/d(?!d)/g, String(parseInt(p.day||'0'))).replace(/h(?!h)/g, String(parseInt(p.hour||'0')));
-    // })();
-    await correspondentPortalPage.StartTime_In_Hour.fill(vars["Time_Hour"]);
-    // [DISABLED] Pick the current date hh:mm by location UTC-04:00 and store into a variable Time_Min
-    // vars["Time_Min"] = (() => {
-    //   const d = new Date();
-    //   const opts: Intl.DateTimeFormatOptions = { timeZone: "UTC-04:00" };
-    //   const fmt = "hh:mm";
-    //   // Map Java date format to Intl parts
-    //   const parts = new Intl.DateTimeFormat('en-US', { ...opts, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }).formatToParts(d);
-    //   const p = Object.fromEntries(parts.map(({type, value}) => [type, value]));
-    //   return fmt.replace('yyyy', p.year || '').replace('yy', (p.year||'').slice(-2)).replace('MM', p.month || '').replace('dd', p.day || '').replace('HH', String(d.getHours()).padStart(2,'0')).replace('hh', p.hour || '').replace('mm', p.minute || '').replace('ss', p.second || '').replace('a', p.dayPeriod || '').replace(/M(?!M)/g, String(parseInt(p.month||'0'))).replace(/d(?!d)/g, String(parseInt(p.day||'0'))).replace(/h(?!h)/g, String(parseInt(p.hour||'0')));
-    // })();
-    // [DISABLED] Split the Time_Min with the : and store the value from the 2 in the BulkBatchTiming
-    // vars["BulkBatchTiming"] = String(vars["Time_Min"]).split(":")["2"] || '';
-    // [DISABLED] Store the value displayed in the text box Pricing_Return_Time_Buffer field into a variable PricingReturnTimeBuffer
-    // vars["PricingReturnTimeBuffer"] = await statusInactivePage.Pricing_Return_Time_Buffer.inputValue() || '';
-    await correspondentPortalPage.StartTime_In_Minutes.fill(vars["Time_Min"]);
-    vars["AddStartTimeInMin"] = await correspondentPortalPage.StartTime_In_Minutes.inputValue() || '';
-    if (String(vars["Time_Unit"]).includes(String("PM"))) {
-      await correspondentPortalPage.Dropdown_selection_2.selectOption({ label: "PM" });
-      await expect(correspondentPortalPage.Dropdown_selection_2).toHaveValue("PM");
-    }
-    await correspondentPortalPage.Add_Batch_Button.click();
-    // [DISABLED] Wait until the current page is loaded completely
-    // await page.waitForLoadState('networkidle');
-    await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-    await expect(page.getByText("Create Batch Timing")).toBeVisible();
-    await expect(correspondentPortalPage.Batch_timing_has_been_created_successfully_Success_Message).toBeVisible();
-    await okButtonPage.Ok_Button.click();
-    vars["ActualBatchTime"] = await batchinbulkbatchtimingPage.Last_Before_Batch_Time.textContent() || '';
-    expect(String(vars["ActualBatchTime"])).toBe(vars["AddedBatchTime"]);
-    await stepGroups.stepGroup_Verifying_the_Last_Modified_Data_In_the_Right_corner_screen(page, vars);
-    // [DISABLED] Store the value displayed in the text box Pricing_Return_Time_Buffer field into a variable PricingReturnTimeBuffer
-    // vars["PricingReturnTimeBuffer"] = await statusInactivePage.Pricing_Return_Time_Buffer.inputValue() || '';
-    // [DISABLED] Add PricingReturnTimeBuffer minutes to the AddedBatchTime with hh:mm a , convert to hh:mm a format, and store it in a runtime variable AddedBatchTime
-    // vars["AddedBatchTime"] = (() => {
-    //   const d = new Date('2000-01-01 ' + String(vars["AddedBatchTime"]));
-    //   d.setMinutes(d.getMinutes() + parseInt(String(vars["PricingReturnTimeBuffer"])));
-    //   return d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true }); // Format: hh:mm a
-    // })();
-    // [DISABLED] Store the count of elements identified by locator Batches_Count into a variable BatchCount
-    // vars["BatchCount"] = String(await correspondentPortalPage.Batches_Count.count());
-    // [DISABLED] Wait until the current page is loaded completely
-    // await page.waitForLoadState('networkidle');
-    // [DISABLED] Click on BidRequests_Menu
-    // await correspondentPortalPage.Bid_Requests.click();
-    // [DISABLED] Wait until the element Spinner is not visible
-    // await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-    // [DISABLED] Click on Upload New Bid Request Button
-    // await uploadNewBidRequestButtonPage.Upload_New_Bid_Request_Button.click();
-    // [DISABLED] Verify that the current page displays text Bid Request Details
-    // await expect(page.getByText("Bid Request Details")).toBeVisible();
-    // [DISABLED] Click on Today_Pricing
-    // await bidrequestCreationPage.Pricing_ReturnTime_Dropdown.click();
-    // [DISABLED] Verify that the options with text AddedBatchTime is present in the select list Select_Pricing_Batch_Dropdown and With Scrollable FALSE
-    // await expect(statusInactive2Page.Select_Pricing_Batch_Dropdown.locator('option', { hasText: vars["AddedBatchTime"] })).toBeVisible();
-    // [DISABLED] Store 1 in Batch
-    // vars["Batch"] = "1";
-    while (true) /* Verify if Batch <= BatchCount */ {
-      // [DISABLED] Perform addition on 1 and Batch and store the result inside a Batch considering 0 decimal places
-      // vars["Batch"] = (parseFloat(String("1")) + parseFloat(String(vars["Batch"]))).toFixed(0);
-      // [DISABLED] Navigating to Bulk Batch Timing
-      // await stepGroups.stepGroup_Navigating_to_Bulk_Batch_Timing(page, vars);
+  test(`${TC_ID} - ${TC_TITLE}`, async ({ page }) => {
+    log.tcStart(TC_ID, TC_TITLE);
+
+    try {
+
+      log.step('Login to CORR Portal');
+      try {
+        await stepGroups.stepGroup_Login_to_CORR_Portal(page, vars);
+        log.stepPass('Login to CORR Portal successful');
+      } catch (e) {
+        await log.stepFail(page, 'Login to CORR Portal failed');
+        throw e;
+      }
+
+      log.step('Navigate to Bulk Batch Timing and verify page');
+      try {
+        await stepGroups.stepGroup_Navigating_to_Bulk_Batch_Timing(page, vars);
+        await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+        await expect(page.getByText('Bulk Batch Timing')).toBeVisible();
+        log.stepPass('Navigated to Bulk Batch Timing and page verified successfully');
+      } catch (e) {
+        await log.stepFail(page, 'Failed to navigate to Bulk Batch Timing or verify page');
+        throw e;
+      }
+
+      log.step('Capture last batch time and calculate new batch time to add');
+      try {
+        vars['LastBeforeBatchTime'] = await batchinbulkbatchtimingPage.Last_Before_Batch_Time.textContent() || '';
+        Methods.addMinutesToDatetime(vars['LastBeforeBatchTime'], appconstants.TIME_FORMAT1_HHMMA, 2, appconstants.TIME_FORMAT1_HHMMA, 'BatchTime(FewMinAdded)');
+        vars['AddedBatchTime'] = vars['BatchTime(FewMinAdded)'];
+        vars['MinWithStandard'] = String(vars['BatchTime(FewMinAdded)']).split(':')['2'] || '';
+        vars['Time_Hour'] = String(vars['BatchTime(FewMinAdded)']).substring(0, String(vars['BatchTime(FewMinAdded)']).length - 6);
+        vars['Time_Min'] = String(vars['MinWithStandard']).substring(0, String(vars['MinWithStandard']).length - 3);
+        vars['Time_Unit'] = String(vars['MinWithStandard']).substring(3);
+        log.info('LastBeforeBatchTime: ' + vars['LastBeforeBatchTime']);
+        log.info('AddedBatchTime: ' + vars['AddedBatchTime']);
+        log.info('Time_Hour: ' + vars['Time_Hour']);
+        log.info('Time_Min: ' + vars['Time_Min']);
+        log.info('Time_Unit: ' + vars['Time_Unit']);
+        log.stepPass('Last batch time captured and new batch time calculated successfully');
+      } catch (e) {
+        await log.stepFail(page, 'Failed to capture last batch time or calculate new batch time');
+        throw e;
+      }
+
+      log.step('Click Add a Batch button and fill in batch time details');
+      try {
+        await correspondentPortalPage.Add_A_Batch_Button.click();
+        await expect(page.getByText('Add a Batch')).toBeVisible();
+        await correspondentPortalPage.StartTime_In_Hour.fill(vars['Time_Hour']);
+        await correspondentPortalPage.StartTime_In_Minutes.fill(vars['Time_Min']);
+        vars['AddStartTimeInMin'] = await correspondentPortalPage.StartTime_In_Minutes.inputValue() || '';
+        log.info('AddStartTimeInMin: ' + vars['AddStartTimeInMin']);
+        if (String(vars['Time_Unit']).includes(String('PM'))) {
+          await correspondentPortalPage.Dropdown_selection_2.selectOption({ label: 'PM' });
+          await expect(correspondentPortalPage.Dropdown_selection_2).toHaveValue('PM');
+        }
+        await correspondentPortalPage.Add_Batch_Button.click();
+        log.stepPass('Batch time details filled and Add Batch button clicked successfully');
+      } catch (e) {
+        await log.stepFail(page, 'Failed to fill batch time details or click Add Batch button');
+        throw e;
+      }
+
+      log.step('Verify batch creation success message and confirm');
+      try {
+        await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+        await expect(page.getByText('Create Batch Timing')).toBeVisible();
+        await expect(correspondentPortalPage.Batch_timing_has_been_created_successfully_Success_Message).toBeVisible();
+        await okButtonPage.Ok_Button.click();
+        log.stepPass('Batch creation success message verified and confirmed successfully');
+      } catch (e) {
+        await log.stepFail(page, 'Failed to verify batch creation success message or confirm');
+        throw e;
+      }
+
+      log.step('Verify newly added batch time and last modified data');
+      try {
+        vars['ActualBatchTime'] = await batchinbulkbatchtimingPage.Last_Before_Batch_Time.textContent() || '';
+        log.info('ActualBatchTime: ' + vars['ActualBatchTime']);
+        expect(String(vars['ActualBatchTime'])).toBe(vars['AddedBatchTime']);
+        await stepGroups.stepGroup_Verifying_the_Last_Modified_Data_In_the_Right_corner_screen(page, vars);
+        log.stepPass('Newly added batch time and last modified data verified successfully');
+      } catch (e) {
+        await log.stepFail(page, 'Failed to verify newly added batch time or last modified data');
+        throw e;
+      }
+
+      log.tcEnd('PASS');
+
+    } catch (e) {
+      await log.captureOnFailure(page, TC_ID, e);
+      log.tcEnd('FAIL');
+      throw e;
     }
   });
 });
