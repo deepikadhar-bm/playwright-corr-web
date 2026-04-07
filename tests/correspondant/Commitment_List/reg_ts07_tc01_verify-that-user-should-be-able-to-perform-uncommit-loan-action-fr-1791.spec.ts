@@ -55,7 +55,7 @@ test.describe('Commitment List - TS_2', () => {
         await correspondentPortalPage.Commitments_Side_Menu.click();
         await commitmentListPage.Committed_List_Dropdown.click();
         if (profile && profile.data) {
-          vars['BidReqId'] = profile.data[0]['RequestIdFrom5-5'];
+          vars['BidReqId'] = profile.data[0]['RequestIdFrom6-4'];
           log.info('Bid Request ID: ' + vars['BidReqId']);
         }
         await priceOfferedPage.Search_Dropdown.click();

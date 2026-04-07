@@ -64,7 +64,7 @@ export async function runPrereq_1424(page: Page, vars: Record<string, string>): 
       await priceOfferedPage.Commit_Selected_Footer_Buttonprice_offered.click();
       await priceOfferedPage.Commit_Selected_Loanspopupprice_offered_screen.waitFor({ state: 'visible' });
       await expect(priceOfferedPage.Commit_Selected_Loanspopupprice_offered_screen).toContainText(appconstants.COMMIT_SELECTED_LOANS_TEXT_POPUP);
-      await expect(page.getByText(appconstants.COMMIT_POPUP_SUCCESS_MESSAGE_PRICEOFFERED)).toBeVisible();
+      await expect(page.getByText(appconstants.YES_COMMIT_POPUP_MESSAGE_PRICEOFFERED)).toBeVisible();
       log.stepPass('First loan selected and Commit Selected popup displayed successfully');
     } catch (e) {
       log.stepFail(page, 'Failed to select first loan or open Commit Selected popup');

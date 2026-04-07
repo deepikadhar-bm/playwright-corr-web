@@ -17,7 +17,7 @@ export async function runPrereq_1788(page: Page, vars: Record<string, string>): 
   try {
     log.step('Generate base loan number string from current date');
     try {
-      const filePath = path.resolve(__dirname, '../../../uploads', fileconstants.BID_FILE_4LOANS);
+      const filePath = path.resolve(__dirname,'../../../../uploads',fileconstants.BID_FILE_4LOANS);
       vars['FilePath'] = filePath;
       log.info('File path: ' + vars['FilePath']);
       Methods.getCurrentTimestamp(appconstants.DATE_FORMAT_DDMMYYYY, 'CurrentDate', appconstants.UTC);

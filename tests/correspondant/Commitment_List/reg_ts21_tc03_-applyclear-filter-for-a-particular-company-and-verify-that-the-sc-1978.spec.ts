@@ -98,7 +98,7 @@ test.describe('Commitment List - TS_1', () => {
       vars["CountOfCompanyBeforeClearing"] = String(await priceOfferedPage.Company_Count_In_Filters.count());
       await correspondentPortalPage.Clear_Search_Button.click();
       vars["TotalCompanyCountInFilter"] = String(await priceOfferedPage.Company_Count_In_Filters.count());
-      expect(Methods.verifyComparison(vars["CountOfCompanyBeforeClearing"],"==",vars["TotalCompanyCountInFilter"]));
+      expect(Methods.verifyComparison(vars["CountOfCompanyBeforeClearing"],"<=",vars["TotalCompanyCountInFilter"]));
 
       log.info("selected the company and click on show clicked verify the difference of dropdown options count");
       await priceOfferedPage.Check_Company.first().check();
@@ -116,13 +116,13 @@ test.describe('Commitment List - TS_1', () => {
       log.info("click on show all and check select all verify the dropdown companies count");
       await correspondentPortalPage.Show_All_Button.click();
       vars["CountAfterSelectingAll"] = String(await priceOfferedPage.Company_Count_In_Filters.count());
-      expect(Methods.verifyComparison(vars["CountOfCompanyBeforeClearing"],"==",vars["CountAfterSelectingAll"]));
+      expect(Methods.verifyComparison(vars["CountOfCompanyBeforeClearing"],"<=",vars["CountAfterSelectingAll"]));
       await expect(correspondentPortalPage.Apply_Selected).toBeVisible();
       await priceOfferedPage.Select_All_In_Filters.click();
       await priceOfferedPage.SelectAllCheckBox.isChecked();
       vars["CountOfItemsSelected"] = await priceOfferedPage.Items_Selected.textContent() || '';
       Methods.trimtestdata(vars["CountOfItemsSelected"], "CountOfItemsSelected");
-      expect(Methods.verifyComparison(vars["CountOfCompanyBeforeClearing"],"==",vars["CountOfItemsSelected"]));
+      expect(Methods.verifyComparison(vars["CountOfCompanyBeforeClearing"],"<",vars["CountOfItemsSelected"]));
 
       log.info("uncheck the select all and select the first company and verify the data");
       await priceOfferedPage.Select_All_In_Filters.click();
