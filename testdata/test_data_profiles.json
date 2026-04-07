@@ -497,7 +497,7 @@
         "MissingHeaders_ErrorMessage2": "Please verify the correct Map ID is selected or tape is formatted correctly.",
         "Geo Coding Reducer flow(Loan Status)": "Success",
         "Eligibility Check(Error Description)": "Minimum loan amount $5,000",
-        "Stored_Text1": "10:13 AM",
+        "Stored_Text1": "04:47 AM",
         "Status Name": "Committed",
         "Bid Valid File(Error Column)": "No errors",
         "CompanyName3": "American Pacific - A4257",
@@ -533,7 +533,7 @@
         "Search Field Company Name": "Wik1C",
         "DuplicateLoans_HeaderMessage": "Duplicate Loans",
         "Company Name": "Freedom - A4187",
-        "Stored_Text": "09:22 AM",
+        "Stored_Text": "02:34 AM",
         "Resubmit Pricing Error Chase Direct1": "( nmlsId = 2767 )",
         "DuplicateLoans_ErrorMessage": "Duplicate loan numbers contained in this file: Deepika_June_02_02, Deepika_June_02_04. Please remove these from the file and retry upload.",
         "Missing Headers(Error Message)": "Bid tape is missing values for following headers: Loan Purpose. Please verify the correct Map ID is selected or tape is formatted correctly.",
@@ -568,7 +568,7 @@
         "MissingHeaders_ErrorMessage2": "",
         "Geo Coding Reducer flow(Loan Status)": "",
         "Eligibility Check(Error Description)": "",
-        "Stored_Text1": "10:18 AM",
+        "Stored_Text1": "04:53 AM",
         "Status Name": "",
         "Bid Valid File(Error Column)": "",
         "CompanyName3": "",
@@ -604,7 +604,7 @@
         "Search Field Company Name": "",
         "DuplicateLoans_HeaderMessage": "",
         "Company Name": "",
-        "Stored_Text": "09:27 AM",
+        "Stored_Text": "02:40 AM",
         "Resubmit Pricing Error Chase Direct1": "",
         "DuplicateLoans_ErrorMessage": "",
         "Missing Headers(Error Message)": "",
@@ -639,7 +639,7 @@
         "MissingHeaders_ErrorMessage2": "",
         "Geo Coding Reducer flow(Loan Status)": "",
         "Eligibility Check(Error Description)": "",
-        "Stored_Text1": "10:23 AM",
+        "Stored_Text1": "04:59 AM",
         "Status Name": "",
         "Bid Valid File(Error Column)": "",
         "CompanyName3": "",
@@ -675,7 +675,7 @@
         "Search Field Company Name": "",
         "DuplicateLoans_HeaderMessage": "",
         "Company Name": "",
-        "Stored_Text": "09:32 AM",
+        "Stored_Text": "02:46 AM",
         "Resubmit Pricing Error Chase Direct1": "",
         "DuplicateLoans_ErrorMessage": "",
         "Missing Headers(Error Message)": "",
@@ -710,7 +710,7 @@
         "MissingHeaders_ErrorMessage2": "",
         "Geo Coding Reducer flow(Loan Status)": "",
         "Eligibility Check(Error Description)": "",
-        "Stored_Text1": "10:28 AM",
+        "Stored_Text1": "05:05 AM",
         "Status Name": "",
         "Bid Valid File(Error Column)": "",
         "CompanyName3": "",
@@ -746,7 +746,7 @@
         "Search Field Company Name": "",
         "DuplicateLoans_HeaderMessage": "",
         "Company Name": "",
-        "Stored_Text": "09:37 AM",
+        "Stored_Text": "02:52 AM",
         "Resubmit Pricing Error Chase Direct1": "",
         "DuplicateLoans_ErrorMessage": "",
         "Missing Headers(Error Message)": "",
@@ -781,7 +781,7 @@
         "MissingHeaders_ErrorMessage2": "",
         "Geo Coding Reducer flow(Loan Status)": "",
         "Eligibility Check(Error Description)": "",
-        "Stored_Text1": "10:33 AM",
+        "Stored_Text1": "05:11 AM",
         "Status Name": "",
         "Bid Valid File(Error Column)": "",
         "CompanyName3": "",
@@ -817,7 +817,7 @@
         "Search Field Company Name": "",
         "DuplicateLoans_HeaderMessage": "",
         "Company Name": "",
-        "Stored_Text": "09:42 AM",
+        "Stored_Text": "02:58 AM",
         "Resubmit Pricing Error Chase Direct1": "",
         "DuplicateLoans_ErrorMessage": "",
         "Missing Headers(Error Message)": "",
@@ -852,7 +852,7 @@
         "MissingHeaders_ErrorMessage2": "",
         "Geo Coding Reducer flow(Loan Status)": "",
         "Eligibility Check(Error Description)": "",
-        "Stored_Text1": "01:53 PM",
+        "Stored_Text1": "05:17 AM",
         "Status Name": "",
         "Bid Valid File(Error Column)": "",
         "CompanyName3": "",
@@ -888,7 +888,7 @@
         "Search Field Company Name": "",
         "DuplicateLoans_HeaderMessage": "",
         "Company Name": "",
-        "Stored_Text": "01:57 PM",
+        "Stored_Text": "03:04 AM",
         "Resubmit Pricing Error Chase Direct1": "",
         "DuplicateLoans_ErrorMessage": "",
         "Missing Headers(Error Message)": "",
@@ -959,7 +959,7 @@
         "Search Field Company Name": "",
         "DuplicateLoans_HeaderMessage": "",
         "Company Name": "",
-        "Stored_Text": "",
+        "Stored_Text": "10:21 AM",
         "Resubmit Pricing Error Chase Direct1": "",
         "DuplicateLoans_ErrorMessage": "",
         "Missing Headers(Error Message)": "",
@@ -1819,22 +1819,22 @@
     "testDataName": "bulk batch to bid request",
     "data": [
       {
-        "batch time": "08:41 AM"
+        "batch time": "01:57 AM"
       },
       {
-        "batch time": "08:47 AM"
+        "batch time": "02:03 AM"
       },
       {
-        "batch time": "08:53 AM"
+        "batch time": "02:09 AM"
       },
       {
-        "batch time": "08:59 AM"
+        "batch time": "02:15 AM"
       },
       {
-        "batch time": "09:05 AM"
+        "batch time": "02:21 AM"
       },
       {
-        "batch time": "09:11 AM"
+        "batch time": "02:27 AM"
       }
     ],
     "createdById": 24,

@@ -3362,15 +3362,12 @@ export async function stepGroup_Modifying_The_Batch_Intervals_For_Next_bussiness
   const testData: Record<string, string> = {}; // TODO: Load from test data profile
   await CorrPortalElem.Modify_Batch_Intervals_Button.click();
   await expect(page.getByText("Edit Batch Timing")).toBeVisible();
-  vars["CurrentTime"] = (() => {
-    const d = new Date();
-    const opts: Intl.DateTimeFormatOptions = { timeZone: "America/New_York" };
-    const fmt = "hh:mm a";
-    // Map Java date format to Intl parts
-    const parts = new Intl.DateTimeFormat('en-US', { ...opts, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }).formatToParts(d);
-    const p = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
-    return fmt.replace('yyyy', p.year || '').replace('yy', (p.year || '').slice(-2)).replace('MM', p.month || '').replace('dd', p.day || '').replace('HH', String(d.getHours()).padStart(2, '0')).replace('hh', p.hour || '').replace('mm', p.minute || '').replace('ss', p.second || '').replace('a', p.dayPeriod || '').replace(/M(?!M)/g, String(parseInt(p.month || '0'))).replace(/d(?!d)/g, String(parseInt(p.day || '0'))).replace(/h(?!h)/g, String(parseInt(p.hour || '0')));
-  })();
+  vars["CurrentTime"] = new Date().toLocaleTimeString('en-US', {
+  timeZone: 'America/New_York',
+  hour: '2-digit',
+  minute: '2-digit',
+  hour12: true
+});
   vars["OnehourPrior"] = (() => {
     const d = new Date('2000-01-01 ' + String(vars["CurrentTime"]));
     d.setMinutes(d.getMinutes() + parseInt(String("60")));
@@ -3686,17 +3683,17 @@ export async function stepGroup_Filtering_Status_and_Navigating_to_Filtered_Stat
   await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
   await CorrPortalElem.Filter_Dropdown.click();
   await CorrPortalElem.Select_Company_CCode_Dropdown.click();
-  await CorrPortalElem.Required_Company_Checkbox_filter.check();
-  await CorrPortalElem.Apply_Selected_1_button_in_Rule.click();
+  await CorrPortalElem.Required_Company_Checkbox_filter(vars["CompanyName"]).check();
+  await CorrPortalElem.Apply_Selected_1_button_in_Rule.first().click();
   await CorrPortalElem.Select_Bid_Request_Status_Dropdown1.click();
-  await CorrPortalElem.Status_checkbox_Filter.check();
-  await expect(CorrPortalElem.Apply_Selected_1_button_in_Rule).toBeVisible();
-  await CorrPortalElem.Apply_Selected_Button_2_filter.click();
+  await CorrPortalElem.Status_checkbox_Filter(vars["StatusToBeSelected"]).check();
+  //await expect(CorrPortalElem.Apply_Selected_1_button_in_Rule.first()).toBeVisible();
+  await CorrPortalElem.Apply_Selected_Button_2_filter.first().click();
   await CorrPortalElem.Apply_Filters_Button.click();
   await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
   await stepGroup_Traversing_to_the_next_screens_until_the_bid_is_visible(page, vars);
   await expect(CorrPortalElem.Status).toContainText(vars["StatusToBeSelected"]);
-  await CorrPortalElem.Filtered_Status_BidRequest_ID.click();
+  await CorrPortalElem.Filtered_Status_BidRequest_ID(vars["ExecutionType"], vars["StatusToBeSelected"]).first().click();
   await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
 }
 
@@ -3799,11 +3796,11 @@ export async function stepGroup_Traversing_to_the_next_screens_until_the_bid_is_
     await CorrPortalElem.Change_Page_Size_Dropdown.click();
     await CorrPortalElem.Set_page_size_to_50_Dropdown.click();
     await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
-    if (true) /* Element Filtered Status BidRequest ID is not visible */ {
-      while (!(await CorrPortalElem.Filtered_Status_BidRequest_ID.isVisible())) {
+    //if (!(await CorrPortalElem.Filtered_Status_BidRequest_ID(vars["ExecutionType"], vars["StatusToBeSelected"]).isVisible())) {
+      while (!(await CorrPortalElem.Filtered_Status_BidRequest_ID(vars["ExecutionType"], vars["StatusToBeSelected"]).first().isVisible())) {
         await CorrPortalElem.Go_to_Next_Page_Button.click();
       }
-    }
+    //}
   }
 }
 

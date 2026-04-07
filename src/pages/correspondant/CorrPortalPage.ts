@@ -941,12 +941,12 @@ export class CorrPortalPage {
     return this.page.locator("//td[@data-title=\"Uploaded\"]//div[starts-with(text(),\" $|Last Month|\")]");
   }
 
-  get Filtered_Status_BidRequest_ID(): Locator {
-    return this.page.locator("//div[   contains(@aria-label, 'Loans total:') and   number(substring-before(substring-after(@aria-label, 'Loans total: '), ',')) < 10 ]/../..//td[@data-title=\"Execution Type\"]//div[text()=\" $|ExecutionType| \"]/../..//td[@data-title=\"Status\"]//span[contains(text(),\"$|StatusToBeSelected|\")]/../../..//td[@data-title=\"Bid Req. ID\"]");
+  Filtered_Status_BidRequest_ID(ExecutionType: string, StatusToBeSelected: string): Locator {
+    return this.page.locator(`//div[   contains(@aria-label, 'Loans total:') and   number(substring-before(substring-after(@aria-label, 'Loans total: '), ',')) < 10 ]/../..//td[@data-title=\"Execution Type\"]//div[text()=\" ${ExecutionType} \"]/../..//td[@data-title=\"Status\"]//span[contains(text(),\"${StatusToBeSelected}\")]/../../..//td[@data-title=\"Bid Req. ID\"]`);
   }
 
   get Filtered_Status_BidRequest_ID_Standard_and_chase(): Locator {
-    return this.page.locator("//div[   contains(@aria-label, 'Loans total:') and   number(substring-before(substring-after(@aria-label, 'Loans total: '), ',')) <= 10 ]/../..//td[@data-title='Execution Type']/div[normalize-space(.) = 'Standard , Chase Direct']/../..//td[@data-title=\"Status\"]//*[text()=\" $|StatusToBeSelected| \"]/../../..//td[@data-title=\"Bid Req. ID\"]");
+    return this.page.locator(`//div[   contains(@aria-label, 'Loans total:') and   number(substring-before(substring-after(@aria-label, 'Loans total: '), ',')) <= 10 ]/../..//td[@data-title='Execution Type']/div[normalize-space(.) = 'Standard , Chase Direct']/../..//td[@data-title=\"Status\"]//*[text()=\" ${StatusToBeSelected} \"]/../../..//td[@data-title=\"Bid Req. ID\"]`);
   }
 
   get First_Active_Rule_Name(): Locator {
@@ -1525,8 +1525,8 @@ export class CorrPortalPage {
     return this.page.locator("((//input[@type=\"checkbox\" and not(contains(@aria-label,\"Home Sweet Mortgage\"))])[position() > 1 and position() < last()])[1]");
   }
 
-  get Required_Company_Checkbox_filter(): Locator {
-    return this.page.locator("//input[@type=\"checkbox\" and contains(@aria-label,\"@|Company Name|\")]");
+  Required_Company_Checkbox_filter(CompanyName: string): Locator {
+    return this.page.locator(`//input[@type="checkbox" and contains(@aria-label,"${CompanyName}")]`);
   }
 
   Required_Company_s_Name_Value(Companyname: string): Locator {
@@ -1919,8 +1919,8 @@ export class CorrPortalPage {
     return this.page.locator("//div[@class=\"pill rounded-pill relative\" and contains(@aria-label,\"Chip Status\")]");
   }
 
-  get Status_checkbox_Filter(): Locator {
-    return this.page.locator("//input[@type=\"checkbox\" and @aria-label=\"Select $|StatusToBeSelected|\"]");
+  Status_checkbox_Filter(StatusToBeSelected: string): Locator {
+    return this.page.locator(`//input[@type="checkbox" and @aria-label="Select ${StatusToBeSelected}"]`);
   }
 
   get Submit_for_Pricing_Enabled(): Locator {

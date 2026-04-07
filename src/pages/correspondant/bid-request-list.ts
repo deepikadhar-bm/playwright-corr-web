@@ -67,8 +67,8 @@ export class BidRequestListPage {
     return this.page.locator(`//span[normalize-space(text())='${CurrentDate}' and @class=\"custom-day\"]`);
   }
 
-  get Selection_Dropdown_In_Resubmit_Popup2(): Locator {
-    return this.page.locator("((//select[@aria-label=\"Dropdown selection\"]//option)[position() > 1 and position() <= last()])[$|count|]");
+  Selection_Dropdown_In_Resubmit_Popup2(count : string): Locator {
+    return this.page.locator(`((//select[@aria-label="Dropdown selection"]//option)[position() > 1 and position() <= last()])[${count}]`);
   }
 
   Uploaded_date_from_list(RequestIDDetails:String): Locator {

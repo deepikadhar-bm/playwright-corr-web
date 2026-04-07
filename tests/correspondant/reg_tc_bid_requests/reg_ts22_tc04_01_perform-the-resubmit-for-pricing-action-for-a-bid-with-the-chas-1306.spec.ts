@@ -43,7 +43,7 @@ test.describe('Unassigned', () => {
     await stepGroups.stepGroup_Navigating_to_Bulk_Batch_Timing(page, vars);
     vars["BufferTime"] = await statusInactivePage.Pricing_Return_Time_Buffer.inputValue() || '';
     await correspondentPortalPage.Bid_Requests_Side_Menu.click();
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('load');
     await priceOfferedPage.Filter_Dropdown1.click();
     await correspondentPortalPage.Select_CompanyCCode_Dropdown1.click();
     await bidRequestListPage.Required_Company_Checkbox_filter.check();
@@ -119,20 +119,7 @@ test.describe('Unassigned', () => {
       }
       vars["RowsCount"] = (parseFloat(String("1")) + parseFloat(String(vars["RowsCount"]))).toFixed(0);
     }
-    // [DISABLED] Click on First loan Number In table
-    // await bidRequestDetailsPage.First_loan_Number_In_table.click();
-    // [DISABLED] Wait until the element Spinner is not visible
-    // await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-    // [DISABLED] Store text from the element Bid Request ID On Loan Details Popup into a variable RequestIdPopupBeforeSubmit
-    // vars["RequestIdPopupBeforeSubmit"] = await bidRequestDetailsPage.Bid_Request_ID_On_Loan_Details_Popup.textContent() || '';
-    // [DISABLED] Store text from the element Bid Loan Number Loan Details Pop up into a variable LoanNumberPopUpBeforeSubmit
-    // vars["LoanNumberPopUpBeforeSubmit"] = await bidRequestDetailsPage.Bid_Loan_Number_Loan_Details_Pop_up.textContent() || '';
-    // [DISABLED] Store text from the element Errors Check On Laon Details Popup into a variable ErrorsCheckPopupBeforeSubmit
-    // vars["ErrorsCheckPopupBeforeSubmit"] = await bidRequestDetailsPage.Errors_Check_On_Laon_Details_Popup.textContent() || '';
-    // [DISABLED] Store the count of elements identified by locator ChaseFields Count Popup (Loan Details) into a variable ChaseFieldCountPopup
-    // vars["ChaseFieldCountPopup"] = String(await bidRequestDetailsPage.ChaseFields_Count_Popup_Loan_Details.count());
-    // [DISABLED] Store 1 in count
-    // vars["count"] = "1";
+    
     while (true) /* Verify if count <= ChaseFieldCountPopup */ {
       // [DISABLED] Click on Bid Request ID On Loan Details Popup
       // await bidRequestDetailsPage.Bid_Request_ID_On_Loan_Details_Popup.click();
@@ -153,22 +140,7 @@ test.describe('Unassigned', () => {
       // [DISABLED] Perform addition on 1 and count and store the result inside a count considering 0 decimal places
       // vars["count"] = (parseFloat(String("1")) + parseFloat(String(vars["count"]))).toFixed(0);
     }
-    // [DISABLED] Click on Close Button Loan Details Popup
-    // await correspondentPortalPage.Close_Buttonemail_config.click();
-    // [DISABLED] Store text from the element Footer Submission Date into a variable FooterSubmssionBeforeSubmit
-    // vars["FooterSubmssionBeforeSubmit"] = await bidRequestDetailsPage.Footer_Submission_Date.textContent() || '';
-    // [DISABLED] Store text from the element Footer Queued For Date into a variable FooterQueuedBeforeSubmit
-    // vars["FooterQueuedBeforeSubmit"] = await bidRequestDetailsPage.Footer_Queued_For_Date.textContent() || '';
-    // [DISABLED] Click on Re-Submit For Pricing Button
-    // await correspondentPortalPage.ReSubmit_For_Pricing_Button.click();
-    // [DISABLED] Wait until the element Spinner is not visible
-    // await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-    // [DISABLED] Verify that the element bidRequestDate Today Radio Button is enabled and With Scrollable TRUE
-    // await expect(bidRequestDetailsPage.bidRequestDate_Today_Radio_Button).toBeVisible();
-    // [DISABLED] Click on Pricing Dropdown
-    // await correspondentPortalPage.Dropdown_selection_2.click();
-    // [DISABLED] Wait for 5 seconds
-    // await page.waitForTimeout(5000);
+    
     if (true) /* Element Enabled Time is visible */ {
     }
     }
