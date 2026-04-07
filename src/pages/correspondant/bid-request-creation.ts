@@ -59,4 +59,7 @@ export class BidRequestCreationPage {
     return this.page.locator("(//option[@aria-disabled=\"false\"])[3]");
   }
 
+  get Delete_File_Button(): Locator {
+    return this.page.locator("//div[@class=\"card\"]//button");
+  }
 }
