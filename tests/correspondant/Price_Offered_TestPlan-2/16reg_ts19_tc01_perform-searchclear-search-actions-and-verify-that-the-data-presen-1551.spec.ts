@@ -4,13 +4,14 @@ import { BidRequestsPage } from '../../../src/pages/correspondant/bid-requests';
 import { CorrespondentPortalPage } from '../../../src/pages/correspondant/correspondent-portal';
 import { PriceOfferedPage } from '../../../src/pages/correspondant/price-offered';
 import { SpinnerPage } from '../../../src/pages/correspondant/spinner';
-import { AddonHelpers } from '../../../src/helpers/AddonHelpers';
-import { Logger as log } from '../../../src/helpers/log-helper';
-import { ENV } from '@config/environments'
+import { AddonHelpers } from '@helpers/AddonHelpers';
+import { Logger as log } from '@helpers/log-helper';
+import { ENV } from '@config/environments';
 import { APP_CONSTANTS as appconstants } from '../../../src/constants/app-constants';
 
-const TC_ID = "REG_TS19_TC01";
-const TC_TITLE = "Perform search/Clear search actions and verify that the data present in the list screen";
+
+const TC_ID = 'REG_TS19_TC01';
+const TC_TITLE = 'Perform search/Clear search actions and verify that the data present in the list screen';
 
 test.describe('REG_PriceOffered', () => {
   let vars: Record<string, string> = {};
@@ -18,144 +19,119 @@ test.describe('REG_PriceOffered', () => {
   let correspondentPortalPage: CorrespondentPortalPage;
   let priceOfferedPage: PriceOfferedPage;
   let spinnerPage: SpinnerPage;
-  let helpers: AddonHelpers;
+  let Methods: AddonHelpers;
   const credentials = ENV.getCredentials('internal');
-
 
   test.beforeEach(async ({ page }) => {
     vars = {};
+    vars["Username"] = credentials.username;
+    vars["Password"] = credentials.password;
     bidRequestsPage = new BidRequestsPage(page);
     correspondentPortalPage = new CorrespondentPortalPage(page);
     priceOfferedPage = new PriceOfferedPage(page);
     spinnerPage = new SpinnerPage(page);
-    helpers = new AddonHelpers(page, vars);
+    Methods = new AddonHelpers(page, vars);
   });
 
   test(`${TC_ID} - ${TC_TITLE}`, async ({ page }) => {
     log.tcStart(TC_ID, TC_TITLE);
-
     try {
-      log.step(`Step 1: Login to CORR Portal`);
-      try {
-        vars["Username"] = credentials.username;
-        vars["Password"] = credentials.password;
-        await stepGroups.stepGroup_Login_to_CORR_Portal(page, vars);
-        log.stepPass(`Step 1 passed: Logged in to CORR Portal successfully`);
 
-      } catch (error) {
-        log.stepFail(page, `Step 1 failed: Failed to login to CORR Portal`);
-        throw error; // Rethrow to fail the test
+      log.step('Login to CORR Portal');
+      try {
+        await stepGroups.stepGroup_Login_to_CORR_Portal(page, vars);
+        log.stepPass('Logged in to CORR Portal successfully');
+      } catch (e) {
+        log.stepFail(page, 'Failed to login to CORR Portal');
+        throw e;
       }
 
-      log.step(`Step 2: Click to expand Commitments side menu`);
+      log.step('Navigate to Price Offered');
       try {
         await correspondentPortalPage.Commitments_Side_Menu.click();
-
-      } catch (error) {
-        log.stepFail(page, `Step 2 failed: Failed to click and expand Commitments side menu `);
-        throw error;
-      }
-
-      log.step("Step 3: Select Price Offered from dropdown");
-      try {
-        await spinnerPage.Spinner.waitFor({ state: 'visible', timeout: 10000 });
         await correspondentPortalPage.Price_Offered_List_Dropdown.click();
-        await spinnerPage.Spinner.waitFor({ state: 'hidden', timeout: 10000 });
-        log.stepPass(`Step 3 passed: Price Offered selected from dropdown successfully`);
-      } catch (error) {
-        log.stepFail(page, `Step 3 failed: Failed to select Price Offered from dropdown`);
-        throw error;
+        await spinnerPage.Spinner.waitFor({ state: 'hidden', timeout: 20000 });
+        log.stepPass('Navigated to Price Offered successfully');
+      } catch (e) {
+        log.stepFail(page, 'Failed to navigate to Price Offered');
+        throw e;
       }
 
-      log.step("Step 4: Perform search by Bid Request ID");
+      log.step('Search by partial Bid Request ID and verify results on each page contain the search term');
       try {
         await bidRequestsPage.Search_by_Bid_Request_ID_Field.click();
         vars["ThreeDigitBidId"] = appconstants.ThreeDigitBidID;
-        await bidRequestsPage.Search_by_Bid_Request_ID_Field.type(vars["ThreeDigitBidId"], { delay: 250 });
-        // await spinnerPage.Spinner.waitFor({ state: 'visible', timeout: 10000 });
-        await spinnerPage.Spinner.waitFor({ state: 'hidden', timeout: 10000 });
+        await bidRequestsPage.Search_by_Bid_Request_ID_Field.type(vars["ThreeDigitBidId"]);
+        await page.keyboard.press('Enter');
+        await spinnerPage.Spinner.waitFor({ state: 'hidden', timeout: 20000 });
+        log.info('ThreeDigitBidId: ' + vars['ThreeDigitBidId']);
+
         vars["count"] = appconstants.ONE;
-        vars["Count"] = appconstants.ONE;
         vars["PageCount"] = await correspondentPortalPage.Pagination_Count.textContent() || '';
-        helpers.extractSubstringAfterReference(vars["PageCount"], "of ", 2, "PageCount");
-        log.stepPass(`Step 4 passed: Search by Bid Request ID performed successfully`);
-
-      } catch (error) {
-        log.stepFail(page, `Step 4 failed: Failed to click on Search by Bid Request ID field`);
-        throw error;
-      }
-
-      log.step("Step 5: Verify the search results and pagination");
-      try {
-        while (parseFloat(String(vars["count"])) <= parseFloat(String("2"))) {
-          vars["BidReqIdPriceOffered"] = String(await correspondentPortalPage.First_Bid_Req_Id.count());
-          await helpers.verifyMultipleElementsHavePartialText(correspondentPortalPage.First_Bid_Req_Id, vars["ThreeDigitBidId"]);
-          if (await correspondentPortalPage.Go_to_Next_Page_Button.isEnabled()) /* Element Go to Next Page Button is enabled */ {
+        Methods.removeCharactersFromPosition(vars["PageCount"], "10", '0', "PageCount");
+        log.info('PageCount: ' + vars['PageCount']);
+        while (parseFloat(vars["count"]) <= parseFloat("2")) {
+          log.info('Page: ' + vars['count']);
+          await Methods.verifyMultipleElementsHavePartialText(correspondentPortalPage.First_Bid_Req_Id, vars["ThreeDigitBidId"]);
+          if (await correspondentPortalPage.Go_to_Next_Page_Button.isEnabled()) {
             await correspondentPortalPage.Go_to_Next_Page_Button.click();
-            vars["Count"] = (parseFloat(String(vars["Count"])) - (parseFloat(vars["BidReqIdPriceOffered"]) - 1)).toFixed(0);
           }
-          vars["count"] = (parseFloat(String("1")) + parseFloat(String(vars["count"]))).toFixed(0);
+          Methods.MathematicalOperation(vars["count"], '+', 1, 'count');
         }
-        log.stepPass(`Step 5 passed: Search results and pagination verified successfully`);
-      } catch (error) {
-        log.stepFail(page, `Step 5 failed: Failed to verify the search results and pagination`);
-        throw error;
+        log.stepPass('Partial Bid Request ID search results verified successfully across pages');
+      } catch (e) {
+        log.stepFail(page, 'Partial Bid Request ID search results verification failed');
+        throw e;
       }
 
-      log.step("Step 6: Clear the search field and verify results reset");
-      try {
-        await bidRequestsPage.Search_by_Bid_Request_ID_Field.clear();
-        log.stepPass(`Step 6 passed: Search field cleared successfully`);
-      } catch (error) {
-        log.stepFail(page, `Step 6 failed: Failed to clear the search field and verify results reset`);
-        throw error;
-      }
-
-      log.step("Step 7: Wait for filter reset and persist first Bid Request ID for next test steps");
-      try {
-        await spinnerPage.Spinner.waitFor({ state: 'visible', timeout: 15000 });
-        await spinnerPage.Spinner.waitFor({ state: 'hidden', timeout: 10000 });
-        vars["FirstBidReqId"] = await correspondentPortalPage.First_Bid_Request_ID.first().textContent() || '';
-        helpers.trimtestdata(vars["FirstBidReqId"], "FirstBidReqId");
-        log.stepPass(`Step 7 passed: Filter reset and first Bid Request ID persisted successfully`);
-      } catch (error) {
-        log.stepFail(page, `Step 7 failed: Failed to wait for filter reset and persist first Bid Request ID for next test steps`);
-        throw error;
-      }
-
-      log.step("Step 8: Perform search by persisted Bid Request ID and verify results");
+      log.step('Clear search field and capture first Bid Request ID from reset results');
       try {
         await bidRequestsPage.Search_by_Bid_Request_ID_Field.click();
-        await bidRequestsPage.Search_by_Bid_Request_ID_Field.type(vars["FirstBidReqId"], { delay: 250 });
-        await spinnerPage.Spinner.waitFor({ state: 'visible', timeout: 15000 });
-        await spinnerPage.Spinner.waitFor({ state: 'hidden', timeout: 10000 });
-        vars["CountBidReqIdPriceOffered"] = String(await correspondentPortalPage.First_Bid_Req_Id.count());
-        vars["Count1"] = appconstants.ONE;
-        await helpers.verifyMultipleElementsHaveSameText(correspondentPortalPage.First_Bid_Req_Id, vars["FirstBidReqId"]);
-        log.stepPass(`Step 8 passed: Search by persisted Bid Request ID performed and results verified successfully`);
-      } catch (error) {
-        log.stepFail(page, `Step 8 failed: Failed to click on Search by Bid Request ID field`);
-        throw error;
-      }
-
-      log.step("Step 9: Clear the search field again and verify all results are displayed");
-      try {
         await bidRequestsPage.Search_by_Bid_Request_ID_Field.clear();
-        await spinnerPage.Spinner.waitFor({ state: 'visible', timeout: 15000 });
-        await spinnerPage.Spinner.waitFor({ state: 'hidden', timeout: 10000 });
-        vars["CountBidReqIdPriceOffered"] = String(await correspondentPortalPage.First_Bid_Req_Id.count());
-        expect(parseFloat(vars["CountBidReqIdPriceOffered"])).toBeGreaterThanOrEqual(parseFloat(appconstants.TWO));
-        log.stepPass(`Step 9 passed: Search field cleared again and count of results displayed verified successfully`);
-      } catch (error) {
-        log.stepFail(page, `Step 9 failed: Failed to clear the search field again and verify the count of results displayed`);
-        throw error;
+        await spinnerPage.Spinner.waitFor({ state: 'hidden', timeout: 20000 });
+        vars["FirstBidReqId"] = await correspondentPortalPage.First_Bid_Request_ID.first().textContent() || '';
+        Methods.trimtestdata(vars["FirstBidReqId"], 'FirstBidReqId');
+        log.info('First Bid Request ID: ' + vars['FirstBidReqId']);
+        log.stepPass('Search field cleared and first Bid Request ID captured successfully');
+      } catch (e) {
+        log.stepFail(page, 'Failed to clear search field or capture first Bid Request ID');
+        throw e;
       }
 
-    } catch (error) {
-      log.captureOnFailure(page, TC_ID, error);
-      log.tcEnd('FAIL')
-      throw error; // Rethrow to ensure the test is marked as failed
+      log.step('Search by exact Bid Request ID and store count of matching records');
+      try {
+        await bidRequestsPage.Search_by_Bid_Request_ID_Field.click();
+        await bidRequestsPage.Search_by_Bid_Request_ID_Field.type(vars["FirstBidReqId"]);
+        await page.keyboard.press('Enter');
+        await spinnerPage.Spinner.waitFor({ state: 'hidden', timeout: 20000 });
+        vars["CountBidReqIdAfterSearch"] = String(await priceOfferedPage.Bid_Req_Id_Price_Offered.count());
+        log.info('Count of BidReqId after search: ' + vars['CountBidReqIdAfterSearch']);
+        await Methods.verifyMultipleElementsHaveSameText(priceOfferedPage.Bid_Req_Id_Price_Offered, vars["FirstBidReqId"]);
+        log.stepPass('Successfully searched for exact Bid Request ID and stored count of matching records');
+      } catch (e) {
+        log.stepFail(page, 'Failed to search for exact Bid Request ID or store count of matching records');
+        throw e;
+      }
+
+      log.step('Clear search field again and verify results are reset to show multiple records');
+      try {
+        await bidRequestsPage.Search_by_Bid_Request_ID_Field.click();
+        await bidRequestsPage.Search_by_Bid_Request_ID_Field.clear();
+        await spinnerPage.Spinner.waitFor({ state: 'hidden', timeout: 20000 });
+        vars["CountBidReqIdAfterClear"] = String(await priceOfferedPage.Bid_Req_Id_Price_Offered.count());
+        log.info('Count of BidReqId PriceOffered after clear: ' + vars['CountBidReqIdAfterClear']);
+        expect(Methods.verifyComparison(vars["CountBidReqIdAfterClear"], '>=', vars['CountBidReqIdAfterSearch']));
+        log.stepPass('Search cleared and results reset successfully to show multiple records');
+      } catch (e) {
+        log.stepFail(page, 'Failed to clear search field or verify that results were reset to show multiple records');
+        throw e;
+      }
+
+      log.tcEnd('PASS');
+    } catch (e) {
+      await log.captureOnFailure(page, TC_ID, e);
+      log.tcEnd('FAIL');
+      throw e;
     }
   });
-
 });

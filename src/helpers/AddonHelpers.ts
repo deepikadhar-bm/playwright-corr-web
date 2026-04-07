@@ -170,11 +170,11 @@ export class AddonHelpers {
   // 5. Verify element text contains (case-insensitive)
   // ==========================================================================
   async verifyElementTextContainsCaseInsensitive(
-    strategyOrLocator: string | Locator, value: string | undefined, testData: string
+    strategyOrLocator: string | Locator, testData: string
   ): Promise<void> {
     const METHOD = 'verifyElementTextContainsCaseInsensitive';
     try {
-      const actual = (await this.buildLocator(strategyOrLocator, value).textContent() ?? '').trim();
+      const actual = (await this.buildLocator(strategyOrLocator).textContent() ?? '').trim();
       if (!actual.toLowerCase().includes(testData.toLowerCase()))
         throw new Error(`"${actual}" does not contain "${testData}"`);
       log.pass(`[${METHOD}] "${actual}" contains "${testData}" (case-insensitive)`);
@@ -875,17 +875,27 @@ export class AddonHelpers {
     } catch (e) { log.error(`[${METHOD}] Remove characters from "${sourceString}" | Error: ${e instanceof Error ? e.message : String(e)}`); throw (e instanceof Error ? e : new Error(String(e))); }
   }
   //verifying the element contains text with ignore case
-  async verifyElementContainsTextIgnoreCase(element: Locator, expectedText: string): Promise<void> {
-    const METHOD = 'verifyElementContainsTextIgnoreCase';
-    const actualText = await element.textContent() || '';
+ async verifyElementContainsTextIgnoreCase(element: Locator, expectedText: string): Promise<void> {
+  const METHOD = 'verifyElementContainsTextIgnoreCase';
+  try {
+    if (!expectedText || expectedText.trim() === '') {
+      throw new Error(`Expected text is empty or blank. Received: "${expectedText}"`);
+    }
+    const actualText = (await element.textContent()) || '';
+    if (!actualText || actualText.trim() === '') {
+      throw new Error(`Actual element text is empty or blank`);
+    }
     const actual = actualText.trim().toLowerCase();
     const expected = expectedText.trim().toLowerCase();
-    if (actual.includes(expected)) {
-      log.pass(`[${METHOD}] Element contains "${expectedText}" (case-insensitive)`);
-    } else {
-      log.fail(`[${METHOD}] Expected to contain "${expectedText}" (case-insensitive) | Error: Got: "${actualText.trim()}"`); throw new Error(`Got: "${actualText.trim()}"`);
+    if (!actual.includes(expected)) {
+      throw new Error(`Expected to contain "${expectedText}" (case-insensitive) | Got: "${actualText.trim()}"`);
     }
+    log.pass(`[${METHOD}] Element contains "${expectedText}" (case-insensitive)`);
+  } catch (e) {
+    log.fail(`[${METHOD}] Element does not contain "${expectedText}" (case-insensitive) | Error: ${e instanceof Error ? e.message : String(e)}`);
+    throw (e instanceof Error ? e : new Error(String(e)));
   }
+}
   /**
  * Verifies that textData1 equals or contains textData2 (case-insensitive).
  * Throws synchronously on failure so execution stops immediately.
@@ -1411,5 +1421,46 @@ export class AddonHelpers {
       if (!matched) throw new Error(`Value "${trimmed}" does NOT match pattern "${pattern}"`);
       log.pass(`[${METHOD}] Value "${trimmed}" matches pattern "${pattern}"`);
     } catch (e) { log.fail(`[${METHOD}] Pattern [${pattern}] | Error: ${e instanceof Error ? e.message : String(e)}`); throw (e instanceof Error ? e : new Error(String(e))); }
+  }
+  /**
+   * 
+ * Compares two strings with case-insensitive matching using equals or contains logic use for if condition in test steps. Returns true/false without throwing, so it can be used for conditional branching.
+ * @param textData1 - The actual text value to compare
+ * @param matchType - Type of comparison ('equals' or 'contains')
+ * @param textData2 - The expected text value to compare against
+ * @returns boolean indicating whether the comparison is successful
+ */
+  isTestdataIgnoreCase(
+    textData1: string,
+    matchType: 'equals' | 'contains',
+    textData2: string
+  ): boolean {
+    const METHOD = 'isTestdataIgnoreCase';
+
+    if (textData1 == null) {
+      log.warn(`[${METHOD}] Actual value is null/undefined`);
+      return false;
+    }
+
+    if (textData2 == null) {
+      log.warn(`[${METHOD}] Expected value is null/undefined`);
+      return false;
+    }
+
+    const actual = textData1.trim().toLowerCase();
+    const expected = textData2.trim().toLowerCase();
+
+    if (!expected) {
+      log.warn(`[${METHOD}] Expected value is empty after trim for comparison with "${textData1}"`);
+      return false;
+    }
+
+    const isMatch = matchType === 'equals'
+      ? actual === expected
+      : actual.includes(expected);
+
+    log.info(`[${METHOD}] "${textData1}" ${matchType} "${textData2}" => ${isMatch}`);
+
+    return isMatch;
   }
 }

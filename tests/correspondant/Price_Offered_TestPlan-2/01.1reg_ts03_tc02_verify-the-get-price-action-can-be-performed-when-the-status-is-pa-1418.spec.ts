@@ -43,7 +43,7 @@ test.describe('REG_PriceOffered', () => {
         await priceOfferedPage.Commit_Selected_Footer_Buttonprice_offered.click();
         await priceOfferedPage.Commit_Selected_Loanspopupprice_offered_screen.waitFor({ state: 'visible' });
         await expect(priceOfferedPage.Commit_Selected_Loanspopupprice_offered_screen).toContainText(appconstants.COMMIT_SELECTED_LOANS_TEXT_POPUP);
-        await expect(page.getByText(appconstants.COMMIT_POPUP_SUCCESS_MESSAGE_PRICEOFFERED)).toBeVisible();
+        await expect(page.getByText(appconstants.YES_COMMIT_POPUP_MESSAGE_PRICEOFFERED)).toBeVisible();
         await priceOfferedPage.Yes_Commit_ButtonPopup.click();
         await priceOfferedPage.Yes_Commit_ButtonPopup.waitFor({ state: 'hidden' });
         await expect(priceOfferedPage.Commit_Selected_Loans2popup_price_offered_screen).toContainText(appconstants.UPDATED_SUCCESSFULLY_TEXT_POPUP);

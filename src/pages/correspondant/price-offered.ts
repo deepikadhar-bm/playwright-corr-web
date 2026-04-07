@@ -2250,8 +2250,8 @@ Select_Loan_which_is_committed_in_Standard(CommittedLoanNumber:string): Locator 
     return this.page.locator(`(//div[@role="status"]//span)[${Count}]`);
   }
 
-  get Status_Individual_2(): Locator {
-    return this.page.locator("(//div[@role=\"status\"]//span)[$|CCount|]");
+  Status_Individual_2(CCount: string): Locator {
+    return this.page.locator(`(//div[@role=\"status\"]//span)[${CCount}]`);
   }
 
   get Status_Individual_In_Screen(): Locator {

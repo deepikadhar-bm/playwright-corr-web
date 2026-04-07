@@ -240,7 +240,7 @@ test.describe('REG_PriceOffered', () => {
         await generalSettingPage.General_Settings.click();
         await correspondentPortalPage.Market_Thresholds.click();
         await priceOfferedPage.Edit_Map_Button.click();
-        await priceOfferedPage.Maximum_Display_Value.clear();
+        await priceOfferedPage.Maximum_Display_Value.click();
         await priceOfferedPage.Minimum_Display_value.clear();
         await priceOfferedPage.Minimum_Display_value.fill(appconstants.ONE);
         await priceOfferedPage.Maximum_Display_Value.fill(appconstants.ONE_HUNDRED_TWEENTY);

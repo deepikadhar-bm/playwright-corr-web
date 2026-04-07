@@ -2767,32 +2767,25 @@ export async function stepGroup_selecting_time_unit_bulk_batch(page: import('@pl
  */
 export async function stepGroup_Modifying_The_Batch_Intervals(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
-  const testData: Record<string, string> = {}; // TODO: Load from test data profile
+  const Methods=new AddonHelpers(page,vars);
+  const profileName = "Administration_Bulk Batch Timing";
+  const profile = testDataManager.getProfileByName(profileName);
+
+  if (profile && profile.data) {
+    vars["Time Interval"] = profile.data[0]['Time Interval'];  // row 0, column name
+    // vars["Time Interval"] = TimeInterval;
+    vars["NO of Batches"] = profile.data[0]['NO of Batches'];
+    // vars["NO of Batches"] = NoOfBatches;                  // store in vars
+  }
   await CorrPortalElem.Modify_Batch_Intervals_Button.click();
   await expect(page.getByText("Edit Batch Timing")).toBeVisible();
-  vars["Time_Hour"] = (() => {
-    const d = new Date();
-    const opts: Intl.DateTimeFormatOptions = { timeZone: "America/New_York" };
-    const fmt = "hh";
-    // Map Java date format to Intl parts
-    const parts = new Intl.DateTimeFormat('en-US', { ...opts, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }).formatToParts(d);
-    const p = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
-    return fmt.replace('yyyy', p.year || '').replace('yy', (p.year || '').slice(-2)).replace('MM', p.month || '').replace('dd', p.day || '').replace('HH', String(d.getHours()).padStart(2, '0')).replace('hh', p.hour || '').replace('mm', p.minute || '').replace('ss', p.second || '').replace('a', p.dayPeriod || '').replace(/M(?!M)/g, String(parseInt(p.month || '0'))).replace(/d(?!d)/g, String(parseInt(p.day || '0'))).replace(/h(?!h)/g, String(parseInt(p.hour || '0')));
-  })();
-  await CorrPortalElem.StartTime_In_Hour.fill(vars["Time_Hour"]);
-  vars["Time_Min"] = (() => {
-    const d = new Date();
-    const opts: Intl.DateTimeFormatOptions = { timeZone: "America/New_York" };
-    const fmt = "hh:mm";
-    // Map Java date format to Intl parts
-    const parts = new Intl.DateTimeFormat('en-US', { ...opts, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }).formatToParts(d);
-    const p = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
-    return fmt.replace('yyyy', p.year || '').replace('yy', (p.year || '').slice(-2)).replace('MM', p.month || '').replace('dd', p.day || '').replace('HH', String(d.getHours()).padStart(2, '0')).replace('hh', p.hour || '').replace('mm', p.minute || '').replace('ss', p.second || '').replace('a', p.dayPeriod || '').replace(/M(?!M)/g, String(parseInt(p.month || '0'))).replace(/d(?!d)/g, String(parseInt(p.day || '0'))).replace(/h(?!h)/g, String(parseInt(p.hour || '0')));
-  })();
-  vars["Time_Minute"] = String(vars["Time_Min"]).split(":")["2"] || '';
-  await CorrPortalElem.StartTime_In_Minutes.fill(vars["Time_Minute"]);
-  await CorrPortalElem.Time_Interval.fill(testData["Time Interval"]);
-  await CorrPortalElem.No_Of_Batches.fill(testData["NO of Batches"]);
+  Methods.getCurrentTimestamp(appconstants. HOUR_FORMAT_HH,'Time_Hour',appconstants.AMERICA_NEW_YORK);
+  await CorrPortalElem.StartTime_In_Hour.type(vars["Time_Hour"]);
+  Methods.getCurrentTimestamp(appconstants. TIME_FORMAT_HHMM,'Time_Min',appconstants.AMERICA_NEW_YORK);
+  Methods.splitBySpecialChar(vars["Time_Min"], ":",'1', "Time_Minute");
+  await CorrPortalElem.StartTime_In_Minutes.type(vars["Time_Minute"]);
+  await CorrPortalElem.Time_Interval.type(vars["Time Interval"]);
+  await CorrPortalElem.No_Of_Batches.type(vars["NO of Batches"]);
   await expect(CorrPortalElem.On_Radio_button_in_Bid_Request).toBeEnabled();
   await CorrPortalElem.Modify_Batch_Button.click();
   await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
@@ -4703,22 +4696,30 @@ export async function stepGroup_Uploading_New_Bid_Request_Bid_Request_Screen(pag
  */
 export async function stepGroup_Verification_of_Loan_Pop_up_Details_From_Locked_Loans_Tab_Pr(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
-  const testData: Record<string, string> = {}; // TODO: Load from test data profile
+  const Methods = new AddonHelpers(page, vars);
+  const profileName = 'Loan Details Popup(Price Offered)';
+  const profile = testDataManager.getProfileByName(profileName);
+
   vars["ChaseFieldCountPopup"] = String(await CorrPortalElem.ChaseFields_Count_Popup_Loan_Details.count());
-  vars["count"] = "1";
+  vars["count"] = appconstants.ONE;
+  let i = 0;
+  const dataList = profile?.data as Record<string, any>[];
   while (parseFloat(String(vars["count"])) <= parseFloat(String(vars["ChaseFieldCountPopup"]))) {
+    vars['ChaseFieldName'] = dataList[i]['ChaseFieldName'];
+    vars['ChaseFieldValue'] = dataList[i]['ChaseValue'];
     await CorrPortalElem.Bid_Loan_Num_Loan_Details_Popup.click();
-    vars["ChaseFieldPopupLockedLoans"] = await CorrPortalElem.Individual_Chase_Field_Name_Popup.textContent() || '';
-    vars["ChaseValuePopupLockedLoans"] = await CorrPortalElem.LockedLoans_ChaseFieldValuePopup.textContent() || '';
-    for (let dataIdx = parseInt(vars["count"]); dataIdx <= parseInt(vars["count"]); dataIdx++) {
-      await expect(CorrPortalElem.Individual_Chase_Field_Name_Popup).toContainText(testData["ChaseFieldName"]);
-      if (String(vars["ChaseValuePopupLockedLoans"]) === String("Key_blank")) {
-        expect(String(testData["ChaseValue"])).toBe("Null");
-      } else {
-        await expect(CorrPortalElem.LockedLoans_ChaseFieldValuePopup).toContainText(testData["ChaseValue"]);
-      }
+    vars["ChaseFieldPopupLockedLoans"] = await CorrPortalElem.Individual_Chase_Field_Name_Popup(vars['count']).textContent() || '';
+    log.info("Chase Field Name from Popup: " + vars["ChaseFieldPopupLockedLoans"]);
+    vars["ChaseValuePopupLockedLoans"] = await CorrPortalElem.LockedLoans_ChaseFieldValuePopup(vars['ChaseFieldPopupLockedLoans']).textContent() || '';
+    log.info("Chase Field Value from Popup: " + vars["ChaseValuePopupLockedLoans"]);
+    await expect(CorrPortalElem.Individual_Chase_Field_Name_Popup(vars['count'])).toContainText(vars["ChaseFieldName"]);
+    if (String(vars["ChaseValuePopupLockedLoans"]).trim() === '') {
+      Methods.verifyString(String(vars["ChaseFieldValue"]), 'equals', "Null");
+    } else {
+      await expect(CorrPortalElem.LockedLoans_ChaseFieldValuePopup(vars['ChaseFieldPopupLockedLoans'])).toContainText(vars["ChaseFieldValue"]);
     }
-    vars["count"] = (parseFloat(String("1")) + parseFloat(String(vars["count"]))).toFixed(0);
+    Methods.performArithmetic('1', 'ADDITION', vars['count'], 'count', 0);
+    i++;
   }
   await CorrPortalElem.Close_Button_Loan_Details_Popup.click();
 }
@@ -4730,22 +4731,25 @@ export async function stepGroup_Verification_of_Loan_Pop_up_Details_From_Locked_
  */
 export async function stepGroup_Storing_Loan_Popup_Details_From_All_Loans_Tab_in_to_the_tdp_(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
+  const profileName = 'Loan Details Popup(Price Offered)';
+  const Methods = new AddonHelpers(page, vars);
+
   vars["ChaseFieldCountPopup"] = String(await CorrPortalElem.ChaseFields_Count_Popup_Loan_Details.count());
-  vars["count"] = "1";
+  vars["count"] = appconstants.ONE;
   while (parseFloat(String(vars["count"])) <= parseFloat(String(vars["ChaseFieldCountPopup"]))) {
     await CorrPortalElem.Bid_Loan_Num_Loan_Details_Popup.click();
-    vars["ChaseFieldNamePopupAllLoans"] = await CorrPortalElem.Individual_Chase_Field_Name_Popup.textContent() || '';
-    vars["ChaseValuePopupAllLoans"] = await CorrPortalElem.ChaseValuePopup_AllLoans.textContent() || '';
-    if (String(vars["ChaseValuePopupAllLoans"]) === String("Key_blank")) {
+    vars["ChaseFieldNamePopupAllLoans"] = await CorrPortalElem.Individual_Chase_Field_Name_Popup(vars['count']).textContent() || '';
+    log.info("Chase Field Name from Popup: " + vars["ChaseFieldNamePopupAllLoans"]);
+    vars["ChaseValuePopupAllLoans"] = await CorrPortalElem.ChaseValuePopup_AllLoans(vars["ChaseFieldNamePopupAllLoans"]).textContent() || '';
+    log.info("Chase Field Value from Popup: " + vars["ChaseValuePopupAllLoans"]);
+    if (String(vars['ChaseValuePopupAllLoans']).trim() === '') {
       vars["ChaseValuePopupAllLoans"] = "Null";
     }
-    for (let dataIdx = parseInt(vars["count"]); dataIdx <= parseInt(vars["count"]); dataIdx++) {
-      // Write to test data profile: "ChaseFieldName" = vars["ChaseFieldNamePopupAllLoans"]
-      // TODO: Test data profile writes need custom implementation
-      // Write to test data profile: "ChaseValue" = vars["ChaseValuePopupAllLoans"]
-      // TODO: Test data profile writes need custom implementation
-    }
-    vars["count"] = (parseFloat(String("1")) + parseFloat(String(vars["count"]))).toFixed(0);
+    testDataManager.updatePartialProfileDataByDataIndex(profileName, {
+      'ChaseFieldName': vars['ChaseFieldNamePopupAllLoans'],
+      'ChaseValue': vars['ChaseValuePopupAllLoans'],
+    }, vars['count']);
+    Methods.performArithmetic('1', 'ADDITION', vars['count'], 'count', 0);
   }
   await CorrPortalElem.Close_Button_Loan_Details_Popup.click();
 }
@@ -6205,40 +6209,18 @@ export async function stepGroup_Toggle_Radio_Button_Based_on_Current_State_and_S
  */
 export async function stepGroup_Verifying_the_Last_Modified_Data_In_the_Right_corner_screen(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
-  vars["CurrentLocalTime"] = (() => {
-    const d = new Date();
-    const opts: Intl.DateTimeFormatOptions = { timeZone: "UTC" };
-    const fmt = "h:mm a";
-    // Map Java date format to Intl parts
-    const parts = new Intl.DateTimeFormat('en-US', { ...opts, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }).formatToParts(d);
-    const p = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
-    return fmt.replace('yyyy', p.year || '').replace('yy', (p.year || '').slice(-2)).replace('MM', p.month || '').replace('dd', p.day || '').replace('HH', String(d.getHours()).padStart(2, '0')).replace('hh', p.hour || '').replace('mm', p.minute || '').replace('ss', p.second || '').replace('a', p.dayPeriod || '').replace(/M(?!M)/g, String(parseInt(p.month || '0'))).replace(/d(?!d)/g, String(parseInt(p.day || '0'))).replace(/h(?!h)/g, String(parseInt(p.hour || '0')));
-  })();
-  vars["CurrentLocalDate"] = (() => {
-    const d = new Date();
-    const opts: Intl.DateTimeFormatOptions = { timeZone: "UTC" };
-    const fmt = "M/d/yyyy";
-    // Map Java date format to Intl parts
-    const parts = new Intl.DateTimeFormat('en-US', { ...opts, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }).formatToParts(d);
-    const p = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
-    return fmt.replace('yyyy', p.year || '').replace('yy', (p.year || '').slice(-2)).replace('MM', p.month || '').replace('dd', p.day || '').replace('HH', String(d.getHours()).padStart(2, '0')).replace('hh', p.hour || '').replace('mm', p.minute || '').replace('ss', p.second || '').replace('a', p.dayPeriod || '').replace(/M(?!M)/g, String(parseInt(p.month || '0'))).replace(/d(?!d)/g, String(parseInt(p.day || '0'))).replace(/h(?!h)/g, String(parseInt(p.hour || '0')));
-  })();
+  const Methods=new AddonHelpers(page,vars);
+
+  Methods.getCurrentTimestamp(appconstants.TIME_FORMAT_HMMA, "CurrentLocalTime",appconstants.UTC);
+  Methods.getCurrentTimestamp(appconstants.DATE_FORMAT_MDYYYY, "CurrentLocalDate",appconstants.UTC);
   await expect(CorrPortalElem.Last_Modified_Data_Right_Corner_Screen).toContainText(vars["CurrentLocalDate"]);
-  vars["LocalTimePlus1Min"] = (() => {
-    const d = new Date('2000-01-01 ' + String(vars["CurrentLocalTime"]));
-    d.setMinutes(d.getMinutes() + parseInt(String("1")));
-    return d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true }); // Format: h:mm a
-  })();
-  vars[""] = (() => {
-    const d = new Date('2000-01-01 ' + String(''));
-    d.setMinutes(d.getMinutes() - parseInt(String('')));
-    return d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
-  })();
+  Methods.addMinutesToDatetime(vars["CurrentLocalTime"],appconstants.TIME_FORMAT_HMMA, 1,appconstants.TIME_FORMAT_HMMA, "LocalTimePlus1Min");
+  Methods.subtractMinutesFromDatetime(vars["CurrentLocalTime"], appconstants.TIME_FORMAT_HMMA, 1, appconstants.TIME_FORMAT_HMMA, "LocalTimeMinusMin");
   vars["TimeOnScreen"] = await CorrPortalElem.Last_Modified_Data_Right_Corner_Screen.textContent() || '';
-  if (true) /* Verify if TimeOnScreen contains ignore-case with CurrentLoca */ {
-  } else if (true) /* Verify if TimeOnScreen contains ignore-case with LocalTimePl */ {
+  if (Methods.isTestdataIgnoreCase(vars["TimeOnScreen"],'contains', vars["CurrentLocalTime"])) /* Verify if TimeOnScreen contains ignore-case with CurrentLoca */ {
+  } else if (Methods.isTestdataIgnoreCase(vars["TimeOnScreen"],'contains', vars["LocalTimePlus1Min"])) /* Verify if TimeOnScreen contains ignore-case with LocalTimePl */ {
   } else {
-    expect((await CorrPortalElem.Last_Modified_Data_Right_Corner_Screen.textContent() || '').toLowerCase()).toContain(String('').toLowerCase());
+    await Methods.verifyElementContainsTextIgnoreCase(CorrPortalElem.Last_Modified_Data_Right_Corner_Screen, vars["LocalTimeMinusMin"]);  
   }
   await expect(CorrPortalElem.Last_Modified_Data_Right_Corner_Screen).toContainText("test sigma");
 }
