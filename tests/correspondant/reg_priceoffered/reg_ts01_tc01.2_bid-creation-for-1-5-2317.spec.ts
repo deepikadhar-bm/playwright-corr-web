@@ -22,6 +22,9 @@ test.describe('Unassigned', () => {
 
   test.beforeEach(async ({ page }) => {
     vars = {};
+    //  log.info('\n========== PREREQ 1 START: Updating Loan Numbers In File ==========');
+    vars['filePath'] = path.resolve(__dirname, '../../../uploads/Bid_file_success_error_newly_updated (12).xlsx');
+    // log.info('[PREREQ 1] File path: ' + filePath);
     await runPrereq_2318(page, vars);
     bidRequestDetailsPage = new BidRequestDetailsPage(page);
     bidRequestListPage = new BidRequestListPage(page);
@@ -63,8 +66,8 @@ test.describe('Unassigned', () => {
       const fmt = "hh:mm ";
       // Map Java date format to Intl parts
       const parts = new Intl.DateTimeFormat('en-US', { ...opts, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }).formatToParts(d);
-      const p = Object.fromEntries(parts.map(({type, value}) => [type, value]));
-      return fmt.replace('yyyy', p.year || '').replace('yy', (p.year||'').slice(-2)).replace('MM', p.month || '').replace('dd', p.day || '').replace('HH', String(d.getHours()).padStart(2,'0')).replace('hh', p.hour || '').replace('mm', p.minute || '').replace('ss', p.second || '').replace('a', p.dayPeriod || '').replace(/M(?!M)/g, String(parseInt(p.month||'0'))).replace(/d(?!d)/g, String(parseInt(p.day||'0'))).replace(/h(?!h)/g, String(parseInt(p.hour||'0')));
+      const p = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
+      return fmt.replace('yyyy', p.year || '').replace('yy', (p.year || '').slice(-2)).replace('MM', p.month || '').replace('dd', p.day || '').replace('HH', String(d.getHours()).padStart(2, '0')).replace('hh', p.hour || '').replace('mm', p.minute || '').replace('ss', p.second || '').replace('a', p.dayPeriod || '').replace(/M(?!M)/g, String(parseInt(p.month || '0'))).replace(/d(?!d)/g, String(parseInt(p.day || '0'))).replace(/h(?!h)/g, String(parseInt(p.hour || '0')));
     })();
     vars["TimeDifference"] = Math.abs(new Date('2000-01-01 ' + String(vars["QueuedTime"])).getTime() - new Date('2000-01-01 ' + String(vars["CurrentEstTime"])).getTime()) / 60000 + '';
     if (String(vars["TimeDifference"]) > String("4")) {
@@ -87,8 +90,8 @@ test.describe('Unassigned', () => {
       const fmt = "hh:mm a";
       // Map Java date format to Intl parts
       const parts = new Intl.DateTimeFormat('en-US', { ...opts, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }).formatToParts(d);
-      const p = Object.fromEntries(parts.map(({type, value}) => [type, value]));
-      return fmt.replace('yyyy', p.year || '').replace('yy', (p.year||'').slice(-2)).replace('MM', p.month || '').replace('dd', p.day || '').replace('HH', String(d.getHours()).padStart(2,'0')).replace('hh', p.hour || '').replace('mm', p.minute || '').replace('ss', p.second || '').replace('a', p.dayPeriod || '').replace(/M(?!M)/g, String(parseInt(p.month||'0'))).replace(/d(?!d)/g, String(parseInt(p.day||'0'))).replace(/h(?!h)/g, String(parseInt(p.hour||'0')));
+      const p = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
+      return fmt.replace('yyyy', p.year || '').replace('yy', (p.year || '').slice(-2)).replace('MM', p.month || '').replace('dd', p.day || '').replace('HH', String(d.getHours()).padStart(2, '0')).replace('hh', p.hour || '').replace('mm', p.minute || '').replace('ss', p.second || '').replace('a', p.dayPeriod || '').replace(/M(?!M)/g, String(parseInt(p.month || '0'))).replace(/d(?!d)/g, String(parseInt(p.day || '0'))).replace(/h(?!h)/g, String(parseInt(p.hour || '0')));
     })();
     await stepGroups.stepGroup_Waiting_in_the_2_while_loops_for_the_price_offered_status_up(page, vars);
     while (true) /* While element Price Offered Status of searched bid is not vi */ {

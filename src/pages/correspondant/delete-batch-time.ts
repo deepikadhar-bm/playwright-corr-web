@@ -10,5 +10,9 @@ export class DeleteBatchTimePage {
   get Delete_Batch_Time(): Locator {
     return this.page.locator("(//button[@aria-label=\"Delete Batch Time\"])[last()]");
   }
+   get Delete_Batch_Time_Text(): Locator {
+    return this.page.locator("//div[@class='tooltip-inner' and text()='Delete Batch Time']");
+  }
+  
 
 }
