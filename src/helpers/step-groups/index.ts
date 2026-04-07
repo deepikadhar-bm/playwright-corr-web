@@ -2768,15 +2768,7 @@ export async function stepGroup_selecting_time_unit_bulk_batch(page: import('@pl
 export async function stepGroup_Modifying_The_Batch_Intervals(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
   const Methods=new AddonHelpers(page,vars);
-  const profileName = "Administration_Bulk Batch Timing";
-  const profile = testDataManager.getProfileByName(profileName);
 
-  if (profile && profile.data) {
-    vars["Time Interval"] = profile.data[0]['Time Interval'];  // row 0, column name
-    // vars["Time Interval"] = TimeInterval;
-    vars["NO of Batches"] = profile.data[0]['NO of Batches'];
-    // vars["NO of Batches"] = NoOfBatches;                  // store in vars
-  }
   await CorrPortalElem.Modify_Batch_Intervals_Button.click();
   await expect(page.getByText("Edit Batch Timing")).toBeVisible();
   Methods.getCurrentTimestamp(appconstants. HOUR_FORMAT_HH,'Time_Hour',appconstants.AMERICA_NEW_YORK);

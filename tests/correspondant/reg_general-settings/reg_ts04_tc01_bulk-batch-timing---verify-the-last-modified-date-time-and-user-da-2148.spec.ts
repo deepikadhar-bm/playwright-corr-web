@@ -5,6 +5,7 @@ import { SpinnerPage } from '../../../src/pages/correspondant/spinner';
 import { AddonHelpers } from '../../../src/helpers/AddonHelpers';
 import { Logger as log } from '../../../src/helpers/log-helper';
 import { ENV } from '@config/environments';
+import { testDataManager } from 'testdata/TestDataManager';
 
 
 const TC_ID = 'REG_TS04_TC01';
@@ -52,6 +53,13 @@ test.describe('REG_General Settings', () => {
 
       log.step('Modify batch intervals');
       try {
+        const profileName = "Administration_Bulk Batch Timing";
+        const profile = testDataManager.getProfileByName(profileName);
+
+        if (profile && profile.data) {
+          vars["Time Interval"] = profile.data[0]['Time Interval'];
+          vars["NO of Batches"] = profile.data[0]['NO of Batches'];
+        }
         await stepGroups.stepGroup_Modifying_The_Batch_Intervals(page, vars);
         await page.waitForTimeout(2000);
         log.stepPass('Batch intervals modified successfully');
