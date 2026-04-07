@@ -62,9 +62,9 @@ test.describe('Commitment List - TS_2', () => {
         await correspondentPortalPage.Price_Offered_List_Dropdown.click();
         await bidRequestsPage.Search_by_Bid_Request_ID_Field.click();
         await bidRequestsPage.Search_by_Bid_Request_ID_Field.type(vars["BidReqId"]);
-        await correspondentPortalPage.Search_By_Bid_Request_ID_Input.press('Enter');
-        await spinnerPage.Spinner.first().waitFor({ state: 'hidden' });
-        expect(await spinnerPage.Spinner.first()).not.toBeVisible();
+        await page.keyboard.press('Enter');
+        await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+        expect(await spinnerPage.Spinner).not.toBeVisible();
         await page.waitForTimeout(2000);
         await priceOfferedPage.BidRequestIDPrice_Offered_New(vars["BidReqId"]).click();
 
@@ -88,20 +88,19 @@ test.describe('Commitment List - TS_2', () => {
         await commitmentListPage.Commitment_List_Text.waitFor({ state: 'visible' });
         await expect(commitmentListPage.Commitment_List_Text).toBeVisible();
         await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-        await priceOfferedPage.Search_Dropdown.click();
         await priceOfferedPage.Search_Dropdown.type(vars["BidReqId"]);
         await priceOfferedPage.Search_Dropdown.click();
         await priceOfferedPage.Dropdown_Commitment_ID_Bid_Request_ID.click();
         await spinnerPage.Spinner.waitFor({ state: 'hidden' });
         await page.waitForTimeout(4000);
-        await priceOfferedPage.Commitment_IDCommitment_List_Page_New(vars["BidReqId"]).click();
+        await priceOfferedPage.Commitment_IDCommitment_List_Page_New(vars["BidReqId"]).first().click();
         vars["BidReqIdCommitmentListDetails"] = await priceOfferedPage.BidRequestIDTextDetails.textContent() || '';
         vars["ExecutionTypeCommitmentListDetails"] = await priceOfferedPage.Execution_TypeDetails.textContent() || '';
         vars["CCodeInCommitmentListDetails"] = await priceOfferedPage.CCode_In_UI.textContent() || '';
         vars["CompanyNameCommitmentListDetails"] = await commitmentDetailsPage.Company_Name_Details_Commitments.textContent() || '';
         vars["ProductCommitmentListDetails"] = await priceOfferedPage.Product_NameDetails.textContent() || '';
         vars["CouponCommitmentListdetails"] = await priceOfferedPage.Ref_Sec_CouponDetails.textContent() || '';
-        vars["CurrentMarketCommitmentListDetails"] = await priceOfferedPage.Current_Market_ValueDetails_Screen.textContent() || '';
+        vars["CurrentMarketCommitmentListDetails"] = await priceOfferedPage.Current_Market_ValueDetails_Screen.first().textContent() || '';
         vars["MinMaxThresholdCommitmentListDetails"] = await priceOfferedPage.MinMax_ThresholdDetails.textContent() || '';
         log.stepPass('Successfully stored the required details in commitment list details screen');
       } catch (e) {

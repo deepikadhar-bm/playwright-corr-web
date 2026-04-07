@@ -353,8 +353,8 @@ export class CorrPortalPage {
     return this.page.locator("//div[@class=\"border-bottom p-2\"]");
   }
 
-  get ChaseValuePopup_AllLoans(): Locator {
-    return this.page.locator("(//div[@class=\"border-bottom p-2\" and contains(text(),\"$|ChaseFieldNamePopupAllLoans|\")]/following-sibling::div)[1]");
+  ChaseValuePopup_AllLoans(ChaseFieldNamePopupAllLoans:string): Locator {
+    return this.page.locator(`(//div[@class=\"border-bottom p-2\" and contains(text(),\"${ChaseFieldNamePopupAllLoans}\")]/following-sibling::div)[1]`);
   }
 
   get ChaseValues_Corresponding_to_Chase_Field(): Locator {
@@ -1151,28 +1151,28 @@ export class CorrPortalPage {
     return this.page.locator("((//div[@class=\"my-2\" and text()=\"$|IndividualChaseFieldName|\"]/..//following-sibling::div)//div[@class=\"mb-2\"]//*[contains(@class,\"form-control p-0\") or contains(@class,\"form-select\")])[$|count2|]");
   }
 
-  get Individual_Chase_Enum_Name(): Locator {
-    return this.page.locator("(//div[@class=\"my-2\"])[$|count1|]");
+  Individual_Chase_Enum_Name(count1: string): Locator {
+    return this.page.locator(`(//div[@class=\"my-2\"])[${count1}]`);
   }
 
-  get Individual_Chase_Field_Name_Popup(): Locator {
-    return this.page.locator("(//div[@class=\"border-bottom p-2\"])[$|count|]");
+  Individual_Chase_Field_Name_Popup(count:string): Locator {
+    return this.page.locator(`(//div[@class=\"border-bottom p-2\"])[${count}]`);
   }
 
-  get Individual_Chase_Value_Popup(): Locator {
-    return this.page.locator("(//div[@class=\"border-bottom p-2\" and contains(text(),\"$|ChaseFieldNameBeforeSubmit|\")]/following-sibling::div)[1]");
+  Individual_Chase_Value_Popup(ChaseFieldNameBeforeSubmit: string): Locator {
+    return this.page.locator(`(//div[@class=\"border-bottom p-2\" and contains(text(),\"${ChaseFieldNameBeforeSubmit}\")]/following-sibling::div)[1]`);
   }
 
-  get Individual_Chase_Value_popup2(): Locator {
-    return this.page.locator("(//div[@class=\"border-bottom p-2\" and contains(text(),\"$|ChaseFieldPopupAfterSubmit|\")]/following-sibling::div)[1]");
+   Individual_Chase_Value_popup2(ChaseFieldPopupAfterSubmit: string): Locator {
+    return this.page.locator(`(//div[@class=\"border-bottom p-2\" and contains(text(),\"${ChaseFieldPopupAfterSubmit}\")]/following-sibling::div)[1]`);
   }
 
-  get Individual_Checkbox_Enum(): Locator {
-    return this.page.locator("(//div[@class=\"my-2\"])[$|count1|]/ancestor::div[contains(@class,\"mapping-card\")]//input[@type=\"checkbox\"]");
+  Individual_Checkbox_Enum(count1: string): Locator {
+    return this.page.locator(`(//div[@class=\"my-2\"])[${count1}]/ancestor::div[contains(@class,\"mapping-card\")]//input[@type=\"checkbox\"]`);
   }
 
-  get Individual_Column_Name(): Locator {
-    return this.page.locator("//th[position() >1 and position() < last()][$|count|]");
+  Individual_Column_Name(count:string): Locator {
+    return this.page.locator(`//th[position() >1 and position() < last()][${count}]`);
   }
 
   Individual_Corr_Loan_Num(RowCount: string): Locator {
@@ -1286,12 +1286,12 @@ export class CorrPortalPage {
     return this.page.locator("//div[@class=\"d2h-file-diff\"]//table");
   }
 
-  get Loan_Numbers_Expect_the_Current_Loan(): Locator {
-    return this.page.locator("(//button[contains(@aria-label,\"View loan details\")])[not(position()=$|count|)]");
+  Loan_Numbers_Expect_the_Current_Loan(count:string): Locator {
+    return this.page.locator(`(//button[contains(@aria-label,\"View loan details\")])[not(position()=${count})]`);
   }
 
-  get LockedLoans_ChaseFieldValuePopup(): Locator {
-    return this.page.locator("(//div[@class=\"border-bottom p-2\" and contains(text(),\"$|ChaseFieldPopupLockedLoans|\")]/following-sibling::div)[1]");
+   LockedLoans_ChaseFieldValuePopup(ChaseFieldPopupLockedLoans:string): Locator {
+    return this.page.locator(`(//div[@class=\"border-bottom p-2\" and contains(text(),\"${ChaseFieldPopupLockedLoans}\")]/following-sibling::div)[1]`);
   }
 
   get Locked_Loans_Rows_Count_Commitment_List(): Locator {

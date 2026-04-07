@@ -218,7 +218,7 @@ test.describe('REG_PriceOffered', () => {
         Methods.trimtestdata(vars['CommitmentIDPopup'], 'CommitmentIDPopup');
         log.info('Commitment ID: ' + vars['CommitmentIDPopup']);
         log.info('Actual popup: ' + vars['ActualSuccesfullyCreatedPopup']);
-         Methods.splitByWhiteSpace(vars['ActualSuccesfullyCreatedPopup'], '0', 'ActualSuccesfullyCreatedPopup_1');
+        Methods.splitByWhiteSpace(vars['ActualSuccesfullyCreatedPopup'], '0', 'ActualSuccesfullyCreatedPopup_1');
         Methods.splitByWhiteSpace(vars['ActualSuccesfullyCreatedPopup'], '2', 'ActualSuccesfullyCreatedPopup_2');
         Methods.splitByWhiteSpace(vars['ActualSuccesfullyCreatedPopup'], '3', 'ActualSuccesfullyCreatedPopup_3');
         Methods.splitByWhiteSpace(vars['ActualSuccesfullyCreatedPopup'], '4', 'ActualSuccesfullyCreatedPopup_4');
@@ -240,12 +240,12 @@ test.describe('REG_PriceOffered', () => {
         await generalSettingPage.General_Settings.click();
         await correspondentPortalPage.Market_Thresholds.click();
         await priceOfferedPage.Edit_Map_Button.click();
-        await priceOfferedPage.Maximum_Display_Value.clear();
+        await priceOfferedPage.Maximum_Display_Value.click();
         await priceOfferedPage.Minimum_Display_value.clear();
         await priceOfferedPage.Minimum_Display_value.fill(appconstants.ONE);
         await priceOfferedPage.Maximum_Display_Value.fill(appconstants.ONE_HUNDRED_TWEENTY);
-        if(await priceOfferedPage.Update_Threshold_Button.isEnabled){
-        await priceOfferedPage.Update_Threshold_Button.click();
+        if (await priceOfferedPage.Update_Threshold_Button.isEnabled) {
+          await priceOfferedPage.Update_Threshold_Button.click();
         }
         log.stepPass('Market threshold reset to default values successfully');
       } catch (e) {
@@ -276,9 +276,9 @@ test.describe('REG_PriceOffered', () => {
         await priceOfferedPage.Minimum_Display_value.fill(appconstants.ONE);
         await priceOfferedPage.Maximum_Display_Value.clear();
         await priceOfferedPage.Maximum_Display_Value.fill(appconstants.ONE_HUNDRED_TWEENTY);
-        if(await priceOfferedPage.Update_Threshold_Button.isEnabled){
-        await priceOfferedPage.Update_Threshold_Button.click();
-        }      
+        if (await priceOfferedPage.Update_Threshold_Button.isEnabled) {
+          await priceOfferedPage.Update_Threshold_Button.click();
+        }
       }
       log.stepPass('After-test steps executed successfully. Market threshold restored to original state');
     } catch (e) {

@@ -79,7 +79,7 @@ test.describe('Commitment List - TS_1', () => {
       log.step('Select date and company filters and apply');
       try {
         await stepGroups.stepGroup_Selecting_Date_from_the_filters_by_fetching_the_first_comm_d(page, vars);
-        Methods.convertDateFormat(vars['ExpectedCommDate'], appconstants.DATE_FORMAT_MMDDYYYY, appconstants.DATE_FORMAT_DMYYYY, 'ExpectedChipDate');
+        Methods.convertDateFormat(vars['ExpectedCommDate'], appconstants.DATE_FORMAT_MMDDYYYY, appconstants. DATE_FORMATEYYYYMMDD, 'ExpectedChipDate');
         log.info('ExpectedCommDate: ' + vars['ExpectedCommDate']);
         log.info('ExpectedChipDate: ' + vars['ExpectedChipDate']);
         await correspondentPortalPage.Select_CompanyCCode_Dropdown1.click();
@@ -131,7 +131,7 @@ test.describe('Commitment List - TS_1', () => {
           log.info('No results present on Closed List');
         } else {
           while (parseFloat(String(vars['count'])) <= parseFloat(String(vars['CountofPages']))) {
-            await commitmentListPage.Committed_Date.waitFor({ state: 'visible' });
+            await commitmentListPage.Committed_Date.first().waitFor({ state: 'visible' });
             await Methods.verifyMultipleElementsHaveSameText(commitmentListPage.Committed_Date, vars['ExpectedCommDate']);
             await Methods.verifyMultipleElementsHaveSameText(priceOfferedPage.Price_Offered_Company_Name_Column_Data, vars['SelectedCompanyName']);
             if (await NextButton1.isVisible() && await NextButton1.isEnabled()) {
@@ -151,6 +151,8 @@ test.describe('Commitment List - TS_1', () => {
       try {
         await commitmentListPage.Open_List_Tab.click();
         await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+        await commitmentListPage.Closed_Date.waitFor({ state: 'hidden' });
+        await expect(commitmentListPage.Closed_Date).not.toBeVisible();
         await priceOfferedPage.Date_Filter_ChipPrice_Offered_Page.waitFor({ state: 'visible' });
         await expect(priceOfferedPage.Date_Filter_ChipPrice_Offered_Page).toContainText(vars['ExpectedChipDate']);
         await expect(priceOfferedPage.Date_Filter_ChipPrice_Offered_Page).toContainText(vars['DateWithTextDate']);
@@ -179,7 +181,7 @@ test.describe('Commitment List - TS_1', () => {
           log.info('No results present on Open List');
         } else {
           while (parseFloat(String(vars['count'])) <= parseFloat(String(vars['CountofPages']))) {
-            await commitmentListPage.Committed_Date.waitFor({ state: 'visible' });
+            await commitmentListPage.Committed_Date.first().waitFor({ state: 'visible' });
             await Methods.verifyMultipleElementsHaveSameText(commitmentListPage.Committed_Date, vars['ExpectedCommDate']);
             await Methods.verifyMultipleElementsHaveSameText(priceOfferedPage.Price_Offered_Company_Name_Column_Data, vars['SelectedCompanyName']);
             if (await NextButton2.isVisible() && await NextButton2.isEnabled()) {

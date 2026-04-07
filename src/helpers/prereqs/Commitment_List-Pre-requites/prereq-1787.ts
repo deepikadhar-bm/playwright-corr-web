@@ -118,10 +118,7 @@ const credentials = ENV.getCredentials('internal'); // 2
         return s.options[s.selectedIndex]?.text || '';
       });
       await correspondentPortalPage.Upload_File.setInputFiles([
-        // path.resolve(__dirname, '..', '..', '..', 'uploads', 'Bid_file_success_error_newly_updated_(6)_(1).xlsx')
-        path.resolve(__dirname, '../../../uploads', fileconstants.BID_FILE_4LOANS)
-
-        
+          path.resolve(__dirname,'../../../../uploads',fileconstants.BID_FILE_4LOANS)  
       ]);
       await expect(correspondentPortalPage.UploadBid_Button).toBeVisible();
       await expect(correspondentPortalPage.UploadBid_Button).toBeEnabled();
