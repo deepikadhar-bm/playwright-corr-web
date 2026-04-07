@@ -8,15 +8,16 @@ import { BidRequestPage } from '../../../src/pages/correspondant/bid-request';
 import { ChaseFieldNamePage } from '../../../src/pages/correspondant/chase-field-name';
 import { CorrespondentPortalPage } from '../../../src/pages/correspondant/correspondent-portal';
 import { OkButtonPage } from '../../../src/pages/correspondant/ok-button';
+import { P24UnitDropdownPage } from '../../../src/pages/correspondant/p-24-unit-dropdown';
 import { SpinnerPage } from '../../../src/pages/correspondant/spinner';
 import { StatusInactive2Page } from '../../../src/pages/correspondant/status-inactive--2';
 import { StatusInactivePage } from '../../../src/pages/correspondant/status-inactive-';
 import { UploadNewBidRequestButtonPage } from '../../../src/pages/correspondant/upload-new-bid-request-button';
-import { runPrereq_903 } from '../../../src/helpers/prereqs/prereq-903';
+import { runPrereq_903 } from '../../../src/helpers/prereqs/BidRequests/prereq-903';
 import { Logger as log } from '../../../src/helpers/log-helper';
 
-const TC_ID = 'REG_TS01_TC13';
-const TC_TITLE = 'Add a batch time value (without selecting chase only checkbox) from the general settings module and verify that batch time value should be updated here under today\'s pricing return time';
+const TC_ID = 'REG_TS01_TC14';
+const TC_TITLE = 'Add a batch time by selecting Chase only check box from the general settings module and verify that batch time value should be updated here under today\'s pricing return time value.';
 
 test.describe('REG_TC_Bid_Requests', () => {
   let vars: Record<string, string> = {};
@@ -25,6 +26,7 @@ test.describe('REG_TC_Bid_Requests', () => {
   let chaseFieldNamePage: ChaseFieldNamePage;
   let correspondentPortalPage: CorrespondentPortalPage;
   let okButtonPage: OkButtonPage;
+  let p24UnitDropdownPage: P24UnitDropdownPage;
   let spinnerPage: SpinnerPage;
   let statusInactive2Page: StatusInactive2Page;
   let statusInactivePage: StatusInactivePage;
@@ -38,6 +40,7 @@ test.describe('REG_TC_Bid_Requests', () => {
     chaseFieldNamePage = new ChaseFieldNamePage(page);
     correspondentPortalPage = new CorrespondentPortalPage(page);
     okButtonPage = new OkButtonPage(page);
+    p24UnitDropdownPage = new P24UnitDropdownPage(page);
     spinnerPage = new SpinnerPage(page);
     statusInactive2Page = new StatusInactive2Page(page);
     statusInactivePage = new StatusInactivePage(page);
@@ -67,8 +70,6 @@ test.describe('REG_TC_Bid_Requests', () => {
         //   d.setMinutes(d.getMinutes() + parseInt(String("5")));
         //   return d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true }); // Format: HH:mm a
         // })();
-        // [DISABLED] Trim white space from DeletedBatch1 and store it in a runtime DeletedBatch1
-        // vars["DeletedBatch1"] = String(vars["DeletedBatch1"]).trim();
         log.stepPass('Bulk Batch Timing page loaded');
       } catch (e) {
         await log.stepFail(page, 'Navigating to Bulk Batch Timing failed');
@@ -78,8 +79,8 @@ test.describe('REG_TC_Bid_Requests', () => {
       // ── Parse deleted batch time into hour / minute / unit parts ──────────
       log.step('Parsing deleted batch time into Time_Hour, Time_Min, Time_Unit');
       try {
-        vars["MinWithStandard"] = String(vars["DeletedBatchTime1"]).split(":")["1"] || '';
-        vars["Time_Hour"] = String(vars["DeletedBatchTime1"]).substring(0, String(vars["DeletedBatchTime1"]).length - 6);
+        vars["MinWithStandard"] = String(vars["DeletedBatchTime2"]).split(":")["1"] || '';
+        vars["Time_Hour"] = String(vars["DeletedBatchTime2"]).substring(0, String(vars["DeletedBatchTime2"]).length - 6);
         vars["Time_Min"] = String(vars["MinWithStandard"]).substring(0, String(vars["MinWithStandard"]).length - 3);
         vars["Time_Unit"] = String(vars["MinWithStandard"]).substring(3);
         log.info(`Time_Hour: "${vars["Time_Hour"]}", Time_Min: "${vars["Time_Min"]}", Time_Unit: "${vars["Time_Unit"]}"`);
@@ -89,11 +90,13 @@ test.describe('REG_TC_Bid_Requests', () => {
         throw e;
       }
 
-      // ── Open Add a Batch dialog and fill in time ──────────────────────────
-      log.step('Opening Add a Batch dialog and filling in batch time');
+      // ── Open Add a Batch dialog, check Chase only, fill in time ──────────
+      log.step('Opening Add a Batch dialog, selecting Chase only checkbox and filling in batch time');
       try {
         await correspondentPortalPage.Add_A_Batch_Button.click();
         await expect(page.getByText("Add a Batch").nth(1)).toBeVisible();
+        await p24UnitDropdownPage.Select_Rules_Checkbox.check();
+        await expect(p24UnitDropdownPage.Select_Rules_Checkbox).toBeChecked();
         // [DISABLED] Pick the current date hh by location UTC-04:00 and store into a variable Time_Hour
         // vars["Time_Hour"] = (() => {
         //   const d = new Date();
@@ -104,7 +107,7 @@ test.describe('REG_TC_Bid_Requests', () => {
         //   const p = Object.fromEntries(parts.map(({type, value}) => [type, value]));
         //   return fmt.replace('yyyy', p.year || '').replace('yy', (p.year||'').slice(-2)).replace('MM', p.month || '').replace('dd', p.day || '').replace('HH', String(d.getHours()).padStart(2,'0')).replace('hh', p.hour || '').replace('mm', p.minute || '').replace('ss', p.second || '').replace('a', p.dayPeriod || '').replace(/M(?!M)/g, String(parseInt(p.month||'0'))).replace(/d(?!d)/g, String(parseInt(p.day||'0'))).replace(/h(?!h)/g, String(parseInt(p.hour||'0')));
         // })();
-        await correspondentPortalPage.StartTime_In_Hour.fill(vars["Time_Hour"]);
+        await correspondentPortalPage.StartTime_In_Hour.pressSequentially(vars["Time_Hour"]);
         // [DISABLED] Pick the current date hh:mm by location UTC-04:00 and store into a variable Time_Min
         // vars["Time_Min"] = (() => {
         //   const d = new Date();
@@ -118,13 +121,10 @@ test.describe('REG_TC_Bid_Requests', () => {
         // [DISABLED] Split the Time_Min with the : and store the value from the 2 in the BulkBatchTiming
         // vars["BulkBatchTiming"] = String(vars["Time_Min"]).split(":")["2"] || '';
         vars["PricingReturnTimeBuffer"] = await statusInactivePage.Pricing_Return_Time_Buffer.inputValue() || '';
-        await correspondentPortalPage.StartTime_In_Minutes.fill(vars["Time_Min"]);
+        await correspondentPortalPage.StartTime_In_Minutes.pressSequentially(vars["Time_Min"]);
         vars["AddStartTimeInMin"] = await correspondentPortalPage.StartTime_In_Minutes.inputValue() || '';
-        if (String(vars["Time_Unit"]).includes(String("PM"))) {
-          await correspondentPortalPage.Dropdown_selection_2.selectOption({ label: "PM" });
-          await expect(correspondentPortalPage.Dropdown_selection_2).toHaveValue("PM");
-        }
-        log.stepPass('Batch time fields filled successfully');
+        await stepGroups.stepGroup_selecting_time_unit_bulk_batch(page, vars);
+        log.stepPass('Chase only checkbox selected and batch time fields filled successfully');
       } catch (e) {
         await log.stepFail(page, 'Opening Add a Batch dialog or filling in batch time failed');
         throw e;
@@ -134,9 +134,9 @@ test.describe('REG_TC_Bid_Requests', () => {
       log.step('Submitting batch and verifying creation success message');
       try {
         await correspondentPortalPage.Add_Batch_Button.click();
+        await spinnerPage.Spinner.waitFor({ state: 'hidden' });
         // [DISABLED] Wait until the current page is loaded completely
         // await page.waitForLoadState('load');
-        await spinnerPage.Spinner.waitFor({ state: 'hidden' });
         await expect(page.getByText("Create Batch Timing")).toBeVisible();
         await expect(correspondentPortalPage.Batch_timing_has_been_created_successfully_Success_Message).toBeVisible();
         await okButtonPage.Ok_Button.click();
@@ -149,7 +149,7 @@ test.describe('REG_TC_Bid_Requests', () => {
       // ── Compute expected pricing return time from added batch ─────────────
       log.step('Computing AddedBatchTime with PricingReturnTimeBuffer offset');
       try {
-        vars["AddedBatchTime"] = await bidRequestPage.Added_Batch_1(vars["DeletedBatchTime1"]).textContent() || '';
+        vars["AddedBatchTime"] = await bidRequestPage.Added_Batch_2(vars["DeletedBatchTime2"]).textContent() || '';
         vars["PricingReturnTimeBuffer"] = await statusInactivePage.Pricing_Return_Time_Buffer.inputValue() || '';
         vars["AddedBatchTime"] = (() => {
           const d = new Date('2000-01-01 ' + String(vars["AddedBatchTime"]));
@@ -186,8 +186,7 @@ test.describe('REG_TC_Bid_Requests', () => {
         await bidrequestCreationPage.Pricing_ReturnTime_Dropdown.click({ force: true });
         await page.waitForTimeout(3000);
         await expect(bidrequestCreationPage.Pricing_ReturnTime_Dropdown.locator(`option[value="${vars["AddedBatchTime"]}"]`)).toBeAttached();
-       // await expect(statusInactive2Page.Select_Pricing_Batch_Dropdown.locator('option', { hasText: vars["AddedBatchTime"] })).toBeVisible();
-        log.stepPass(`Batch time "${vars["AddedBatchTime"]}" is visible in Pricing Return Time dropdown`);
+        log.stepPass(`Batch time "${vars["AddedBatchTime"]}" is attached in Pricing Return Time dropdown`);
       } catch (e) {
         await log.stepFail(page, 'Verifying added batch time in Pricing Return Time dropdown failed');
         throw e;
