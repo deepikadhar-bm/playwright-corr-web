@@ -188,7 +188,7 @@ export class BidRequestDetailsPage {
   }
 
   get Execution_Typesflbid_request_details(): Locator {
-    return this.page.locator("//div[@aria-labelledby=\"executionHeader\"]//div/h5[text()=\"Standard Flow Loans\"]");
+    return this.page.locator("//div[@aria-labelledby=\"executionHeader\"]//div/h5[contains(text(),\"Standard\")]");
   }
 
   ExecutionTypebid_requests_details_counter(count:string): Locator {

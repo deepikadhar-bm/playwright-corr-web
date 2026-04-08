@@ -7,6 +7,7 @@ import { OkButtonPage } from '../../../src/pages/correspondant/ok-button';
 import { SpinnerPage } from '../../../src/pages/correspondant/spinner';
 import { runPrereq_2246 } from '../../../src/helpers/prereqs/prereq-2246';
 import { Logger as log } from '@helpers/log-helper';
+import { AddonHelpers } from '@helpers/AddonHelpers';
 
 const TC_ID = 'REG_TS04_TC08.1';
 const TC_TITLE = 'Bulk Batch Timing - Verify edit failure on already created batch timings';
@@ -18,6 +19,7 @@ test.describe('REG_General Settings', () => {
   let correspondentPortalPage: CorrespondentPortalPage;
   let okButtonPage: OkButtonPage;
   let spinnerPage: SpinnerPage;
+  let Methods: AddonHelpers;
 
   test.beforeEach(async ({ page }) => {
     vars = {};
@@ -28,6 +30,7 @@ test.describe('REG_General Settings', () => {
     correspondentPortalPage = new CorrespondentPortalPage(page);
     okButtonPage = new OkButtonPage(page);
     spinnerPage = new SpinnerPage(page);
+    Methods = new AddonHelpers(page, vars);
   });
 
   test(`${TC_ID} - ${TC_TITLE}`, async ({ page }) => {
@@ -38,7 +41,12 @@ test.describe('REG_General Settings', () => {
       log.step('Capture third batch time and split into hour/minute');
       try {
         vars["ThirdBatchFromLast"] = await bidRequestPage.Third_Batch_From_the_Last.textContent() || '';
-        await stepGroups.stepGroup_Separating_Hours_and_Minutes(page, vars);
+        // vars["RequiredBatchTime"] = vars["ThirdBatchFromLast"];
+        // await stepGroups.stepGroup_Separating_Hours_and_Minutes(page, vars);
+        Methods.splitBySpecialChar(vars['ThirdBatchFromLast'], ':', '1', 'MinWithStandard');
+        Methods.removeCharactersFromPosition(vars['ThirdBatchFromLast'], '0', '6', 'Time_Hour');
+        Methods.removeCharactersFromPosition(vars['MinWithStandard'], '0', '3', 'Time_Min');
+        Methods.removeCharactersFromPosition(vars['MinWithStandard'], '3', '0', 'Time_Unit');
         log.stepPass('Batch time captured and split successfully');
       } catch (e) {
         await log.stepFail(page, 'Failed to capture or split batch time');
@@ -58,11 +66,13 @@ test.describe('REG_General Settings', () => {
 
       log.step('Update batch time with existing values and apply changes');
       try {
+        await correspondentPortalPage.StartTime_In_Hour.click();
         await correspondentPortalPage.StartTime_In_Hour.clear();
         await correspondentPortalPage.StartTime_In_Hour.fill(vars["Time_Hour"]);
+        await correspondentPortalPage.StartTime_In_Minutes.click();
         await correspondentPortalPage.StartTime_In_Minutes.clear();
         await correspondentPortalPage.StartTime_In_Minutes.fill(vars["Time_Min"]);
-        await expect(correspondentPortalPage.Apply_Changes_Button).toBeVisible();
+        await expect(correspondentPortalPage.Apply_Changes_Button).toBeEnabled();
         await correspondentPortalPage.Apply_Changes_Button.click();
         log.stepPass('Batch time updated with existing values and applied');
       } catch (e) {

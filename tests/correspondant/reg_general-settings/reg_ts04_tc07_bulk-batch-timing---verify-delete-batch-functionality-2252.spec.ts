@@ -1,34 +1,30 @@
 import { test, expect } from '@playwright/test';
 import * as stepGroups from '../../../src/helpers/step-groups';
-import { BidrequestCreationPage } from '../../../src/pages/correspondant/bidrequest-creation';
 import { ChaseFieldNamePage } from '../../../src/pages/correspondant/chase-field-name';
-import { CorrespondentPortalPage } from '../../../src/pages/correspondant/correspondent-portal';
 import { DeletebatchbuttonPage } from '../../../src/pages/correspondant/deletebatchbutton';
 import { DeleteBatchTimePage } from '../../../src/pages/correspondant/delete-batch-time';
 import { SpinnerPage } from '../../../src/pages/correspondant/spinner';
-import { StatusInactive2Page } from '../../../src/pages/correspondant/status-inactive--2';
 import { StatusInactivePage } from '../../../src/pages/correspondant/status-inactive-';
-import { UploadNewBidRequestButtonPage } from '../../../src/pages/correspondant/upload-new-bid-request-button';
 import { Logger as log } from '@helpers/log-helper';
 import { ENV } from '@config/environments';
 import { AddonHelpers } from '@helpers/AddonHelpers';
 import { APP_CONSTANTS as appconstants } from '../../../src/constants/app-constants';
+import { testDataManager } from 'testdata/TestDataManager';
 
 
 const TC_ID = 'REG_TS04_TC07';
 const TC_TITLE = 'Bulk Batch Timing - Verify Delete batch functionality';
 
+const profileName = 'Administration_Bulk Batch Timing';
+const profile = testDataManager.getProfileByName(profileName);
+
 test.describe('REG_General Settings', () => {
   let vars: Record<string, string> = {};
-  let bidrequestCreationPage: BidrequestCreationPage;
   let chaseFieldNamePage: ChaseFieldNamePage;
-  let correspondentPortalPage: CorrespondentPortalPage;
   let deletebatchbuttonPage: DeletebatchbuttonPage;
   let deleteBatchTimePage: DeleteBatchTimePage;
   let spinnerPage: SpinnerPage;
-  let statusInactive2Page: StatusInactive2Page;
   let statusInactivePage: StatusInactivePage;
-  let uploadNewBidRequestButtonPage: UploadNewBidRequestButtonPage;
   let Methods: AddonHelpers;
   const credentials = ENV.getCredentials('internal');
 
@@ -36,15 +32,11 @@ test.describe('REG_General Settings', () => {
     vars = {};
     vars['Username'] = credentials.username;
     vars['Password'] = credentials.password;
-    bidrequestCreationPage = new BidrequestCreationPage(page);
     chaseFieldNamePage = new ChaseFieldNamePage(page);
-    correspondentPortalPage = new CorrespondentPortalPage(page);
     deletebatchbuttonPage = new DeletebatchbuttonPage(page);
     deleteBatchTimePage = new DeleteBatchTimePage(page);
     spinnerPage = new SpinnerPage(page);
-    statusInactive2Page = new StatusInactive2Page(page);
     statusInactivePage = new StatusInactivePage(page);
-    uploadNewBidRequestButtonPage = new UploadNewBidRequestButtonPage(page);
     Methods = new AddonHelpers(page, vars);
   });
 
@@ -75,7 +67,8 @@ test.describe('REG_General Settings', () => {
       try {
         await stepGroups.stepGroup_Navigating_to_Bulk_Batch_Timing(page, vars);
         await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-        await expect(page.getByText('Bulk Batch Timing')).toBeVisible();
+        // await expect(page.getByText('Bulk Batch Timing')).toBeVisible();
+        await expect(page.getByRole('heading', { name: 'Bulk Batch Timing' })).toBeVisible();
         log.stepPass('Navigated to Bulk Batch Timing and page verified successfully');
       } catch (e) {
         await log.stepFail(page, 'Failed to navigate to Bulk Batch Timing or verify page');
@@ -84,11 +77,17 @@ test.describe('REG_General Settings', () => {
 
       log.step('Modify batch intervals and capture last batch time and buffer time');
       try {
+        if (profile && profile.data) {
+          vars['Time Interval'] = profile.data[0]['Time Interval'];
+          vars['NO of Batches'] = profile.data[0]['NO of Batches'];
+          log.info('Time Interval: ' + vars['Time Interval']);
+          log.info('NO of Batches: ' + vars['NO of Batches']);
+        }
         await stepGroups.stepGroup_Modifying_The_Batch_Intervals(page, vars);
         vars['LastBatchTime(withspace)'] = await chaseFieldNamePage.Last_batch_Timebulk_batch_screen.textContent() || '';
         vars['DeletedBatchTime1'] = await chaseFieldNamePage.Last_batch_Timebulk_batch_screen.textContent() || '';
         vars['BufferTime'] = await statusInactivePage.Pricing_Return_Time_Buffer.inputValue() || '';
-        
+
         Methods.addMinutesToDatetime(vars['LastBatchTime(withspace)'], appconstants.TIME_FORMAT1_HHMMA, parseInt(String(vars['BufferTime'])), appconstants.TIME_FORMAT1_HHMMA, 'BufferedDeletedBatchTime1');
         log.info('LastBatchTime(withspace): ' + vars['LastBatchTime(withspace)']);
         log.info('DeletedBatchTime1: ' + vars['DeletedBatchTime1']);
@@ -105,7 +104,8 @@ test.describe('REG_General Settings', () => {
         await page.reload();
         await statusInactivePage.BulkBatch_Timing.hover();
         await deleteBatchTimePage.Delete_Batch_Time.hover();
-        await expect(page.getByText('Delete Batch Time')).toBeVisible();
+        // await expect(page.getByText('Delete Batch Time')).toBeVisible();
+        await expect(deleteBatchTimePage.Delete_Batch_Time_Text).toBeVisible();
         log.stepPass('Page reloaded and Delete Batch Time tooltip verified successfully');
       } catch (e) {
         await log.stepFail(page, 'Failed to reload page or verify Delete Batch Time tooltip');
@@ -150,4 +150,4 @@ test.describe('REG_General Settings', () => {
       throw e;
     }
   });
-});
+});	

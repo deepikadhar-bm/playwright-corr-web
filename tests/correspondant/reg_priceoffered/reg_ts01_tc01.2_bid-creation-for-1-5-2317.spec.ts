@@ -1,112 +1,197 @@
-// [PREREQ-APPLIED]
-// [POM-APPLIED]
 import { test, expect } from '@playwright/test';
 import path from 'path';
 import * as stepGroups from '../../../src/helpers/step-groups';
 import { BidRequestDetailsPage } from '../../../src/pages/correspondant/bid-request-details';
-import { BidRequestListPage } from '../../../src/pages/correspondant/bid-request-list';
 import { BidRequestPage } from '../../../src/pages/correspondant/bid-request';
 import { BidRequestsPage } from '../../../src/pages/correspondant/bid-requests';
 import { CorrespondentPortalPage } from '../../../src/pages/correspondant/correspondent-portal';
 import { SpinnerPage } from '../../../src/pages/correspondant/spinner';
 import { runPrereq_2318 } from '../../../src/helpers/prereqs/prereq-2318';
+import { CorrPortalPage } from '@pages/correspondant/CorrPortalPage';
+import { AddonHelpers } from '@helpers/AddonHelpers';
+import { Logger as log } from '@helpers/log-helper';
+import { ENV } from '@config/environments';
+import { testDataManager } from 'testdata/TestDataManager';
+import { FILE_CONSTANTS as fileconstants } from '../../../src/constants/file-constants';
+
+
+const TC_ID = 'REG_TS01_TC01.2';
+const TC_TITLE = 'Bid Creation for 1-5';
 
 test.describe('Unassigned', () => {
   let vars: Record<string, string> = {};
   let bidRequestDetailsPage: BidRequestDetailsPage;
-  let bidRequestListPage: BidRequestListPage;
   let bidRequestPage: BidRequestPage;
   let bidRequestsPage: BidRequestsPage;
   let correspondentPortalPage: CorrespondentPortalPage;
   let spinnerPage: SpinnerPage;
+  let Methods: AddonHelpers;
+  let CorrPortalElem: CorrPortalPage;
+  const credentials = ENV.getCredentials('internal');
 
   test.beforeEach(async ({ page }) => {
-    vars = {};
-    //  log.info('\n========== PREREQ 1 START: Updating Loan Numbers In File ==========');
-    vars['filePath'] = path.resolve(__dirname, '../../../uploads/Bid_file_success_error_newly_updated (12).xlsx');
-    // log.info('[PREREQ 1] File path: ' + filePath);
+    // vars = {};
+    vars['FilePath'] = path.resolve(__dirname, '../../../uploads', fileconstants.NEW_FILE_LOAN_POPUP_VERIFICATION);
     await runPrereq_2318(page, vars);
     bidRequestDetailsPage = new BidRequestDetailsPage(page);
-    bidRequestListPage = new BidRequestListPage(page);
     bidRequestPage = new BidRequestPage(page);
     bidRequestsPage = new BidRequestsPage(page);
     correspondentPortalPage = new CorrespondentPortalPage(page);
     spinnerPage = new SpinnerPage(page);
+    Methods = new AddonHelpers(page, vars);
+    CorrPortalElem = new CorrPortalPage(page);
   });
 
-  test('REG_TS01_TC01.2_Bid Creation for 1-5', async ({ page }) => {
+  test(`${TC_ID} - ${TC_TITLE}`, async ({ page }) => {
+    log.tcStart(TC_ID, TC_TITLE);
 
-    await stepGroups.stepGroup_Login_to_CORR_Portal(page, vars);
-    await stepGroups.stepGroup_Deleting_Early_Config_Report_If_Present(page, vars);
-    await stepGroups.stepGroup_Navigating_to_Bulk_Batch_Timing(page, vars);
-    await stepGroups.stepGroup_Modifying_The_batch_Intervals_with_current_est_time(page, vars);
-    await stepGroups.stepGroup_Navigating_to_Upload_New_Bid_Request(page, vars);
-    await stepGroups.stepGroup_Uploading_Bid_Request(page, vars);
-    // [DISABLED] Uploading Bid Request(Latest)
-    // await stepGroups.stepGroup_Uploading_Bid_RequestLatest(page, vars);
-    await correspondentPortalPage.Pricing_Return_Time.selectOption({ index: parseInt("2") });
-    vars["ExtractedPrincingReturnTime"] = await correspondentPortalPage.Pricing_Return_Time.evaluate(el => { const s = el as HTMLSelectElement; return s.options[s.selectedIndex]?.text || ''; });
-    await correspondentPortalPage.Upload_File.setInputFiles([]);
-    await expect(correspondentPortalPage.UploadBid_Button).toBeVisible();
-    await correspondentPortalPage.UploadBid_Button.click();
-    await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-    await page.getByText("Bid Upload Progress").waitFor({ state: 'visible' });
-    await bidRequestPage.Continue_ButtonUpload_Pop_up.waitFor({ state: 'visible' });
-    await bidRequestPage.Continue_ButtonUpload_Pop_up.click();
-    await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-    vars["RequestIDDetails"] = await bidRequestDetailsPage.Request_Id_From_Details.textContent() || '';
-    vars["RequestIDDetails"] = String(vars["RequestIDDetails"]).trim();
-    await expect(bidRequestDetailsPage.Statusbid_request_details).toContainText("Ready for Pricing");
-    vars["QueuedDateTime"] = await bidRequestDetailsPage.Queued_Forbid_request_details_text_dark.textContent() || '';
-    vars["ExtractedDateTime"] = String('').split("")["3"] || '';
-    vars["QueuedTime"] = vars["ExtractedDateTime"];
-    vars["CurrentEstTime"] = (() => {
-      const d = new Date();
-      const opts: Intl.DateTimeFormatOptions = { timeZone: "UTC-05:00" };
-      const fmt = "hh:mm ";
-      // Map Java date format to Intl parts
-      const parts = new Intl.DateTimeFormat('en-US', { ...opts, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }).formatToParts(d);
-      const p = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
-      return fmt.replace('yyyy', p.year || '').replace('yy', (p.year || '').slice(-2)).replace('MM', p.month || '').replace('dd', p.day || '').replace('HH', String(d.getHours()).padStart(2, '0')).replace('hh', p.hour || '').replace('mm', p.minute || '').replace('ss', p.second || '').replace('a', p.dayPeriod || '').replace(/M(?!M)/g, String(parseInt(p.month || '0'))).replace(/d(?!d)/g, String(parseInt(p.day || '0'))).replace(/h(?!h)/g, String(parseInt(p.hour || '0')));
-    })();
-    vars["TimeDifference"] = Math.abs(new Date('2000-01-01 ' + String(vars["QueuedTime"])).getTime() - new Date('2000-01-01 ' + String(vars["CurrentEstTime"])).getTime()) / 60000 + '';
-    if (String(vars["TimeDifference"]) > String("4")) {
-      vars["WaitTime"] = "4";
-    } else {
-      vars["WaitTime"] = vars["TimeDifference"];
+    try {
+
+      vars['Username'] = credentials.username;
+      vars['Password'] = credentials.password;
+
+      const profileName = 'Bid Requests';
+      const profile = testDataManager.getProfileByName(profileName);
+      if (profile && profile.data) {
+        vars['CompanyName'] = profile.data[0]['Company Name'];
+        vars['BidMappingID'] = profile.data[0]['BidMappingID'];
+      }
+
+      const profile2 = testDataManager.getProfileByName('Administration_Bulk Batch Timing');
+      if (profile2 && profile2.data) {
+        vars['Time Interval'] = profile2.data[0]['Time Interval'];
+        vars['NO of Batches'] = profile2.data[0]['NO of Batches'];
+      }
+
+      log.step('Login to Correspondent Portal');
+      try {
+        await stepGroups.stepGroup_Login_to_CORR_Portal(page, vars);
+        log.stepPass('Login to Correspondent Portal successful');
+      } catch (e) {
+        await log.stepFail(page, 'Login to Correspondent Portal failed');
+        throw e;
+      }
+
+      log.step('Deleting Early Config Report if present');
+      try {
+        await stepGroups.stepGroup_Deleting_Early_Config_Report_If_Present(page, vars);
+        log.stepPass('Early Config Report deletion handled');
+      } catch (e) {
+        await log.stepFail(page, 'Deleting Early Config Report failed');
+        throw e;
+      }
+
+      log.step('Navigating to Bulk Batch Timing');
+      try {
+        await stepGroups.stepGroup_Navigating_to_Bulk_Batch_Timing(page, vars);
+        log.stepPass('Navigated to Bulk Batch Timing');
+      } catch (e) {
+        await log.stepFail(page, 'Navigation to Bulk Batch Timing failed');
+        throw e;
+      }
+
+      log.step('Modifying Batch Intervals with current EST time');
+      try {
+        await stepGroups.stepGroup_Modifying_The_batch_Intervals_with_current_est_time(page, vars);
+        log.stepPass('Batch Intervals modified successfully');
+      } catch (e) {
+        await log.stepFail(page, 'Modifying Batch Intervals failed');
+        throw e;
+      }
+
+      log.step('Navigating to Bid Requests menu');
+      try {
+        await CorrPortalElem.BidRequests_Menu.click();
+        await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
+        await expect(page.getByText('Bid Requests').first()).toBeVisible();
+        log.stepPass('Navigated to Bid Requests menu');
+      } catch (e) {
+        await log.stepFail(page, 'Navigation to Bid Requests menu failed');
+        throw e;
+      }
+
+      log.step('Uploading Bid Request file');
+      try {
+        // await stepGroups.stepGroup_Uploading_Bid_Request(page, vars);
+        await stepGroups.stepGroup_Uploading_Bid_Request_copy(page, vars);
+        await correspondentPortalPage.Pricing_Return_Time.selectOption({ index: parseInt('2') });
+        vars['ExtractedPrincingReturnTime'] = await correspondentPortalPage.Pricing_Return_Time.evaluate(el => {
+          const s = el as HTMLSelectElement;
+          return s.options[s.selectedIndex]?.text || '';
+        });
+        await correspondentPortalPage.Upload_File.setInputFiles([
+          path.resolve(__dirname, '../../../uploads', fileconstants.NEW_FILE_LOAN_POPUP_VERIFICATION)
+        ]);
+        await expect(correspondentPortalPage.UploadBid_Button).toBeVisible();
+        await expect(correspondentPortalPage.UploadBid_Button).toBeEnabled();
+        await correspondentPortalPage.UploadBid_Button.click();
+        await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+        await page.getByText('Bid Upload Progress').waitFor({ state: 'visible' });
+        await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+        await bidRequestPage.Continue_ButtonUpload_Pop_up.waitFor({ state: 'visible' });
+        await page.waitForTimeout(5000);
+        await bidRequestPage.Continue_ButtonUpload_Pop_up.click();
+        await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+        await page.waitForLoadState('load');
+        await page.waitForTimeout(5000);
+        log.stepPass('Bid Request file uploaded successfully');
+      } catch (e) {
+        await log.stepFail(page, 'Bid Request file upload failed');
+        throw e;
+      }
+
+      log.step('Extracting Request ID from Bid Request Details');
+      try {
+        await bidRequestDetailsPage.Request_Id_From_Details.waitFor({ state: 'visible', timeout: 20000 });
+        vars['RequestIDDetails'] = await bidRequestDetailsPage.Request_Id_From_Details.textContent() || '';
+        Methods.trimtestdata(vars['RequestIDDetails'], 'RequestIDDetails');
+        log.info('Extracted Request ID: ' + vars['RequestIDDetails']);
+        await expect(bidRequestDetailsPage.Statusbid_request_details).toContainText('Ready for Pricing');
+        log.stepPass('Request ID extracted: ' + vars['RequestIDDetails']);
+      } catch (e) {
+        await log.stepFail(page, 'Extracting Request ID failed');
+        throw e;
+      }
+
+      log.step('Submitting Bid Request for Pricing');
+      try {
+        await bidRequestDetailsPage.Submit_for_PricingEnabled.click();
+        await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+        await bidRequestDetailsPage.Yes_Submit_Button.click();
+        await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+        log.stepPass('Bid Request submitted for pricing');
+      } catch (e) {
+        await log.stepFail(page, 'Submitting Bid Request for Pricing failed');
+        throw e;
+      }
+
+      log.step('Waiting for Price Offered status');
+      try {
+        await correspondentPortalPage.Bid_Requests_Side_Menu.click();
+        await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+        vars['index'] = '0';
+        while (!(await bidRequestDetailsPage.Price_Offered_Status_of_searched_bid(vars['RequestIDDetails']).isVisible())) {
+          await page.reload();
+          await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+          await expect(bidRequestsPage.Search_by_Bid_Request_ID_Field).toBeVisible();
+          await bidRequestsPage.Search_by_Bid_Request_ID_Field.fill(vars['RequestIDDetails']);
+          await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+          vars['index'] = (parseInt(String(vars['index'])) + 1).toString();
+          log.info('Current Attempt: ' + vars['index']);
+        }
+        log.info('Price Offered status visible after ' + vars['index'] + ' attempts');
+        log.stepPass('Price Offered status confirmed for Request ID: ' + vars['RequestIDDetails']);
+      } catch (e) {
+        await log.stepFail(page, 'Price Offered status not achieved for Request ID: ' + vars['RequestIDDetails']);
+        throw e;
+      }
+
+      log.tcEnd('PASS');
+
+    } catch (e) {
+      await log.captureOnFailure(page, TC_ID, e);
+      log.tcEnd('FAIL');
+      throw e;
     }
-    vars["WaitTimeSeconds"] = (parseFloat(String(vars["WaitTime"])) * parseFloat(String("60"))).toFixed(0);
-    vars["WaitTimeSeconds"] = (parseFloat(String(vars["WaitTimeSeconds"])) - parseFloat(String("60"))).toFixed(0);
-    await page.waitForTimeout(parseInt(vars["WaitTimeSeconds"]) * 1000);
-    await bidRequestDetailsPage.Submit_for_PricingEnabled.click();
-    await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-    await bidRequestDetailsPage.Yes_Submit_Button.click();
-    await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-    await correspondentPortalPage.Bid_Requests_Side_Menu.click();
-    await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-    vars["CurrentEstTime"] = (() => {
-      const d = new Date();
-      const opts: Intl.DateTimeFormatOptions = { timeZone: "UTC-05:00" };
-      const fmt = "hh:mm a";
-      // Map Java date format to Intl parts
-      const parts = new Intl.DateTimeFormat('en-US', { ...opts, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }).formatToParts(d);
-      const p = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
-      return fmt.replace('yyyy', p.year || '').replace('yy', (p.year || '').slice(-2)).replace('MM', p.month || '').replace('dd', p.day || '').replace('HH', String(d.getHours()).padStart(2, '0')).replace('hh', p.hour || '').replace('mm', p.minute || '').replace('ss', p.second || '').replace('a', p.dayPeriod || '').replace(/M(?!M)/g, String(parseInt(p.month || '0'))).replace(/d(?!d)/g, String(parseInt(p.day || '0'))).replace(/h(?!h)/g, String(parseInt(p.hour || '0')));
-    })();
-    await stepGroups.stepGroup_Waiting_in_the_2_while_loops_for_the_price_offered_status_up(page, vars);
-    while (true) /* While element Price Offered Status of searched bid is not vi */ {
-      // [DISABLED] Verify that the current page displays an element Search by Bid Request ID Field and With Scrollable FALSE
-      // await expect(bidRequestsPage.Search_by_Bid_Request_ID_Field).toBeVisible();
-      // [DISABLED] Enter RequestIDDetails in the Search by Bid Request ID Field field
-      // await bidRequestsPage.Search_by_Bid_Request_ID_Field.fill(vars["RequestIDDetails"]);
-      // [DISABLED] Wait until the element Spinner is not visible
-      // await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-      // [DISABLED] Click on the Refresh button in the browser
-      // await page.reload();
-      // [DISABLED] Wait until the element Spinner is not visible
-      // await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-    }
-    // [DISABLED] Verify that the element BidStatus From List displays text contains Price Offered and With Scrollable TRUE
-    // await expect(bidRequestListPage.BidStatus_From_List).toContainText("Price Offered");
   });
 });
