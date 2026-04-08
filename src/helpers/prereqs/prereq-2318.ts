@@ -1,42 +1,66 @@
 import type { Page } from '@playwright/test';
-import { expect } from '@playwright/test';
 import path from 'path';
-import * as stepGroups from '../step-groups';
 import * as excelHelper from '../excel-helpers';
+import { AddonHelpers } from '@helpers/AddonHelpers';
+import { Logger as log } from '@helpers/log-helper';
+import { APP_CONSTANTS as appconstants } from '../../constants/app-constants';
+
+
+const TC_ID = 'PREREQ_2318(REG_TS01_TC01.1)';
+const TC_TITLE = 'Setup: Update Loan Numbers In File';
 
 export async function runPrereq_2318(page: Page, vars: Record<string, string>): Promise<void> {
+  const Methods = new AddonHelpers(page, vars);
 
-  // Set up download handler
-  page.on('download', async (download) => {
-    const filePath = path.join('test-results', 'downloads', download.suggestedFilename());
-    await download.saveAs(filePath);
-    vars['_lastDownloadPath'] = filePath;
-  });
+  log.tcStart(TC_ID, TC_TITLE);
+  try {
+    log.step('Generate base loan number string from current date');
+    try {
+      log.info('File path: ' + vars['FilePath']);
+      Methods.getCurrentTimestamp(appconstants.DATE_FORMAT_DDMMYYYY, 'CurrentDate', appconstants.UTC);
+      log.info('CurrentDate: ' + vars['CurrentDate']);
+      Methods.concatenate('TestSigma_', vars['CurrentDate'], 'Str1');
+      log.info('Str1: ' + vars['Str1']);
+      Methods.concatenate(vars['Str1'], '_SC1', 'Str2');
+      log.info('Str2: ' + vars['Str2']);
+      log.stepPass('Base loan number string generated: ' + vars['Str2']);
+    } catch (e) {
+      await log.stepFail(page, 'Failed to generate base loan number string');
+      log.tcEnd('FAIL');
+      throw e;
+    }
 
-  await stepGroups.stepGroup_Rename_File(page, vars);
-  if (vars['_lastDownloadPath']) { require('fs').copyFileSync(vars['_lastDownloadPath'], vars['_lastDownloadPath'] + '.copy'); }
-  vars["CurrentDate"] = (() => {
-    const d = new Date();
-    const opts: Intl.DateTimeFormatOptions = { timeZone: "UTC" };
-    const fmt = "dd-MM-yyyy";
-    // Map Java date format to Intl parts
-    const parts = new Intl.DateTimeFormat('en-US', { ...opts, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }).formatToParts(d);
-    const p = Object.fromEntries(parts.map(({type, value}) => [type, value]));
-    return fmt.replace('yyyy', p.year || '').replace('yy', (p.year||'').slice(-2)).replace('MM', p.month || '').replace('dd', p.day || '').replace('HH', String(d.getHours()).padStart(2,'0')).replace('hh', p.hour || '').replace('mm', p.minute || '').replace('ss', p.second || '').replace('a', p.dayPeriod || '').replace(/M(?!M)/g, String(parseInt(p.month||'0'))).replace(/d(?!d)/g, String(parseInt(p.day||'0'))).replace(/h(?!h)/g, String(parseInt(p.hour||'0')));
-  })();
-  vars["Str1"] = String("TestSigma_") + String(vars["CurrentDate"]);
-  vars["Str2"] = String(vars["Str1"]) + String("_SC1");
-  vars["ColumnCount"] = "0";
-  vars["count"] = "1";
-  vars["RowsCountExcel"] = String(excelHelper.getRowCount(vars["File"], "0"));
-  await page.waitForTimeout(5000);
-  while (parseFloat(String(vars["count"])) < parseFloat(String(vars["RowsCountExcel"]))) {
-    vars["RandomString"] = Array.from({length: 2}, () => 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'.charAt(Math.floor(Math.random() * 62))).join('');
-    vars["RandomNumber"] = String(Math.floor(Math.random() * (999 - 100 + 1)) + 100);
-    vars["FormattedLoanNumber"] = vars["Str2"] + "_" + vars["RandomString"] + "_" + vars["RandomNumber"];
-    // [DISABLED] Write the data FormattedLoanNumber into Excel File with Cell value count , ColumnCount and Sheet 1
-    // excelHelper.writeCell(vars["File"], vars["count"], vars["ColumnCount"], String(vars["FormattedLoanNumber"]), "1");
-    excelHelper.writeCell(vars["File"], vars["count"], vars["ColumnCount"], String(vars["FormattedLoanNumber"]), "0");
-    vars["count"] = (parseFloat(String("1")) + parseFloat(String(vars["count"]))).toFixed(0);
+    log.step('Update loan numbers in Excel file');
+    try {
+      vars['RowsCountExcel'] = String(excelHelper.getAllRowCount(vars['FilePath'], 0));
+      log.info('RowsCountExcel (total including header): ' + vars['RowsCountExcel']);
+      Methods.MathematicalOperation(vars['RowsCountExcel'], '-', 1, 'RowsCountExcel');
+      log.info('RowsCountExcel (data rows only, excluding header): ' + vars['RowsCountExcel']);
+
+      vars['RowIndex'] = appconstants.ONE;
+      vars['ColIndex'] = appconstants.ZERO;
+
+      while (parseFloat(String(vars['RowIndex'])) <= parseFloat(String(vars['RowsCountExcel']))) {
+        Methods.generateRandomString('2', 'RandomString');
+        Methods.generateRandomNumber('3', 'RandomNumber');
+        Methods.concatenateWithSpecialChar(vars['Str2'], vars['RandomString'], '_', 'FormattedLoanNumber');
+        Methods.concatenateWithSpecialChar(vars['FormattedLoanNumber'], vars['RandomNumber'], '_', 'FormattedLoanNumber');
+        log.info('FormattedLoanNumber [row ' + vars['RowIndex'] + ']: ' + vars['FormattedLoanNumber']);
+        excelHelper.writeCellByColAndRowIndex(vars['FilePath'], '0', vars['RowIndex'], vars['ColIndex'], vars['FormattedLoanNumber'], 'a');
+        log.info('Written to sheet[0] row: ' + vars['RowIndex'] + ' | col: ' + vars['ColIndex']);
+        Methods.MathematicalOperation(vars['RowIndex'], '+', 1, 'RowIndex');
+      }
+      log.info('Total rows updated: ' + vars['RowsCountExcel']);
+      log.stepPass('Loan numbers updated in Excel file successfully');
+    } catch (e) {
+      await log.stepFail(page, 'Failed to update loan numbers in Excel file');
+      throw e;
+    }
+    log.tcEnd('PASS');
+
+  } catch (e) {
+    await log.captureOnFailure(page, TC_ID, e);
+    log.tcEnd('FAIL');
+    throw e;
   }
 }

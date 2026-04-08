@@ -1,13 +1,9 @@
 import { test, expect } from '@playwright/test';
 import * as stepGroups from '../../../src/helpers/step-groups';
 import { BatchinbulkbatchtimingPage } from '../../../src/pages/correspondant/batchinbulkbatchtiming';
-import { BidrequestCreationPage } from '../../../src/pages/correspondant/bidrequest-creation';
 import { CorrespondentPortalPage } from '../../../src/pages/correspondant/correspondent-portal';
 import { OkButtonPage } from '../../../src/pages/correspondant/ok-button';
 import { SpinnerPage } from '../../../src/pages/correspondant/spinner';
-import { StatusInactive2Page } from '../../../src/pages/correspondant/status-inactive--2';
-import { StatusInactivePage } from '../../../src/pages/correspondant/status-inactive-';
-import { UploadNewBidRequestButtonPage } from '../../../src/pages/correspondant/upload-new-bid-request-button';
 import { Logger as log } from '@helpers/log-helper';
 import { ENV } from '@config/environments';
 import { AddonHelpers } from '@helpers/AddonHelpers';
@@ -20,13 +16,9 @@ const TC_TITLE = 'Bulk Batch Timing - Verify Add batch functionality(Without Cha
 test.describe('REG_General Settings', () => {
   let vars: Record<string, string> = {};
   let batchinbulkbatchtimingPage: BatchinbulkbatchtimingPage;
-  let bidrequestCreationPage: BidrequestCreationPage;
   let correspondentPortalPage: CorrespondentPortalPage;
   let okButtonPage: OkButtonPage;
   let spinnerPage: SpinnerPage;
-  let statusInactive2Page: StatusInactive2Page;
-  let statusInactivePage: StatusInactivePage;
-  let uploadNewBidRequestButtonPage: UploadNewBidRequestButtonPage;
   const credentials = ENV.getCredentials('internal');
   let Methods: AddonHelpers;
 
@@ -35,13 +27,9 @@ test.describe('REG_General Settings', () => {
     vars['Username'] = credentials.username;
     vars['Password'] = credentials.password;
     batchinbulkbatchtimingPage = new BatchinbulkbatchtimingPage(page);
-    bidrequestCreationPage = new BidrequestCreationPage(page);
     correspondentPortalPage = new CorrespondentPortalPage(page);
     okButtonPage = new OkButtonPage(page);
     spinnerPage = new SpinnerPage(page);
-    statusInactive2Page = new StatusInactive2Page(page);
-    statusInactivePage = new StatusInactivePage(page);
-    uploadNewBidRequestButtonPage = new UploadNewBidRequestButtonPage(page);
     Methods = new AddonHelpers(page, vars);
   });
 
@@ -63,7 +51,8 @@ test.describe('REG_General Settings', () => {
       try {
         await stepGroups.stepGroup_Navigating_to_Bulk_Batch_Timing(page, vars);
         await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-        await expect(page.getByText('Bulk Batch Timing')).toBeVisible();
+        // await expect(page.getByText('Bulk Batch Timing')).toBeVisible();
+        await expect(page.getByRole('heading', { name: 'Bulk Batch Timing' })).toBeVisible();
         log.stepPass('Navigated to Bulk Batch Timing and page verified successfully');
       } catch (e) {
         await log.stepFail(page, 'Failed to navigate to Bulk Batch Timing or verify page');
@@ -75,10 +64,10 @@ test.describe('REG_General Settings', () => {
         vars['LastBeforeBatchTime'] = await batchinbulkbatchtimingPage.Last_Before_Batch_Time.textContent() || '';
         Methods.addMinutesToDatetime(vars['LastBeforeBatchTime'], appconstants.TIME_FORMAT1_HHMMA, 2, appconstants.TIME_FORMAT1_HHMMA, 'BatchTime(FewMinAdded)');
         vars['AddedBatchTime'] = vars['BatchTime(FewMinAdded)'];
-        vars['MinWithStandard'] = String(vars['BatchTime(FewMinAdded)']).split(':')['2'] || '';
-        vars['Time_Hour'] = String(vars['BatchTime(FewMinAdded)']).substring(0, String(vars['BatchTime(FewMinAdded)']).length - 6);
-        vars['Time_Min'] = String(vars['MinWithStandard']).substring(0, String(vars['MinWithStandard']).length - 3);
-        vars['Time_Unit'] = String(vars['MinWithStandard']).substring(3);
+        Methods.splitBySpecialChar(vars['BatchTime(FewMinAdded)'], ':', '1', 'MinWithStandard');
+        Methods.removeCharactersFromPosition(vars['BatchTime(FewMinAdded)'], '0', '6','Time_Hour');
+        Methods.removeCharactersFromPosition(vars['MinWithStandard'], '0', '3','Time_Min');
+        Methods.removeCharactersFromPosition(vars['MinWithStandard'], '3', '0','Time_Unit');
         log.info('LastBeforeBatchTime: ' + vars['LastBeforeBatchTime']);
         log.info('AddedBatchTime: ' + vars['AddedBatchTime']);
         log.info('Time_Hour: ' + vars['Time_Hour']);
@@ -93,12 +82,16 @@ test.describe('REG_General Settings', () => {
       log.step('Click Add a Batch button and fill in batch time details');
       try {
         await correspondentPortalPage.Add_A_Batch_Button.click();
-        await expect(page.getByText('Add a Batch')).toBeVisible();
+        // await expect(page.getByText('Add a Batch')).toBeVisible();
+        await expect(page.getByRole('heading', { name: 'Add a Batch' })).toBeVisible();
+        await correspondentPortalPage.StartTime_In_Hour.click();
         await correspondentPortalPage.StartTime_In_Hour.fill(vars['Time_Hour']);
+        await correspondentPortalPage.StartTime_In_Minutes.click();
         await correspondentPortalPage.StartTime_In_Minutes.fill(vars['Time_Min']);
         vars['AddStartTimeInMin'] = await correspondentPortalPage.StartTime_In_Minutes.inputValue() || '';
         log.info('AddStartTimeInMin: ' + vars['AddStartTimeInMin']);
         if (String(vars['Time_Unit']).includes(String('PM'))) {
+          log.info('Selecting PM for time unit');
           await correspondentPortalPage.Dropdown_selection_2.selectOption({ label: 'PM' });
           await expect(correspondentPortalPage.Dropdown_selection_2).toHaveValue('PM');
         }
@@ -125,7 +118,7 @@ test.describe('REG_General Settings', () => {
       try {
         vars['ActualBatchTime'] = await batchinbulkbatchtimingPage.Last_Before_Batch_Time.textContent() || '';
         log.info('ActualBatchTime: ' + vars['ActualBatchTime']);
-        expect(String(vars['ActualBatchTime'])).toBe(vars['AddedBatchTime']);
+        Methods.verifyString(vars['ActualBatchTime'],'equals', vars['AddedBatchTime']);
         await stepGroups.stepGroup_Verifying_the_Last_Modified_Data_In_the_Right_corner_screen(page, vars);
         log.stepPass('Newly added batch time and last modified data verified successfully');
       } catch (e) {

@@ -1,7 +1,6 @@
 import { test, expect } from '@playwright/test';
 import * as stepGroups from '../../../src/helpers/step-groups';
 import { BatchinbulkbatchtimingPage } from '../../../src/pages/correspondant/batchinbulkbatchtiming';
-import { BidrequestCreationPage } from '../../../src/pages/correspondant/bidrequest-creation';
 import { CorrespondentPortalPage } from '../../../src/pages/correspondant/correspondent-portal';
 import { OkButtonPage } from '../../../src/pages/correspondant/ok-button';
 import { SpinnerPage } from '../../../src/pages/correspondant/spinner';
@@ -9,14 +8,18 @@ import { Logger as log } from '@helpers/log-helper';
 import { ENV } from '@config/environments';
 import { AddonHelpers } from '@helpers/AddonHelpers';
 import { APP_CONSTANTS as appconstants } from '../../../src/constants/app-constants';
+import { testDataManager } from 'testdata/TestDataManager';
+
 
 const TC_ID = 'REG_TS04_TC08';
 const TC_TITLE = 'Bulk Batch Timing - Verify Edit batch functionality';
 
+const profileName = 'Administration_Bulk Batch Timing';
+const profile = testDataManager.getProfileByName(profileName);
+
 test.describe('REG_General Settings', () => {
   let vars: Record<string, string> = {};
   let batchinbulkbatchtimingPage: BatchinbulkbatchtimingPage;
-  let bidrequestCreationPage: BidrequestCreationPage;
   let correspondentPortalPage: CorrespondentPortalPage;
   let okButtonPage: OkButtonPage;
   let spinnerPage: SpinnerPage;
@@ -28,7 +31,6 @@ test.describe('REG_General Settings', () => {
     vars['Username'] = credentials.username;
     vars['Password'] = credentials.password;
     batchinbulkbatchtimingPage = new BatchinbulkbatchtimingPage(page);
-    bidrequestCreationPage = new BidrequestCreationPage(page);
     correspondentPortalPage = new CorrespondentPortalPage(page);
     okButtonPage = new OkButtonPage(page);
     spinnerPage = new SpinnerPage(page);
@@ -70,6 +72,12 @@ test.describe('REG_General Settings', () => {
 
       log.step('Modify batch intervals and capture last batch time and expected batch time');
       try {
+        if (profile && profile.data) {
+          vars['Time Interval'] = profile.data[0]['Time Interval'];
+          vars['NO of Batches'] = profile.data[0]['NO of Batches'];
+          log.info('Time Interval: ' + vars['Time Interval']);
+          log.info('NO of Batches: ' + vars['NO of Batches']);
+        }
         await stepGroups.stepGroup_Modifying_The_batch_Intervals_with_current_est_time(page, vars);
         vars['LastBeforeBatchTime'] = await batchinbulkbatchtimingPage.Last_Before_Batch_Time.textContent() || '';
         Methods.addMinutesToDatetime(vars['LastBeforeBatchTime'], appconstants.TIME_FORMAT1_HHMMA, 1, appconstants.TIME_FORMAT1_HHMMA, 'ExpectedBatchTime');
@@ -83,9 +91,11 @@ test.describe('REG_General Settings', () => {
 
       log.step('Separate hours and minutes and hover over last batch time to click Edit');
       try {
-        await stepGroups.stepGroup_Separating_Hours_and_Minutes(page, vars);
-        log.info('Time_Hour: ' + vars['Time_Hour']);
-        log.info('Time_Min: ' + vars['Time_Min']);
+        // await stepGroups.stepGroup_Separating_Hours_and_Minutes(page, vars);
+        Methods.splitBySpecialChar(vars['ExpectedBatchTime'], ':', '1', 'MinWithStandard');
+        Methods.removeCharactersFromPosition(vars['ExpectedBatchTime'], '0', '6','Time_Hour');
+        Methods.removeCharactersFromPosition(vars['MinWithStandard'], '0', '3','Time_Min');
+        Methods.removeCharactersFromPosition(vars['MinWithStandard'], '3', '0','Time_Unit');
         await batchinbulkbatchtimingPage.Batch_Time_Last_Before.hover();
         await batchinbulkbatchtimingPage.Edit_Batch_ButtonLast_Before.click();
         await expect(page.getByText('Edit Batch Timing')).toBeVisible();
@@ -97,11 +107,13 @@ test.describe('REG_General Settings', () => {
 
       log.step('Fill in updated batch time and apply changes');
       try {
+        await correspondentPortalPage.StartTime_In_Hour.click();
         await correspondentPortalPage.StartTime_In_Hour.clear();
         await correspondentPortalPage.StartTime_In_Hour.fill(vars['Time_Hour']);
+        await correspondentPortalPage.StartTime_In_Minutes.click();
         await correspondentPortalPage.StartTime_In_Minutes.clear();
         await correspondentPortalPage.StartTime_In_Minutes.fill(vars['Time_Min']);
-        await expect(correspondentPortalPage.Apply_Changes_Button).toBeVisible();
+        await expect(correspondentPortalPage.Apply_Changes_Button).toBeEnabled();
         await correspondentPortalPage.Apply_Changes_Button.click();
         log.stepPass('Updated batch time filled and Apply Changes clicked successfully');
       } catch (e) {
@@ -126,7 +138,7 @@ test.describe('REG_General Settings', () => {
         await stepGroups.stepGroup_Verifying_the_Last_Modified_Data_In_the_Right_corner_screen(page, vars);
         vars['EditedBatchTime'] = await batchinbulkbatchtimingPage.Last_Before_Batch_Time.textContent() || '';
         log.info('EditedBatchTime: ' + vars['EditedBatchTime']);
-        expect(String(vars['EditedBatchTime'])).toBe(vars['ExpectedBatchTime']);
+        Methods.verifyString(vars['EditedBatchTime'], 'equals', vars['ExpectedBatchTime']);
         log.stepPass('Last modified data and edited batch time verified successfully');
       } catch (e) {
         await log.stepFail(page, 'Failed to verify last modified data or edited batch time');
