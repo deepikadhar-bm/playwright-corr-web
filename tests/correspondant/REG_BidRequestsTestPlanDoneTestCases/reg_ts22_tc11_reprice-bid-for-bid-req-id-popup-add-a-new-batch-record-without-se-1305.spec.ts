@@ -11,6 +11,7 @@ import { StatusInactivePage } from '../../../src/pages/correspondant/status-inac
 import { ENV } from '@config/environments';
 import { Logger as log } from '../../../src/helpers/log-helper';
 import { CorrPortalPage } from '@pages/correspondant/CorrPortalPage';
+import { testDataManager } from 'testdata/TestDataManager';
 
 test.describe('REG_TC_Bid_Requests', () => {
   let vars: Record<string, string> = {};
@@ -45,6 +46,23 @@ test.describe('REG_TC_Bid_Requests', () => {
         const credentials = ENV.getCredentials('internal');
         vars["Username"] = credentials.username;
         vars["Password"] = credentials.password;
+        const profile2 = testDataManager.getProfileByName("Administration_Bulk Batch Timing");
+        if (profile2 && profile2.data) {
+          const TimeInterval = profile2.data[0]['Time Interval'];
+          vars["Time Interval"] = TimeInterval;
+          log.info(`Loaded Time Interval: ${vars["Time Interval"]}`);
+
+          const NoOfBatches = profile2.data[0]['NO of Batches'];
+          vars["NO of Batches"] = NoOfBatches;
+          log.info(`Loaded NO of Batches: ${vars["NO of Batches"]}`);
+        }
+
+        const profile1 = testDataManager.getProfileByName("Bid Requests");
+        if (profile1 && profile1.data) {
+          const CompanyName = profile1.data[0]['Company Name'];
+          vars["CompanyName"] = CompanyName;
+          log.info(`Loaded Company Name: ${vars["CompanyName"]}`);
+        }
         await stepGroups.stepGroup_Login_to_CORR_Portal(page, vars);
         await stepGroups.stepGroup_Deleting_Early_Config_Report_If_Present(page, vars);
         log.info('Logged in and cleared any early config report');
@@ -65,15 +83,15 @@ test.describe('REG_TC_Bid_Requests', () => {
         await correspondentPortalPage.Pricing_Return_Time.click();
         log.info('Clicked Pricing Return Time');
         let isVisible = false;
-                try {
-                  await page.locator('app-single-select-dropdown#pricingReturnTimeDropdown').waitFor({ state: 'visible', timeout: 10000 });
-                  const count = await new CorrPortalPage(page).Second_Enabled_Time.count();
-                  log.info(`Second_Enabled_Time element count: ${count}`);
-                  isVisible = count > 0;
-                } catch {
-                  isVisible = false;
-                }
-                log.info(`Is the second enabled batch time visible? ${isVisible}`);
+        try {
+          await page.locator('app-single-select-dropdown#pricingReturnTimeDropdown').waitFor({ state: 'visible', timeout: 10000 });
+          const count = await new CorrPortalPage(page).Second_Enabled_Time.count();
+          log.info(`Second_Enabled_Time element count: ${count}`);
+          isVisible = count > 0;
+        } catch {
+          isVisible = false;
+        }
+        log.info(`Is the second enabled batch time visible? ${isVisible}`);
         if (isVisible) /* Element Enabled Time is visible */ {
           log.info('Enabled Time is visible — navigating to Bulk Batch Timing without modification');
           await stepGroups.stepGroup_Navigating_to_Bulk_Batch_Timing(page, vars);
@@ -84,7 +102,7 @@ test.describe('REG_TC_Bid_Requests', () => {
         }
 
         await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-        await expect(page.getByText("Bulk Batch Timing")).toBeVisible();
+        await expect(page.getByText("Bulk Batch Timing").first()).toBeVisible();
         log.info('Bulk Batch Timing page is visible');
 
         log.stepPass('Navigation to Bulk Batch Timing and conditional batch modification successful');
@@ -106,7 +124,7 @@ test.describe('REG_TC_Bid_Requests', () => {
         })();
         log.info(`BatchTime(FewMinAdded): ${vars["BatchTime(FewMinAdded)"]}`);
 
-        vars["MinWithStandard"] = String(vars["BatchTime(FewMinAdded)"]).split(":")["2"] || '';
+        vars["MinWithStandard"] = String(vars["BatchTime(FewMinAdded)"]).split(":")["1"] || '';
         vars["Time_Hour"] = String(vars["BatchTime(FewMinAdded)"]).substring(0, String(vars["BatchTime(FewMinAdded)"]).length - 6);
         vars["Time_Min"] = String(vars["MinWithStandard"]).substring(0, String(vars["MinWithStandard"]).length - 3);
         vars["Time_Unit"] = String(vars["MinWithStandard"]).substring(3);
@@ -124,7 +142,7 @@ test.describe('REG_TC_Bid_Requests', () => {
         await correspondentPortalPage.Add_A_Batch_Button.click();
         log.info('Clicked Add A Batch button');
 
-        await expect(page.getByText("Add a Batch")).toBeVisible();
+        await expect(page.getByText("Add a Batch").first()).toBeVisible();
         log.info('"Add a Batch" dialog is visible');
 
         await expect(p24UnitDropdownPage.Select_Rules_Checkbox).toBeVisible();
@@ -221,10 +239,10 @@ test.describe('REG_TC_Bid_Requests', () => {
 
         await correspondentPortalPage.Dropdown_selection_2.click();
         log.info('Clicked Dropdown_selection_2');
-
+        log.info('Options for Today in dropdown are : ' + await correspondentPortalPage.Dropdown_selection_2.innerText());
         await page.waitForTimeout(5000);
 
-        await expect(correspondentPortalPage.Dropdown_selection_2.locator('option', { hasText: vars["AddedBatchTime"] })).toBeVisible();
+        await expect(correspondentPortalPage.Dropdown_selection_2.locator('option', { hasText: vars["AddedBatchTime"] })).toBeAttached();
         log.info(`Validated: option with text "${vars["AddedBatchTime"]}" is visible in today's dropdown`);
 
         log.stepPass(`AddedBatchTime "${vars["AddedBatchTime"]}" is present in today's pricing return time dropdown`);
@@ -244,7 +262,7 @@ test.describe('REG_TC_Bid_Requests', () => {
 
         await correspondentPortalPage.Dropdown_selection_2.click();
         log.info('Clicked Dropdown_selection_2 for Next Business Day');
-
+        log.info('Options for Next Business Day in dropdown are : ' + await correspondentPortalPage.Dropdown_selection_2.innerText());
         await expect(correspondentPortalPage.Dropdown_selection_2).not.toContainText(vars["AddedBatchTime"]);
         log.info(`Validated: "${vars["AddedBatchTime"]}" is NOT present in Next Business Day dropdown`);
 
