@@ -480,7 +480,7 @@
         "Loan Field Validation(Number)": "Deepika_June_invaliddatafield",
         "Bid Valid File(Loan Status)": "Success",
         "Bid Request ID Header": "BidRequestID",
-        "Resubmit Pricing Error Chase Direct": "Execution type 'Chase Direct' not permitted for client",
+        "Resubmit Pricing Error Chase Direct": "Execution type 'CHASE_DIRECT' not permitted for client",
         "Geo Coding happy flow(Error Description)": "No Errors",
         "Bid Enum Check(Loan Status)": "Error",
         "Pos Check(Errors Column)": "No eligibility results",
@@ -497,7 +497,7 @@
         "MissingHeaders_ErrorMessage2": "Please verify the correct Map ID is selected or tape is formatted correctly.",
         "Geo Coding Reducer flow(Loan Status)": "Success",
         "Eligibility Check(Error Description)": "Minimum loan amount $5,000",
-        "Stored_Text1": "04:47 AM",
+        "Stored_Text1": "11:49 PM",
         "Status Name": "Committed",
         "Bid Valid File(Error Column)": "No errors",
         "CompanyName3": "American Pacific - A4257",
@@ -509,7 +509,7 @@
         "Eligibility Check(Error Column)": "Minimum Loan Amount $5,000",
         "Loan Field Validation(Error description)": "Loan value cannot be blank or zero for 'loan purpose'",
         "Last One Month": "Last One Month",
-        "Resubmit Pricing Error Standard and Chase": "Execution type 'Standard' not permitted for client",
+        "Resubmit Pricing Error Standard and Chase": "Execution type 'STANDARD' not permitted for client",
         "Reason For Cancellation": "To be Cancelled",
         "Reason For Deletion": "To be deleted",
         "Loan Field Validation(Error)": "Invalid Loan Data",
@@ -533,7 +533,7 @@
         "Search Field Company Name": "Wik1C",
         "DuplicateLoans_HeaderMessage": "Duplicate Loans",
         "Company Name": "Freedom - A4187",
-        "Stored_Text": "02:34 AM",
+        "Stored_Text": "11:47 PM",
         "Resubmit Pricing Error Chase Direct1": "( nmlsId = 2767 )",
         "DuplicateLoans_ErrorMessage": "Duplicate loan numbers contained in this file: Deepika_June_02_02, Deepika_June_02_04. Please remove these from the file and retry upload.",
         "Missing Headers(Error Message)": "Bid tape is missing values for following headers: Loan Purpose. Please verify the correct Map ID is selected or tape is formatted correctly.",
@@ -568,7 +568,7 @@
         "MissingHeaders_ErrorMessage2": "",
         "Geo Coding Reducer flow(Loan Status)": "",
         "Eligibility Check(Error Description)": "",
-        "Stored_Text1": "04:53 AM",
+        "Stored_Text1": "11:55 PM",
         "Status Name": "",
         "Bid Valid File(Error Column)": "",
         "CompanyName3": "",
@@ -604,7 +604,7 @@
         "Search Field Company Name": "",
         "DuplicateLoans_HeaderMessage": "",
         "Company Name": "",
-        "Stored_Text": "02:40 AM",
+        "Stored_Text": "11:53 PM",
         "Resubmit Pricing Error Chase Direct1": "",
         "DuplicateLoans_ErrorMessage": "",
         "Missing Headers(Error Message)": "",
@@ -675,7 +675,7 @@
         "Search Field Company Name": "",
         "DuplicateLoans_HeaderMessage": "",
         "Company Name": "",
-        "Stored_Text": "02:46 AM",
+        "Stored_Text": "11:59 PM",
         "Resubmit Pricing Error Chase Direct1": "",
         "DuplicateLoans_ErrorMessage": "",
         "Missing Headers(Error Message)": "",
@@ -1819,22 +1819,22 @@
     "testDataName": "bulk batch to bid request",
     "data": [
       {
-        "batch time": "01:57 AM"
+        "batch time": "09:54 PM"
       },
       {
-        "batch time": "02:03 AM"
+        "batch time": "10:00 PM"
       },
       {
-        "batch time": "02:09 AM"
+        "batch time": "10:06 PM"
       },
       {
-        "batch time": "02:15 AM"
+        "batch time": "10:12 PM"
       },
       {
-        "batch time": "02:21 AM"
+        "batch time": "10:18 PM"
       },
       {
-        "batch time": "02:27 AM"
+        "batch time": "10:24 PM"
       }
     ],
     "createdById": 24,

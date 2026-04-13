@@ -19,12 +19,13 @@ export class BidRequestListPage {
     return this.page.locator(`//button[contains(text(),\"${RequestIDDetails}\")]/../..//td[@data-title=\"Execution Type\"]`);
   }
 
-  get Filtered_Status_BidRequest_ID_ChaseDirect(): Locator {
-    return this.page.locator("//td[@data-title=\"Execution Type\"]//div[text()=\" Chase Direct \"]/../..//td[@data-title=\"Status\"]//span[contains(text(),\"$|StatusToBeSelected|\")]/../../..//td[@data-title=\"Bid Req. ID\"]");
+  Filtered_Status_BidRequest_ID_ChaseDirect(StatusToBeSelected: string): Locator {
+    return this.page.locator(`//td[@data-title="Execution Type"]//div[text()=" Chase Direct "]/../..//td[@data-title="Status"]//span[contains(text(), "${StatusToBeSelected}")]/../../..//td[@data-title="Bid Req. ID"]`);
   }
 
-  get Filtered_Status_BidRequest_ID_Standard_and_chase(): Locator {
-    return this.page.locator("//div[   contains(@aria-label, 'Loans total:') and   number(substring-before(substring-after(@aria-label, 'Loans total: '), ',')) <= 10 ]/../..//td[@data-title='Execution Type']/div[normalize-space(.) = 'Standard , Chase Direct']/../..//td[@data-title=\"Status\"]//*[text()=\" $|StatusToBeSelected| \"]/../../..//td[@data-title=\"Bid Req. ID\"]");
+  Filtered_Status_BidRequest_ID_Standard_and_chase(StatusToBeSelected: string): Locator {
+    //return this.page.locator(`//div[   contains(@aria-label, 'Loans total:') and   number(substring-before(substring-after(@aria-label, 'Loans total: '), ',')) <= 10 ]/../..//td[@data-title='Execution Type']/div[normalize-space(.) = 'Standard , Chase Direct']/../..//td[@data-title="Status"]//*[text()="${StatusToBeSelected}"]/../../..//td[@data-title="Bid Req. ID"]`);
+    return this.page.locator(`//div[contains(@aria-label, 'Loans total:') and number(substring-before(substring-after(@aria-label, 'Loans total: '), ',')) <= 10]/../..//td[@data-title='Execution Type']/div[normalize-space(.) = 'Standard , Chase Direct']/../..//td[@data-title="Status"]//*[text()=" ${StatusToBeSelected} "]/../../..//td[@data-title="Bid Req. ID"]`);
   }
 
   get First_Cancel_Button(): Locator {
@@ -47,8 +48,8 @@ export class BidRequestListPage {
     return this.page.locator(`//button[contains(text(),\"${RequestIDDetails}\")]/../..//td[@data-title=\"Bid Req. ID\"]`);
   }
 
-  get Request_Id_to_select(): Locator {
-    return this.page.locator("//button[contains(text(),\"$|RequestIdFromDetails|\")]");
+  Request_Id_to_select(RequestIdFromDetails: string): Locator {
+    return this.page.locator(`//button[contains(text(),\"${RequestIdFromDetails}\")]`);
   }
 
   Requested_date_from_List(RequestIDDetails:String): Locator {

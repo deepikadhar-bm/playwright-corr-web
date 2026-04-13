@@ -828,8 +828,8 @@ export class CorrPortalPage {
     return this.page.locator("//td[@role=\"cell\"]//input[@type=\"checkbox\"]//..//..//button[contains(@aria-label,\"Edit Map\")]");
   }
 
-  get Edit_Permission_Button_For_Freedomcompany(): Locator {
-    return this.page.locator("//td[contains(text(),\"@|Company Name|\")]/following-sibling::td[@data-title=\"Actions\"]//button[@aria-label=\"Edit Permission\"]//span[contains(@class, 'fa-pencil-alt')]");
+  Edit_Permission_Button_For_Freedomcompany(CompanyName: string): Locator {
+    return this.page.locator(`//td[contains(text(),\"${CompanyName}\")]/following-sibling::td[@data-title=\"Actions\"]//button[@aria-label=\"Edit Permission\"]//span[contains(@class, 'fa-pencil-alt')]`);
   }
 
   get Edit_Permission_Buttonfirst_record(): Locator {
@@ -856,8 +856,8 @@ export class CorrPortalPage {
     return this.page.locator("//button[contains(@aria-label,\"View loan details\")]");
   }
 
-  get Enabled_PricingReturnTime(): Locator {
-    return this.page.locator("//option[contains(text(),\"$|BulkBatchTiming|\")]");
+  Enabled_PricingReturnTime(BulkBatchTiming: string): Locator {
+    return this.page.locator(`//option[contains(text(),\"${BulkBatchTiming}\")]`);
   }
 
   get Enabled_Time(): Locator {
@@ -950,7 +950,7 @@ export class CorrPortalPage {
     return this.page.locator(`//div[   contains(@aria-label, 'Loans total:') and   number(substring-before(substring-after(@aria-label, 'Loans total: '), ',')) < 10 ]/../..//td[@data-title=\"Execution Type\"]//div[text()=\" ${ExecutionType} \"]/../..//td[@data-title=\"Status\"]//span[contains(text(),\"${StatusToBeSelected}\")]/../../..//td[@data-title=\"Bid Req. ID\"]`);
   }
 
-  Filtered_Status_BidRequest_ID_Standard_and_chase(StatusToBeSelected:string): Locator {
+  Filtered_Status_BidRequest_ID_Standard_and_chase(StatusToBeSelected: string): Locator {
     return this.page.locator(`//div[   contains(@aria-label, 'Loans total:') and   number(substring-before(substring-after(@aria-label, 'Loans total: '), ',')) <= 10 ]/../..//td[@data-title='Execution Type']/div[normalize-space(.) = 'Standard , Chase Direct']/../..//td[@data-title=\"Status\"]//*[text()=\" ${StatusToBeSelected} \"]/../../..//td[@data-title=\"Bid Req. ID\"]`);
   }
 

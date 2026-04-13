@@ -475,8 +475,8 @@ export class BidRequestPage {
     return this.page.locator("//label[@for=\"chkItembidRequestStatusundefined\"]/following-sibling::div[@aria-label=\"Toggle sort selected\"]");
   }
 
-  get Status_checkbox_Filter(): Locator {
-    return this.page.locator("//input[@type=\"checkbox\" and @aria-label=\"Select $|StatusToBeSelected|\"]");
+  Status_checkbox_Filter(StatusToBeSelected:String): Locator {
+    return this.page.locator(`//input[@type=\"checkbox\" and @aria-label=\"Select ${StatusToBeSelected}\"]`);
   }
 
   get Status_Filter_Tube(): Locator {
