@@ -1,6 +1,4 @@
-// [POM-APPLIED]
 import { test, expect } from '@playwright/test';
-import path from 'path';
 import * as stepGroups from '../../../src/helpers/step-groups';
 import { ChaseFieldNamePage } from '../../../src/pages/correspondant/chase-field-name';
 import { CorrespondentPortalPage } from '../../../src/pages/correspondant/correspondent-portal';
@@ -16,7 +14,17 @@ import { SaveAndPublishButtonPage } from '../../../src/pages/correspondant/save-
 import { SpinnerPage } from '../../../src/pages/correspondant/spinner';
 import { StatusInactive2Page } from '../../../src/pages/correspondant/status-inactive--2';
 import { ViewActiveVersionButtonPage } from '../../../src/pages/correspondant/view-active-version-button';
+import { EnumerationMappingPage } from '../../../src/pages/correspondant/enumeration-mapping';
 import { ViewDraftButtonPage } from '../../../src/pages/correspondant/view-draft-button';
+import { Logger as log } from '@helpers/log-helper';
+import { testDataManager } from 'testdata/TestDataManager';
+import { ENV } from '@config/environments';
+import { FILE_CONSTANTS as fileconstants } from '../../../src/constants/file-constants';
+import { AddonHelpers } from '@helpers/AddonHelpers';
+
+
+const TC_ID = 'REG_TS16_TC03';
+const TC_TITLE = 'If the status is active draft, then verify that user should be able to switch the view between active draft and should be able to delete the draft version if not required.[Rules and Actions]';
 
 test.describe('REG_Bid Maps', () => {
   let vars: Record<string, string> = {};
@@ -35,9 +43,18 @@ test.describe('REG_Bid Maps', () => {
   let statusInactive2Page: StatusInactive2Page;
   let viewActiveVersionButtonPage: ViewActiveVersionButtonPage;
   let viewDraftButtonPage: ViewDraftButtonPage;
+  let Methods : AddonHelpers;
+  let enumerationMappingPage:EnumerationMappingPage;
+
+  const credentials = ENV.getCredentials('internal');
+
+  const profileName = 'Bid_Maps';
+  const profile = testDataManager.getProfileByName(profileName);
 
   test.beforeEach(async ({ page }) => {
     vars = {};
+    vars['Username'] = credentials.username;
+    vars['Password'] = credentials.password;
     chaseFieldNamePage = new ChaseFieldNamePage(page);
     correspondentPortalPage = new CorrespondentPortalPage(page);
     deleteDraftButtonPage = new DeleteDraftButtonPage(page);
@@ -53,157 +70,181 @@ test.describe('REG_Bid Maps', () => {
     statusInactive2Page = new StatusInactive2Page(page);
     viewActiveVersionButtonPage = new ViewActiveVersionButtonPage(page);
     viewDraftButtonPage = new ViewDraftButtonPage(page);
+    enumerationMappingPage=new EnumerationMappingPage(page);
+    Methods = new AddonHelpers(page,vars);
   });
 
-  test('REG_TS16_TC03_(Rules and Actions)If the status is active draft, then verify that user should be able to switch the view between active draft and should be able to delete the defat version if not requi', async ({ page }) => {
-    const testData: Record<string, string> = {
-  "Duplicated Rule Name": "Rule 2",
-  "New Rule Name": "New Rule",
-  "UniqueColHeader/Enum": "TsSearchUniqueColHeaderEnum",
-  "Save and Move to Next Page": "Save and Move to Next Page",
-  "CSS Attribute": "2px solid rgb(227, 82, 5)",
-  "Used Headers": "Show Used Headers",
-  "2-4 Unit": "2-4 Unit",
-  "Search Map Input": "Deepika Aug1",
-  "Chase_Field_Name1": "Mortgage Type",
-  "Rule Name": "Rule 1",
-  "Unidentified Headers": "Show Unidentified Headers",
-  "Operations": "GREATER",
-  "BidFields.": "DTI",
-  "Search Fields": "hii",
-  "Operator 2 Symbol": ">",
-  "Time Interval": "05",
-  "Unidentified Enumerations": "Show Unidentified Enumerations",
-  "Show All Enumerations": "Show All Enumerations",
-  "Unidentfied and Save Message": "You have unidentified fields.  This action will save the changes and Move to Next Page.",
-  "BidField": "FICO Score",
-  "Search_Map": "Deepika Aug",
-  "CustomHeader": "Header 02",
-  "Assigned Companies1": "Wik1C BeuLD MoJbr CoEmy LLpoJ",
-  "Unique Chase Value1": "AndoverBirchDrive1",
-  "Company name 2": "Wik1C BeuLD MoJbr CoEmy LLpoJ  - A2964",
-  "Bid Field": "Base Loan Amount",
-  "Chase  Values": "False",
-  "ChaseValue": "Attached",
-  "Unused Enumerations": "Show Unused Enumerations",
-  "Reason For Cancellation": "To Be Cancelled",
-  "Reason For Deletion": "To Be Deleted",
-  "ChaseValues.": "False",
-  "Chase_Field_Name": "Mortgage Limit",
-  "Header Mapping": "Show All Headers",
-  "Chase Field Name": "Amortization Type",
-  "ChaseFieldName": "Appraised Value",
-  "UniqueBidEnumTapeValue": "852345",
-  "BidEnumeratedTapeValue": "800",
-  "Chase Fields Name": "Amortization Type, Appraised Value, Attachment Type, Aus List, Borrower First Name, Borrower Last Name, Buy Down, CLTV, City, DTI, Fico, First Time Home Buyer, First Time Homebuyer Credit Fee Waiver, Impound Types, Income Ami Ratio, Ineligible, Interest Only, LTV, Loan Amount, Loan Number, Loan Purpose, Loan Term, Monthly Income, Mortgage Limit, Mortgage Types, Note Rate, Number Of Unit, Occupancy Type, Product Name, Property Type, Property Valuation Type, Purchase Price, State, Street, Subordinate Loan Amount, TPO, Total Loan Amount, Unpaid Principal Balance, Zip",
-  "Unique Chase Field Name": "Street",
-  "Chase Value": "Fixed rate",
-  "Search_Input": "TS_SEARCHMAP21",
-  "Unused Headers": "Show Unused Headers",
-  "Upload File Text Verification": "Drag and drop files here or click to browse. Allowed formats: .xls,.xlsx,.csv,.txt",
-  "Bid Enumerated Tape Value": "80",
-  "Search Field Company Name": "Wik1C",
-  "Create Map": "Testsigma_04/03/2025/",
-  "Custom Header": "Header01",
-  "Investment (NOO)": "Investment (NOO)",
-  "PropertyValuation": "1004Desktop",
-  "ImportRuleName": "TEst",
-  "Action Save message": "This action will save the changes and Move to Next Page",
-  "SearchFields": "Hii",
-  "Start Time in Minutes": "31",
-  "Execution Type1": "STANDARD",
-  "BidEnumeratedTapeValue - Block 2": "Fixed",
-  "Execution Type": "CHASE_DIRECT",
-  "UniqueColumnHeaderSearch": "TsSearchUniqueColumnHeader",
-  "Start Time in Hour": "8",
-  "UniqueWhenBidFieldSearch": "TsSearchWhenBidField",
-  "WhenBidFieldName - Block 2": "Amortization Type",
-  "EmptyChaseFieldName": "Select",
-  "WhenBidFieldValue-3": "Appraised Value",
-  "Unique Chase Value": "AndoverBirchDrive",
-  "BidFields": "CLTV",
-  "Loan Purpose": "Refinance (R&T)",
-  "Advanced Search": "Fico",
-  "ChaseFieldNames": "Aus List",
-  "NO of Batches": "05",
-  "CompanyName3": "American Pacific  - A4257",
-  "Operator": "LESS_OR_EQUAL",
-  "SelectingChaseFieldName": "7",
-  "UpdatedBidEnumeratedTapeValue": "SAIKAT_18_FEB_002",
-  "Search Input": "Test",
-  "Company name 1": "Freedom",
-  "Operator 3": "CONTAINS",
-  "Expected Company Name": "Freedom",
-  "Operation2": "GREATER",
-  "Operation1": "LESS",
-  "Operator - Block 2": "GREATER",
-  "Bid Tape Value": "Fixed",
-  "Search Field": "free",
-  "Created Map Id": "Testsigma_05/07/2025/20:55:58",
-  "Rule Name(Updated)": "UP Rule 1",
-  "Operator 1 Symbol": "<",
-  "UniqueChaseValueSearch": "TsSearchChaseValue",
-  "Import Rule": "Testsigma_02/23/2026/01:02:39",
-  "Condition Bid Field": "FICO Score",
-  "BidEnumeraedTapeValue - 3": "425000",
-  "Chasevalues": "Variable rate",
-  "DeleteId": "Testsigma_05/05/2025/16:23:13",
-  "UpdatedWhenBidFieldName": "Correspondent Loan Number",
-  "Unidentified fields Message": "You have unidentified fields do you want to proceed further.",
-  "UniqueBidEnumTapeSearch": "TsSearchBidEnumTape",
-  "Unidentified Fields Error Message": "You have unidentified fields.",
-  "UniqueRuleNameSearch": "TsSearchUniqueRuleName"
-}; // Profile: "Bid_Maps", row: 0
+  test(`${TC_ID} - ${TC_TITLE}`, async ({ page }) => {
+    log.tcStart(TC_ID, TC_TITLE);
 
-    await stepGroups.stepGroup_Login_to_CORR_Portal(page, vars);
-    await stepGroups.stepGroup_Smart_Mapper_from_Off_to_On(page, vars);
-    await stepGroups.stepGroup_Creation_Of_Bid_Map_Upto_Header_Mapping(page, vars);
-    await enumerationMappingButtonPage.Enumeration_Mapping_Button.click();
-    await correspondentPortalPage.Yes_Proceed_Button.click();
-    await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-    await rulesAndActionsButtonPage.Rules_and_Actions_Button.click();
-    await correspondentPortalPage.Yes_Proceed_Button.waitFor({ state: 'visible' });
-    await correspondentPortalPage.Yes_Proceed_Button.click();
-    await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-    await stepGroups.stepGroup_Adding_Rules_In_Rules_and_Actions_Screen(page, vars);
-    await stepGroups.stepGroup_Add_Actions_in_Rules_and_Actions(page, vars);
-    await stepGroups.stepGroup_Duplicating_Rule_In_Enumeration_Mapping(page, vars);
-    await saveAndPublishButtonPage.Save_and_Publish_Button.click();
-    await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-    await mapNameFieldInBidMapsPage.Bid_Map_Name_Field_In_Row.click();
-    await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-    await mapHeadersButtonPage.Map_Headers_Button.click();
-    await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-    await enumerationMappingButtonPage.Enumeration_Mapping_Button.click();
-    await correspondentPortalPage.Yes_Proceed_Button.waitFor({ state: 'visible' });
-    await correspondentPortalPage.Yes_Proceed_Button.evaluate(el => (el as HTMLElement).click());
-    await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-    await rulesAndActionsButtonPage.Rules_and_Actions_Button.click();
-    await correspondentPortalPage.Yes_Proceed_Button.waitFor({ state: 'visible' });
-    await correspondentPortalPage.Yes_Proceed_Button.evaluate(el => (el as HTMLElement).click());
-    await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-    await stepGroups.stepGroup_Editing_All_Fields_In_a_Rule(page, vars);
-    await stepGroups.stepGroup_Deleting_the_Rule_in_Rules_and_Actions_Page(page, vars);
-    await expect(page.getByText(testData["Duplicated Rule Name"])).not.toBeVisible();
-    await stepGroups.stepGroup_Duplicating_Rule_In_Enumeration_Mapping(page, vars);
-    await chaseFieldNamePage.Save_Draft.click();
-    await viewActiveVersionButtonPage.View_Active_Version_Button.waitFor({ state: 'visible' });
-    await viewActiveVersionButtonPage.View_Active_Version_Button.click();
-    await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-    await expect(headeramappingPage.Disabled_Headers).toBeVisible();
-    await stepGroups.stepGroup_Verifying_that_Changes_Are_Not_Updated_In_Active_VersionRule(page, vars);
-    await stepGroups.stepGroup_Verification_of_Rules_and_Action_Values_Before_EditingActive(page, vars);
-    await expect(statusInactive2Page.Rule_Name).toHaveValue(testData["Duplicated Rule Name"]);
-    vars["Rulename"] = await statusInactive2Page.Rule_Name.inputValue() || '';
-    expect(String(vars["Rulename"])).toBe(testData["New Rule Name"]);
-    await viewDraftButtonPage.View_Draft_Button.click();
-    await expect(headeramappingPage.Disabled_Headers).toBeVisible();
-    await expect(viewActiveVersionButtonPage.View_Active_Version_Button).toBeVisible();
-    await expect(deleteDraftButtonPage.Delete_Draft_Button).toBeVisible();
-    await deleteDraftButtonPage.Delete_Draft_Button.click();
-    await expect(deleteDraftPage.Text_In_Delete_Draft).toBeVisible();
-    await expect(deleteDraftPage.Yes_proceed_On_Delete_Draft).toBeVisible();
-    await deleteDraftPage.Yes_proceed_On_Delete_Draft.click();
-    await expect(mapNamePage.Active_Map_Name).toContainText("ACTIVE");
+    if (profile && profile.data) {
+      vars["New Rule Name"] = profile.data[0]['New Rule Name'];
+      vars["Duplicated Rule Name"] = profile.data[0]['Duplicated Rule Name'];
+      vars["Rule Name"] = profile.data[0]['Rule Name'];
+      vars["BidEnumeratedTapeValue"] = profile.data[0]['BidEnumeratedTapeValue'];
+      vars["BidFields"] = profile.data[0]['BidFields'];
+      vars["Bid Enumerated Tape Value"] = profile.data[0]['Bid Enumerated Tape Value'];
+      vars["Condition Bid Field"] = profile.data[0]['Condition Bid Field'];
+      vars["Operation1"] = profile.data[0]['Operation1'];
+      vars["Operation2"] = profile.data[0]['Operation2'];
+      vars["Operator 2 Symbol"]=profile.data[0]['Operator 2 Symbol'];
+    }
+
+    try {
+
+      log.step('Login to CORR portal');
+      try {
+        await stepGroups.stepGroup_Login_to_CORR_Portal(page, vars);
+        log.stepPass('Login successful');
+      } catch (e) {
+        await log.stepFail(page, 'Login failed');
+        throw e;
+      }
+
+      log.step('Enable Smart Mapper and create Bid Map up to Header Mapping');
+      try {
+        await stepGroups.stepGroup_Smart_Mapper_from_Off_to_On(page, vars);
+        const fileName = fileconstants.BID_QA_FILE_COMMON;
+        await stepGroups.stepGroup_Creation_Of_Bid_Map_Upto_Header_Mapping(page, vars, fileName);
+        log.stepPass('Smart Mapper enabled and Bid Map created up to Header Mapping');
+      } catch (e) {
+        await log.stepFail(page, 'Failed to enable Smart Mapper or create Bid Map');
+        throw e;
+      }
+
+      log.step('Navigate through Enumeration Mapping and Rules and Actions');
+      try {
+        await enumerationMappingButtonPage.Enumeration_Mapping_Button.click();
+        await correspondentPortalPage.Yes_Proceed_Button.click();
+        await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+        await rulesAndActionsButtonPage.Rules_and_Actions_Button.click();
+        await correspondentPortalPage.Yes_Proceed_Button.waitFor({ state: 'visible' });
+        await correspondentPortalPage.Yes_Proceed_Button.click();
+        await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+        log.stepPass('Navigated to Rules and Actions screen');
+      } catch (e) {
+        await log.stepFail(page, 'Failed to navigate to Rules and Actions screen');
+        throw e;
+      }
+
+      log.step('Add Rules and Actions in Rules and Actions screen');
+      try {
+        await stepGroups.stepGroup_Adding_Rules_In_Rules_and_Actions_Screen(page, vars);
+        await stepGroups.stepGroup_Add_Actions_in_Rules_and_Actions(page, vars);
+        log.stepPass('Rules and Actions added successfully');
+      } catch (e) {
+        await log.stepFail(page, 'Failed to add Rules and Actions');
+        throw e;
+      }
+
+      log.step('Duplicate rule and Save and Publish the Bid Map');
+      try {
+        await stepGroups.stepGroup_Duplicating_Rule_In_Enumeration_Mapping(page, vars);
+        await saveAndPublishButtonPage.Save_and_Publish_Button.click();
+        await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+        log.stepPass('Rule duplicated and Bid Map saved and published successfully');
+      } catch (e) {
+        await log.stepFail(page, 'Failed to duplicate rule or Save and Publish the Bid Map');
+        throw e;
+      }
+
+      log.step('Navigate back to Bid Map and proceed to Rules and Actions for editing');
+      try {
+        await mapNameFieldInBidMapsPage.get_Bid_Map_Name_Field_In_Row(vars['CreateNewMap']).click();
+        await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+        await mapHeadersButtonPage.Map_Headers_Button.click();
+        await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+        await enumerationMappingButtonPage.Enumeration_Mapping_Button.click();
+        await correspondentPortalPage.Yes_Proceed_Button.waitFor({ state: 'visible' });
+        await correspondentPortalPage.Yes_Proceed_Button.evaluate(el => (el as HTMLElement).click());
+        await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+        await rulesAndActionsButtonPage.Rules_and_Actions_Button.click();
+        await correspondentPortalPage.Yes_Proceed_Button.waitFor({ state: 'visible' });
+        await correspondentPortalPage.Yes_Proceed_Button.evaluate(el => (el as HTMLElement).click());
+        await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+        log.stepPass('Navigated back to Rules and Actions screen for editing');
+      } catch (e) {
+        await log.stepFail(page, 'Failed to navigate back to Rules and Actions screen');
+        throw e;
+      }
+
+      log.step('Edit all fields in the rule and delete the duplicated rule');
+      try {
+        await stepGroups.stepGroup_Editing_All_Fields_In_a_Rule(page, vars);
+        await stepGroups.stepGroup_Deleting_the_Rule_in_Rules_and_Actions_Page(page, vars);
+        await expect(page.getByText(vars["Duplicated Rule Name"])).not.toBeVisible();
+        log.stepPass('Rule edited and duplicated rule deleted successfully');
+      } catch (e) {
+        await log.stepFail(page, 'Failed to edit rule or delete duplicated rule');
+        throw e;
+      }
+
+      log.step('Duplicate rule again and save as draft');
+      try {
+        await stepGroups.stepGroup_Duplicating_Rule_In_Enumeration_Mapping(page, vars);
+        await chaseFieldNamePage.Save_Draft.click();
+        await viewActiveVersionButtonPage.View_Active_Version_Button.waitFor({ state: 'visible' });
+        log.stepPass('Rule duplicated and saved as draft successfully');
+      } catch (e) {
+        await log.stepFail(page, 'Failed to duplicate rule or save as draft');
+        throw e;
+      }
+
+      log.step('Switch to Active Version and verify changes are not reflected');
+      try {
+        await viewActiveVersionButtonPage.View_Active_Version_Button.click();
+        await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+        await expect(headeramappingPage.Disabled_Headers).toBeVisible();
+        await stepGroups.stepGroup_Verifying_that_Changes_Are_Not_Updated_In_Active_VersionRule(page, vars);
+        await stepGroups.stepGroup_Verification_of_Rules_and_Action_Values_Before_EditingActive(page, vars);
+        log.stepPass('Active Version verified: draft changes are not reflected');
+      } catch (e) {
+        await log.stepFail(page, 'Failed to verify Active Version');
+        throw e;
+      }
+
+      log.step('Verify Duplicated Rule Name in Active Version');
+      try {
+        await expect(statusInactive2Page.Rule_Name).toHaveValue(vars["Duplicated Rule Name"]);
+        vars["Rulename"] = await statusInactive2Page.Rule_Name.inputValue() || '';
+        expect(Methods.verifyString(vars["Rulename"],'notEquals',vars["New Rule Name"]));
+        log.stepPass('Duplicated Rule Name verified in Active Version: ' + vars["Rulename"]);
+      } catch (e) {
+        await log.stepFail(page, 'Duplicated Rule Name verification failed in Active Version');
+        throw e;
+      }
+
+      log.step('Switch to Draft View and verify draft controls are visible');
+      try {
+        await viewDraftButtonPage.View_Draft_Button.click();
+        await expect(enumerationMappingPage.Disabled_Fields_Page).toBeHidden();
+        await expect(viewActiveVersionButtonPage.View_Active_Version_Button).toBeVisible();
+        await expect(deleteDraftButtonPage.Delete_Draft_Button).toBeVisible();
+        log.stepPass('Draft View loaded: Active Version and Delete Draft buttons are visible');
+      } catch (e) {
+        await log.stepFail(page, 'Failed to switch to Draft View or verify draft controls');
+        throw e;
+      }
+
+      log.step('Delete the draft version and verify redirect to active Bid Map');
+      try {
+        await deleteDraftButtonPage.Delete_Draft_Button.click();
+        await expect(deleteDraftPage.Text_In_Delete_Draft).toBeVisible();
+        await expect(deleteDraftPage.Yes_proceed_On_Delete_Draft).toBeVisible();
+        await deleteDraftPage.Yes_proceed_On_Delete_Draft.click();
+        await expect(mapNamePage.get_Active_Map_Name(vars['CreateNewMap'])).toContainText("ACTIVE");
+        log.stepPass('Draft deleted and Bid Map is now ACTIVE');
+      } catch (e) {
+        await log.stepFail(page, 'Failed to delete draft or verify ACTIVE status');
+        throw e;
+      }
+
+      log.tcEnd('PASS');
+
+    } catch (e) {
+      await log.captureOnFailure(page, TC_ID, e);
+      log.tcEnd('FAIL');
+      throw e;
+    }
   });
 });

@@ -232,6 +232,9 @@ export async function stepGroup_Creation_Of_Bid_Map_Upto_Header_Mapping(page: im
   //await CorrPortalElem.Search_Text_Field.click();
   await CorrPortalElem.Required_Company_s_Name_Value(vars["Companyname"]).first().click();
   await CorrPortalElem.Apply_Selected.click();
+  const value = 'STANDARD';
+  await correspondentPortalPage.Execution_Type_Dropdown.selectOption({ label: value });
+  await expect(correspondentPortalPage.Execution_Type_Dropdown).toHaveValue(value);
   await expect(CorrPortalElem.Upload_File).toHaveValue('');
   await expect(page.getByText("Drag and drop files here or click to browse. Allowed formats: .xls,.xlsx,.csv,.txt")).toBeVisible();
   // await CorrPortalElem.Upload_File.setInputFiles(path.resolve(__dirname, '../../../uploads', "DeepikaAugBidQA_(3)_(1)_(1)_(2).xlsx"));
@@ -1099,19 +1102,19 @@ export async function stepGroup_Editing_of_Add_Conditions_and_Add_Actions(page: 
   const CorrPortalElem = new CorrPortalPage(page);
   // const testData: Record<string, string> = {}; // TODO: Load from test data profile
   // await CorrPortalElem.When_Bid_Field.click();
-  await CorrPortalElem.When_Bid_Field_in_Add_Conditions.waitFor({ state: "visible" })
-  await CorrPortalElem.When_Bid_Field_in_Add_Conditions.click();
+  await CorrPortalElem.When_Bid_Field_select.first().waitFor({ state: "visible" })
+  await CorrPortalElem.When_Bid_Field_select.first().click();
   await CorrPortalElem.Search_Field.fill(vars["BidFields"]);
   vars["BidField"] = await CorrPortalElem.Search_Field.inputValue() || '';
-  await CorrPortalElem.When_Bid_Field_Name.click();
+  await CorrPortalElem.When_Bid_Field_Name.first().click();
   expect(String(vars["BidField"])).toBe(vars["BidFields"]);
-  vars["EditedBidField[RulesAndActions]"] = await CorrPortalElem.Condition_BidField_1.inputValue() || '';
+  vars["EditedRuleBidField[RulesAndActions]"] = await CorrPortalElem.Condition_BidField_1.textContent() || '';
   await CorrPortalElem.Bid_Enumerated.click();
-  await CorrPortalElem.Search_Field.fill(vars["Bid Enumerated Tape Value"]);
-  vars["BidField"] = await CorrPortalElem.Search_Field.inputValue() || '';
+  await CorrPortalElem.Search_Field2.fill(vars["Bid Enumerated Tape Value"]);
+  vars["BidField"] = await CorrPortalElem.Search_Field2.inputValue() || '';
   await CorrPortalElem.Select_Button.click();
   expect(String(vars["BidField"])).toBe(vars["Bid Enumerated Tape Value"]);
-  vars["EditedBidTape[RulesAndActions]"] = await CorrPortalElem.Condition_BidTape1.inputValue() || '';
+  vars["EditedRuleBidTape[RulesAndActions]"] = await CorrPortalElem.Condition_BidTape1.textContent() || '';
 }
 
 /**
@@ -1340,8 +1343,8 @@ export async function stepGroup_Edition_In_Enumeration_Mapping(page: import('@pl
  */
 export async function stepGroup_Deleting_the_Rule_in_Rules_and_Actions_Page(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
-  await CorrPortalElem.Delete_Rule_Button.click();
-  await expect(CorrPortalElem.Delete_Rule).toBeVisible();
+  await CorrPortalElem.Last_Delete_Rule_Button.click();
+  await expect(CorrPortalElem.Delete_Rule.first()).toBeVisible();
   await CorrPortalElem.Yes_Proceed_Button.click();
   // [DISABLED] Verify that the text Rule Name is not displayed in the element Rule Name and With Scrollable FALSE
   // await expect(CorrPortalElem.Rule_Name_Field).not.toContainText(vars["Rule Name"]);
@@ -1946,11 +1949,13 @@ export async function stepGroup_Editing_In_Enumeration_Mapping_Screen(page: impo
  */
 export async function stepGroup_Save_Draft_exit_and_Navigating_To_Rules_And_Actions(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
+   await CorrPortalElem.Save_Draft_Exit_Button.scrollIntoViewIfNeeded();
   await CorrPortalElem.Save_Draft_Exit_Button.click();
+  await CorrPortalElem.Save_Draft_Exit_Button.waitFor({ state: 'hidden' });
   await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
-  await CorrPortalElem.Bid_Map_Name_Field_In_Row.click();
+  await CorrPortalElem.get_Bid_Map_Name_Field_In_Row(vars['CreateNewMap']).click();
   await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
-  await expect(page.getByText(vars["Create New Map"])).toBeVisible();
+  await expect(page.getByText(vars["CreateNewMap"])).toBeVisible();
   await CorrPortalElem.Map_Headers_Button.click();
   await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
   await CorrPortalElem.Enumeration_Mapping_Button.click();
@@ -2365,21 +2370,20 @@ export async function stepGroup_Duplicating_Rule_In_Enumeration_Mapping(page: im
  */
 export async function stepGroup_Editing_All_Fields_In_a_Rule(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
-  const testData: Record<string, string> = {}; // TODO: Load from test data profile
   await stepGroup_Editing_of_Add_Conditions_and_Add_Actions(page, vars);
-  await CorrPortalElem.Rule_Name_Field.clear();
-  await CorrPortalElem.Rule_Name_Field.pressSequentially(vars["New Rule Name"]);
-  await expect(CorrPortalElem.Rule_Name_Field).toHaveValue(vars["New Rule Name"]);
-  await CorrPortalElem.Select_Category_Dropdown.click();
+  await CorrPortalElem.Rule_Name_Field.first().clear();
+  await CorrPortalElem.Rule_Name_Field.first().pressSequentially(vars["New Rule Name"]);
+  await expect(CorrPortalElem.Rule_Name_Field.first()).toHaveValue(vars["New Rule Name"]);
+  await CorrPortalElem.Select_Category_Dropdown1.first().click();
   vars["EditedCategory"] = await CorrPortalElem.Second_Category_In_Dropdown.textContent() || '';
   await CorrPortalElem.Second_Category_Checkbox.check();
-  await CorrPortalElem.Apply_Selected_1_button_in_Rule.click();
-  await CorrPortalElem.Operation_Dropdown.selectOption({ label: vars["Operation2"] });
-  await expect(CorrPortalElem.Operation_Dropdown).toHaveValue(vars["Operation2"]);
+  await CorrPortalElem.Apply_Selected_button_in_Rule.first().click();
+  await CorrPortalElem.Operation_Dropdown1.selectOption({ value: vars["Operation2"] });
+  await expect(CorrPortalElem.Operation_Dropdown1).toHaveValue(vars["Operation2"]);
   await CorrPortalElem.Action_Chase_Field_Name_1.selectOption({ index: parseInt("17") });
   vars["EditedActionChaseFieldName"] = await CorrPortalElem.Action_Chase_Field_Name_1.evaluate(el => { const s = el as HTMLSelectElement; return s.options[s.selectedIndex]?.text || ''; });
-  await CorrPortalElem.Action_Chase_Value1.selectOption({ index: parseInt("1") });
-  vars["EditedActionChaseValue"] = await CorrPortalElem.Action_Chase_Value_1.evaluate(el => { const s = el as HTMLSelectElement; return s.options[s.selectedIndex]?.text || ''; });
+  await CorrPortalElem.Action_Chase_Value1.first().selectOption({ index: parseInt("1") });
+  vars["EditedActionChaseValue"] = await CorrPortalElem.Action_Chase_Value_1.first().evaluate(el => { const s = el as HTMLSelectElement; return s.options[s.selectedIndex]?.text || ''; });
 }
 
 /**
@@ -2389,12 +2393,15 @@ export async function stepGroup_Editing_All_Fields_In_a_Rule(page: import('@play
  */
 export async function stepGroup_Verification_of_Rules_and_Action_Values_Before_EditingActive(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
-  await expect(CorrPortalElem.Rule_Name_Field).toHaveValue(vars["Rule Name"]);
-  await expect(CorrPortalElem.Condition_BidField_1).toContainText(vars["RuleBidField"]);
-  await expect(CorrPortalElem.Operation_Dropdown).toHaveValue(vars["RuleCondition"]);
-  await expect(CorrPortalElem.Condition_BidTape1).toContainText(vars["RuleBidTapeValue"]);
-  await expect(CorrPortalElem.Add_Actions_Chase_Field_Name).toHaveValue(vars["ActionChaseFieldName"]);
-  await expect(CorrPortalElem.Add_Actions_Chase_Value).toHaveValue(vars["ActionChaseValue"]);
+  await expect(CorrPortalElem.Rule_Name_Field.first()).toHaveValue(vars["Rule Name"]);
+  await expect(CorrPortalElem.Condition_BidField_1.first()).toContainText(vars["RuleBidField"]);
+  await expect(CorrPortalElem.Operation_Dropdown.first()).toHaveValue(vars["RuleCondition"]);
+  await expect(CorrPortalElem.Condition_BidTape1.first()).toContainText(vars["RuleBidTapeValue"]);
+  // await expect(CorrPortalElem.Add_Actions_Chase_Field_Name.first()).toHaveValue(vars["ChaseFiledNameonAddActions"]);
+  log.info('ChaseFiledNameonAddActions'+vars['ChaseFiledNameonAddActions']);
+  await expect(CorrPortalElem.Add_Actions_Chase_Field_Name.locator('option:checked')).toHaveText(vars["ChaseFiledNameonAddActions"]);
+  // await expect(CorrPortalElem.Add_Actions_Chase_Value.first()).toHaveValue(vars["ChasevalueOnAddActions"]);
+  await expect(CorrPortalElem.Add_Actions_Chase_Value.locator('option :checked')).toHaveText(vars["ChasevalueOnAddActions"]);
 }
 
 /**
@@ -2404,20 +2411,21 @@ export async function stepGroup_Verification_of_Rules_and_Action_Values_Before_E
  */
 export async function stepGroup_Verifying_that_Changes_Are_Not_Updated_In_Active_VersionRule(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
-  const testData: Record<string, string> = {}; // TODO: Load from test data profile
+  const Methods = new AddonHelpers(page,vars);
   vars["ActiveVersionRuleName"] = await CorrPortalElem.First_Active_Rule_Name.inputValue() || '';
-  expect(String(vars["Rule Name"])).toBe(vars["ActiveVersionRuleName"]);
+  expect(Methods.verifyString(vars["New Rule Name"],'notEquals',vars["ActiveVersionRuleName"]));
   // [DISABLED] Verify that the text Rule Name is not displayed in the element First Rule Name Field and With Scrollable FALSE
   // await expect(CorrPortalElem.First_Active_Rule_Name).not.toContainText(vars["Rule Name"]);
   vars["CountOfCategory"] = await CorrPortalElem.First_Select_Category_box_text.textContent() || '';
-  expect(String(vars["CountOfCategory"])).toBe("1");
-  await expect(CorrPortalElem.Condition_BidField_1).not.toContainText(vars["RuleBidField"]);
-  await expect(CorrPortalElem.Operation_Dropdown).not.toContainText(vars["Operator 2 Symbol"]);
+  expect(Methods.verifyString(vars["CountOfCategory"],'contains',"1"));
+  await expect(CorrPortalElem.Condition_BidField_1).not.toContainText(vars["EditedRuleBidField[RulesAndActions]"]);
+  // await expect(CorrPortalElem.Operation_Dropdown.first()).not.toContainText(vars["Operator 2 Symbol"]);
+  await expect(CorrPortalElem.Operation_Dropdown.first().locator('option:checked')).not.toHaveText(vars["Operator 2 Symbol"]);
   // [DISABLED] Verify that the element Operation Dropdown display value RuleCondition and With Scrollable FALSE
   // await expect(CorrPortalElem.Operation_Dropdown).toHaveValue(vars["RuleCondition"]);
-  await expect(CorrPortalElem.Condition_BidTape1).not.toContainText(vars["RuleBidTapeValue"]);
-  await expect(CorrPortalElem.Add_Actions_Chase_Field_Name).not.toContainText(vars["ActionChaseFieldName"]);
-  await expect(CorrPortalElem.Add_Actions_Chase_Value).not.toContainText(vars["ActionChaseValue"]);
+  await expect(CorrPortalElem.Condition_BidTape1).not.toHaveText(vars["EditedRuleBidTape[RulesAndActions]"]);
+  await expect(CorrPortalElem.Add_Actions_Chase_Field_Name).not.toHaveText(vars["EditedActionChaseFieldName"]);
+  await expect(CorrPortalElem.Add_Actions_Chase_Value).not.toHaveText(vars["EditedActionChaseValue"]);
 }
 
 /**

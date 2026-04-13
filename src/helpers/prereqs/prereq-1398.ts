@@ -6,6 +6,14 @@ import { CorrespondentPortalPage } from '../../pages/correspondant/correspondent
 import { PriceOfferedPage } from '../../pages/correspondant/price-offered';
 import { SpinnerPage } from '../../pages/correspondant/spinner';
 import { runPrereq_1405 } from './prereq-1405';
+import { testDataManager } from 'testdata/TestDataManager';
+import { AddonHelpers } from '@helpers/AddonHelpers';
+import { APP_CONSTANTS as appconstants } from '../../../src/constants/app-constants';
+import { Logger as log } from '@helpers/log-helper';
+
+
+const TC_ID = 'PREREQ_1398(REG_TS01_TC04)';
+const TC_TITLE = 'Verify the table data..';
 
 export async function runPrereq_1398(page: Page, vars: Record<string, string>): Promise<void> {
   await runPrereq_1405(page, vars);
@@ -15,48 +23,67 @@ export async function runPrereq_1398(page: Page, vars: Record<string, string>): 
   const correspondentPortalPage = new CorrespondentPortalPage(page);
   const priceOfferedPage = new PriceOfferedPage(page);
   const spinnerPage = new SpinnerPage(page);
+  const Methods = new AddonHelpers(page, vars);
+  const profileName = 'Standard Loan Details Table';
 
+  log.tcStart(TC_ID, TC_TITLE);
 
-
-  await correspondentPortalPage.Bid_Requestsside_bar_menu.click();
-  await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-  await expect(bidRequestsPage.Search_by_Bid_Request_ID_Field).toBeVisible();
-  await bidRequestsPage.Search_by_Bid_Request_ID_Field.clear();
-  await bidRequestsPage.Search_by_Bid_Request_ID_Field.fill(vars["RequestIDDetails"]);
-  await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-  await correspondentPortalPage.First_Bid_Request_ID.click();
-  await correspondentPortalPage.Corr_Loan_Column_Sort_Arrow.waitFor({ state: 'visible' });
-  vars["ExecutionTypeCheck"] = await bidRequestDetailsPage.Execution_Type_from_Details_table1.textContent() || '';
-  if (String(vars["ExecutionTypeCheck"]).includes(String("Standard"))) {
-    await correspondentPortalPage.Corr_Loan_Column_Sort_Arrow.click();
-    await priceOfferedPage.Corr_Loan_Down_Arrow_Sort.waitFor({ state: 'visible' });
-    await page.waitForLoadState('networkidle');
-    vars["SuccessStatusCount(table1)"] = String(await bidRequestDetailsPage.Success_Rowtable1_bid_request_details.count());
-    vars["count"] = "1";
-    while (parseFloat(String(vars["count"])) <= parseFloat(String(vars["SuccessStatusCount(table1)"]))) {
-      for (let dataIdx = parseInt(vars["count"]); dataIdx <= parseInt(vars["count"]); dataIdx++) {
-        await bidRequestDetailsPage.Bid_Request_Details_Text.click();
-        vars["LoanNumber(table1)"] = await bidRequestDetailsPage.Corr_Loantable1_bid_request_details.textContent() || '';
-        vars["LoanNumber(table1)"] = String(vars["LoanNumber(table1)"]).substring(0, String(vars["LoanNumber(table1)"]).length - 7);
-        // Write to test data profile: "Loan Number(Standard)" = vars["LoanNumber(table1)"]
-        // [DISABLED] Click on Last Name Sort Button
-        // await bidRequestDetailsPage.Last_Name_Sort_Button.click();
-        // [DISABLED] Wait until the current page is loaded completely
-        // await page.waitForLoadState('networkidle');
-        // [DISABLED] Wait until the element Last Name Down Arrow Sort is visible
-        // await priceOfferedPage.Last_Name_Down_Arrow_Sort.waitFor({ state: 'visible' });
-        vars["LastName(table1)"] = await bidRequestDetailsPage.Last_Nametable1_bid_request_details.textContent() || '';
-        // Write to test data profile: "Last Name(Standard)" = vars["LastName(table1)"]
-        // [DISABLED] Click on Loan Amount Sort Button
-        // await bidRequestDetailsPage.Loan_Amount_Sort_Button.click();
-        // [DISABLED] Wait until the current page is loaded completely
-        // await page.waitForLoadState('networkidle');
-        // [DISABLED] Wait until the element Loan Amount Down Arrow Sort is visible
-        // await priceOfferedPage.Loan_Amount_Down_Arrow_Sort.waitFor({ state: 'visible' });
-        vars["LoanAmount(table1)"] = await bidRequestDetailsPage.Loan_Amounttable1_bid_request_details.textContent() || '';
-        // Write to test data profile: "Loan Amount(Standard)" = vars["LoanAmount(table1)"]
-      }
-      vars["count"] = (parseFloat(String("1")) + parseFloat(String(vars["count"]))).toFixed(0);
+  try {
+    log.step('Search for Bid Request and navigate to Details');
+    try {
+      await correspondentPortalPage.Bid_Requestsside_bar_menu.click();
+      await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+      await expect(bidRequestsPage.Search_by_Bid_Request_ID_Field).toBeVisible();
+      await bidRequestsPage.Search_by_Bid_Request_ID_Field.clear();
+      await bidRequestsPage.Search_by_Bid_Request_ID_Field.fill(vars["RequestIDDetails"]);
+      await page.keyboard.press('Enter');
+      await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+      await correspondentPortalPage.First_Bid_Request_ID.click();
+      await correspondentPortalPage.Corr_Loan_Column_Sort_Arrow.waitFor({ state: 'visible' });
+      vars["ExecutionTypeCheck"] = await bidRequestDetailsPage.Execution_Type_from_Details_table1.textContent() || '';
+      log.info(`Execution Type detected: ${vars["ExecutionTypeCheck"]}`);
+      log.stepPass('Navigated to Bid Request Details successfully');
+    } catch (e) {
+      await log.stepFail(page, `Failed to navigate to Bid Request Details`);
+      throw e;
     }
+
+    if (String(vars["ExecutionTypeCheck"]).includes(appconstants.STANDARD_TEXT)) {
+      log.step('Verify and capture data for all rows in the Standard Loan Details table');
+      try {
+        await correspondentPortalPage.Corr_Loan_Column_Sort_Arrow.click();
+        await priceOfferedPage.Corr_Loan_Down_Arrow_Sort.waitFor({ state: 'visible' });
+        await page.waitForTimeout(5000);
+        vars["SuccessStatusCount(table1)"] = String(await bidRequestDetailsPage.Success_Rowtable1_bid_request_details.count());
+        vars["count"] = appconstants.ONE;
+        log.info('Total rows count:' + vars["SuccessStatusCount(table1)"]);
+        while (parseFloat(String(vars["count"])) <= parseFloat(String(vars["SuccessStatusCount(table1)"]))) {
+          await bidRequestDetailsPage.Bid_Request_Details_Text.click();
+          vars["Loan Number(Standard)"] = await bidRequestDetailsPage.Corr_Loantable1_bid_request_details(vars['count']).textContent() || '';
+          Methods.removeCharactersFromPosition(vars["Loan Number(Standard)"], '0', '7', "Loan Number(Standard)");
+          vars["Last Name(Standard)"] = await bidRequestDetailsPage.Last_Nametable1_bid_request_details(vars['count']).textContent() || '';
+          vars["Loan Amount(Standard)"] = await bidRequestDetailsPage.Loan_Amounttable1_bid_request_details(vars['count']).textContent() || '';
+          testDataManager.updatePartialProfileDataByDataIndex(profileName, {
+            'Last Name(Standard)': vars['Last Name(Standard)'],
+            'Loan Number(Standard)': vars['Loan Number(Standard)'],
+            'Loan Amount(Standard)': vars['Loan Amount(Standard)'],
+          }, vars['count']);
+
+          Methods.performArithmetic(vars["count"], 'ADDITION', appconstants.ONE, "count", 0);
+        }
+        log.stepPass('All rows processed and data stored successfully');
+      } catch (e) {
+        await log.stepFail(page, `Error processing table rows at count: ${vars["count"]}`);
+        throw e;
+      }
+    } else {
+      log.info('Standard Execution text not found. Skipping table verification.');
+    }
+
+    log.tcEnd('PASS');
+  } catch (e) {
+    await log.captureOnFailure(page, TC_ID, e);
+    log.tcEnd('FAIL');
+    throw e;
   }
 }
