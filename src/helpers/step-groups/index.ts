@@ -234,7 +234,7 @@ export async function stepGroup_Creation_Of_Bid_Map_Upto_Header_Mapping(page: im
   await CorrPortalElem.Apply_Selected.click();
   const value = 'STANDARD';
   await correspondentPortalPage.Execution_Type_Dropdown.selectOption({ label: value });
-  await expect(correspondentPortalPage.Execution_Type_Dropdown).toHaveValue(value);
+  await expect(correspondentPortalPage.Execution_Type_Dropdown.locator('option:checked')).toHaveText(value);
   await expect(CorrPortalElem.Upload_File).toHaveValue('');
   await expect(page.getByText("Drag and drop files here or click to browse. Allowed formats: .xls,.xlsx,.csv,.txt")).toBeVisible();
   // await CorrPortalElem.Upload_File.setInputFiles(path.resolve(__dirname, '../../../uploads', "DeepikaAugBidQA_(3)_(1)_(1)_(2).xlsx"));
@@ -2393,15 +2393,12 @@ export async function stepGroup_Editing_All_Fields_In_a_Rule(page: import('@play
  */
 export async function stepGroup_Verification_of_Rules_and_Action_Values_Before_EditingActive(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
-  await expect(CorrPortalElem.Rule_Name_Field.first()).toHaveValue(vars["Rule Name"]);
-  await expect(CorrPortalElem.Condition_BidField_1.first()).toContainText(vars["RuleBidField"]);
-  await expect(CorrPortalElem.Operation_Dropdown.first()).toHaveValue(vars["RuleCondition"]);
-  await expect(CorrPortalElem.Condition_BidTape1.first()).toContainText(vars["RuleBidTapeValue"]);
-  // await expect(CorrPortalElem.Add_Actions_Chase_Field_Name.first()).toHaveValue(vars["ChaseFiledNameonAddActions"]);
-  log.info('ChaseFiledNameonAddActions'+vars['ChaseFiledNameonAddActions']);
-  await expect(CorrPortalElem.Add_Actions_Chase_Field_Name.locator('option:checked')).toHaveText(vars["ChaseFiledNameonAddActions"]);
-  // await expect(CorrPortalElem.Add_Actions_Chase_Value.first()).toHaveValue(vars["ChasevalueOnAddActions"]);
-  await expect(CorrPortalElem.Add_Actions_Chase_Value.locator('option :checked')).toHaveText(vars["ChasevalueOnAddActions"]);
+  await expect(CorrPortalElem.Rule_Name_Field).toHaveValue(vars["Rule Name"]);
+  await expect(CorrPortalElem.Condition_BidField_1).toContainText(vars["RuleBidField"]);
+  await expect(CorrPortalElem.Operation_Dropdown).toHaveValue(vars["RuleCondition"]);
+  await expect(CorrPortalElem.Condition_BidTape1).toContainText(vars["RuleBidTapeValue"]);
+  await expect(CorrPortalElem.Add_Actions_Chase_Field_Name).toHaveValue(vars["ActionChaseFieldName"]);
+  await expect(CorrPortalElem.Add_Actions_Chase_Value).toHaveValue(vars["ActionChaseValue"]);
 }
 
 /**
@@ -3381,7 +3378,6 @@ export async function stepGroup_Modifying_The_Batch_Intervals_For_Next_bussiness
     d.setMinutes(d.getMinutes() + parseInt(String("60")));
     return d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true }); // Format: hh:mm a
   })();
-  vars["CurrentTime"]=vars["OnehourPrior"];
   //await stepGroup_Separating_Hours_and_minutes_In_timeOne_hour_prior(page, vars);
   await stepGroup_Separating_Hours_and_minutes_In_time_Current_EST_time(page, vars);
   // [DISABLED] Pick the current date hh by location UTC-04:00 and store into a variable Time_Hour

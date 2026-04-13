@@ -12,6 +12,7 @@ import { MapNamePage } from '../../../src/pages/correspondant/map-name';
 import { RulesAndActionsButtonPage } from '../../../src/pages/correspondant/rules-and-actions-button';
 import { SaveAndPublishButtonPage } from '../../../src/pages/correspondant/save-and-publish-button';
 import { SpinnerPage } from '../../../src/pages/correspondant/spinner';
+import { CorrPortalPage } from '../../../src/pages/correspondant/CorrPortalPage';
 import { StatusInactive2Page } from '../../../src/pages/correspondant/status-inactive--2';
 import { ViewActiveVersionButtonPage } from '../../../src/pages/correspondant/view-active-version-button';
 import { EnumerationMappingPage } from '../../../src/pages/correspondant/enumeration-mapping';
@@ -43,8 +44,9 @@ test.describe('REG_Bid Maps', () => {
   let statusInactive2Page: StatusInactive2Page;
   let viewActiveVersionButtonPage: ViewActiveVersionButtonPage;
   let viewDraftButtonPage: ViewDraftButtonPage;
-  let Methods : AddonHelpers;
-  let enumerationMappingPage:EnumerationMappingPage;
+  let Methods: AddonHelpers;
+  let enumerationMappingPage: EnumerationMappingPage;
+  let CorrPortalElem: CorrPortalPage;
 
   const credentials = ENV.getCredentials('internal');
 
@@ -70,8 +72,9 @@ test.describe('REG_Bid Maps', () => {
     statusInactive2Page = new StatusInactive2Page(page);
     viewActiveVersionButtonPage = new ViewActiveVersionButtonPage(page);
     viewDraftButtonPage = new ViewDraftButtonPage(page);
-    enumerationMappingPage=new EnumerationMappingPage(page);
-    Methods = new AddonHelpers(page,vars);
+    enumerationMappingPage = new EnumerationMappingPage(page);
+    CorrPortalElem = new CorrPortalPage(page);
+    Methods = new AddonHelpers(page, vars);
   });
 
   test(`${TC_ID} - ${TC_TITLE}`, async ({ page }) => {
@@ -87,7 +90,7 @@ test.describe('REG_Bid Maps', () => {
       vars["Condition Bid Field"] = profile.data[0]['Condition Bid Field'];
       vars["Operation1"] = profile.data[0]['Operation1'];
       vars["Operation2"] = profile.data[0]['Operation2'];
-      vars["Operator 2 Symbol"]=profile.data[0]['Operator 2 Symbol'];
+      vars["Operator 2 Symbol"] = profile.data[0]['Operator 2 Symbol'];
     }
 
     try {
@@ -196,7 +199,12 @@ test.describe('REG_Bid Maps', () => {
         await spinnerPage.Spinner.waitFor({ state: 'hidden' });
         await expect(headeramappingPage.Disabled_Headers).toBeVisible();
         await stepGroups.stepGroup_Verifying_that_Changes_Are_Not_Updated_In_Active_VersionRule(page, vars);
-        await stepGroups.stepGroup_Verification_of_Rules_and_Action_Values_Before_EditingActive(page, vars);
+        await expect(CorrPortalElem.Rule_Name_Field.first()).toHaveValue(vars["Rule Name"]);
+        await expect(CorrPortalElem.Condition_BidField_1.first()).toContainText(vars["RuleBidField"]);
+        await expect(CorrPortalElem.Operation_Dropdown.first()).toHaveValue(vars["RuleCondition"]);
+        await expect(CorrPortalElem.Condition_BidTape1.first()).toContainText(vars["RuleBidTapeValue"]);
+        await expect(CorrPortalElem.Add_Actions_Chase_Field_Name.locator('option:checked')).toHaveText(vars["ChaseFiledNameonAddActions"]);
+        await expect(CorrPortalElem.Add_Actions_Chase_Value.locator('option:checked')).toHaveText(vars["ChasevalueOnAddActions"]);
         log.stepPass('Active Version verified: draft changes are not reflected');
       } catch (e) {
         await log.stepFail(page, 'Failed to verify Active Version');
@@ -207,7 +215,7 @@ test.describe('REG_Bid Maps', () => {
       try {
         await expect(statusInactive2Page.Rule_Name).toHaveValue(vars["Duplicated Rule Name"]);
         vars["Rulename"] = await statusInactive2Page.Rule_Name.inputValue() || '';
-        expect(Methods.verifyString(vars["Rulename"],'notEquals',vars["New Rule Name"]));
+        expect(Methods.verifyString(vars["Rulename"], 'notEquals', vars["New Rule Name"]));
         log.stepPass('Duplicated Rule Name verified in Active Version: ' + vars["Rulename"]);
       } catch (e) {
         await log.stepFail(page, 'Duplicated Rule Name verification failed in Active Version');
