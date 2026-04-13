@@ -3373,6 +3373,7 @@ export async function stepGroup_Modifying_The_Batch_Intervals_For_Next_bussiness
     d.setMinutes(d.getMinutes() + parseInt(String("60")));
     return d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true }); // Format: hh:mm a
   })();
+  vars["CurrentTime"]=vars["OnehourPrior"];
   //await stepGroup_Separating_Hours_and_minutes_In_timeOne_hour_prior(page, vars);
   await stepGroup_Separating_Hours_and_minutes_In_time_Current_EST_time(page, vars);
   // [DISABLED] Pick the current date hh by location UTC-04:00 and store into a variable Time_Hour
