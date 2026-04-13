@@ -35,8 +35,8 @@ export class BidrequestPage {
     return this.page.locator(`//td[@data-title="Uploaded"]//div[starts-with(text(), " ${lastMonth}")]`);
   }
 
-  get Filtered_Status_BidRequest_ID(): Locator {
-    return this.page.locator("//div[   contains(@aria-label, 'Loans total:') and   number(substring-before(substring-after(@aria-label, 'Loans total: '), ',')) < 10 ]/../..//td[@data-title=\"Execution Type\"]//div[text()=\" $|ExecutionType| \"]/../..//td[@data-title=\"Status\"]//span[contains(text(),\"$|StatusToBeSelected|\")]/../../..//td[@data-title=\"Bid Req. ID\"]");
+  Filtered_Status_BidRequest_ID(ExecutionType: string, StatusToBeSelected: string): Locator {
+    return this.page.locator(`//div[   contains(@aria-label, 'Loans total:') and   number(substring-before(substring-after(@aria-label, 'Loans total: '), ',')) < 10 ]/../..//td[@data-title=\"Execution Type\"]//div[text()=\" ${ExecutionType} \"]/../..//td[@data-title=\"Status\"]//span[contains(text(),\"${StatusToBeSelected}\")]/../../..//td[@data-title=\"Bid Req. ID\"]`);
   }
 
   First_Column_Data(IndividualHeaderName: string): Locator {
