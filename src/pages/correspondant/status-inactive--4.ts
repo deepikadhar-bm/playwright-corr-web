@@ -50,6 +50,9 @@ export class StatusInactive4Page {
   get Select_Category_Dropdown(): Locator {
     return this.page.locator("//div[text()[normalize-space() = \"Select Category\"]]");
   }
+  get Select_Category_Dropdown1(): Locator {
+    return this.page.locator("//button[@id='multiSelectDropDown']");
+  }
 
   get Selected_Category_Dropdown(): Locator {
     return this.page.locator("//div[text()[normalize-space() = \"Selected (1)\"]]");
