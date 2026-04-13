@@ -1,6 +1,4 @@
-// [POM-APPLIED]
 import { test, expect, Page } from '@playwright/test';
-import path from 'path';
 import * as stepGroups from '../../../src/helpers/step-groups';
 import { ActionsPage } from '../../../src/pages/correspondant/actions';
 import { AdvanceSearchPage } from '../../../src/pages/correspondant/advance-search';
@@ -12,15 +10,12 @@ import { CorrespondentPortalPage } from '../../../src/pages/correspondant/corres
 import { HeadingCreateNewMapPage } from '../../../src/pages/correspondant/heading-create-new-map';
 import { HomeSweetMortgageCheckboxPage } from '../../../src/pages/correspondant/home-sweet-mortgage-checkbox';
 import { NewMapNameInputPage } from '../../../src/pages/correspondant/new-map-name-input';
-import { P15ActivePage } from '../../../src/pages/correspondant/p-15-active';
-import { P1MoreButtonPage } from '../../../src/pages/correspondant/p-1-more-button';
 import { P2142530YrFreddieMacFixedDropdownPage } from '../../../src/pages/correspondant/p-2142530-yr-freddie-mac-fixed-dropdown';
 import { SpinnerPage } from '../../../src/pages/correspondant/spinner';
 import { StatusInactive2Page } from '../../../src/pages/correspondant/status-inactive--2';
 import { StatusInactivePage } from '../../../src/pages/correspondant/status-inactive-';
 import { AddonHelpers } from '../../../src/helpers/AddonHelpers';
 import { testDataManager } from 'testdata/TestDataManager';
-import { uploadFile } from '../../../src/helpers/file-helpers';
 import { Logger as log } from '../../../src/helpers/log-helper';
 import { APP_CONSTANTS as appconstants } from '../../../src/constants/app-constants';
 import { ENV } from '@config/environments'
@@ -29,7 +24,7 @@ const TC_ID = "REG_TS01_TC04";
 const TC_TITLE = "Verify that if user selects two companies A and B and if company A has both exe type and company B has only chase exe type, then user should be able to view only chase exe type in the dropdown";
 
 test.describe('REG_Bid Maps', () => {
-  let vars: Record<string, string> = {};
+  let vars: Record<string, any> = {};
   let actionsPage: ActionsPage;
   let advanceSearchPage: AdvanceSearchPage;
   let amix4MosnaCovdaA4189CheckboxPage: Amix4MosnaCovdaA4189CheckboxPage;
@@ -40,8 +35,6 @@ test.describe('REG_Bid Maps', () => {
   let headingCreateNewMapPage: HeadingCreateNewMapPage;
   let homeSweetMortgageCheckboxPage: HomeSweetMortgageCheckboxPage;
   let newMapNameInputPage: NewMapNameInputPage;
-  let p15ActivePage: P15ActivePage;
-  let p1MoreButtonPage: P1MoreButtonPage;
   let p2142530YrFreddieMacFixedDropdownPage: P2142530YrFreddieMacFixedDropdownPage;
   let spinnerPage: SpinnerPage;
   let statusInactive2Page: StatusInactive2Page;
@@ -61,8 +54,6 @@ test.describe('REG_Bid Maps', () => {
     headingCreateNewMapPage = new HeadingCreateNewMapPage(page);
     homeSweetMortgageCheckboxPage = new HomeSweetMortgageCheckboxPage(page);
     newMapNameInputPage = new NewMapNameInputPage(page);
-    p15ActivePage = new P15ActivePage(page);
-    p1MoreButtonPage = new P1MoreButtonPage(page);
     p2142530YrFreddieMacFixedDropdownPage = new P2142530YrFreddieMacFixedDropdownPage(page);
     spinnerPage = new SpinnerPage(page);
     statusInactive2Page = new StatusInactive2Page(page);
@@ -83,11 +74,13 @@ test.describe('REG_Bid Maps', () => {
         vars["Execution Type"] = profile.data[0]['Execution Type'];
         const companyName1 = profile.data[0]['CompanyName1'];
         vars["Company name 1"] = companyName1;
-        const companyName2 = profile.data[0]['CompanyName2'];
-        vars["Company name 2"] = companyName2;
+        vars["Company name"] = vars["Company name 1"]
+        vars["Company name 2"] = profile.data[0]['CompanyName2'];;
 
         vars["Username"] = credentials.username;
         vars["Password"] = credentials.password;
+        vars["CompanyIndex"] = appconstants.THREE;
+        vars["CompanyNameActionIndex"] = appconstants.THREE;
       }
 
       log.step("Step 1: Login to CORR Portal");
@@ -105,6 +98,9 @@ test.describe('REG_Bid Maps', () => {
         await stepGroups.stepGroup_Store_Company_Names_from_Company_Permissions(page, vars);
         await stepGroups.stepGroup_Store_More_Company_Name(page, vars);
         await stepGroups.stepGroup_Standard_and_Chase_Direct_ON_for_Company(page, vars);
+        vars["CompanyIndex"] = appconstants.FOUR;
+        vars["CompanyNameActionIndex"] = appconstants.FOUR;
+        log.info(vars["CompanyIndex"] + " | " + vars["CompanyNameActionIndex"]);
         await stepGroups.stepGroup_Store_More_Company_Name(page, vars);
         await stepGroups.stepGroup_Only_Chase_Direct_On_for_Company(page, vars);
         log.stepPass("Step 2 passed: Navigated to Customer Permission and configured company execution types successfully");
@@ -142,14 +138,17 @@ test.describe('REG_Bid Maps', () => {
       try {
         await correspondentPortalPage.Select_Companys_Dropdown.click();
         await stepGroups.stepGroup_Enter_Company_Name_in_New_Map_Filter(page, vars);
+        vars["Company name"] = vars["Company name 2"];
         await stepGroups.stepGroup_Enter_Company_Name_in_New_Map_Filter(page, vars);
         await expect(correspondentPortalPage.Apply_Selected_for_Bid_Maps).toContainText("2");
         await correspondentPortalPage.Apply_Selected.click();
-        vars["CompanyNamePartial"] = String(vars["FirstCompanyName"]).substring(0, String(vars["FirstCompanyName"]).length - 4);
-        await expect(actionsPage.CompanyName_Below_Dropdown).toContainText(vars["FirstCompanyName"]);
-        vars["CompanyNamePartial"] = String(vars["SecondCompanyName"]).substring(0, String(vars["SecondCompanyName"]).length - 10);
-        await expect(actionsPage.CompanyName_Below_Dropdown).toContainText(vars["SecondCompanyName"]);
-        await correspondentPortalPage.Dropdown_selection_2.click();
+        vars["CompanyNamePartial"] = String(vars["Company name 1"]).substring(0, String(vars["Company name 1"]).length - 4);
+        log.info("Partial Company Name: " + vars["CompanyNamePartial"]);
+        log.info("First Company Name: " + vars["Company name 1"]);
+        await expect(actionsPage.CompanyName_Below_Dropdown(vars["CompanyNamePartial"])).toContainText(vars["Company name 1"]);
+        vars["CompanyNamePartial"] = String(vars["Company name 2"]).substring(0, String(vars["Company name 2"]).length - 10);
+        await expect(actionsPage.CompanyName_Below_Dropdown(vars["CompanyNamePartial"])).toContainText(vars["Company name 2"]);
+        await correspondentPortalPage.Dropdown_selection_2.selectOption("STANDARD");
         await expect(correspondentPortalPage.Dropdown_selection_2).toHaveValue("STANDARD");
         log.stepPass("Step 5 passed: Companies selected and execution type verified successfully");
       } catch (error) {
@@ -160,16 +159,19 @@ test.describe('REG_Bid Maps', () => {
       try {
         await bidMapsCompanyDropdownPage.Remove_second_Selected_Company_buttonBid_Map_Creation.click();
         await statusInactivePage.Selected1_Dropdown.click();
-        await correspondentPortalPage.Search_Text_Field.fill(vars["SecondCompanyName"]);
+        await correspondentPortalPage.Search_Text_Field.fill(vars["Company name 2"]);
         await expect(correspondentPortalPage.Check_box).toBeVisible();
         await statusInactivePage.Selected1_Dropdown.click();
         await bidMapsCompanyDropdownPage.Remove_First_Selected_Company_ButtonBid_map_creation.click();
         await correspondentPortalPage.Select_Companys_Dropdown.click();
+        vars["Company name"] = vars["Company name 1"];
         await stepGroups.stepGroup_Enter_Company_Name_in_New_Map_Filter(page, vars);
+        vars["Company name"] = vars["Company name 2"];
         await stepGroups.stepGroup_Enter_Company_Name_in_New_Map_Filter(page, vars);
         await correspondentPortalPage.Apply_Selected.click();
-        await correspondentPortalPage.Dropdown_selection_2.click();
-        await expect(correspondentPortalPage.Dropdown_selection_2.locator('option', { hasText: "CHASE_DIRECT" })).toBeVisible();
+        await correspondentPortalPage.Dropdown_selection_2.selectOption("CHASE_DIRECT");
+        await expect(correspondentPortalPage.Dropdown_selection_2).toHaveValue("CHASE_DIRECT");
+       
         log.stepPass("Step 6 passed: Companies removed and re-added, Chase Direct execution type verified");
       } catch (error) {
         log.stepFail(page, "Step 6 failed: Failed to remove/re-add companies or verify execution type");
@@ -180,6 +182,7 @@ test.describe('REG_Bid Maps', () => {
         await correspondentPortalPage.Cross_button_in_Bid_Map.click();
         await correspondentPortalPage.Cross_button_in_Bid_Map.click();
         await correspondentPortalPage.Select_Companys_Dropdown.click();
+        vars["Company name"] = vars["Company name 1"];
         await stepGroups.stepGroup_Enter_Company_Name_in_New_Map_Filter(page, vars);
         await expect(correspondentPortalPage.Apply_Selected).toContainText("1");
         await correspondentPortalPage.Apply_Selected.click();
@@ -198,17 +201,41 @@ test.describe('REG_Bid Maps', () => {
       try {
         await correspondentPortalPage.Cross_button_in_Bid_Map.click();
         await correspondentPortalPage.Select_Companys_Dropdown.click();
+        vars["Company name"] = vars["Company name 1"];
         await stepGroups.stepGroup_Enter_Company_Name_in_New_Map_Filter(page, vars);
+        vars["Company name"] = vars["Company name 2"];
         await stepGroups.stepGroup_Enter_Company_Name_in_New_Map_Filter(page, vars);
+
         await correspondentPortalPage.Search_Text_Field.clear();
         await checkboxPage.checkbox2.check();
-        vars["ThirdCompanyName"] = await correspondentPortalPage.Third_Company_Name.textContent() || '';
-        await homeSweetMortgageCheckboxPage.FourthCompany_Checkbox.check();
-        vars["FourthCompanyName"] = await correspondentPortalPage.Fourth_Company_Name.textContent() || '';
-        await statusInactive2Page.Import_Rule_Checkbox.check();
-        vars["FifthCompanyName"] = await correspondentPortalPage.Fifth_Company_Name.textContent() || '';
-        await amix4MosnaCovdaA4189CheckboxPage.SixthCompany_Checkbox.check();
-        vars["SixthCompanyName"] = await correspondentPortalPage.Sixth_Company_Name.textContent() || '';
+        const rows = page.locator("//div[contains(@class, 'dropdown-overflow')]//label[@role='option']");
+
+        // Capture already selected names
+        const selectedSet = new Set<string>(
+          await page
+            .locator("//label[contains(@class, 'checked')]//span")
+            .evaluateAll((spans: HTMLElement[]) => spans.map(s => s.getAttribute('title') || ""))
+        );
+
+        // Loop through indices 2 to 5 to capture and select companies, checking for duplicates against the Set
+        for (let i = 1; i < 6; i++) {
+          const currentRow = rows.nth(i);
+          const companyName = await currentRow.locator('span').getAttribute('title');
+
+          if (companyName) {
+            // Only check if it's NOT already selected to avoid UI duplication bugs
+            if (!selectedSet.has(companyName)) {
+              await currentRow.locator('input[type="checkbox"]').check();
+              selectedSet.add(companyName);
+            }
+          }
+        }
+
+        vars['storedCompanies'] = Array.from(selectedSet).sort();
+        vars['storedCompanies'] = vars['storedCompanies']
+        .map((name: string) => name.replace(/\s+/g, ' ').trim())
+        .sort();
+
         await expect(correspondentPortalPage.Apply_Selected).toContainText("6");
         await correspondentPortalPage.Apply_Selected.click();
         log.stepPass("Step 8 passed: Multiple companies selected successfully");
@@ -218,18 +245,18 @@ test.describe('REG_Bid Maps', () => {
       }
       log.step("Step 9: Verify selected companies display correctly in dropdown area");
       try {
-        vars["ExpectedThirdCompanyName"] = await statusInactivePage.Below_Dropdown_First_company.textContent() || '';
-        expect(String(vars["ExpectedThirdCompanyName"])).toBe(vars["ThirdCompanyName"]);
-        await expect(advanceSearchPage.Below_Dropdown_Second_Company).toContainText(vars["FourthCompanyName"]);
-        vars["ExpectedFifthCompanyName"] = String(vars["FifthCompanyName"]).trim();
-        vars["FifthCompanyName1"] = await p15ActivePage.Below_Dropdown_Third_Company.textContent() || '';
-        vars["FifthCompanyName1"] = String(vars["FifthCompanyName1"]).trim();
-        expect(String(vars["FifthCompanyName1"])).toBe(vars["ExpectedFifthCompanyName"]);
-        await correspondentPortalPage._2_more_Button.click();
-        vars["lastcompany"] = await statusInactive2Page.Below_Dropdown_Fourth_Company.textContent() || '';
-        expect(String(vars["lastcompany"])).toBe(vars["SixthCompanyName"]);
+           await  correspondentPortalPage.More_companies.click();
+        const uiSelectedNames = await page
+          .locator("//table[@role='table']//tbody//td[@data-title='Company']")
+          .evaluateAll((cells: HTMLElement[]) =>
+            cells.map(c => c.innerText.replace(/\s+/g, ' ').trim()).sort()
+          );
+
+        //stored variable is also sorted for an accurate comparison
+        expect(uiSelectedNames).toEqual(vars['storedCompanies'].sort());
+        log.info("Verification Passed: UI matches stored companies.");
+
         await chaseFieldNamePage.Ok_Button_Bid_Request.click();
-        await page.waitForLoadState('networkidle');
         log.stepPass("Step 9 passed: All selected companies displayed correctly");
       } catch (error) {
         log.stepFail(page, "Step 9 failed: Failed to verify selected companies display");
@@ -237,11 +264,13 @@ test.describe('REG_Bid Maps', () => {
       }
       log.step("Step 10: Verify company visibility and more companies button behavior");
       try {
-        await expect(page.getByText(vars["SecondCompanyName"])).not.toBeVisible();
+        
+        await expect(page.getByText(vars["Company name 2"])).not.toBeVisible();
+        log.info("Verified that Company name 2 is not visible ");
         await expect(correspondentPortalPage.More_companies).toContainText("2");
-        // await correspondentPortalPage.More_companies.hover();
+        await correspondentPortalPage.More_companies.hover();
         await expect(correspondentPortalPage.Dropdown_selection_2).toHaveValue('');
-        await p1MoreButtonPage._1_more_Button.click();
+        await correspondentPortalPage.More_companies.click();
         log.stepPass("Step 10 passed: Company visibility and more button verified successfully");
       } catch (error) {
         log.stepFail(page, "Step 10 failed: Failed to verify company visibility or more button");
@@ -249,9 +278,9 @@ test.describe('REG_Bid Maps', () => {
       }
       log.step("Step 11: Verify Added On date, save draft and edit file name");
       try {
-        helpers.getCurrentTimestamp('MM/dd/yyyy hh:mm a', 'Added On');
+        helpers.getCurrentTimestamp('MM/dd/yyyy hh:mm a', 'Added On',appconstants.UTC);
         vars["Added On Bid Map"] = await correspondentPortalPage.Added_On.textContent() || '';
-        expect(String(vars["Added On"])).toBe(vars["Added On Bid Map"]);
+        expect(String(vars["Added On"])).toBe(vars["Added On Bid Map"].trim());
         await correspondentPortalPage.close_pop_up_bid_request_details.click();
         await correspondentPortalPage.Save_Draft_Button1.click();
         await spinnerPage.Spinner.waitFor({ state: 'hidden' });

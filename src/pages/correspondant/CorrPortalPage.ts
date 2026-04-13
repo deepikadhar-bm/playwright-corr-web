@@ -470,7 +470,7 @@ export class CorrPortalPage {
   }
 
   get Check_box(): Locator {
-    return this.page.locator("(//input[@type=\"checkbox\"])[1]");
+    return this.page.getByRole('checkbox', { name: 'Select' });
   }
 
   get Checkbox_in_the_Header_Mapping(): Locator {
@@ -573,8 +573,8 @@ export class CorrPortalPage {
     return this.page.locator("(//label[@class='dropdown-item d-flex'])");
   }
 
-  get CompanyName_Action_Button_By_Index(): Locator {
-    return this.page.locator("(//div[@id=\"common-table-results\"]//following-sibling::td[@data-title=\"Actions\"])[$|CompanyIndex|]//button[@aria-label=\"Edit Permission\"]");
+  CompanyName_Action_Button_By_Index(CompanyIndex: string): Locator {
+    return this.page.locator(`(//div[@id="common-table-results"]//following-sibling::td[@data-title="Actions"])[${CompanyIndex}]//button[@aria-label="Edit Permission"]`);
   }
 
   get Company_ConfigGenral_settings(): Locator {
@@ -601,8 +601,8 @@ export class CorrPortalPage {
     return this.page.locator("//div[@id='common-table-results']/table//tr[1]//td[@data-title=\"Company Name\"]");
   }
 
-  get Company_Name_Customer_Permission(): Locator {
-    return this.page.locator("//div[@id='common-table-results']/table//tr[$|CompanyIndex|]//td[@data-title=\"Company Name\"]");
+  Company_Name_Customer_Permission(CompanyIndex: string): Locator {
+    return this.page.locator(`//div[@id='common-table-results']/table//tr[${CompanyIndex}]//td[@data-title="Company Name"]`);
   }
 
   get Compare_Button(): Locator {
@@ -1868,7 +1868,7 @@ export class CorrPortalPage {
   }
 
   get Standard_Flow_Off_Button(): Locator {
-    return this.page.locator("(//label[normalize-space(text())='Standard Flow']/parent::div//input)[2]");
+    return this.page.locator("(//label[normalize-space(text())='Standard']/parent::div//input)[2]");
   }
 
   get Standard_Flow_On_Button(): Locator {

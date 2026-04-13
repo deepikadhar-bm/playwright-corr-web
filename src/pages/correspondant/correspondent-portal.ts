@@ -674,7 +674,7 @@ export class CorrespondentPortalPage {
   }
 
   get Cross_button_in_Bid_Map(): Locator {
-    return this.page.locator("//button[@aria-label=\"Close modal\"]//i[contains(@class,\"fas fa-lg\")]");
+  return this.page.getByRole('button', { name: 'Remove ' }).first();
   }
 
   get Cross_Button_in_Header_Mapping(): Locator {
