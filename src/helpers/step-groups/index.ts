@@ -20,7 +20,7 @@ import { uploadFile } from '../../../src/helpers/file-helpers';
 import { CorrespondentPortalPage } from '@pages/correspondant/correspondent-portal';
 import { CorrespondentPortal4Page } from '@pages/correspondant/correspondent-portal-4';
 import { EnumerationMappingPage } from '../../../src/pages/correspondant/enumeration-mapping';
-import { SpinnerPage } from '@pages/correspondant';
+import { SpinnerPage, StandardPage, UpdatePermissionsButtonPage } from '@pages/correspondant';
 import { APP_CONSTANTS as appconstants } from '../../../src/constants/app-constants';
 import { BidRequestPage } from '../../../src/pages/correspondant/bid-request';
 import { BidRequestsPage } from '../../../src/pages/correspondant/bid-requests';
@@ -3654,19 +3654,24 @@ export async function stepGroup_Navigating_to_Customer_Permission_Page_and_disab
   await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
   await CorrPortalElem.CustomerPermission_Menu.click();
   await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
-  await expect(page.getByText("Customer Permission")).toBeVisible();
-  await CorrPortalElem.Edit_Permission_Button_For_Freedomcompany.click();
+  await expect(page.getByText("Customer Permission").nth(1)).toBeVisible();
+  await CorrPortalElem.Search_Filter_Input_in_Customer_Permission.click();
+  await CorrPortalElem.Search_Filter_Input_in_Customer_Permission.fill(vars["CompanyName"]);
+  await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
+  await CorrPortalElem.Edit_Permission_Button_For_Freedomcompany(vars["CompanyName"]).click();
   await page.getByText("Edit Permissions").waitFor({ state: 'visible' });
   await expect(CorrPortalElem.On_Radio_ChaseDirect_Edit_Permissions_Popup).toBeEnabled();
-  if (true) /* Radio button Off Radio Standard(Edit Permissions Popup) is n */ {
+  if (!await CorrPortalElem.Off_Radio_Standard_Edit_Permissions_Popup.isChecked()) {
     await CorrPortalElem.Off_Radio_Standard_Edit_Permissions_Popup.check();
-    await CorrPortalElem.Update_Permissions_Button.waitFor({ state: 'visible' });
+   // await CorrPortalElem.Update_Permissions_Button.waitFor({ state: 'enabled' });
+    await expect(CorrPortalElem.Update_Permissions_Button).toBeEnabled();
   }
-  if (true) /* Radio button On Radio ChaseDirect(Edit Permissions Popup) is */ {
+  if (!await CorrPortalElem.On_Radio_ChaseDirect_Edit_Permissions_Popup.isChecked()) {
     await CorrPortalElem.On_Radio_ChaseDirect_Edit_Permissions_Popup.check();
-    await CorrPortalElem.Update_Permissions_Button.waitFor({ state: 'visible' });
+    //await CorrPortalElem.Update_Permissions_Button.waitFor({ state: 'enabled' });
+    await expect(CorrPortalElem.Update_Permissions_Button).toBeEnabled();
   }
-  if (true) /* Element Update Permissions Button is enabled */ {
+  if (await CorrPortalElem.Update_Permissions_Button.isEnabled()) /* Element Update Permissions Button is enabled */ {
     await CorrPortalElem.Update_Permissions_Button.click();
   } else {
     await CorrPortalElem.Close_pop_up.click();
@@ -3705,24 +3710,34 @@ export async function stepGroup_Filtering_Status_and_Navigating_to_Filtered_Stat
  */
 export async function stepGroup_Navigating_to_Customer_Permission_and_enabling_the_Standard_(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
-  const testData: Record<string, string> = {}; // TODO: Load from test data profile
+  
+  //const testData: Record<string, string> = {}; // TODO: Load from test data profile
+
   await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
   await CorrPortalElem.Administration_Menu.click();
   await CorrPortalElem.GeneralSettings_Menu.click();
   await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
   await CorrPortalElem.CustomerPermission_Menu.click();
   await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
-  await expect(page.getByText("Customer Permission")).toBeVisible();
-  await CorrPortalElem.Search_Filter_Input.fill(testData["Expected Company Name"]);
+  await expect(page.getByText("Customer Permission").first()).toBeVisible();
+  await CorrPortalElem.Search_Filter_Input.fill(vars["CompanyName"]);
   await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
-  await CorrPortalElem.Edit_Permission_Button_For_Freedomcompany.click();
+  await CorrPortalElem.Edit_Permission_Button_For_Freedomcompany(vars["CompanyName"]).click();
   await page.getByText("Edit Permissions").waitFor({ state: 'visible' });
-  if (true) /* Radio button Standard_Flow_On_Button is not selected */ {
+  if (!await CorrPortalElem.Standard_Flow_On_Button.isChecked()) /* Radio button Standard_Flow_On_Button is not selected */ {
+
     await CorrPortalElem.Standard_Flow_On_Button.check();
     await CorrPortalElem.Update_Permissions_Button.waitFor({ state: 'visible' });
+    if(await CorrPortalElem.Update_Permissions_Button.isEnabled()) 
+      /* Element Update Permissions Button is enabled */ {
     await CorrPortalElem.Update_Permissions_Button.click();
+   
     await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
   }
+  else{
+    await CorrPortalElem.Close_pop_up.click();
+  }
+}
 }
 
 /**
@@ -3739,20 +3754,23 @@ export async function stepGroup_Navigating_to_Customer_Permissions_and_disabling
   await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
   await CorrPortalElem.CustomerPermission_Menu.click();
   await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
-  await expect(page.getByText("Customer Permission")).toBeVisible();
-  await CorrPortalElem.Search_Filter_Input.fill(testData["Expected Company Name"]);
+  await expect(page.getByText("Customer Permission").first()).toBeVisible();
+  await CorrPortalElem.Search_Filter_Input.fill(vars["CompanyName"]);
   await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
-  await CorrPortalElem.Edit_Permission_Button_For_Freedomcompany.click();
-  await page.getByText("Edit Permissions").waitFor({ state: 'visible' });
-  if (true) /* Radio button Off Radio Chase Direct(Edit Permissions) is not */ {
+  await CorrPortalElem.Edit_Permission_Button_For_Freedomcompany(vars["CompanyName"]).click();
+  await page.getByText("Edit Permissions").first().waitFor({ state: 'visible' });
+  if (!await CorrPortalElem.ChaseDirect_OFF_Edit_Permissions_Popup.isChecked()) /* Radio button Off Radio Chase Direct(Edit Permissions) is not */ {
     await CorrPortalElem.ChaseDirect_OFF_Edit_Permissions_Popup.check();
     await CorrPortalElem.Update_Permissions_Button.waitFor({ state: 'visible' });
+    await expect(CorrPortalElem.Update_Permissions_Button).toBeEnabled();
   }
-  if (true) /* Radio button StandardFlow On(Edit Permissions Popup) is not  */ {
-    await CorrPortalElem.On_Radio_button_in_Bid_Request.check();
+  if (!await CorrPortalElem.Standard_Flow_On_Button.isChecked()) /* Radio button StandardFlow On(Edit Permissions Popup) is not  */ {
+    await CorrPortalElem.Standard_Flow_On_Button.check();
     await CorrPortalElem.Update_Permissions_Button.waitFor({ state: 'visible' });
+    await expect(CorrPortalElem.Update_Permissions_Button).toBeEnabled();
+
   }
-  if (true) /* Element Update Permissions Button is enabled */ {
+  if (await CorrPortalElem.Update_Permissions_Button.isEnabled()) /* Element Update Permissions Button is enabled */ {
     await CorrPortalElem.Update_Permissions_Button.click();
   } else {
     await CorrPortalElem.Close_pop_up.click();
@@ -3773,18 +3791,21 @@ export async function stepGroup_Navigating_To_Customer_Permissions_and_enabling_
   await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
   await CorrPortalElem.CustomerPermission_Menu.click();
   await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
-  await expect(page.getByText("Customer Permission")).toBeVisible();
-  await CorrPortalElem.Search_Filter_Input.fill(testData["Expected Company Name"]);
+  await expect(page.getByText("Customer Permission").first()).toBeVisible();
+  await CorrPortalElem.Search_Filter_Input.fill(vars["CompanyName"]);
   await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
-  await CorrPortalElem.Edit_Permission_Button_For_Freedomcompany.click();
-  await page.getByText("Edit Permissions").waitFor({ state: 'visible' });
-  if (true) /* Radio button On Radio ChaseDirect(Edit Permissions Popup) is */ {
+  await CorrPortalElem.Edit_Permission_Button_For_Freedomcompany(vars["CompanyName"]).click();
+  await page.getByText("Edit Permissions").first().waitFor({ state: 'visible' });
+  if (!await CorrPortalElem.On_Radio_ChaseDirect_Edit_Permissions_Popup.isChecked()) /* Radio button On Radio ChaseDirect(Edit Permissions Popup) is not */ {
     await CorrPortalElem.On_Radio_ChaseDirect_Edit_Permissions_Popup.check();
     await CorrPortalElem.Update_Permissions_Button.waitFor({ state: 'visible' });
+    await expect(CorrPortalElem.Update_Permissions_Button).toBeEnabled();
     await CorrPortalElem.Update_Permissions_Button.click();
     await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
   }
+  
 }
+
 
 /**
  * Step Group: Traversing to the next screens until the bid is visible
@@ -3793,7 +3814,7 @@ export async function stepGroup_Navigating_To_Customer_Permissions_and_enabling_
  */
 export async function stepGroup_Traversing_to_the_next_screens_until_the_bid_is_visible(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
-  if (true) /* Element Filtered Status BidRequest ID is not visible */ {
+  if (!(await CorrPortalElem.Filtered_Status_BidRequest_ID(vars["ExecutionType"], vars["StatusToBeSelected"]).first().isVisible())) {
     await CorrPortalElem.Change_Page_Size_Dropdown.click();
     await CorrPortalElem.Set_page_size_to_50_Dropdown.click();
     await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
@@ -3819,20 +3840,20 @@ export async function stepGroup_Navigating_to_Customer_Permissions_and_disabling
   await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
   await CorrPortalElem.CustomerPermission_Menu.click();
   await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
-  await expect(page.getByText("Customer Permission")).toBeVisible();
-  await CorrPortalElem.Search_Filter_Input.fill(testData["Expected Company Name"]);
+  await expect(page.getByText("Customer Permission").first()).toBeVisible();
+  await CorrPortalElem.Search_Filter_Input.fill(vars["CompanyName"]);
   await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
-  await CorrPortalElem.Edit_Permission_Button_For_Freedomcompany.click();
-  await page.getByText("Edit Permissions").waitFor({ state: 'visible' });
-  if (true) /* Radio button Off Radio Chase Direct(Edit Permissions) is not */ {
+  await CorrPortalElem.Edit_Permission_Button_For_Freedomcompany(vars["CompanyName"]).click();
+  await page.getByText("Edit Permissions").first().waitFor({ state: 'visible' });
+  if (!await CorrPortalElem.ChaseDirect_OFF_Edit_Permissions_Popup.isChecked()) /* Radio button Off Radio Chase Direct(Edit Permissions) is not */ {
     await CorrPortalElem.ChaseDirect_OFF_Edit_Permissions_Popup.check();
     await CorrPortalElem.Update_Permissions_Button.waitFor({ state: 'visible' });
   }
-  if (true) /* Radio button Off Radio Standard(Edit Permissions Popup) is n */ {
+  if (!await CorrPortalElem.Off_Radio_Standard_Edit_Permissions_Popup.isChecked()) /* Radio button Off Radio Standard(Edit Permissions Popup) is not */ {
     await CorrPortalElem.Off_Radio_Standard_Edit_Permissions_Popup.check();
     await CorrPortalElem.Update_Permissions_Button.waitFor({ state: 'visible' });
   }
-  if (true) /* Element Update Permissions Button is enabled */ {
+  if (await CorrPortalElem.Update_Permissions_Button.isEnabled()) /* Element Update Permissions Button is enabled */ {
     await CorrPortalElem.Update_Permissions_Button.click();
   } else {
     await CorrPortalElem.Close_pop_up.click();
@@ -3853,20 +3874,20 @@ export async function stepGroup_Navigating_to_Customer_Permissions_and_enabling_
   await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
   await CorrPortalElem.CustomerPermission_Menu.click();
   await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
-  await expect(page.getByText("Customer Permission")).toBeVisible();
-  await CorrPortalElem.Search_Filter_Input.fill(testData["Expected Company Name"]);
+  await expect(page.getByText("Customer Permission").first()).toBeVisible();
+  await CorrPortalElem.Search_Filter_Input.fill(vars["CompanyName"]);
   await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
-  await CorrPortalElem.Edit_Permission_Button_For_Freedomcompany.click();
-  await page.getByText("Edit Permissions").waitFor({ state: 'visible' });
-  if (true) /* Radio button StandardFlow On(Edit Permissions Popup) is not  */ {
-    await CorrPortalElem.On_Radio_button_in_Bid_Request.check();
+  await CorrPortalElem.Edit_Permission_Button_For_Freedomcompany(vars["CompanyName"]).click();
+  await page.getByText("Edit Permissions").first().waitFor({ state: 'visible' });
+  if (!await CorrPortalElem.Standard_Flow_On_Button.isChecked()) /* Radio button StandardFlow On(Edit Permissions Popup) is not  */ {
+    await CorrPortalElem.Standard_Flow_On_Button.check();
     await CorrPortalElem.Update_Permissions_Button.waitFor({ state: 'visible' });
   }
-  if (true) /* Radio button On Radio ChaseDirect(Edit Permissions Popup) is */ {
+  if (!await CorrPortalElem.On_Radio_ChaseDirect_Edit_Permissions_Popup.isChecked()) /* Radio button On Radio ChaseDirect(Edit Permissions Popup) is */ {
     await CorrPortalElem.On_Radio_ChaseDirect_Edit_Permissions_Popup.check();
     await CorrPortalElem.Update_Permissions_Button.waitFor({ state: 'visible' });
   }
-  if (true) /* Element Update Permissions Button is enabled */ {
+  if (await CorrPortalElem.Update_Permissions_Button.isEnabled()) /* Element Update Permissions Button is enabled */ {
     await CorrPortalElem.Update_Permissions_Button.click();
   } else {
     await CorrPortalElem.Close_pop_up.click();
@@ -3885,7 +3906,7 @@ export async function stepGroup_Traversing_to_the_next_screens_until_the_Standar
     await CorrPortalElem.Set_page_size_to_50_Dropdown.click();
     await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
     if (true) /* Element Filtered Status BidRequest ID (Standard and chase) i */ {
-      while (!(await CorrPortalElem.Filtered_Status_BidRequest_ID_Standard_and_chase.isVisible())) {
+      while (!(await CorrPortalElem.Filtered_Status_BidRequest_ID_Standard_and_chase(vars["StatusToBeSelected"]).first().isVisible())) {
         await CorrPortalElem.Go_to_Next_Page_Button.click();
       }
     }
@@ -3903,17 +3924,17 @@ export async function stepGroup_Filtering_Status_and_Navigating_to_the_standard_
   await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
   await CorrPortalElem.Filter_Dropdown.click();
   await CorrPortalElem.Select_Company_CCode_Dropdown.click();
-  await CorrPortalElem.Required_Company_Checkbox_filter.check();
-  await CorrPortalElem.Apply_Selected_1_button_in_Rule.click();
+  await CorrPortalElem.Required_Company_Checkbox_filter(vars["CompanyName"]).check();
+  await CorrPortalElem.Apply_Selected_1_button_in_Rule.first().click();
   await CorrPortalElem.Select_Bid_Request_Status_Dropdown1.click();
-  await CorrPortalElem.Status_checkbox_Filter.check();
-  await expect(CorrPortalElem.Apply_Selected_1_button_in_Rule).toBeVisible();
+  await CorrPortalElem.Status_checkbox_Filter(vars["StatusToBeSelected"]).check();
+  await expect(CorrPortalElem.Apply_Selected_1_button_in_Rule.nth(1)).toBeVisible();
   await CorrPortalElem.Apply_Selected_Button_2_filter.click();
   await CorrPortalElem.Apply_Filters_Button.click();
   await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
   await expect(CorrPortalElem.Status).toContainText(vars["StatusToBeSelected"]);
   await stepGroup_Traversing_to_the_next_screens_until_the_Standard_and_chase_(page, vars);
-  await CorrPortalElem.Filtered_Status_BidRequest_ID_Standard_and_chase.click();
+  await CorrPortalElem.Filtered_Status_BidRequest_ID_Standard_and_chase(vars["StatusToBeSelected"]).first().click();
   await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
 }
 
@@ -3932,6 +3953,7 @@ export async function stepGroup_Verify_that_the_Bid_Upload_Progress_Popup_has_Al
     vars["count"] = (parseFloat(String("1")) + parseFloat(String(vars["count"]))).toFixed(0);
   }
 }
+
 
 /**
  * Step Group: Verifying the table data in bid request details from tdp
@@ -3972,6 +3994,7 @@ export async function stepGroup_Verifying_the_table_data_in_bid_request_details_
     }
   }
 }
+
 
 /**
  * Step Group: Verifying Footer Queued and Submission date for next bussiness day
@@ -4049,6 +4072,7 @@ export async function stepGroup_Verify_Footer_Submission_and_Queued_Date_For_Tod
   await expect(CorrPortalElem.Footer_Submission_Date).toContainText("ET");
   await expect(CorrPortalElem.Footer_Queued_For_Date).toContainText("ET");
 }
+
 
 /**
  * Step Group: Fetching Second Table data in bid requests details and storing into tdp
@@ -4132,25 +4156,32 @@ export async function stepGroup_Uploading_Bid_RequestNew(page: import('@playwrig
   const CorrPortalElem = new CorrPortalPage(page);
   const testData: Record<string, string> = {}; // TODO: Load from test data profile
   await CorrPortalElem.Select_Company_In_BidRequest.click();
-  await CorrPortalElem.Bid_Mapping_Id_Search_Input_box.fill(testData["Company Name"]);
+  await CorrPortalElem.Bid_Mapping_Id_Search_Input_box.fill(vars["CompanyName"]);
   await CorrPortalElem.SelectCompany_Value.click();
-  await expect(CorrPortalElem.SelectCompany_Value).toContainText(testData["Company Name"]);
+  await expect(CorrPortalElem.SelectCompany_Value).toContainText(vars["CompanyName"]);
   await CorrPortalElem.Standard_Execution_Checkbox.waitFor({ state: 'visible' });
   await expect(CorrPortalElem.Standard_Execution_Checkbox).toBeVisible();
+  if (!(await CorrPortalElem.Standard_Execution_Checkbox.isChecked())) {
+    await CorrPortalElem.Standard_Execution_Checkbox.check();
+    await page.waitForTimeout(2000);
+    log.info("Standard checkbox was not checked — checked it now");
+  }
+  await expect(CorrPortalElem.Standard_Execution_Checkbox).toBeChecked();
   await CorrPortalElem.StandardExecution_Dropdown.selectOption({ label: "3" });
   await expect(CorrPortalElem.StandardExceutionType_Dropdown).toHaveValue("3");
   await CorrPortalElem.Bid_Mapping_ID_Dropdown.click();
-  await CorrPortalElem.Search_box_Bid_mapping_id.fill(testData["BidMappingID"]);
+ await CorrPortalElem.Search_box_Bid_mapping_id.fill(vars["BidMappingID"]);
   await CorrPortalElem.Bid_Mapping_ID_Dropdown_1.click();
-  await expect(CorrPortalElem.Bid_Mapping_ID_Dropdown).toContainText(testData["BidMappingID"]);
+  await expect(CorrPortalElem.Bid_Mapping_ID_Dropdown).toContainText(vars["BidMappingID"]);
   await expect(CorrPortalElem.Bid_Request_Date).toBeEnabled();
   await CorrPortalElem.Pricing_Return_Time.click();
-  await CorrPortalElem.Enabled_PricingReturnTime.scrollIntoViewIfNeeded();
-  await expect(CorrPortalElem.Enabled_PricingReturnTime).toBeVisible();
-  await CorrPortalElem.Enabled_PricingReturnTime.click();
+  // await CorrPortalElem.Enabled_PricingReturnTime(vars["BulkBatchTiming"]).scrollIntoViewIfNeeded();
+  // await expect(CorrPortalElem.Enabled_PricingReturnTime(vars["BulkBatchTiming"])).toBeVisible();
+  // await CorrPortalElem.Enabled_PricingReturnTime(vars["BulkBatchTiming"]).click();
+  await CorrPortalElem.Pricing_Return_Time.selectOption({value: vars["BulkBatchTiming"]});
   await expect(page.getByText("Drag and drop files here or click to browse. Allowed formats: .xls,.xlsx,.csv,.txt")).toBeVisible();
-  await CorrPortalElem.Upload_File.setInputFiles(path.resolve(__dirname, 'test-data', "Bid_Valid_file.xlsx"));
-  await expect(CorrPortalElem.UploadBid_Button).toBeVisible();
+  await CorrPortalElem.Upload_File.setInputFiles(path.resolve(__dirname, '../../../uploads', "Bid_file_success_error_newfile1.xlsx"));
+  await expect(CorrPortalElem.UploadBid_Button).toBeEnabled();
   await CorrPortalElem.UploadBid_Button.click();
 }
 
@@ -5194,28 +5225,30 @@ export async function stepGroup_Undoing_Time_in_Other_Config(page: import('@play
  */
 export async function stepGroup_Navigating_to_Customer_Permission_Page_and_disabling_the_sta_2(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
-  const testData: Record<string, string> = {}; // TODO: Load from test data profile
   await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
   await CorrPortalElem.Administration_Menu.click();
   await CorrPortalElem.GeneralSettings_Menu.click();
   await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
   await CorrPortalElem.CustomerPermission_Menu.click();
   await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
-  await expect(page.getByText("Customer Permission")).toBeVisible();
-  await CorrPortalElem.Search_Filter_Input.fill(testData["Expected Company Name"]);
+  await expect(page.getByText("Customer Permission").nth(1)).toBeVisible();
+  await CorrPortalElem.Search_Filter_Input_in_Customer_Permission.click();
+  await CorrPortalElem.Search_Filter_Input_in_Customer_Permission.fill(vars["CompanyName"]);
   await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
-  await CorrPortalElem.Edit_Permission_Button_For_Freedomcompany.click();
+  await CorrPortalElem.Edit_Permission_Button_For_Freedomcompany(vars["CompanyName"]).click();
   await page.getByText("Edit Permissions").waitFor({ state: 'visible' });
   await expect(CorrPortalElem.On_Radio_ChaseDirect_Edit_Permissions_Popup).toBeEnabled();
-  if (true) /* Radio button Off Radio Standard(Edit Permissions Popup) is n */ {
+  if (!await CorrPortalElem.Off_Radio_Standard_Edit_Permissions_Popup.isChecked()) {
     await CorrPortalElem.Off_Radio_Standard_Edit_Permissions_Popup.check();
-    await CorrPortalElem.Update_Permissions_Button.waitFor({ state: 'visible' });
+   // await CorrPortalElem.Update_Permissions_Button.waitFor({ state: 'enabled' });
+    await expect(CorrPortalElem.Update_Permissions_Button).toBeEnabled();
   }
-  if (true) /* Radio button On Radio ChaseDirect(Edit Permissions Popup) is */ {
+  if (!await CorrPortalElem.On_Radio_ChaseDirect_Edit_Permissions_Popup.isChecked()) {
     await CorrPortalElem.On_Radio_ChaseDirect_Edit_Permissions_Popup.check();
-    await CorrPortalElem.Update_Permissions_Button.waitFor({ state: 'visible' });
+    //await CorrPortalElem.Update_Permissions_Button.waitFor({ state: 'enabled' });
+    await expect(CorrPortalElem.Update_Permissions_Button).toBeEnabled();
   }
-  if (true) /* Element Update Permissions Button is enabled */ {
+  if (await CorrPortalElem.Update_Permissions_Button.isEnabled()) /* Element Update Permissions Button is enabled */ {
     await CorrPortalElem.Update_Permissions_Button.click();
   } else {
     await CorrPortalElem.Close_pop_up.click();
