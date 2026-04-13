@@ -100,7 +100,6 @@ test.describe('REG_Bid Maps', () => {
         await stepGroups.stepGroup_Standard_and_Chase_Direct_ON_for_Company(page, vars);
         vars["CompanyIndex"] = appconstants.FOUR;
         vars["CompanyNameActionIndex"] = appconstants.FOUR;
-        log.info(vars["CompanyIndex"] + " | " + vars["CompanyNameActionIndex"]);
         await stepGroups.stepGroup_Store_More_Company_Name(page, vars);
         await stepGroups.stepGroup_Only_Chase_Direct_On_for_Company(page, vars);
         log.stepPass("Step 2 passed: Navigated to Customer Permission and configured company execution types successfully");
@@ -171,7 +170,7 @@ test.describe('REG_Bid Maps', () => {
         await correspondentPortalPage.Apply_Selected.click();
         await correspondentPortalPage.Dropdown_selection_2.selectOption("CHASE_DIRECT");
         await expect(correspondentPortalPage.Dropdown_selection_2).toHaveValue("CHASE_DIRECT");
-       
+
         log.stepPass("Step 6 passed: Companies removed and re-added, Chase Direct execution type verified");
       } catch (error) {
         log.stepFail(page, "Step 6 failed: Failed to remove/re-add companies or verify execution type");
@@ -233,8 +232,8 @@ test.describe('REG_Bid Maps', () => {
 
         vars['storedCompanies'] = Array.from(selectedSet).sort();
         vars['storedCompanies'] = vars['storedCompanies']
-        .map((name: string) => name.replace(/\s+/g, ' ').trim())
-        .sort();
+          .map((name: string) => name.replace(/\s+/g, ' ').trim())
+          .sort();
 
         await expect(correspondentPortalPage.Apply_Selected).toContainText("6");
         await correspondentPortalPage.Apply_Selected.click();
@@ -245,7 +244,7 @@ test.describe('REG_Bid Maps', () => {
       }
       log.step("Step 9: Verify selected companies display correctly in dropdown area");
       try {
-           await  correspondentPortalPage.More_companies.click();
+        await correspondentPortalPage.More_companies.click();
         const uiSelectedNames = await page
           .locator("//table[@role='table']//tbody//td[@data-title='Company']")
           .evaluateAll((cells: HTMLElement[]) =>
@@ -264,7 +263,7 @@ test.describe('REG_Bid Maps', () => {
       }
       log.step("Step 10: Verify company visibility and more companies button behavior");
       try {
-        
+
         await expect(page.getByText(vars["Company name 2"])).not.toBeVisible();
         log.info("Verified that Company name 2 is not visible ");
         await expect(correspondentPortalPage.More_companies).toContainText("2");
@@ -278,7 +277,7 @@ test.describe('REG_Bid Maps', () => {
       }
       log.step("Step 11: Verify Added On date, save draft and edit file name");
       try {
-        helpers.getCurrentTimestamp('MM/dd/yyyy hh:mm a', 'Added On',appconstants.UTC);
+        helpers.getCurrentTimestamp('MM/dd/yyyy hh:mm a', 'Added On', appconstants.UTC);
         vars["Added On Bid Map"] = await correspondentPortalPage.Added_On.textContent() || '';
         expect(String(vars["Added On"])).toBe(vars["Added On Bid Map"].trim());
         await correspondentPortalPage.close_pop_up_bid_request_details.click();
