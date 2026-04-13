@@ -51,28 +51,28 @@ export class RulesAndActionsPage {
     return this.page.locator("(//button[@id=\"singleSelectDropDownWithSearch\"]/parent::div[contains(@class,\"form-control p-0 danger\")])[last()]");
   }
 
-  get Common_Action_Chase_Field_Name(): Locator {
-    return this.page.locator("(//label[normalize-space(text())='Chase Field Name']//..//select[@class=\"form-select\"])[$|count|]");
+  Common_Action_Chase_Field_Name(count: string): Locator {
+    return this.page.locator(`(//label[normalize-space(text())='Chase Field Name']//..//select[@class=\"form-select\"])[${count}]`);
   }
 
-  get Common_Action_Chase_Value(): Locator {
-    return this.page.locator("(//div[@class=\"row rules-actions\"]//label[text()=\"Chase Value\"]/..//select)[$|count|]");
+  Common_Action_Chase_Value(count: string): Locator {
+    return this.page.locator(`(//div[@class=\"row rules-actions\"]//label[text()=\"Chase Value\"]/..//select)[${count}]`);
   }
 
-  get Common_Bid_Field_Rule(): Locator {
-    return this.page.locator("(//div[@class=\"rules-conditions\"]//label[text()=\" When Bid Field \"]/..//div[@class=\"flex-grow-1 text-start text-truncate\"])[$|count|]");
+  Common_Bid_Field_Rule(count: string): Locator {
+    return this.page.locator(`(//div[@class=\"rules-conditions\"]//label[text()=\" When Bid Field \"]/..//div[@class=\"flex-grow-1 text-start text-truncate\"])[${count}]`);
   }
 
-  get Common_Bid_Tape_Rule(): Locator {
-    return this.page.locator("(//div[@class=\"rules-conditions\"]//label[text()=\" Bid Enumerated Tape Value \"]/..//div[@class=\"flex-grow-1 text-start text-truncate\"])[$|count|]");
+  Common_Bid_Tape_Rule(count: string): Locator {
+    return this.page.locator(`(//div[@class=\"rules-conditions\"]//label[text()=\" Bid Enumerated Tape Value \"]/..//div[@class=\"flex-grow-1 text-start text-truncate\"])[${count}]`);
   }
 
-  get Common_Rule_Name_Field(): Locator {
-    return this.page.locator("(//input[@placeholder=\"Enter a Rule Name\"])[$|count|]");
+  Common_Rule_Name_Field(count: string): Locator {
+    return this.page.locator(`(//input[@placeholder=\"Enter a Rule Name\"])[${count}]`);
   }
 
-  get Common_Select_Category_Dropdown(): Locator {
-    return this.page.locator("(//div[text()=\" Select Category \"])[$|count|]");
+  Common_Select_Category_Dropdown(count: string): Locator {
+    return this.page.locator(`(//div[text()=\" Select Category \"])[${count}]`);
   }
 
   get Delete_Rule_Button_1(): Locator {
@@ -83,20 +83,20 @@ export class RulesAndActionsPage {
     return this.page.locator("//div[@class=\"form-control p-0\"]/..");
   }
 
-  get Disabled_Dropdown_Value(): Locator {
-    return this.page.locator("(//div[@class=\"form-control p-0\"]/..)[$|count|]");
+  Disabled_Dropdown_Value(count:string): Locator {
+    return this.page.locator(`(//div[@class=\"form-control p-0\"]/..)[${count}]`);
   }
 
   get Duplicated_Block(): Locator {
     return this.page.locator("(//div[@class=\"block\"])[2]");
   }
 
-  get Edited_Category_rules_and_actions(): Locator {
-    return this.page.locator("(//input[contains(@aria-label,\"$|EditedCategory|\")])");
+  Edited_Category_rules_and_actions(EditedCategory:string): Locator {
+    return this.page.locator(`(//input[contains(@aria-label,\"${EditedCategory}\")])`);
   }
 
-  get Edited_Category_In_Dropdown(): Locator {
-    return this.page.locator("(//input[contains(@aria-label,\"$|EditedCategory|\")])[$|count1|]");
+  Edited_Category_In_Dropdown(EditedCategory:string, count1:string): Locator {
+    return this.page.locator(`(//input[contains(@aria-label,\"${EditedCategory}\")])[${count1}]`);
   }
 
   get First_Operation_Dropdown(): Locator {
@@ -155,8 +155,8 @@ export class RulesAndActionsPage {
     return this.page.locator("(//button[@id=\"multiSelectDropDown\"])[2]");
   }
 
-  get Select_Category_DropdownNew(): Locator {
-    return this.page.locator("(//button[@id=\"multiSelectDropDown\"])[$|count|]");
+  Select_Category_DropdownNew(count:string): Locator {
+    return this.page.locator(`(//button[@id=\"multiSelectDropDown\"])[${count}]`);
   }
 
   get Select_tagRules_and_Actions(): Locator {

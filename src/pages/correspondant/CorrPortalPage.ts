@@ -128,6 +128,9 @@ export class CorrPortalPage {
   get Apply_Selected_1_button_in_Rule(): Locator {
     return this.page.locator("//button[contains(normalize-space(),\"Apply Selected 1\")]");
   }
+  get Apply_Selected_button_in_Rule(): Locator {
+    return this.page.locator("//button[contains(normalize-space(),\"Apply Selected \")]");
+  }
 
   get Apply_Selected_Button_2_filter(): Locator {
     return this.page.locator("(//button[contains(normalize-space(),\"Apply Selected 1\")])[2]");
@@ -218,7 +221,7 @@ export class CorrPortalPage {
   }
 
   get_Bid_Map_Name_Field_In_Row(CreateNewMap:string): Locator {
-    return this.page.locator(`//td[@data-title=\"Map Name\"]//button[text()=\" ${CreateNewMap} \"]`);
+    return this.page.locator(`//td[@data-title=\"Map Name\"]//button[normalize-space(text())=\"${CreateNewMap}\"]`);
   }
 
   // get Bid_Mapping_ID_Dropdown(): Locator {
@@ -750,7 +753,9 @@ export class CorrPortalPage {
   get Delete_Rule_Button(): Locator {
     return this.page.locator("(//span[text()[normalize-space() = \"Delete Rule\"]])[1]");
   }
-
+  get Last_Delete_Rule_Button(): Locator {
+    return this.page.locator("(//span[text()[normalize-space() = \"Delete Rule\"]])[last()]");
+  }
   get Delete_batch_Button(): Locator {
     return this.page.locator("//span[normalize-space(text())=\"Delete batch\"]//parent::button");
   }
@@ -1429,7 +1434,9 @@ export class CorrPortalPage {
   get Operation_Dropdown(): Locator {
     return this.page.locator("//select[contains(normalize-space(),\"Select = != > < >= <= contains\")]");
   }
-
+    get Operation_Dropdown1(): Locator {
+    return this.page.locator("(//div[@class='block'])[1]//select[contains(normalize-space(),'Select = != > < >= <= contains')]");
+  }
   get Operations_Dropdown_2(): Locator {
     return this.page.locator("(//select[contains(normalize-space(),\"Select = != > < >= <= contains\")])[2]");
   }
@@ -1594,7 +1601,7 @@ export class CorrPortalPage {
   }
 
   get Save_Draft_Exit_Button(): Locator {
-    return this.page.locator("//span[text()[normalize-space() = \"Save Draft & Exit\"]]");
+    return this.page.locator("//span[text()[normalize-space() ='Save Draft & Exit']]//ancestor::button[@type='button']");
   }
 
   get Save_Settings(): Locator {
@@ -1615,6 +1622,9 @@ export class CorrPortalPage {
 
   get Search_Field(): Locator {
     return this.page.locator("(//input[@type=\"search\"])[1]");
+  }
+    get Search_Field2(): Locator {
+    return this.page.locator("(//input[@type=\"search\"])[2]");
   }
 
   get Bid_Enumerated_Search_Field(): Locator {
@@ -1721,6 +1731,9 @@ export class CorrPortalPage {
 
   get Select_Category_Dropdown(): Locator {
     return this.page.locator("//div[text()[normalize-space() = \"Select Category\"]]");
+  }
+  get Select_Category_Dropdown1(): Locator {
+    return this.page.locator("//button[@id='multiSelectDropDown']");
   }
 
   get Select_Category_Dropdown_Duplicated(): Locator {
@@ -2041,6 +2054,9 @@ export class CorrPortalPage {
 
   get When_Bid_Field(): Locator {
     return this.page.locator("//label[text()[normalize-space() = \"When Bid Field\"]]/following-sibling::div[contains(@class, 'd-flex')]//div[@aria-labelledby=\"singleSelectDropDown\"]//input[@type=\"search\"]");
+  }
+  get When_Bid_Field_select(): Locator {
+    return this.page.locator("//label[text()[normalize-space() = 'When Bid Field']]/following-sibling::div[contains(@class, 'd-flex')]");
   }
 
   get When_Bid_Field_Name(): Locator {
