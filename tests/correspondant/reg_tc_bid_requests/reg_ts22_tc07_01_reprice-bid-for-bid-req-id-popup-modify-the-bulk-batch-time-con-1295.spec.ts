@@ -65,7 +65,7 @@ test.describe('REG_TC_Bid_Requests', () => {
     await correspondentPortalPage.Bid_Requestsside_bar_menu.click();
     await priceOfferedPage.Filter_Dropdown1.click();
     await correspondentPortalPage.Select_CompanyCCode_Dropdown1.click();
-    await bidRequestListPage.Required_Company_Checkbox_filter.check();
+    await bidRequestListPage.Required_Company_Checkbox_filter(vars["CompanyName"]).check();
     await p15Active2Page.Apply_Selected_Button.click();
     await correspondentPortalPage.Select_Bid_Request_Status.click();
     await expect(bidRequestPage.Upload_Expired).toBeVisible();
