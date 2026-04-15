@@ -247,6 +247,7 @@ export async function stepGroup_Creation_Of_Bid_Map_Upto_Header_Mapping(page: im
   await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
   await expect(page.getByText(vars["CreateNewMap"])).toBeVisible();
   await CorrPortalElem.Header_Mapping.waitFor({ state: 'visible' });
+  expect(CorrPortalElem.Header_Mapping).toBeEnabled();
 }
 
 
@@ -1243,12 +1244,18 @@ export async function stepGroup_Deleting_the_UnMapped_fields_in_Header_Mapping(p
  * Steps: 3
  */
 export async function stepGroup_Storing_All_Enum_TDP_Values_into_a_Variable(page: import('@playwright/test').Page, vars: Record<string, string>) {
-  const testData: Record<string, string> = {}; // TODO: Load from test data profile
-  const testDataSets: Record<string, string>[] = []; // TODO: Load test data sets
   vars["EnumValues"] = "Loan Purpose";
+  const Methods = new AddonHelpers(page, vars);
+  const profileName = 'Enum Type Values';
+  const profile = testDataManager.getProfileByName(profileName);
+  const dataList = profile?.data as Record<string, any>[];
   // Loop over test data sets in "Enum Type Values." from set2 to set18
-  for (const testDataSet of testDataSets) {
-    vars["EnumValues"] = String(testData["Enum Type"]) + "," + String(vars["EnumValues"]);
+  for (let i = 1; i <= Number(17); i++) {
+    log.info('Iteration: ' + i);
+    
+    vars['Enum Type'] = dataList[i]['Enum Type'];
+    log.info('Enum Type: ' + vars['Enum Type']);
+    Methods.concatenateWithSpecialChar(vars["EnumValues"], vars['Enum Type'], ',', 'EnumValues');
   }
 }
 
@@ -1404,6 +1411,9 @@ export async function stepGroup_Creating_New_BidMap_Upto_Upload_File(page: impor
   await CorrPortalElem.Select_Companys_Dropdown.click();
   await CorrPortalElem.Required_Company_s_Name_Value(vars["Companyname"]).click();
   await CorrPortalElem.Apply_Selected.click();
+  const value = 'STANDARD';
+  await correspondentPortalPage.Execution_Type_Dropdown.selectOption({ value: value });
+  await expect(correspondentPortalPage.Execution_Type_Dropdown.locator('option:checked')).toHaveText(value);
   await expect(CorrPortalElem.Upload_File).toHaveValue('');
   await expect(page.getByText("Drag and drop files here or click to browse. Allowed formats: .xls,.xlsx,.csv,.txt")).toBeVisible();
   // await CorrPortalElem.Upload_File.setInputFiles(path.resolve(__dirname, 'test-data', "DeepikaAugBidQA.xlsx"));
@@ -1720,22 +1730,24 @@ export async function stepGroup_Verification_of_ExportList_from_UI_to_Excel(page
  */
 export async function stepGroup_Checking_All_Enum_Fields_In_Header_Mapping_Screen(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
+  const Methods = new AddonHelpers(page, vars);
   vars["MappedChaseFieldCount"] = String(await CorrPortalElem.MappedChaseFieldName.count());
-  vars["count"] = "1";
+  log.info('Mapped Chase Field Count: '+vars["MappedChaseFieldCount"]);
+  vars["count"] = appconstants.ONE;
   vars["ChaseEnumValue"] = "sample";
   vars["CorrespondentBidNames"] = "sample";
-  while (parseFloat(String(vars["count"])) < parseFloat(String(vars["MappedChaseFieldCount"]))) {
-    vars["ChaseName"] = await CorrPortalElem.Individual_Mapped_Chase_Name.evaluate(el => { const s = el as HTMLSelectElement; return s.options[s.selectedIndex]?.text || ''; });
+  while (parseFloat(String(vars["count"]))  <= parseFloat(String(vars["MappedChaseFieldCount"]))) {
+    log.info('Iteration: '+vars["count"]);
+    vars["ChaseName"] = await CorrPortalElem.Individual_Mapped_Chase_Name(vars['count']).evaluate(el => { const s = el as HTMLSelectElement; return s.options[s.selectedIndex]?.text || ''; });
     if (String(vars["EnumValues"]).includes(String(vars["ChaseName"]))) {
-      vars["ChaseEnumValue"] = String(vars["ChaseName"]) + "," + String(vars["ChaseEnumValue"]);
-      vars["CorrespondentBidName"] = await CorrPortalElem.Correspondent_Bid_sample_name.textContent() || '';
-      vars["CorrespondentBidNames"] = String(vars["CorrespondentBidName"]) + "," + String(vars["CorrespondentBidNames"]);
-      await CorrPortalElem.Chase_Field_Checkbox.check();
-      await expect(CorrPortalElem.Chase_Field_Checkbox).toBeVisible();
-      // [DISABLED] Verify that the element Bid Sample Name Field [Enumeration Mapping] displays text CorrespondentBidName and With Scrollable FALSE
-      // await expect(CorrPortalElem.Bid_Sample_Name_Field_Enumeration_Mapping).toContainText(vars["CorrespondentBidName"]);
+      Methods.concatenateWithSpecialChar(vars["ChaseName"],vars["ChaseEnumValue"],',','ChaseEnumValue');
+      vars["CorrespondentBidName"] = await CorrPortalElem.Correspondent_Bid_sample_name(vars['count']).textContent() || '';
+      Methods.concatenateWithSpecialChar(vars["CorrespondentBidName"],vars["CorrespondentBidNames"],',','CorrespondentBidNames');
+      await CorrPortalElem.Chase_Field_Checkbox(vars['count']).check();
+      await expect(CorrPortalElem.Chase_Field_Checkbox(vars['count'])).toBeChecked();
+
     }
-    vars["count"] = (parseFloat(String("1")) + parseFloat(String(vars["count"]))).toFixed(0);
+    Methods.performArithmetic(vars["count"],'ADDITION','1','count',0);
   }
 }
 
@@ -1746,15 +1758,16 @@ export async function stepGroup_Checking_All_Enum_Fields_In_Header_Mapping_Scree
  */
 export async function stepGroup_Verification_Of_Checked_Enum_Fields_In_Enumeration(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
+  const Methods = new AddonHelpers(page, vars);
   vars["ChaseEnumNamesCount"] = String(await CorrPortalElem.Chase_Enum_Names.count());
-  vars["count1"] = "1";
+  log.info('Chase Enum Names Count: '+vars["ChaseEnumNamesCount"]);
+  vars["count1"] = appconstants.ONE;
   while (parseFloat(String(vars["count1"])) <= parseFloat(String(vars["ChaseEnumNamesCount"]))) {
-    // [DISABLED] Store the value displayed in the text box Individual Chase Enum Name field into a variable ChaseName
-    // vars["ChaseName"] = await CorrPortalElem.Individual_Chase_Enum_Name.inputValue() || '';
-    vars["IndividualBidSampleName"] = await CorrPortalElem.Individual_Bid_Sample_Name_Enum_Page.textContent() || '';
-    expect(String(vars["CorrespondentBidNames"])).toBe(vars["IndividualBidSampleName"]);
-    await expect(CorrPortalElem.Individual_Checkbox_Enum).toBeVisible();
-    vars["count1"] = (parseFloat(String("1")) + parseFloat(String(vars["count1"]))).toFixed(0);
+    log.info('Verifying Iteration: '+vars["count1"]);
+    vars["IndividualBidSampleName"] = await CorrPortalElem.get_Individual_Bid_Sample_Name_Enum_Page(vars['count1']).textContent() || '';
+    Methods.verifyString(vars["CorrespondentBidNames"],'contains',vars["IndividualBidSampleName"]);
+    await expect(CorrPortalElem.Individual_Checkbox_Enum(vars['count1'])).toBeChecked();
+    Methods.performArithmetic(vars["count1"],'ADDITION','1','count1',0);
   }
 }
 
@@ -1765,22 +1778,22 @@ export async function stepGroup_Verification_Of_Checked_Enum_Fields_In_Enumerati
  */
 export async function stepGroup_Unchecking_All_Enum_Fields_In_Header_Mapping_Screen(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
+  const Methods = new AddonHelpers(page, vars);
   vars["MappedChaseFieldCount"] = String(await CorrPortalElem.MappedChaseFieldName.count());
-  vars["count"] = "1";
+  log.info('Mapped Chase Field Count: '+vars["MappedChaseFieldCount"]);
+  vars["count"] = appconstants.ONE;
   vars["ChaseEnumValue"] = "sample";
   vars["CorrespondentBidNames"] = "sample";
   while (parseFloat(String(vars["count"])) < parseFloat(String(vars["MappedChaseFieldCount"]))) {
-    vars["ChaseName"] = await CorrPortalElem.Individual_Mapped_Chase_Name.evaluate(el => { const s = el as HTMLSelectElement; return s.options[s.selectedIndex]?.text || ''; });
+    vars["ChaseName"] = await CorrPortalElem.Individual_Mapped_Chase_Name(vars['count']).evaluate(el => { const s = el as HTMLSelectElement; return s.options[s.selectedIndex]?.text || ''; });
     if (String(vars["EnumValues"]).includes(String(vars["ChaseName"]))) {
       vars["ChaseEnumValue"] = String(vars["ChaseName"]) + "," + String(vars["ChaseEnumValue"]);
-      vars["CorrespondentBidName"] = await CorrPortalElem.Correspondent_Bid_sample_name.textContent() || '';
-      vars["CorrespondentBidNames"] = String(vars["CorrespondentBidName"]) + "," + String(vars["CorrespondentBidNames"]);
-      await CorrPortalElem.Chase_Field_Checkbox.uncheck();
-      await expect(CorrPortalElem.Chase_Field_Checkbox).toBeVisible();
-      // [DISABLED] Verify that the element Bid Sample Name Field [Enumeration Mapping] displays text CorrespondentBidName and With Scrollable FALSE
-      // await expect(CorrPortalElem.Bid_Sample_Name_Field_Enumeration_Mapping).toContainText(vars["CorrespondentBidName"]);
+      vars["CorrespondentBidName"] = await CorrPortalElem.Correspondent_Bid_sample_name(vars['count']).textContent() || '';
+      Methods.concatenateWithSpecialChar(vars["CorrespondentBidName"],vars["CorrespondentBidNames"],',','CorrespondentBidNames');
+      await CorrPortalElem.Chase_Field_Checkbox(vars['count']).uncheck();
+      await expect(CorrPortalElem.Chase_Field_Checkbox(vars['count'])).not.toBeChecked();
     }
-    vars["count"] = (parseFloat(String("1")) + parseFloat(String(vars["count"]))).toFixed(0);
+    Methods.performArithmetic(vars["count"],'ADDITION','1','count',0);
   }
 }
 
@@ -1791,15 +1804,15 @@ export async function stepGroup_Unchecking_All_Enum_Fields_In_Header_Mapping_Scr
  */
 export async function stepGroup_Verification_Of_Unchecked_Enum_Fields_In_Enumeration(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
+  const Methods = new AddonHelpers(page, vars);
   vars["ChaseEnumNamesCount"] = String(await CorrPortalElem.Chase_Enum_Names.count());
-  vars["count1"] = "1";
+  log.info("Chase Enum Names Count: "+vars["ChaseEnumNamesCount"]);
+  vars["count1"] = appconstants.ONE;
   while (parseFloat(String(vars["count1"])) <= parseFloat(String(vars["ChaseEnumNamesCount"]))) {
-    // [DISABLED] Store the value displayed in the text box Individual Chase Enum Name field into a variable ChaseName
-    // vars["ChaseName"] = await CorrPortalElem.Individual_Chase_Enum_Name.inputValue() || '';
-    vars["IndividualBidSampleName"] = await CorrPortalElem.Individual_Bid_Sample_Name_Enum_Page.textContent() || '';
-    expect(String(vars["CorrespondentBidNames"])).toBe(vars["IndividualBidSampleName"]);
-    await expect(CorrPortalElem.Individual_Checkbox_Enum).toBeVisible();
-    vars["count1"] = (parseFloat(String("1")) + parseFloat(String(vars["count1"]))).toFixed(0);
+    vars["IndividualBidSampleName"] = await CorrPortalElem.get_Individual_Bid_Sample_Name_Enum_Page(vars['count1']).textContent() || '';
+    expect(Methods.verifyString(vars["CorrespondentBidNames"],'contains',vars["IndividualBidSampleName"]));
+    await expect(CorrPortalElem.Individual_Checkbox_Enum(vars['count1'])).not.toBeChecked();
+    Methods.performArithmetic(vars["count1"],'ADDITION','1','count1',0);
   }
 }
 
@@ -1923,11 +1936,11 @@ export async function stepGroup_Creating_New_Header_In_Header_Mapping_Screen(pag
   await expect(CorrPortalElem.Custom_Header_Field).toHaveValue(vars["customheadername"]);
   // await CorrPortalElem.Chase_Field_Name.click();
   // await CorrPortalElem.CLM_Field_Name.click();
-  await CorrPortalElem.CLM_Field_Name.selectOption({ label: vars["ChaseFieldNames"] });
+  await CorrPortalElem.CLM_Field_Name.selectOption({ label: vars["Chase_Field_Name"] });
   vars["clmfieldname"] = await CorrPortalElem.CLM_Field_Name.evaluate(el => { const s = el as HTMLSelectElement; return s.options[s.selectedIndex]?.text || ''; });
   await CorrPortalElem.Insert_Header_Button.click();
   await expect(CorrPortalElem.New_Header_Mapping).toBeVisible();
-  await expect(CorrPortalElem.Enumeration_Mapping_Button).toBeVisible();
+  await expect(CorrPortalElem.Enumeration_Mapping_Button).toBeEnabled();
 }
 
 /**
@@ -1949,7 +1962,7 @@ export async function stepGroup_Editing_In_Enumeration_Mapping_Screen(page: impo
  */
 export async function stepGroup_Save_Draft_exit_and_Navigating_To_Rules_And_Actions(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
-   await CorrPortalElem.Save_Draft_Exit_Button.scrollIntoViewIfNeeded();
+  await CorrPortalElem.Save_Draft_Exit_Button.scrollIntoViewIfNeeded();
   await CorrPortalElem.Save_Draft_Exit_Button.click();
   await CorrPortalElem.Save_Draft_Exit_Button.waitFor({ state: 'hidden' });
   await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
@@ -2408,13 +2421,13 @@ export async function stepGroup_Verification_of_Rules_and_Action_Values_Before_E
  */
 export async function stepGroup_Verifying_that_Changes_Are_Not_Updated_In_Active_VersionRule(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
-  const Methods = new AddonHelpers(page,vars);
+  const Methods = new AddonHelpers(page, vars);
   vars["ActiveVersionRuleName"] = await CorrPortalElem.First_Active_Rule_Name.inputValue() || '';
-  expect(Methods.verifyString(vars["New Rule Name"],'notEquals',vars["ActiveVersionRuleName"]));
+  expect(Methods.verifyString(vars["New Rule Name"], 'notEquals', vars["ActiveVersionRuleName"]));
   // [DISABLED] Verify that the text Rule Name is not displayed in the element First Rule Name Field and With Scrollable FALSE
   // await expect(CorrPortalElem.First_Active_Rule_Name).not.toContainText(vars["Rule Name"]);
   vars["CountOfCategory"] = await CorrPortalElem.First_Select_Category_box_text.textContent() || '';
-  expect(Methods.verifyString(vars["CountOfCategory"],'contains',"1"));
+  expect(Methods.verifyString(vars["CountOfCategory"], 'contains', "1"));
   await expect(CorrPortalElem.Condition_BidField_1).not.toContainText(vars["EditedRuleBidField[RulesAndActions]"]);
   // await expect(CorrPortalElem.Operation_Dropdown.first()).not.toContainText(vars["Operator 2 Symbol"]);
   await expect(CorrPortalElem.Operation_Dropdown.first().locator('option:checked')).not.toHaveText(vars["Operator 2 Symbol"]);
@@ -2773,7 +2786,7 @@ export async function stepGroup_selecting_time_unit_bulk_batch(page: import('@pl
 export async function stepGroup_Modifying_The_Batch_Intervals(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
   const Methods = new AddonHelpers(page, vars);
-
+ 
   await CorrPortalElem.Modify_Batch_Intervals_Button.click();
   await expect(page.getByText("Edit Batch Timing")).toBeVisible();
   Methods.getCurrentTimestamp(appconstants.HOUR_FORMAT_HH, 'Time_Hour', appconstants.AMERICA_NEW_YORK);
@@ -2789,6 +2802,7 @@ export async function stepGroup_Modifying_The_Batch_Intervals(page: import('@pla
   await expect(CorrPortalElem.Modified_batch_timings_successfully_Message).toBeVisible();
   await CorrPortalElem.Ok_Button.click();
 }
+ 
 
 /**
  * Step Group: Delete early config
@@ -3001,6 +3015,7 @@ export async function stepGroup_Uploading_Bid_Request(page: import('@playwright/
   //await expect(CorrPortalElem.Bid_Mapping_ID_Dropdown).toContainText([vars["BidMappingID"]]);
   await expect(CorrPortalElem.Bid_Request_Date).toBeEnabled();
   await CorrPortalElem.Pricing_Return_Time.click({ force: true });
+  await CorrPortalElem.Pricing_Return_Time.click({ force: true });
   // [DISABLED] Scroll down to the element Enabled_PricingReturnTime into view
   // await CorrPortalElem.Enabled_PricingReturnTime.scrollIntoViewIfNeeded();
   // [DISABLED] Verify that the element Enabled_PricingReturnTime is present and With Scrollable TRUE
@@ -3069,8 +3084,10 @@ export async function stepGroup_IF_Condition_for_Yes_Proceed_Button(page: import
   const CorrPortalElem = new CorrPortalPage(page);
   if (await CorrPortalElem.Yes_Proceed_Button.isVisible()) /* Element Yes, Proceed Button is visible */ {
     await CorrPortalElem.Yes_Proceed_Button.click();
+    log.info('clicked on yes proceed button');
   } else {
     await CorrPortalElem.Proceed_with_Saving_Button.click();
+    log.info('clikced on proceed with saving button');
   }
 }
 
@@ -3415,7 +3432,8 @@ export async function stepGroup_Modifying_The_Batch_Intervals_For_Next_bussiness
   await expect(CorrPortalElem.Modified_batch_timings_successfully_Message).toBeVisible();
   await CorrPortalElem.Ok_Button.click();
 }
-
+ 
+ 
 /**
  * Step Group: Navigate to Customer Permission to Fetch First Company Name
  * ID: 1250
@@ -3670,6 +3688,7 @@ export async function stepGroup_Navigating_to_Customer_Permission_Page_and_disab
   if (!await CorrPortalElem.Off_Radio_Standard_Edit_Permissions_Popup.isChecked()) {
     await CorrPortalElem.Off_Radio_Standard_Edit_Permissions_Popup.check();
     // await CorrPortalElem.Update_Permissions_Button.waitFor({ state: 'enabled' });
+    // await CorrPortalElem.Update_Permissions_Button.waitFor({ state: 'enabled' });
     await expect(CorrPortalElem.Update_Permissions_Button).toBeEnabled();
   }
   if (!await CorrPortalElem.On_Radio_ChaseDirect_Edit_Permissions_Popup.isChecked()) {
@@ -3716,9 +3735,9 @@ export async function stepGroup_Filtering_Status_and_Navigating_to_Filtered_Stat
  */
 export async function stepGroup_Navigating_to_Customer_Permission_and_enabling_the_Standard_(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
-
+ 
   //const testData: Record<string, string> = {}; // TODO: Load from test data profile
-
+ 
   await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
   await CorrPortalElem.Administration_Menu.click();
   await CorrPortalElem.GeneralSettings_Menu.click();
@@ -3731,13 +3750,13 @@ export async function stepGroup_Navigating_to_Customer_Permission_and_enabling_t
   await CorrPortalElem.Edit_Permission_Button_For_Freedomcompany(vars["CompanyName"]).click();
   await page.getByText("Edit Permissions").waitFor({ state: 'visible' });
   if (!await CorrPortalElem.Standard_Flow_On_Button.isChecked()) /* Radio button Standard_Flow_On_Button is not selected */ {
-
+ 
     await CorrPortalElem.Standard_Flow_On_Button.check();
     await CorrPortalElem.Update_Permissions_Button.waitFor({ state: 'visible' });
     if (await CorrPortalElem.Update_Permissions_Button.isEnabled())
       /* Element Update Permissions Button is enabled */ {
       await CorrPortalElem.Update_Permissions_Button.click();
-
+ 
       await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
     }
     else {
@@ -3810,6 +3829,7 @@ export async function stepGroup_Navigating_To_Customer_Permissions_and_enabling_
     await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
   }
 
+
 }
 
 
@@ -3825,6 +3845,9 @@ export async function stepGroup_Traversing_to_the_next_screens_until_the_bid_is_
     await CorrPortalElem.Set_page_size_to_50_Dropdown.click();
     await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
     //if (!(await CorrPortalElem.Filtered_Status_BidRequest_ID(vars["ExecutionType"], vars["StatusToBeSelected"]).isVisible())) {
+    while (!(await CorrPortalElem.Filtered_Status_BidRequest_ID(vars["ExecutionType"], vars["StatusToBeSelected"]).first().isVisible())) {
+      await CorrPortalElem.Go_to_Next_Page_Button.click();
+    }
     while (!(await CorrPortalElem.Filtered_Status_BidRequest_ID(vars["ExecutionType"], vars["StatusToBeSelected"]).first().isVisible())) {
       await CorrPortalElem.Go_to_Next_Page_Button.click();
     }
@@ -4179,6 +4202,7 @@ export async function stepGroup_Uploading_Bid_RequestNew(page: import('@playwrig
   log.info("Selected Standard execution type with value 3");
   await CorrPortalElem.Bid_Mapping_ID_Dropdown.click();
   await CorrPortalElem.Search_box_Bid_mapping_id.fill(vars["BidMappingID"]);
+  await CorrPortalElem.Search_box_Bid_mapping_id.fill(vars["BidMappingID"]);
   await CorrPortalElem.Bid_Mapping_ID_Dropdown_1.click();
   //await expect(CorrPortalElem.Bid_Mapping_ID_Dropdown).toContainText(vars["BidMappingID"]);
   await expect(CorrPortalElem.Bid_Request_Date).toBeEnabled();
@@ -4187,9 +4211,7 @@ export async function stepGroup_Uploading_Bid_RequestNew(page: import('@playwrig
   // await CorrPortalElem.Enabled_PricingReturnTime(vars["BulkBatchTiming"]).scrollIntoViewIfNeeded();
   // await expect(CorrPortalElem.Enabled_PricingReturnTime(vars["BulkBatchTiming"])).toBeVisible();
   // await CorrPortalElem.Enabled_PricingReturnTime(vars["BulkBatchTiming"]).click();
-  vars["BulkBatchTiming"] = (await bidRequestsPage.First_Enabled_Time.textContent())?.trim() || '';
-  await CorrPortalElem.Pricing_ReturnTime_Dropdown.selectOption({ value: vars["BulkBatchTiming"] });
-  log.info(`Selected Pricing return time with value ${vars["BulkBatchTiming"]}`);
+  await CorrPortalElem.Pricing_Return_Time.selectOption({ value: vars["BulkBatchTiming"] });
   await expect(page.getByText("Drag and drop files here or click to browse. Allowed formats: .xls,.xlsx,.csv,.txt")).toBeVisible();
   await CorrPortalElem.Upload_File.setInputFiles(path.resolve(__dirname, '../../../uploads', "Bid_file_success_error_newfile1.xlsx"));
   await expect(CorrPortalElem.UploadBid_Button).toBeEnabled();
@@ -5252,6 +5274,7 @@ export async function stepGroup_Navigating_to_Customer_Permission_Page_and_disab
   if (!await CorrPortalElem.Off_Radio_Standard_Edit_Permissions_Popup.isChecked()) {
     await CorrPortalElem.Off_Radio_Standard_Edit_Permissions_Popup.check();
     // await CorrPortalElem.Update_Permissions_Button.waitFor({ state: 'enabled' });
+    // await CorrPortalElem.Update_Permissions_Button.waitFor({ state: 'enabled' });
     await expect(CorrPortalElem.Update_Permissions_Button).toBeEnabled();
   }
   if (!await CorrPortalElem.On_Radio_ChaseDirect_Edit_Permissions_Popup.isChecked()) {
@@ -6244,7 +6267,7 @@ export async function stepGroup_Toggle_Radio_Button_Based_on_Current_State_and_S
 export async function stepGroup_Verifying_the_Last_Modified_Data_In_the_Right_corner_screen(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
   const Methods = new AddonHelpers(page, vars);
-
+ 
   Methods.getCurrentTimestamp(appconstants.TIME_FORMAT_HMMA, "CurrentLocalTime", appconstants.UTC);
   Methods.getCurrentTimestamp(appconstants.DATE_FORMAT_MDYYYY, "CurrentLocalDate", appconstants.UTC);
   await expect(CorrPortalElem.Last_Modified_Data_Right_Corner_Screen).toContainText(vars["CurrentLocalDate"]);
@@ -6258,6 +6281,7 @@ export async function stepGroup_Verifying_the_Last_Modified_Data_In_the_Right_co
   }
   await expect(CorrPortalElem.Last_Modified_Data_Right_Corner_Screen).toContainText("test sigma");
 }
+ 
 
 /**
  * Step Group: Verification of see difference pop up data

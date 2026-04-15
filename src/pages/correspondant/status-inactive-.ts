@@ -102,7 +102,9 @@ export class StatusInactivePage {
   get Checking_Enum_Values_In_Enumeration_Mapping(): Locator {
     return this.page.locator("//input[contains(@aria-label,'Enable or disable field Amortization Type')]");
   }
-
+  get Checking_Enum_In_Enumeration_Mapping(): Locator {
+    return this.page.locator("//input[contains(@aria-label,'Enable or disable field Amortization Type')]");
+  }
   get Column_Header_In_SeachField(): Locator {
     return this.page.locator("//h6[text()[normalize-space() = \"Column Header\"]]");
   }

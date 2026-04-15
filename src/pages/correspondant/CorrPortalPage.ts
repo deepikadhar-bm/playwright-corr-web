@@ -380,8 +380,8 @@ export class CorrPortalPage {
     return this.page.locator("//div[@class=\"my-2\"]");
   }
 
-  get Chase_Field_Checkbox(): Locator {
-    return this.page.locator("(//fieldset//div[@class=\"gap-2 header-grid-layout\"]//select)[$|count|]/../../..//input[@type=\"checkbox\"]");
+  Chase_Field_Checkbox(count:string): Locator {
+    return this.page.locator(`(//fieldset//div[@class=\"gap-2 header-grid-layout\"]//select)[${count}]/../../..//input[@type=\"checkbox\"]`);
   }
 
   get Chase_Field_Input_box(): Locator {
@@ -636,8 +636,8 @@ export class CorrPortalPage {
     return this.page.locator("//span[text()[normalize-space() = \"Continue Editing\"]]");
   }
 
-  get Correspondent_Bid_sample_name(): Locator {
-    return this.page.locator("(//fieldset//div[@class=\"gap-2 header-grid-layout\"]//select)[$|count|]/../../..//div[@class=\"flex-grow-1\"]");
+  Correspondent_Bid_sample_name(count:string): Locator {
+    return this.page.locator(`(//fieldset//div[@class=\"gap-2 header-grid-layout\"]//select)[${count}]/../../..//div[@class=\"flex-grow-1\"]`);
   }
 
   get Count_of_Columns_Request_list(): Locator {

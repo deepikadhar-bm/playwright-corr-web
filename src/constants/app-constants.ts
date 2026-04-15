@@ -114,4 +114,6 @@ export const APP_CONSTANTS = {
   SELECTED_LOAN_AMOUNT_TEXT:"Selected Loan Amt",
   HOUR_FORMAT_HH: "hh",
   DATE_FORMAT_MDYYYY: "M/d/yyyy",
+  RULE_NAME_CONST1:'a',
+  RULE_NAME_CONST2:'A',
 };
