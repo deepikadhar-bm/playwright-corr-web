@@ -65,14 +65,14 @@ test.describe('REG_Bid Maps', () => {
     rulesAndActionsButtonPage = new RulesAndActionsButtonPage(page);
     saveAndPublishButtonPage = new SaveAndPublishButtonPage(page);
     spinnerPage = new SpinnerPage(page);
-    Methods= new AddonHelpers(page, vars);
+    Methods = new AddonHelpers(page, vars);
   });
 
   test(`${TC_ID} - ${TC_TITLE}`, async ({ page }) => {
     log.tcStart(TC_ID, TC_TITLE);
-     if (profile && profile.data) {
-      vars["Upload File Text Verification"]=profile.data[0]['Upload File Text Verification'];
-     }
+    if (profile && profile.data) {
+      vars["Upload File Text Verification"] = profile.data[0]['Upload File Text Verification'];
+    }
     try {
 
       log.step('Login to CORR Portal');
@@ -99,8 +99,8 @@ test.describe('REG_Bid Maps', () => {
       try {
         await correspondentPortalPage.Add_New_Mapping_Button.click();
         await expect(headingCreateNewMapPage.Create_New_Map).toBeVisible();
-        Methods.getCurrentTimestamp(appconstants.DATE_FORMAT_SLASH,'Create New Map',appconstants.UTC);
-        Methods.concatenate(appconstants.Testsigma_,vars["Create New Map"],'Create New Map');
+        Methods.getCurrentTimestamp(appconstants.DATE_FORMAT_SLASH, 'Create New Map', appconstants.UTC);
+        Methods.concatenate(appconstants.Testsigma_, vars["Create New Map"], 'Create New Map');
         await correspondentPortalPage.Create_New_Map_Field.fill(vars["Create New Map"]);
         await correspondentPortalPage.Create_Button.click();
         await spinnerPage.Spinner.waitFor({ state: 'hidden' });
@@ -119,8 +119,8 @@ test.describe('REG_Bid Maps', () => {
         await expect(correspondentPortalPage.Upload_File).toHaveValue('');
         await expect(page.getByText(vars["Upload File Text Verification"])).toBeVisible();
         // await stepGroups.stepGroup_Rename_File(page, vars);
-        const fileName1 = path.join(process.cwd(),'uploads',fileconstants.BID_QA_FILE_COMMON);
-        excelHelper.readEntireRow(fileName1,0,0,'Total Headers From Xls');
+        const fileName1 = path.join(process.cwd(), 'uploads', fileconstants.BID_QA_FILE_COMMON);
+        excelHelper.readEntireRow(fileName1, 0, 0, 'Total Headers From Xls');
         const fileName2 = fileconstants.Bid_Maps_File;
         await uploadFile(page, correspondentPortalPage.Upload_File, fileName2);
         log.stepPass('Company selected and bid file uploaded successfully');
@@ -153,22 +153,23 @@ test.describe('REG_Bid Maps', () => {
         vars["PartialMatchCount"] = appconstants.ZERO;
         vars["IncorrectMatchCount"] = appconstants.ZERO;
         vars["UnMappedHeaderCount"] = appconstants.ZERO;
-        log.info('Field Count: '+vars["FieldCount"]);
+        log.info('Field Count: ' + vars["FieldCount"]);
         while (parseFloat(String(vars["count"])) <= parseFloat(String(vars["FieldCount"]))) {
-          log.info('Iteration: '+vars["count"]);
+          log.info('Iteration: ' + vars["count"]);
           vars["Individual BidSample Name"] = await headerMappingPage.Individual_BidSample_Name1(vars['count']).textContent() || '';
           await correspondentPortalPage.Rules_and_Actions_Step_4_of_4.click();
-          vars["IndividualChaseValue"] = await headerMappingPage.Individual_ChaseValue_OF_Bid(vars['count']).evaluate(el => {const s = el as HTMLSelectElement;return s.options[s.selectedIndex]?.text || '';
+          vars["IndividualChaseValue"] = await headerMappingPage.Individual_ChaseValue_OF_Bid(vars['count']).evaluate(el => {
+            const s = el as HTMLSelectElement; return s.options[s.selectedIndex]?.text || '';
           });
 
           if (String(vars["Individual BidSample Name"]) === String(vars["IndividualChaseValue"])) {
-            Methods.performArithmetic(vars["PerfectMatchCount"],'ADDITION','1','PerfectMatchCount',0);
+            Methods.performArithmetic(vars["PerfectMatchCount"], 'ADDITION', '1', 'PerfectMatchCount', 0);
           } else if (String(vars["Individual BidSample Name"]).includes(String(vars["IndividualChaseValue"]))) {
-            Methods.performArithmetic(vars["PartialMatchCount"],'ADDITION','1','PartialMatchCount',0);
+            Methods.performArithmetic(vars["PartialMatchCount"], 'ADDITION', '1', 'PartialMatchCount', 0);
           } else if (String(vars["IndividualChaseValue"]) === String("Select")) {
-            Methods.performArithmetic(vars["UnMappedHeaderCount"],'ADDITION','1','UnMappedHeaderCount',0);
+            Methods.performArithmetic(vars["UnMappedHeaderCount"], 'ADDITION', '1', 'UnMappedHeaderCount', 0);
           } else {
-            Methods.performArithmetic(vars["IncorrectMatchCount"],'ADDITION','1','IncorrectMatchCount',0);
+            Methods.performArithmetic(vars["IncorrectMatchCount"], 'ADDITION', '1', 'IncorrectMatchCount', 0);
           }
           vars["count"] = (parseFloat("1") + parseFloat(String(vars["count"]))).toFixed(0);
         }
@@ -182,9 +183,9 @@ test.describe('REG_Bid Maps', () => {
         vars["IncorrectMatch"] = vars["IncorrectMatchCount"];
 
         if (String(vars["PerfectMatchCount"]) >= String(appconstants.ONE)) {
-          expect(Methods.verifyComparison(vars["PerfectMatchCount"],'>=',appconstants.ONE));
+          expect(Methods.verifyComparison(vars["PerfectMatchCount"], '>=', appconstants.ONE));
         } else {
-          expect(Methods.verifyComparison(vars["PartialMatchCount"],'>=',appconstants.ONE));
+          expect(Methods.verifyComparison(vars["PartialMatchCount"], '>=', appconstants.ONE));
         }
         log.stepPass('Smart Map auto-selection verified successfully');
       } catch (e) {

@@ -2786,15 +2786,11 @@ export async function stepGroup_selecting_time_unit_bulk_batch(page: import('@pl
 export async function stepGroup_Modifying_The_Batch_Intervals(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
   const Methods = new AddonHelpers(page, vars);
-  const Methods = new AddonHelpers(page, vars);
-
+ 
   await CorrPortalElem.Modify_Batch_Intervals_Button.click();
   await expect(page.getByText("Edit Batch Timing")).toBeVisible();
   Methods.getCurrentTimestamp(appconstants.HOUR_FORMAT_HH, 'Time_Hour', appconstants.AMERICA_NEW_YORK);
-  Methods.getCurrentTimestamp(appconstants.HOUR_FORMAT_HH, 'Time_Hour', appconstants.AMERICA_NEW_YORK);
   await CorrPortalElem.StartTime_In_Hour.type(vars["Time_Hour"]);
-  Methods.getCurrentTimestamp(appconstants.TIME_FORMAT_HHMM, 'Time_Min', appconstants.AMERICA_NEW_YORK);
-  Methods.splitBySpecialChar(vars["Time_Min"], ":", '1', "Time_Minute");
   Methods.getCurrentTimestamp(appconstants.TIME_FORMAT_HHMM, 'Time_Min', appconstants.AMERICA_NEW_YORK);
   Methods.splitBySpecialChar(vars["Time_Min"], ":", '1', "Time_Minute");
   await CorrPortalElem.StartTime_In_Minutes.type(vars["Time_Minute"]);
@@ -2806,6 +2802,7 @@ export async function stepGroup_Modifying_The_Batch_Intervals(page: import('@pla
   await expect(CorrPortalElem.Modified_batch_timings_successfully_Message).toBeVisible();
   await CorrPortalElem.Ok_Button.click();
 }
+ 
 
 /**
  * Step Group: Delete early config
@@ -3393,11 +3390,6 @@ export async function stepGroup_Modifying_The_Batch_Intervals_For_Next_bussiness
     minute: '2-digit',
     hour12: true
   });
-    timeZone: 'America/New_York',
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: true
-  });
   vars["OnehourPrior"] = (() => {
     const d = new Date('2000-01-01 ' + String(vars["CurrentTime"]));
     d.setMinutes(d.getMinutes() + parseInt(String("60")));
@@ -3440,7 +3432,8 @@ export async function stepGroup_Modifying_The_Batch_Intervals_For_Next_bussiness
   await expect(CorrPortalElem.Modified_batch_timings_successfully_Message).toBeVisible();
   await CorrPortalElem.Ok_Button.click();
 }
-
+ 
+ 
 /**
  * Step Group: Navigate to Customer Permission to Fetch First Company Name
  * ID: 1250
@@ -3742,10 +3735,9 @@ export async function stepGroup_Filtering_Status_and_Navigating_to_Filtered_Stat
  */
 export async function stepGroup_Navigating_to_Customer_Permission_and_enabling_the_Standard_(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
-
-
+ 
   //const testData: Record<string, string> = {}; // TODO: Load from test data profile
-
+ 
   await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
   await CorrPortalElem.Administration_Menu.click();
   await CorrPortalElem.GeneralSettings_Menu.click();
@@ -3758,22 +3750,13 @@ export async function stepGroup_Navigating_to_Customer_Permission_and_enabling_t
   await CorrPortalElem.Edit_Permission_Button_For_Freedomcompany(vars["CompanyName"]).click();
   await page.getByText("Edit Permissions").waitFor({ state: 'visible' });
   if (!await CorrPortalElem.Standard_Flow_On_Button.isChecked()) /* Radio button Standard_Flow_On_Button is not selected */ {
-
+ 
     await CorrPortalElem.Standard_Flow_On_Button.check();
     await CorrPortalElem.Update_Permissions_Button.waitFor({ state: 'visible' });
     if (await CorrPortalElem.Update_Permissions_Button.isEnabled())
-    if (await CorrPortalElem.Update_Permissions_Button.isEnabled())
       /* Element Update Permissions Button is enabled */ {
       await CorrPortalElem.Update_Permissions_Button.click();
-
-      await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
-    }
-    else {
-      await CorrPortalElem.Close_pop_up.click();
-    }
-  }
-      await CorrPortalElem.Update_Permissions_Button.click();
-
+ 
       await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
     }
     else {
@@ -6284,27 +6267,21 @@ export async function stepGroup_Toggle_Radio_Button_Based_on_Current_State_and_S
 export async function stepGroup_Verifying_the_Last_Modified_Data_In_the_Right_corner_screen(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
   const Methods = new AddonHelpers(page, vars);
-  const Methods = new AddonHelpers(page, vars);
-
-  Methods.getCurrentTimestamp(appconstants.TIME_FORMAT_HMMA, "CurrentLocalTime", appconstants.UTC);
-  Methods.getCurrentTimestamp(appconstants.DATE_FORMAT_MDYYYY, "CurrentLocalDate", appconstants.UTC);
+ 
   Methods.getCurrentTimestamp(appconstants.TIME_FORMAT_HMMA, "CurrentLocalTime", appconstants.UTC);
   Methods.getCurrentTimestamp(appconstants.DATE_FORMAT_MDYYYY, "CurrentLocalDate", appconstants.UTC);
   await expect(CorrPortalElem.Last_Modified_Data_Right_Corner_Screen).toContainText(vars["CurrentLocalDate"]);
-  Methods.addMinutesToDatetime(vars["CurrentLocalTime"], appconstants.TIME_FORMAT_HMMA, 1, appconstants.TIME_FORMAT_HMMA, "LocalTimePlus1Min");
   Methods.addMinutesToDatetime(vars["CurrentLocalTime"], appconstants.TIME_FORMAT_HMMA, 1, appconstants.TIME_FORMAT_HMMA, "LocalTimePlus1Min");
   Methods.subtractMinutesFromDatetime(vars["CurrentLocalTime"], appconstants.TIME_FORMAT_HMMA, 1, appconstants.TIME_FORMAT_HMMA, "LocalTimeMinusMin");
   vars["TimeOnScreen"] = await CorrPortalElem.Last_Modified_Data_Right_Corner_Screen.textContent() || '';
   if (Methods.isTestdataIgnoreCase(vars["TimeOnScreen"], 'contains', vars["CurrentLocalTime"])) /* Verify if TimeOnScreen contains ignore-case with CurrentLoca */ {
   } else if (Methods.isTestdataIgnoreCase(vars["TimeOnScreen"], 'contains', vars["LocalTimePlus1Min"])) /* Verify if TimeOnScreen contains ignore-case with LocalTimePl */ {
-  if (Methods.isTestdataIgnoreCase(vars["TimeOnScreen"], 'contains', vars["CurrentLocalTime"])) /* Verify if TimeOnScreen contains ignore-case with CurrentLoca */ {
-  } else if (Methods.isTestdataIgnoreCase(vars["TimeOnScreen"], 'contains', vars["LocalTimePlus1Min"])) /* Verify if TimeOnScreen contains ignore-case with LocalTimePl */ {
   } else {
-    await Methods.verifyElementContainsTextIgnoreCase(CorrPortalElem.Last_Modified_Data_Right_Corner_Screen, vars["LocalTimeMinusMin"]);
     await Methods.verifyElementContainsTextIgnoreCase(CorrPortalElem.Last_Modified_Data_Right_Corner_Screen, vars["LocalTimeMinusMin"]);
   }
   await expect(CorrPortalElem.Last_Modified_Data_Right_Corner_Screen).toContainText("test sigma");
 }
+ 
 
 /**
  * Step Group: Verification of see difference pop up data
