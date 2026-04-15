@@ -99,12 +99,12 @@ export class BidRequestDetailsPage {
     return this.page.locator("//div[@class=\"modal-footer\"]/button");
   }
 
-  get Corr_Loantable1_bid_request_details(): Locator {
-    return this.page.locator("((//table)[1]//tr[@role=\"row\"]//td[@data-title=\"Loan Status\"]//div[text()[normalize-space() = \"Success\"]]/../..//td[@data-title=\"Corr. Loan#\"])[$|count|]");
+  Corr_Loantable1_bid_request_details(count: string): Locator {
+    return this.page.locator(`((//table)[1]//tr[@role=\"row\"]//td[@data-title=\"Loan Status\"]//div[text()[normalize-space() = \"Success\"]]/../..//td[@data-title=\"Corr. Loan#\"])[${count}]`);
   }
 
-  get Corr_Loantable2_bid_request_details(): Locator {
-    return this.page.locator("((//table)[2]//tr[@role=\"row\"]//td[@data-title=\"Loan Status\"]//div[text()[normalize-space() = \"Success\"]]/../..//td[@data-title=\"Corr. Loan#\"])[$|count|]");
+  Corr_Loantable2_bid_request_details(count: string): Locator {
+    return this.page.locator(`((//table)[2]//tr[@role=\"row\"]//td[@data-title=\"Loan Status\"]//div[text()[normalize-space() = \"Success\"]]/../..//td[@data-title=\"Corr. Loan#\"])[${count}]`);
   }
 
   get demo_last_name(): Locator {
@@ -299,12 +299,12 @@ Individual_PQ_Button(RowsCount:string): Locator {
     return this.page.locator("(//div[@aria-label=\"Sort by Last Name\"])[2]");
   }
 
-  get Last_Nametable1_bid_request_details(): Locator {
-    return this.page.locator("((//table)[1]//tr[@role=\"row\"]//td[@data-title=\"Loan Status\"]//div[text()[normalize-space() = \"Success\"]]/ancestor::tr//td[@data-title=\"Last Name\"]/div)[$|count|]");
+  Last_Nametable1_bid_request_details(count: string): Locator {
+    return this.page.locator(`((//table)[1]//tr[@role=\"row\"]//td[@data-title=\"Loan Status\"]//div[text()[normalize-space() = \"Success\"]]/ancestor::tr//td[@data-title=\"Last Name\"]/div)[${count}]`);
   }
 
-  get Last_Nametable2_bid_request_details(): Locator {
-    return this.page.locator("((//table)[2]//tr[@role=\"row\"]//td[@data-title=\"Loan Status\"]//div[text()[normalize-space() = \"Success\"]]/ancestor::tr//td[@data-title=\"Last Name\"]/div)[$|count|]");
+  Last_Nametable2_bid_request_details(count: string): Locator {
+    return this.page.locator(`((//table)[2]//tr[@role=\"row\"]//td[@data-title=\"Loan Status\"]//div[text()[normalize-space() = \"Success\"]]/ancestor::tr//td[@data-title=\"Last Name\"]/div)[${count}]`);
   }
 
   get Last_Table_Program_Cell_Data_Bid_requests_details(): Locator {
@@ -319,12 +319,12 @@ Individual_PQ_Button(RowsCount:string): Locator {
     return this.page.locator("(//div[@aria-label=\"Sort by Loan Amount\"])[2]");
   }
 
-  get Loan_Amounttable1_bid_request_details(): Locator {
-    return this.page.locator("((//table)[1]//tr[@role=\"row\"]//td[@data-title=\"Loan Status\"]//div[text()[normalize-space() = \"Success\"]]/../..//td[@data-title=\"Loan Amount\"])[$|count|]");
+  Loan_Amounttable1_bid_request_details(count: string): Locator {
+    return this.page.locator(`((//table)[1]//tr[@role=\"row\"]//td[@data-title=\"Loan Status\"]//div[text()[normalize-space() = \"Success\"]]/../..//td[@data-title=\"Loan Amount\"])[${count}]`);
   }
 
-  get Loan_Amounttable2_bid_request_details(): Locator {
-    return this.page.locator("((//table)[2]//tr[@role=\"row\"]//td[@data-title=\"Loan Status\"]//div[text()[normalize-space() = \"Success\"]]/../..//td[@data-title=\"Loan Amount\"])[$|count|]");
+  Loan_Amounttable2_bid_request_details(count: string): Locator {
+    return this.page.locator(`((//table)[2]//tr[@role=\"row\"]//td[@data-title=\"Loan Status\"]//div[text()[normalize-space() = \"Success\"]]/../..//td[@data-title=\"Loan Amount\"])[${count}]`);
   }
 
   get Loan_Number_Column(): Locator {

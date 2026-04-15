@@ -27,7 +27,7 @@ export async function runPrereq_2317(page: Page, vars: Record<string, string>): 
   const bidRequestPage = new BidRequestPage(page);
   const correspondentPortalPage = new CorrespondentPortalPage(page);
   const spinnerPage = new SpinnerPage(page);
-  const  bidRequestsPage = new BidRequestsPage(page);
+  const bidRequestsPage = new BidRequestsPage(page);
   const Methods = new AddonHelpers(page, vars);
   const credentials = ENV.getCredentials('internal');
   const CorrPortalElem = new CorrPortalPage(page);

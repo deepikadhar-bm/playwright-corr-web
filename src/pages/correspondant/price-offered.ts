@@ -1548,12 +1548,12 @@ Last_Nameprice_offered_screen_table(count1:string): Locator {
     return this.page.locator("//span[@class=\"error-loan\"]");
   }
 
-  get Loan_Numberprice_offered_screen_table(): Locator {
-    return this.page.locator("(//table//td[@data-title=\"Corr. Loan#\"]/div)[$|count1|]");
+  Loan_Numberprice_offered_screen_table(count1:string): Locator {
+    return this.page.locator(`(//table//td[@data-title=\"Corr. Loan#\"]/div)[${count1}]`);
   }
 
-  get Loan_Numbers_Expect_the_Current_Loan(): Locator {
-    return this.page.locator("(//button[contains(@aria-label,\"View loan details\")])[not(position()=$|count|)]");
+  Loan_Numbers_Expect_the_Current_Loan(count:string): Locator {
+    return this.page.locator(`(//button[contains(@aria-label,\"View loan details\")])[not(position()=${count})]`);
   }
 
   get Loan_Term_Chase_Field_Name(): Locator {
