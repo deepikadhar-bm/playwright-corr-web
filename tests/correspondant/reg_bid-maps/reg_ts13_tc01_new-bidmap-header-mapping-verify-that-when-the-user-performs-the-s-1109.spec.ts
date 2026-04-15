@@ -1,6 +1,4 @@
-// [POM-APPLIED]
 import { test, expect } from '@playwright/test';
-import path from 'path';
 import * as stepGroups from '../../../src/helpers/step-groups';
 import { ActionruleheaderPage } from '../../../src/pages/correspondant/actionruleheader';
 import { ChaseFieldNamePage } from '../../../src/pages/correspondant/chase-field-name';
@@ -14,6 +12,14 @@ import { MapHeadersButtonPage } from '../../../src/pages/correspondant/map-heade
 import { NewMapPage } from '../../../src/pages/correspondant/new-map';
 import { P1MoreButtonPage } from '../../../src/pages/correspondant/p-1-more-button';
 import { SpinnerPage } from '../../../src/pages/correspondant/spinner';
+import { Logger as log } from '@helpers/log-helper';
+import { testDataManager } from 'testdata/TestDataManager';
+import { ENV } from '@config/environments';
+import { AddonHelpers } from '@helpers/AddonHelpers';
+
+
+const TC_ID = 'REG_TS13_TC01';
+const TC_TITLE = 'Verify that when the user performs the "Save Draft" action on each screen, a draft version is saved.[New Bid Map & Header Mapping]';
 
 test.describe('REG_Bid Maps', () => {
   let vars: Record<string, string> = {};
@@ -29,9 +35,17 @@ test.describe('REG_Bid Maps', () => {
   let newMapPage: NewMapPage;
   let p1MoreButtonPage: P1MoreButtonPage;
   let spinnerPage: SpinnerPage;
+  let Methods: AddonHelpers;
+
+  const credentials = ENV.getCredentials('internal');
+
+  const profileName = 'Bid_Maps';
+  const profile = testDataManager.getProfileByName(profileName);
 
   test.beforeEach(async ({ page }) => {
     vars = {};
+    vars['Username'] = credentials.username;
+    vars['Password'] = credentials.password;
     actionruleheaderPage = new ActionruleheaderPage(page);
     chaseFieldNamePage = new ChaseFieldNamePage(page);
     companybidmapPage = new CompanybidmapPage(page);
@@ -44,155 +58,151 @@ test.describe('REG_Bid Maps', () => {
     newMapPage = new NewMapPage(page);
     p1MoreButtonPage = new P1MoreButtonPage(page);
     spinnerPage = new SpinnerPage(page);
+    Methods = new AddonHelpers(page, vars);
   });
 
-  test('REG_TS13_TC01_New Bidmap & Header Mapping Verify that when the user performs the save draft action on each screen, a draft version is saved.1.', async ({ page }) => {
-    const testData: Record<string, string> = {
-  "Company name 1": "Freedom",
-  "UniqueColHeader/Enum": "TsSearchUniqueColHeaderEnum",
-  "Save and Move to Next Page": "Save and Move to Next Page",
-  "CSS Attribute": "2px solid rgb(227, 82, 5)",
-  "Used Headers": "Show Used Headers",
-  "2-4 Unit": "2-4 Unit",
-  "Search Map Input": "Deepika Aug1",
-  "Chase_Field_Name1": "Mortgage Type",
-  "Rule Name": "Rule 1",
-  "Unidentified Headers": "Show Unidentified Headers",
-  "Operations": "GREATER",
-  "BidFields.": "DTI",
-  "Search Fields": "hii",
-  "Operator 2 Symbol": ">",
-  "Time Interval": "05",
-  "Unidentified Enumerations": "Show Unidentified Enumerations",
-  "Show All Enumerations": "Show All Enumerations",
-  "Unidentfied and Save Message": "You have unidentified fields.  This action will save the changes and Move to Next Page.",
-  "BidField": "FICO Score",
-  "Search_Map": "Deepika Aug",
-  "CustomHeader": "Header 02",
-  "New Rule Name": "New Rule",
-  "Assigned Companies1": "Wik1C BeuLD MoJbr CoEmy LLpoJ",
-  "Unique Chase Value1": "AndoverBirchDrive1",
-  "Company name 2": "Wik1C BeuLD MoJbr CoEmy LLpoJ  - A2964",
-  "Bid Field": "Base Loan Amount",
-  "Chase  Values": "False",
-  "ChaseValue": "Attached",
-  "Unused Enumerations": "Show Unused Enumerations",
-  "Reason For Cancellation": "To Be Cancelled",
-  "Reason For Deletion": "To Be Deleted",
-  "ChaseValues.": "False",
-  "Chase_Field_Name": "Mortgage Limit",
-  "Header Mapping": "Show All Headers",
-  "Chase Field Name": "Amortization Type",
-  "ChaseFieldName": "Appraised Value",
-  "UniqueBidEnumTapeValue": "852345",
-  "BidEnumeratedTapeValue": "800",
-  "Chase Fields Name": "Amortization Type, Appraised Value, Attachment Type, Aus List, Borrower First Name, Borrower Last Name, Buy Down, CLTV, City, DTI, Fico, First Time Home Buyer, First Time Homebuyer Credit Fee Waiver, Impound Types, Income Ami Ratio, Ineligible, Interest Only, LTV, Loan Amount, Loan Number, Loan Purpose, Loan Term, Monthly Income, Mortgage Limit, Mortgage Types, Note Rate, Number Of Unit, Occupancy Type, Product Name, Property Type, Property Valuation Type, Purchase Price, State, Street, Subordinate Loan Amount, TPO, Total Loan Amount, Unpaid Principal Balance, Zip",
-  "Unique Chase Field Name": "Street",
-  "Chase Value": "Fixed rate",
-  "Search_Input": "TS_SEARCHMAP21",
-  "Unused Headers": "Show Unused Headers",
-  "Upload File Text Verification": "Drag and drop files here or click to browse. Allowed formats: .xls,.xlsx,.csv,.txt",
-  "Bid Enumerated Tape Value": "80",
-  "Search Field Company Name": "Wik1C",
-  "Create Map": "Testsigma_04/03/2025/",
-  "Custom Header": "Header01",
-  "Investment (NOO)": "Investment (NOO)",
-  "PropertyValuation": "1004Desktop",
-  "ImportRuleName": "TEst",
-  "Action Save message": "This action will save the changes and Move to Next Page",
-  "SearchFields": "Hii",
-  "Start Time in Minutes": "31",
-  "Execution Type1": "STANDARD",
-  "BidEnumeratedTapeValue - Block 2": "Fixed",
-  "Execution Type": "CHASE_DIRECT",
-  "UniqueColumnHeaderSearch": "TsSearchUniqueColumnHeader",
-  "Start Time in Hour": "8",
-  "UniqueWhenBidFieldSearch": "TsSearchWhenBidField",
-  "WhenBidFieldName - Block 2": "Amortization Type",
-  "EmptyChaseFieldName": "Select",
-  "WhenBidFieldValue-3": "Appraised Value",
-  "Unique Chase Value": "AndoverBirchDrive",
-  "BidFields": "CLTV",
-  "Loan Purpose": "Refinance (R&T)",
-  "Advanced Search": "Fico",
-  "ChaseFieldNames": "Aus List",
-  "NO of Batches": "05",
-  "CompanyName3": "American Pacific  - A4257",
-  "Operator": "LESS_OR_EQUAL",
-  "SelectingChaseFieldName": "7",
-  "UpdatedBidEnumeratedTapeValue": "SAIKAT_18_FEB_002",
-  "Search Input": "Test",
-  "Operator 3": "CONTAINS",
-  "Expected Company Name": "Freedom",
-  "Operation2": "GREATER",
-  "Operation1": "LESS",
-  "Operator - Block 2": "GREATER",
-  "Bid Tape Value": "Fixed",
-  "Search Field": "free",
-  "Created Map Id": "Testsigma_05/07/2025/20:55:58",
-  "Rule Name(Updated)": "UP Rule 1",
-  "Operator 1 Symbol": "<",
-  "UniqueChaseValueSearch": "TsSearchChaseValue",
-  "Import Rule": "Testsigma_02/23/2026/01:02:39",
-  "Duplicated Rule Name": "Rule 2",
-  "Condition Bid Field": "FICO Score",
-  "BidEnumeraedTapeValue - 3": "425000",
-  "Chasevalues": "Variable rate",
-  "DeleteId": "Testsigma_05/05/2025/16:23:13",
-  "UpdatedWhenBidFieldName": "Correspondent Loan Number",
-  "Unidentified fields Message": "You have unidentified fields do you want to proceed further.",
-  "UniqueBidEnumTapeSearch": "TsSearchBidEnumTape",
-  "Unidentified Fields Error Message": "You have unidentified fields.",
-  "UniqueRuleNameSearch": "TsSearchUniqueRuleName"
-}; // Profile: "Bid_Maps", row: 0
+  test(`${TC_ID} - ${TC_TITLE}`, async ({ page }) => {
+    log.tcStart(TC_ID, TC_TITLE);
 
-    await stepGroups.stepGroup_Login_to_CORR_Portal(page, vars);
-    await stepGroups.stepGroup_Smart_Mapper_from_Off_to_On(page, vars);
-    vars["Companyname"] = testData["Company name 1"];
-    await stepGroups.stepGroup_Creating_New_BidMap_Upto_Upload_File(page, vars);
-    vars["EditedMapName"] = vars["Create New Map"];
-    vars["SelectedCompanyName"] = await newMapPage.Individual_Selected_Company.textContent() || '';
-    vars["ExecutionType"] = await mapHeaderPage.Execution_Type_Dropdown_New.evaluate(el => { const s = el as HTMLSelectElement; return s.options[s.selectedIndex]?.text || ''; });
-    vars["UploadedFileName"] = await firstPagePage.Uploaded_File_Name.textContent() || '';
-    await correspondentPortalPage.Save_Draft_Button1.click();
-    await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-    await mapHeadersButtonPage.Map_Headers_Button.waitFor({ state: 'visible' });
-    await expect(companybidmapPage.New_Map_Name).toHaveValue(vars["Create New Map"]);
-    await expect(newMapPage.Individual_Selected_Company).toContainText(vars["SelectedCompanyName"]);
-    await expect(mapHeaderPage.Execution_Type_Dropdown_New).toHaveValue(vars["ExecutionType"]);
-    await expect(p1MoreButtonPage.Uploaded_FileName).toContainText(vars["UploadedFileName"]);
-    await stepGroups.stepGroup_Editing_In_New_Map_After_Save_draft(page, vars);
-    vars["Create New Map"] = vars["EditedMapName"];
-    await mapHeadersButtonPage.Map_Headers_Button.click();
-    await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-    await correspondentPortalPage.Enumeration_Mapping_Button1.waitFor({ state: 'visible' });
-    await stepGroups.stepGroup_Creating_New_Header_In_Header_Mapping_Screen(page, vars);
-    await stepGroups.stepGroup_Editing_Header_Mapping(page, vars);
-    vars["DeletedHeader[HeaderMapping]"] = await headerMappingPage.Deleting_Header.textContent() || '';
-    await stepGroups.stepGroup_Delete_a_Header_In_Header_Mapping(page, vars);
-    await headerMappingPage.First_Header_Checkbox.check();
-    vars["FirstHeaderName"] = await headerMappingPage.First_Header_Bid_Sample_Name.textContent() || '';
-    await actionruleheaderPage.Second_Header_Checkbox.check();
-    vars["SecondHeaderName"] = await headerMappingPage.Second_Header_Bid_Sample_Name.textContent() || '';
-    await expect(correspondentPortalPage.Save_Draft_Button1).toBeVisible();
-    await correspondentPortalPage.Save_Draft_Button1.click();
-    await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-    await enumerationMappingButtonPage.Enumeration_Mapping_Button.waitFor({ state: 'visible' });
-    await expect(headerMappingPage.Custom_Header).toBeVisible();
-    await expect(headerMappingPage.Custom_Header).toContainText(vars["customheadername"]);
-    vars["CustomHeaderChaseValue"] = await headerMappingPage.Custom_Header_Chase_Value.evaluate(el => { const s = el as HTMLSelectElement; return s.options[s.selectedIndex]?.text || ''; });
-    expect(String(vars["clmfieldname"])).toBe(vars["CustomHeaderChaseValue"]);
-    await expect(headerMappingPage.Updated_BidSample_Name).toContainText(vars["UpdatedBidSampleNameHeaderMapping"]);
-    vars["ChaseFieldNameHeaderMapping"] = await headerMappingPage.Updated_Element_In_Header_Mapping.getAttribute('title') || '';
-    expect(String(vars["ChaseFieldNameHeaderMapping"])).toBe(vars["UpdatedChaseFieldNameHeaderMapping"]);
-    await expect(headerMappingPage.Deleted_Header_In_HeaderMaping).toBeVisible();
-    await expect(headerMappingPage.Header_1).toBeVisible();
-    await expect(chaseFieldNamePage.Header_2).toBeVisible();
-    await headerMappingPage.Header_1.uncheck();
-    await expect(headerMappingPage.Header_1).toBeVisible();
-    await correspondentPortalPage.Save_Draft_Button1.click();
-    await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-    await expect(headerMappingPage.Header_1).toBeVisible();
-    await expect(chaseFieldNamePage.Header_2).toBeVisible();
+    if (profile && profile.data) {
+      vars["Company name 1"] = profile.data[0]['CompanyName1'];
+      vars["New Rule Name"] = profile.data[0]['New Rule Name'];
+      vars["Rule Name"] = profile.data[0]['Rule Name'];
+      vars["Duplicated Rule Name"] = profile.data[0]['Duplicated Rule Name'];
+      vars["Condition Bid Field"] = profile.data[0]['Condition Bid Field'];
+      vars["Operation1"] = profile.data[0]['Operation1'];
+      vars["Operation2"] = profile.data[0]['Operation2'];
+      vars['ChaseFieldNames']=profile.data[0]['ChaseFieldNames'];
+      vars["CustomHeader"]=profile.data[0]['Custom Header'];
+    }
+
+    try {
+
+      log.step('Login to CORR portal');
+      try {
+        await stepGroups.stepGroup_Login_to_CORR_Portal(page, vars);
+        log.stepPass('Login successful');
+      } catch (e) {
+        await log.stepFail(page, 'Login failed');
+        throw e;
+      }
+
+      log.step('Enable Smart Mapper and create new Bid Map up to file upload');
+      try {
+        await stepGroups.stepGroup_Smart_Mapper_from_Off_to_On(page, vars);
+        vars["Companyname"] = vars["Company name 1"];
+        await stepGroups.stepGroup_Creating_New_BidMap_Upto_Upload_File(page, vars);
+        vars["EditedMapName"] = vars["CreateNewMap"];
+        vars["SelectedCompanyName"] = await newMapPage.Individual_Selected_Company.textContent() || '';
+        vars["ExecutionType"] = await mapHeaderPage.Execution_Type_Dropdown_New.evaluate(el => { const s = el as HTMLSelectElement; return s.options[s.selectedIndex]?.text || ''; });
+        vars["UploadedFileName"] = await firstPagePage.Uploaded_File_Name.textContent() || '';
+        log.stepPass('Smart Mapper enabled and Bid Map created up to file upload. Map: ' + vars["EditedMapName"]);
+      } catch (e) {
+        await log.stepFail(page, 'Failed to enable Smart Mapper or create Bid Map');
+        throw e;
+      }
+
+      log.step('Save Draft on New Map screen and verify saved values');
+      try {
+        await correspondentPortalPage.Save_Draft_Button1.click();
+        await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+        await mapHeadersButtonPage.Map_Headers_Button.waitFor({ state: 'visible' });
+        await expect(companybidmapPage.New_Map_Name1).toHaveValue(vars["CreateNewMap"]);
+          // await expect(newMapPage.Individual_Selected_Company.locator('option:checked')).toHaveText(vars["SelectedCompanyName"]);
+          await expect(newMapPage.Individual_Selected_Company).toContainText(vars["SelectedCompanyName"]);
+        await expect(mapHeaderPage.Execution_Type_Dropdown_New.locator('option:checked')).toHaveText(vars["ExecutionType"]);
+        await expect(p1MoreButtonPage.Uploaded_FileName).toContainText(vars["UploadedFileName"]);
+        log.stepPass('Draft saved and verified: Map Name, Company, Execution Type, and File Name match');
+      } catch (e) {
+        await log.stepFail(page, 'Draft verification failed on New Map screen');
+        throw e;
+      }
+
+      log.step('Edit New Map fields after Save Draft and navigate to Header Mapping');
+      try {
+        await stepGroups.stepGroup_Editing_In_New_Map_After_Save_draft(page, vars);
+        vars["CreateNewMap"] = vars["EditedMapName"];
+        await mapHeadersButtonPage.Map_Headers_Button.click();
+        await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+        await correspondentPortalPage.Enumeration_Mapping_Button1.waitFor({ state: 'visible' });
+        log.stepPass('New Map edited and navigated to Header Mapping screen');
+      } catch (e) {
+        await log.stepFail(page, 'Failed to edit New Map or navigate to Header Mapping');
+        throw e;
+      }
+
+      log.step('Create new header, edit header mapping, and delete a header');
+      try {
+        vars['Chase_Field_Name']=vars['ChaseFieldNames'];
+        await stepGroups.stepGroup_Creating_New_Header_In_Header_Mapping_Screen(page, vars);
+         if (profile && profile.data) {
+        vars['Chase_Field_Name']=profile.data[0]['Chase_Field_Name'];
+         }
+        await stepGroups.stepGroup_Editing_Header_Mapping(page, vars);
+        vars["UpdatedBidSampleNameHeaderMapping"]=vars['UpdatedBidSampleName[HeaderMapping]'];
+        vars["DeletedHeaderHeaderMapping"] = await headerMappingPage.Deleting_Header.textContent() || '';
+        await stepGroups.stepGroup_Delete_a_Header_In_Header_Mapping(page, vars);
+        log.stepPass('Header created, edited, and deleted. Deleted header: ' + vars["DeletedHeaderHeaderMapping"]);
+      } catch (e) {
+        await log.stepFail(page, 'Failed to create, edit, or delete header in Header Mapping');
+        throw e;
+      }
+
+      log.step('Select headers and Save Draft on Header Mapping screen');
+      try {
+        await headerMappingPage.First_Header_Checkbox.check();
+        vars["FirstHeaderName"] = await headerMappingPage.First_Header_Bid_Sample_Name.textContent() || '';
+        await actionruleheaderPage.Second_Header_Checkbox.check();
+        vars["SecondHeaderName"] = await headerMappingPage.Second_Header_Bid_Sample_Name.textContent() || '';
+        await expect(correspondentPortalPage.Save_Draft_Button1).toBeVisible();
+        await correspondentPortalPage.Save_Draft_Button1.click();
+        await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+        await enumerationMappingButtonPage.Enumeration_Mapping_Button.waitFor({ state: 'visible' });
+        log.stepPass('Headers selected and Draft saved. First: ' + vars["FirstHeaderName"] + ', Second: ' + vars["SecondHeaderName"]);
+      } catch (e) {
+        await log.stepFail(page, 'Failed to select headers or Save Draft on Header Mapping screen');
+        throw e;
+      }
+
+      log.step('Verify Header Mapping draft values are preserved');
+      try {
+        await expect(headerMappingPage.Custom_Header).toBeVisible();
+        await expect(headerMappingPage.Custom_Header).toContainText(vars["customheadername"]);
+        vars["CustomHeaderChaseValue"] = await headerMappingPage.Custom_Header_Chase_Value.evaluate(el => { const s = el as HTMLSelectElement; return s.options[s.selectedIndex]?.text || ''; });
+        // expect(String(vars["clmfieldname"])).toBe(vars["CustomHeaderChaseValue"]);
+        Methods.verifyString(vars['clmfieldname'],'equals',vars["CustomHeaderChaseValue"]);
+        await expect(headerMappingPage.get_Updated_BidSample_Name(vars['UpdatedBidSampleNameHeaderMapping'])).toContainText(vars["UpdatedBidSampleNameHeaderMapping"]);
+        vars["ChaseFieldNameHeaderMapping"] = await headerMappingPage.get_Updated_Element_In_Header_Mapping(vars['UpdatedBidSampleNameHeaderMapping']).getAttribute('title') || '';
+        Methods.verifyString(vars['ChaseFieldNameHeaderMapping'],'equals',vars["UpdatedChaseFieldNameHeaderMapping"]);
+        await expect(headerMappingPage.get_Deleted_Header_In_HeaderMaping(vars['DeletedHeaderHeaderMapping'])).not.toBeVisible();
+        await expect(headerMappingPage.get_Header_1(vars['FirstHeaderName'])).toBeChecked();
+        await expect(chaseFieldNamePage.get_Header_2(vars['SecondHeaderName'])).toBeChecked();
+        log.stepPass('Header Mapping draft verified: Custom Header, Chase Value, BidSample Name, and Chase Field Name match');
+      } catch (e) {
+        await log.stepFail(page, 'Header Mapping draft verification failed');
+        throw e;
+      }
+
+      log.step('Uncheck first header, Save Draft, and verify headers remain visible');
+      try {
+        await headerMappingPage.get_Header_1(vars['FirstHeaderName']).uncheck();
+        await expect(headerMappingPage.get_Header_1(vars['FirstHeaderName'])).not.toBeChecked();
+        await correspondentPortalPage.Save_Draft_Button1.click();
+        await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+        await expect(headerMappingPage.get_Header_1(vars['FirstHeaderName'])).not.toBeChecked();
+        await expect(chaseFieldNamePage.get_Header_2(vars['SecondHeaderName'])).toBeChecked();
+        log.stepPass('Header unchecked, Draft saved, and headers are still visible');
+      } catch (e) {
+        await log.stepFail(page, 'Failed to uncheck header or verify headers after Save Draft');
+        throw e;
+      }
+
+      log.tcEnd('PASS');
+
+    } catch (e) {
+      await log.captureOnFailure(page, TC_ID, e);
+      log.tcEnd('FAIL');
+      throw e;
+    }
   });
 });

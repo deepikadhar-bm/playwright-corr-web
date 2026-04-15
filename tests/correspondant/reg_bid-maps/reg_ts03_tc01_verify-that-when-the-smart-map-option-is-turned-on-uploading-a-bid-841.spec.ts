@@ -1,6 +1,6 @@
-// [POM-APPLIED]
 import { test, expect } from '@playwright/test';
 import path from 'path';
+import { uploadFile } from '../../../src/helpers/file-helpers';
 import * as stepGroups from '../../../src/helpers/step-groups';
 import { BidMapPage } from '../../../src/pages/correspondant/bid-map';
 import { CompanyPage } from '../../../src/pages/correspondant/company';
@@ -15,6 +15,17 @@ import { ProceedWithSavingButtonPage } from '../../../src/pages/correspondant/pr
 import { RulesAndActionsButtonPage } from '../../../src/pages/correspondant/rules-and-actions-button';
 import { SaveAndPublishButtonPage } from '../../../src/pages/correspondant/save-and-publish-button';
 import { SpinnerPage } from '../../../src/pages/correspondant/spinner';
+import { Logger as log } from '@helpers/log-helper';
+import { ENV } from '@config/environments';
+import { FILE_CONSTANTS as fileconstants } from '../../../src/constants/file-constants';
+import { testDataManager } from 'testdata/TestDataManager';
+import * as excelHelper from '../../../src/helpers/excel-helpers';
+import { APP_CONSTANTS as appconstants } from '../../../src/constants/app-constants';
+import { AddonHelpers } from '@helpers/AddonHelpers';
+
+
+const TC_ID = 'REG_TS03_TC01';
+const TC_TITLE = 'Verify that when the smart map option is turned on, uploading a bid file and navigating to the header screen will automatically select the corresponding Chase field name based on the bid';
 
 test.describe('REG_Bid Maps', () => {
   let vars: Record<string, string> = {};
@@ -31,9 +42,16 @@ test.describe('REG_Bid Maps', () => {
   let rulesAndActionsButtonPage: RulesAndActionsButtonPage;
   let saveAndPublishButtonPage: SaveAndPublishButtonPage;
   let spinnerPage: SpinnerPage;
+  let Methods: AddonHelpers;
+  const credentials = ENV.getCredentials('internal');
+
+  const profileName = 'Bid_Maps';
+  const profile = testDataManager.getProfileByName(profileName);
 
   test.beforeEach(async ({ page }) => {
     vars = {};
+    vars['Username'] = credentials.username;
+    vars['Password'] = credentials.password;
     bidMapPage = new BidMapPage(page);
     companyPage = new CompanyPage(page);
     correspondentPortal18Page = new CorrespondentPortal18Page(page);
@@ -47,179 +65,181 @@ test.describe('REG_Bid Maps', () => {
     rulesAndActionsButtonPage = new RulesAndActionsButtonPage(page);
     saveAndPublishButtonPage = new SaveAndPublishButtonPage(page);
     spinnerPage = new SpinnerPage(page);
+    Methods= new AddonHelpers(page, vars);
   });
 
-  test('REG_TS03_TC01_Verify that when the smart map option is turned on, uploading a bid file and navigating to the header screen will automatically select the corresponding Chase field name based on the bid', async ({ page }) => {
-    const testData: Record<string, string> = {
-  "Upload File Text Verification": "Drag and drop files here or click to browse. Allowed formats: .xls,.xlsx,.csv,.txt",
-  "UniqueColHeader/Enum": "TsSearchUniqueColHeaderEnum",
-  "Save and Move to Next Page": "Save and Move to Next Page",
-  "CSS Attribute": "2px solid rgb(227, 82, 5)",
-  "Used Headers": "Show Used Headers",
-  "2-4 Unit": "2-4 Unit",
-  "Search Map Input": "Deepika Aug1",
-  "Chase_Field_Name1": "Mortgage Type",
-  "Rule Name": "Rule 1",
-  "Unidentified Headers": "Show Unidentified Headers",
-  "Operations": "GREATER",
-  "BidFields.": "DTI",
-  "Search Fields": "hii",
-  "Operator 2 Symbol": ">",
-  "Time Interval": "05",
-  "Unidentified Enumerations": "Show Unidentified Enumerations",
-  "Show All Enumerations": "Show All Enumerations",
-  "Unidentfied and Save Message": "You have unidentified fields.  This action will save the changes and Move to Next Page.",
-  "BidField": "FICO Score",
-  "Search_Map": "Deepika Aug",
-  "CustomHeader": "Header 02",
-  "New Rule Name": "New Rule",
-  "Assigned Companies1": "Wik1C BeuLD MoJbr CoEmy LLpoJ",
-  "Unique Chase Value1": "AndoverBirchDrive1",
-  "Company name 2": "Wik1C BeuLD MoJbr CoEmy LLpoJ  - A2964",
-  "Bid Field": "Base Loan Amount",
-  "Chase  Values": "False",
-  "ChaseValue": "Attached",
-  "Unused Enumerations": "Show Unused Enumerations",
-  "Reason For Cancellation": "To Be Cancelled",
-  "Reason For Deletion": "To Be Deleted",
-  "ChaseValues.": "False",
-  "Chase_Field_Name": "Mortgage Limit",
-  "Header Mapping": "Show All Headers",
-  "Chase Field Name": "Amortization Type",
-  "ChaseFieldName": "Appraised Value",
-  "UniqueBidEnumTapeValue": "852345",
-  "BidEnumeratedTapeValue": "800",
-  "Chase Fields Name": "Amortization Type, Appraised Value, Attachment Type, Aus List, Borrower First Name, Borrower Last Name, Buy Down, CLTV, City, DTI, Fico, First Time Home Buyer, First Time Homebuyer Credit Fee Waiver, Impound Types, Income Ami Ratio, Ineligible, Interest Only, LTV, Loan Amount, Loan Number, Loan Purpose, Loan Term, Monthly Income, Mortgage Limit, Mortgage Types, Note Rate, Number Of Unit, Occupancy Type, Product Name, Property Type, Property Valuation Type, Purchase Price, State, Street, Subordinate Loan Amount, TPO, Total Loan Amount, Unpaid Principal Balance, Zip",
-  "Unique Chase Field Name": "Street",
-  "Chase Value": "Fixed rate",
-  "Search_Input": "TS_SEARCHMAP21",
-  "Unused Headers": "Show Unused Headers",
-  "Bid Enumerated Tape Value": "80",
-  "Search Field Company Name": "Wik1C",
-  "Create Map": "Testsigma_04/03/2025/",
-  "Custom Header": "Header01",
-  "Investment (NOO)": "Investment (NOO)",
-  "PropertyValuation": "1004Desktop",
-  "ImportRuleName": "TEst",
-  "Action Save message": "This action will save the changes and Move to Next Page",
-  "SearchFields": "Hii",
-  "Start Time in Minutes": "31",
-  "Execution Type1": "STANDARD",
-  "BidEnumeratedTapeValue - Block 2": "Fixed",
-  "Execution Type": "CHASE_DIRECT",
-  "UniqueColumnHeaderSearch": "TsSearchUniqueColumnHeader",
-  "Start Time in Hour": "8",
-  "UniqueWhenBidFieldSearch": "TsSearchWhenBidField",
-  "WhenBidFieldName - Block 2": "Amortization Type",
-  "EmptyChaseFieldName": "Select",
-  "WhenBidFieldValue-3": "Appraised Value",
-  "Unique Chase Value": "AndoverBirchDrive",
-  "BidFields": "CLTV",
-  "Loan Purpose": "Refinance (R&T)",
-  "Advanced Search": "Fico",
-  "ChaseFieldNames": "Aus List",
-  "NO of Batches": "05",
-  "CompanyName3": "American Pacific  - A4257",
-  "Operator": "LESS_OR_EQUAL",
-  "SelectingChaseFieldName": "7",
-  "UpdatedBidEnumeratedTapeValue": "SAIKAT_18_FEB_002",
-  "Search Input": "Test",
-  "Company name 1": "Freedom",
-  "Operator 3": "CONTAINS",
-  "Expected Company Name": "Freedom",
-  "Operation2": "GREATER",
-  "Operation1": "LESS",
-  "Operator - Block 2": "GREATER",
-  "Bid Tape Value": "Fixed",
-  "Search Field": "free",
-  "Created Map Id": "Testsigma_05/07/2025/20:55:58",
-  "Rule Name(Updated)": "UP Rule 1",
-  "Operator 1 Symbol": "<",
-  "UniqueChaseValueSearch": "TsSearchChaseValue",
-  "Import Rule": "Testsigma_02/23/2026/01:02:39",
-  "Duplicated Rule Name": "Rule 2",
-  "Condition Bid Field": "FICO Score",
-  "BidEnumeraedTapeValue - 3": "425000",
-  "Chasevalues": "Variable rate",
-  "DeleteId": "Testsigma_05/05/2025/16:23:13",
-  "UpdatedWhenBidFieldName": "Correspondent Loan Number",
-  "Unidentified fields Message": "You have unidentified fields do you want to proceed further.",
-  "UniqueBidEnumTapeSearch": "TsSearchBidEnumTape",
-  "Unidentified Fields Error Message": "You have unidentified fields.",
-  "UniqueRuleNameSearch": "TsSearchUniqueRuleName"
-}; // Profile: "Bid_Maps", row: 0
+  test(`${TC_ID} - ${TC_TITLE}`, async ({ page }) => {
+    log.tcStart(TC_ID, TC_TITLE);
+     if (profile && profile.data) {
+      vars["Upload File Text Verification"]=profile.data[0]['Upload File Text Verification'];
+     }
+    try {
 
-    await stepGroups.stepGroup_Login_to_CORR_Portal(page, vars);
-    await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-    await stepGroups.stepGroup_Smart_Mapper_from_Off_to_On(page, vars);
-    await expect(headingMappingsPage.Mappings).toBeVisible();
-    await correspondentPortalPage.Add_New_Mapping_Button.click();
-    await expect(headingCreateNewMapPage.Create_New_Map).toBeVisible();
-    vars["Create New Map"] = new Date().toLocaleDateString('en-US') /* format: dd/MM/yyyy/HH:mm:ss */;
-    vars["Create New Map"] = "Testsigma_" + vars["Create New Map"];
-    await correspondentPortalPage.Create_New_Map_Field.fill(vars["Create New Map"]);
-    await correspondentPortalPage.Create_Button.click();
-    await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-    await expect(page.getByText(vars["Create New Map"])).toBeVisible();
-    await correspondentPortalPage.Select_Companys_Dropdown.click();
-    await bidMapPage.Required_Company_Checkbox_Bidmap_Company_dropdown.click();
-    await correspondentPortalPage.Apply_Selected.click();
-    await expect(correspondentPortalPage.Upload_File).toHaveValue('');
-    await expect(page.getByText(testData["Upload File Text Verification"])).toBeVisible();
-    await stepGroups.stepGroup_Rename_File(page, vars);
-    await page.waitForLoadState('networkidle');
-    await correspondentPortalPage.Upload_File.setInputFiles(path.resolve(__dirname, 'test-data', "Bid Maps File.xlsx"));
-    await mapHeadersButtonPage.Map_Headers_Button.click();
-    await correspondentPortalPage.Heading_Save_and_Move_to_Next_Page1.waitFor({ state: 'visible' });
-    await proceedWithSavingButtonPage.Proceed_with_Saving_Button.click();
-    await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-    await expect(page.getByText(vars["Create New Map"])).toBeVisible();
-    await headerMappingPage.Header_Mapping.waitFor({ state: 'visible' });
-    vars["FieldCount"] = String(await headerMappingPage.All_Fields_in_header_map.count());
-    vars["count"] = "1";
-    vars["PerfectMatchCount"] = "0";
-    vars["PartialMatchCount"] = "0";
-    vars["IncorrectMatchCount"] = "0";
-    vars["UnMappedHeaderCount"] = "0";
-    while (parseFloat(String(vars["count"])) <= parseFloat(String(vars["FieldCount"]))) {
-      vars["Individual BidSample Name"] = await headerMappingPage.Individual_BidSample_Name1.textContent() || '';
-      await correspondentPortalPage.Rules_and_Actions_Step_4_of_4.click();
-      vars["IndividualChaseValue"] = await headerMappingPage.Individual_ChaseValue_OF_Bid.evaluate(el => { const s = el as HTMLSelectElement; return s.options[s.selectedIndex]?.text || ''; });
-      if (String(vars["Individual BidSample Name"]) === String(vars["IndividualChaseValue"])) {
-        vars["PerfectMatchCount"] = (parseFloat(String("1")) + parseFloat(String(vars["PerfectMatchCount"]))).toFixed(0);
-      } else if (String(vars["Individual BidSample Name"]).includes(String(vars["IndividualChaseValue"]))) {
-        vars["PartialMatchCount"] = (parseFloat(String("1")) + parseFloat(String(vars["PartialMatchCount"]))).toFixed(0);
-      } else if (String(vars["IndividualChaseValue"]) === String("Select")) {
-        vars["UnMappedHeaderCount"] = (parseFloat(String("1")) + parseFloat(String(vars["UnMappedHeaderCount"]))).toFixed(0);
-      } else {
-        vars["IncorrectMatchCount"] = (parseFloat(String("1")) + parseFloat(String(vars["IncorrectMatchCount"]))).toFixed(0);
+      log.step('Login to CORR Portal');
+      try {
+        await stepGroups.stepGroup_Login_to_CORR_Portal(page, vars);
+        await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+        log.stepPass('Login to CORR Portal successful');
+      } catch (e) {
+        await log.stepFail(page, 'Login to CORR Portal failed');
+        throw e;
       }
-      vars["count"] = (parseFloat(String("1")) + parseFloat(String(vars["count"]))).toFixed(0);
+
+      log.step('Enable Smart Mapper (Off to On)');
+      try {
+        await stepGroups.stepGroup_Smart_Mapper_from_Off_to_On(page, vars);
+        await expect(headingMappingsPage.Mappings).toBeVisible();
+        log.stepPass('Smart Mapper enabled successfully');
+      } catch (e) {
+        await log.stepFail(page, 'Failed to enable Smart Mapper');
+        throw e;
+      }
+
+      log.step('Create a new Bid Map');
+      try {
+        await correspondentPortalPage.Add_New_Mapping_Button.click();
+        await expect(headingCreateNewMapPage.Create_New_Map).toBeVisible();
+        Methods.getCurrentTimestamp(appconstants.DATE_FORMAT_SLASH,'Create New Map',appconstants.UTC);
+        Methods.concatenate(appconstants.Testsigma_,vars["Create New Map"],'Create New Map');
+        await correspondentPortalPage.Create_New_Map_Field.fill(vars["Create New Map"]);
+        await correspondentPortalPage.Create_Button.click();
+        await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+        await expect(page.getByText(vars["Create New Map"])).toBeVisible();
+        log.stepPass('New Bid Map created successfully');
+      } catch (e) {
+        await log.stepFail(page, 'Failed to create new Bid Map');
+        throw e;
+      }
+
+      log.step('Select company and upload bid file');
+      try {
+        await correspondentPortalPage.Select_Companys_Dropdown.click();
+        await bidMapPage.Required_Company_Checkbox_Bidmap_Company_dropdown.click();
+        await correspondentPortalPage.Apply_Selected.click();
+        await expect(correspondentPortalPage.Upload_File).toHaveValue('');
+        await expect(page.getByText(vars["Upload File Text Verification"])).toBeVisible();
+        // await stepGroups.stepGroup_Rename_File(page, vars);
+        const fileName1 = path.join(process.cwd(),'uploads',fileconstants.BID_QA_FILE_COMMON);
+        excelHelper.readEntireRow(fileName1,0,0,'Total Headers From Xls');
+        const fileName2 = fileconstants.Bid_Maps_File;
+        await uploadFile(page, correspondentPortalPage.Upload_File, fileName2);
+        log.stepPass('Company selected and bid file uploaded successfully');
+      } catch (e) {
+        await log.stepFail(page, 'Failed to select company or upload bid file');
+        throw e;
+      }
+
+      log.step('Navigate to Header Mapping screen');
+      try {
+        await correspondentPortalPage.Execution_Type_Dropdown.selectOption({ value: appconstants.EXECUTION_TYPE_STANDARD });
+        await expect(correspondentPortalPage.Execution_Type_Dropdown.locator('option:checked')).toHaveText(appconstants.EXECUTION_TYPE_STANDARD);
+        await mapHeadersButtonPage.Map_Headers_Button.click();
+        await correspondentPortalPage.Heading_Save_and_Move_to_Next_Page1.waitFor({ state: 'visible' });
+        await proceedWithSavingButtonPage.Proceed_with_Saving_Button.click();
+        await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+        await expect(page.getByText(vars["Create New Map"])).toBeVisible();
+        await headerMappingPage.Header_Mapping.waitFor({ state: 'visible' });
+        log.stepPass('Navigated to Header Mapping screen successfully');
+      } catch (e) {
+        await log.stepFail(page, 'Failed to navigate to Header Mapping screen');
+        throw e;
+      }
+
+      log.step('Verify Smart Map auto-selection of Chase field names');
+      try {
+        vars["FieldCount"] = String(await headerMappingPage.All_Fields_in_header_map.count());
+        vars["count"] = appconstants.ONE;
+        vars["PerfectMatchCount"] = appconstants.ZERO;
+        vars["PartialMatchCount"] = appconstants.ZERO;
+        vars["IncorrectMatchCount"] = appconstants.ZERO;
+        vars["UnMappedHeaderCount"] = appconstants.ZERO;
+        log.info('Field Count: '+vars["FieldCount"]);
+        while (parseFloat(String(vars["count"])) <= parseFloat(String(vars["FieldCount"]))) {
+          log.info('Iteration: '+vars["count"]);
+          vars["Individual BidSample Name"] = await headerMappingPage.Individual_BidSample_Name1(vars['count']).textContent() || '';
+          await correspondentPortalPage.Rules_and_Actions_Step_4_of_4.click();
+          vars["IndividualChaseValue"] = await headerMappingPage.Individual_ChaseValue_OF_Bid(vars['count']).evaluate(el => {const s = el as HTMLSelectElement;return s.options[s.selectedIndex]?.text || '';
+          });
+
+          if (String(vars["Individual BidSample Name"]) === String(vars["IndividualChaseValue"])) {
+            Methods.performArithmetic(vars["PerfectMatchCount"],'ADDITION','1','PerfectMatchCount',0);
+          } else if (String(vars["Individual BidSample Name"]).includes(String(vars["IndividualChaseValue"]))) {
+            Methods.performArithmetic(vars["PartialMatchCount"],'ADDITION','1','PartialMatchCount',0);
+          } else if (String(vars["IndividualChaseValue"]) === String("Select")) {
+            Methods.performArithmetic(vars["UnMappedHeaderCount"],'ADDITION','1','UnMappedHeaderCount',0);
+          } else {
+            Methods.performArithmetic(vars["IncorrectMatchCount"],'ADDITION','1','IncorrectMatchCount',0);
+          }
+          vars["count"] = (parseFloat("1") + parseFloat(String(vars["count"]))).toFixed(0);
+        }
+
+        await correspondentPortalPage.First_Checkbox_Bid_Request.check();
+        await correspondentPortalPage.First_Checkbox_Bid_Request.uncheck();
+
+        vars["PerfectMatch"] = vars["PerfectMatchCount"];
+        vars["PartialMatch"] = vars["PartialMatchCount"];
+        vars["UnmappedHeaders"] = vars["UnMappedHeaderCount"];
+        vars["IncorrectMatch"] = vars["IncorrectMatchCount"];
+
+        if (String(vars["PerfectMatchCount"]) >= String(appconstants.ONE)) {
+          expect(Methods.verifyComparison(vars["PerfectMatchCount"],'>=',appconstants.ONE));
+        } else {
+          expect(Methods.verifyComparison(vars["PartialMatchCount"],'>=',appconstants.ONE));
+        }
+        log.stepPass('Smart Map auto-selection verified successfully');
+      } catch (e) {
+        await log.stepFail(page, 'Failed to verify Smart Map auto-selection');
+        throw e;
+      }
+
+      log.step('Click Enumeration Mapping and proceed');
+      try {
+        await enumerationMappingButtonPage.Enumeration_Mapping_Button.click();
+        if (await proceedWithSavingButtonPage.Proceed_with_Saving_Button.isVisible()) {
+          await correspondentPortalPage.Yes_Proceed_Button.click();
+        }
+        await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+        log.stepPass('Enumeration Mapping saved successfully');
+      } catch (e) {
+        await log.stepFail(page, 'Failed to save Enumeration Mapping');
+        throw e;
+      }
+
+      log.step('Click Rules and Actions and proceed');
+      try {
+        await rulesAndActionsButtonPage.Rules_and_Actions_Button.click();
+        await expect(correspondentPortalPage.You_have_unidentified_fields_do_you_want_to_proceed_Further).toBeVisible();
+        if (await correspondentPortal18Page.Yes_Proceed_Button.isVisible()) {
+          await correspondentPortal18Page.Yes_Proceed_Button.click();
+        }
+        await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+        log.stepPass('Rules and Actions saved successfully');
+      } catch (e) {
+        await log.stepFail(page, 'Failed to save Rules and Actions');
+        throw e;
+      }
+
+      log.step('Save and Publish, then verify status');
+      try {
+        await saveAndPublishButtonPage.Save_and_Publish_Button.click();
+        await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+        await expect(correspondentPortalPage.Status).toContainText("ACTIVE");
+        vars["Version"] = await correspondentPortalPage.Version.textContent() || '';
+        await expect(page.getByText(vars["Version"]).first()).toBeVisible();
+        vars["Company"] = await companyPage.Company.first().textContent() || '';
+        await expect(page.getByText(vars["Company"]).first()).toBeVisible();
+        log.stepPass('Bid Map published successfully and status verified as ACTIVE');
+      } catch (e) {
+        await log.stepFail(page, 'Failed to save/publish or verify status');
+        throw e;
+      }
+
+      log.tcEnd('PASS');
+
+    } catch (e) {
+      await log.captureOnFailure(page, TC_ID, e);
+      log.tcEnd('FAIL');
+      throw e;
     }
-    await correspondentPortalPage.First_Checkbox_Bid_Request.check();
-    await correspondentPortalPage.First_Checkbox_Bid_Request.uncheck();
-    vars["PerfectMatch"] = vars["PerfectMatchCount"];
-    vars["PartialMatch"] = vars["PartialMatchCount"];
-    vars["UnmappedHeaders"] = vars["UnMappedHeaderCount"];
-    vars["IncorrectMatch"] = vars["IncorrectMatchCount"];
-    if (String(vars["PerfectMatchCount"]) >= String("1")) {
-      expect(String(vars["PerfectMatchCount"])).toBe("1");
-    } else {
-      expect(String(vars["PartialMatchCount"])).toBe("1");
-    }
-    await enumerationMappingButtonPage.Enumeration_Mapping_Button.click();
-    await correspondentPortalPage.Yes_Proceed_Button.click();
-    await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-    await rulesAndActionsButtonPage.Rules_and_Actions_Button.click();
-    await expect(correspondentPortalPage.You_have_unidentified_fields_do_you_want_to_proceed_Further).toBeVisible();
-    await correspondentPortal18Page.Yes_Proceed_Button.click();
-    await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-    await saveAndPublishButtonPage.Save_and_Publish_Button.click();
-    await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-    await expect(correspondentPortalPage.Status).toContainText("ACTIVE");
-    vars["Version"] = await correspondentPortalPage.Version.textContent() || '';
-    await expect(page.getByText(vars["Version"])).toBeVisible();
-    vars["Company"] = await companyPage.Company.textContent() || '';
-    await expect(page.getByText(vars["Company"])).toBeVisible();
   });
 });
