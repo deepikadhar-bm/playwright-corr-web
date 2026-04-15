@@ -196,11 +196,11 @@ export class BidRequestDetailsPage {
   }
 
 Expected_Execution_Type_Parsed_Row(SelectedLockTerm: string): Locator {
-    return this.page.locator(`//h5[contains(@aria-label,"Execution Type") and text()=" dynamicPricing(${SelectedLockTerm}d) "]`);
+    return this.page.locator(`//h5[contains(@aria-label,"Execution Type") and text()=" Standard(${SelectedLockTerm}d) "]`);
   }
 
   Expected_Execution_Type_Parsed_rowcd(SelectedLockTerm: string): Locator {
-    return this.page.locator(`//h5[contains(@aria-label,"Execution Type") and text()=" CD(${SelectedLockTerm}d) "]`);
+    return this.page.locator(`//h5[contains(@aria-label,"Execution Type") and text()=" Chase Direct(${SelectedLockTerm}d) "]`);
   }
 
   get First_Download_Icon(): Locator {
@@ -471,8 +471,8 @@ Individual_PQ_Button(RowsCount:string): Locator {
     return this.page.locator("(//select[@aria-label=\"Dropdown selection\"]//option)[position() > 1 and position() <= last()]");
   }
 
-  get Status_Of_Request_Id(): Locator {
-    return this.page.locator("//button[contains(text(),\"$|RequestIdFromDetails|\")]/../..//td[@data-title=\"Status\"]");
+  Status_Of_Request_Id(RequestIdFromDetails: string): Locator {
+    return this.page.locator(`//button[contains(text(),\"${RequestIdFromDetails}\")]/../..//td[@data-title=\"Status\"]`);
   }
 
   get Statusbid_request_details(): Locator {
