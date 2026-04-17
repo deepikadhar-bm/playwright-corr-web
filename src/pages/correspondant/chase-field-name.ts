@@ -183,8 +183,8 @@ export class ChaseFieldNamePage {
     return this.page.locator(`(//div[contains(@class,\"gap-2 header-grid-layout\")]//div[@class=\"flex-grow-1\" and text()=\"${SecondHeaderName}\"])[1]/..//input`);
   }
 
-  get Individual_Company_in_Customer_permission(): Locator {
-    return this.page.locator("(//div[@class='d-flex align-items-end'][contains(.,'Company Name')]/../../../..//td[@data-title=\"Company Name\"])[$|count|]");
+  Individual_Company_in_Customer_permission(count:String): Locator {
+    return this.page.locator(`(//div[@class='d-flex align-items-end'][contains(.,'Company Name')]/../../../..//td[@data-title="Company Name"])[${count}]`);
   }
 
   get Ineligible_Category(): Locator {
