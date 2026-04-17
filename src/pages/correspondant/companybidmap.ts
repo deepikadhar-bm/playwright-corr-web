@@ -14,5 +14,9 @@ export class CompanybidmapPage {
   get New_Map_Name(): Locator {
     return this.page.locator("//label[text()=\"New Map Name\"]/..//input");
   }
+    get New_Map_Name1(): Locator {
+    return this.page.locator("//input[@id='mappingName']");
+    
+  }
 
 }

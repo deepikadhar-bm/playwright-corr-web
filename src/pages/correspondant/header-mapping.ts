@@ -128,20 +128,20 @@ export class HeaderMappingPage {
     return this.page.locator("//fieldset");
   }
 
-  get Individual_BidSample_Name(): Locator {
-    return this.page.locator("(//fieldset//div[@class=\"flex-grow-1\"])[$|count|]");
+  Individual_BidSample_Name(count:string): Locator {
+    return this.page.locator(`(//fieldset//div[@class=\"flex-grow-1\"])[${count}]`);
   }
 
-  get Individual_BidSample_Name1(): Locator {
-    return this.page.locator("(//div[contains(@class,\"gap-2 header-grid-layout\")]//div[@class=\"flex-grow-1\"])[$|count|]");
+  Individual_BidSample_Name1(count:string): Locator {
+    return this.page.locator(`(//div[contains(@class,\"gap-2 header-grid-layout\")]//div[@class=\"flex-grow-1\"])[${count}]`);
   }
 
-  get Individual_Chase_Name(): Locator {
-    return this.page.locator("(//fieldset//select[@class=\"form-select\"])[$|count|]");
+  Individual_Chase_Name(count:string): Locator {
+    return this.page.locator(`(//fieldset//select[@class=\"form-select\"])[${count}]`);
   }
 
-  get Individual_ChaseValue_OF_Bid(): Locator {
-    return this.page.locator("(//div[contains(@class,\"gap-2 header-grid-layout\")]//select)[$|count|]");
+  Individual_ChaseValue_OF_Bid(count:string): Locator {
+    return this.page.locator(`(//div[contains(@class,\"gap-2 header-grid-layout\")]//select)[${count}]`);
   }
 
  get_Individual_Mapped_Chase_Name(count: string): Locator {

@@ -118,4 +118,6 @@ export const APP_CONSTANTS = {
   ChaseDirectExecutionTableHeader: "Chase Direct",
   EmailforConfig: "testemail@sysla.com",
   EditEmailforConfig: "testemail2@sysla.com",
+  RULE_NAME_CONST1:'a',
+  RULE_NAME_CONST2:'A',
 };

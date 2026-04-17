@@ -111,8 +111,8 @@ export class StatusInactive2Page {
     return this.page.locator("(//th[@aria-label=\"File Row\"]/../../..//div[@class=\"truncate\"])[$|Count|]");
   }
 
-  get Import_Rule_dropdown(): Locator {
-    return this.page.locator("(//span[text()[normalize-space() = \"$|Create New Maps|\"]])[1]");
+  Import_Rule_dropdown(CreateNewMaps:string): Locator {
+    return this.page.locator(`(//span[contains(normalize-space(text()),'${CreateNewMaps}')])[1]`);
   }
 
   get Loan_Term_Dropdown(): Locator {

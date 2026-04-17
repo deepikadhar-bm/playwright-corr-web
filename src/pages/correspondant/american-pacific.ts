@@ -15,7 +15,7 @@ export class AmericanPacificPage {
     return this.page.locator("//span[@class=\"counter bg-white text-primary mx-2 text-center fw-semibold small\"]");
   }
 
-  get header_anme(): Locator {
+  get header_name(): Locator {
     return this.page.locator("//div[@class=\"gap-2 header-grid-layout unidentified-header\"]");
   }
 
