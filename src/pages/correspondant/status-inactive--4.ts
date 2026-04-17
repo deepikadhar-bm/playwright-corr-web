@@ -35,8 +35,8 @@ export class StatusInactive4Page {
     return this.page.locator("(//input[@placeholder=\"Enter a Rule Name\"])[2]");
   }
 
-  get Entered_Company_name(): Locator {
-    return this.page.locator("//span[contains(text(),\"$|FirstCompanyname|\")]");
+  Entered_Company_name(FirstCompanyname: string): Locator {
+    return this.page.locator(`//span[contains(text(), "${FirstCompanyname}")]`);
   }
 
   get Enum_SearchField(): Locator {

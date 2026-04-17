@@ -45,8 +45,7 @@ test.describe('REG_TC_Bid_Requests', () => {
         const credentials = ENV.getCredentials('internal');
         vars["Username"] = credentials.username;
         vars["Password"] = credentials.password;
-        log.info(`Credentials loaded - Username: ${vars["Username"]}`);
-
+       
         vars["Time Interval"] = "4";
         log.info(`Time Interval set to: ${vars["Time Interval"]}`);
 

@@ -20,10 +20,13 @@ import { uploadFile } from '../../../src/helpers/file-helpers';
 import { CorrespondentPortalPage } from '@pages/correspondant/correspondent-portal';
 import { CorrespondentPortal4Page } from '@pages/correspondant/correspondent-portal-4';
 import { EnumerationMappingPage } from '../../../src/pages/correspondant/enumeration-mapping';
-import { SpinnerPage, StandardPage, UpdatePermissionsButtonPage } from '@pages/correspondant';
+import { BidRequestCreationPage, BidrequestCreationPage, BidRequestDetailsPage, SpinnerPage, StandardPage, UpdatePermissionsButtonPage } from '@pages/correspondant';
 import { APP_CONSTANTS as appconstants } from '../../../src/constants/app-constants';
 import { BidRequestPage } from '../../../src/pages/correspondant/bid-request';
 import { BidRequestsPage } from '../../../src/pages/correspondant/bid-requests';
+import { readCellByColAndRowIndex } from '../excel-helpers';
+//import { BidrequestCreationPage } from '../../../src/pages/correspondant/bidrequest-creation';
+
 
 
 const credentials = ENV.getCredentials('internal');
@@ -3541,9 +3544,9 @@ export async function stepGroup_Upload_bid_request_with_execution_type_chase(pag
   const CorrPortalElem = new CorrPortalPage(page);
   const testData: Record<string, string> = {}; // TODO: Load from test data profile
   await CorrPortalElem.Select_Company_In_BidRequest.click();
-  await CorrPortalElem.Bid_Mapping_Id_Search_Input_box.fill(testData["Company Name"]);
+  await CorrPortalElem.Bid_Mapping_Id_Search_Input_box.fill(vars["CompanyName"]);
   await CorrPortalElem.SelectCompany_Value.click();
-  await expect(CorrPortalElem.SelectCompany_Value).toContainText(testData["Company Name"]);
+  await expect(CorrPortalElem.SelectCompany_Value).toContainText(vars["CompanyName"]);
   await expect(CorrPortalElem.Standard_Execution_Checkbox).toBeVisible();
   await CorrPortalElem.Standard_Execution_Checkbox.uncheck();
   await expect(CorrPortalElem.Standard_Execution_Checkbox).toBeVisible();
@@ -3551,9 +3554,9 @@ export async function stepGroup_Upload_bid_request_with_execution_type_chase(pag
   await expect(CorrPortalElem.Chase_Direct_Checkbox).toBeVisible();
   await CorrPortalElem.Chase_Direct_Dropdown_Upload_Bidrequest.selectOption({ index: parseInt("1") });
   await CorrPortalElem.Bid_Mapping_ID_Dropdown.click();
-  await CorrPortalElem.Search_box_Bid_mapping_id.fill(testData["BidMappingID"]);
+  await CorrPortalElem.Search_box_Bid_mapping_id.fill(vars["BidMappingID"]);
   await CorrPortalElem.Bid_Mapping_ID_Dropdown_1.click();
-  await expect(CorrPortalElem.Bid_Mapping_ID_Dropdown).toContainText(testData["BidMappingID"]);
+  await expect(CorrPortalElem.Bid_Mapping_ID_Dropdown).toContainText(vars["BidMappingID"]);
   await CorrPortalElem.Pricing_Return_Time.click();
 }
 
@@ -3564,35 +3567,90 @@ export async function stepGroup_Upload_bid_request_with_execution_type_chase(pag
  */
 export async function stepGroup_Verifying_the_second_accordian_table_from_excel_to_UI_In_bid(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
+  const BidrequestDetailsPage = new BidRequestDetailsPage(page);
+
   vars["BidValueFromTableHeader2"] = await CorrPortalElem.Bid_Value_from_Table_Header_2.textContent() || '';
-  vars["amount1"] = String(vars["BidValueFromTableHeader2"]).split(",")["1"] || '';
-  vars["amount2"] = String(vars["BidValueFromTableHeader2"]).split(",")["2"] || '';
+  vars["amount1"] = String(vars["BidValueFromTableHeader2"]).split(",")["0"] || '';
+  vars["amount2"] = String(vars["BidValueFromTableHeader2"]).split(",")["1"] || '';
   vars["BidValueFromTableHeader2"] = String(vars["amount1"]) + String(vars["amount2"]);
   expect(String(vars["BidValueFromTableHeader2"])).toBe(vars["TotalLoanAmountFromRows"]);
-  await expect(CorrPortalElem.Execution_Type_from_Details_table1).toContainText("Standard");
-  vars["TotalLoansCountRows"] = String(await CorrPortalElem.Total_Loans_Count_From_Rows_table_1.count());
-  if (true) /* Element Success Loans Header 1 is visible */ {
-    vars["SuccessLoansCountRows"] = String(await CorrPortalElem.Success_Loans_Count_From_Rows_table1.count());
+  await expect(BidrequestDetailsPage.Execution_Type_from_detailstable2).toContainText(appconstants.ChaseDirectExecutionTableHeader);
+  vars["TotalLoansCountRows"] = String(await BidrequestDetailsPage.Total_Loan_Amount_Count_Table2.count());
+  
+  if (await BidrequestDetailsPage.Success_loans_Rows_Count_table_header_2.first().isVisible()) /* Element Success Loans Header 1 is visible */ {
+    vars["SuccessLoansCountRows"] = String(await BidrequestDetailsPage.Success_loans_Rows_Count_table_header_2.count());
   } else {
     vars["SuccessLoansCountRows"] = "0";
   }
-  if (true) /* Element Errored Loans Count from Rows is visible */ {
-    vars["ErroredLoansCountRows"] = String(await CorrPortalElem.Errored_Loans_Count_from_Rows_table_1.count());
+  if (await BidrequestDetailsPage.Errored_Loans_Count_Rows_table_2.first().isVisible()) /* Element Errored Loans Count from Rows is visible */ {
+    vars["ErroredLoansCountRows"] = String(await BidrequestDetailsPage.Errored_Loans_Count_Rows_table_2.count());
   } else {
     vars["ErroredLoansCountRows"] = "0";
   }
-  await expect(CorrPortalElem.Total_loans_TableHeader_1).toContainText(vars["TotalLoansCountRows"]);
-  await expect(CorrPortalElem.Success_Loans_Header_1).toContainText(vars["SuccessLoansCountRows"]);
-  await expect(CorrPortalElem.Errored_Loans_Header1).toContainText(vars["ErroredLoansCountRows"]);
-  vars["TotalColumnCountExcel"] = String(excelHelper.getColumnCount("Bid_file_success_error.xlsx,Bid_file_success_error.xlsx", "0"));
+  await expect(BidrequestDetailsPage.Total_loans_Table_header_2).toContainText(vars["TotalLoansCountRows"]);
+  await expect(BidrequestDetailsPage.Success_Loans_Header_2).toContainText(vars["SuccessLoansCountRows"]);
+  await expect(BidrequestDetailsPage.Errored_Loans_Header_2).toContainText(vars["ErroredLoansCountRows"]);
+  //vars["TotalColumnCountExcel"] = String(excelHelper.getColumnCount("Bid_file_success_error.xlsx,Bid_file_success_error.xlsx", "0"));
+  vars["TotalColumnCountExcel"] = String(excelHelper.getColumnCount(path.resolve(__dirname, '../../../uploads', "Bid_file_success_error (4).xlsx"), "0"));
+  
   vars["count"] = "1";
   vars["ColumnCountExcel"] = "1";
+  // while (parseFloat(String(vars["count"])) <= parseFloat(String(vars["TotalColumnCountExcel"]))) {
+  //   await CorrPortalElem.Bid_Request_Details_Text.click();
+  //  // vars["ColumnHeaderExcel"] = excelHelper.readCell(path.resolve(__dirname, 'test-data', "Bid_file_success_error.xlsx,Bid_file_success_error.xlsx"), "1", vars["ColumnCountExcel"]);
+  //  vars["ColumnHeaderExcel"] = readCellByColAndRowIndex(path.resolve(__dirname, '../../../uploads', "Bid_file_success_error (4).xlsx"), 0, 0, vars["ColumnCountExcel"]);
+  //  if (String("Correspondent Loan Number , Borrower Last Name , Original Loan Amount , Product Code").includes(String(vars["ColumnHeaderExcel"]))) {
+  //   }
+  // }
   while (parseFloat(String(vars["count"])) <= parseFloat(String(vars["TotalColumnCountExcel"]))) {
-    await CorrPortalElem.Bid_Request_Details_Text.click();
-    vars["ColumnHeaderExcel"] = excelHelper.readCell(path.resolve(__dirname, 'test-data', "Bid_file_success_error.xlsx,Bid_file_success_error.xlsx"), "1", vars["ColumnCountExcel"]);
-    if (String("Correspondent Loan Number , Borrower Last Name , Original Loan Amount , Product Code").includes(String(vars["ColumnHeaderExcel"]))) {
-    }
-  }
+            //vars["ColumnHeaderExcel"] = excelHelper.readCell(path.resolve(__dirname, 'test-data', "Bid_file_success_error.xlsx,Bid_file_success_error.xlsx"), "1", vars["ColumnCountExcel"]);
+            vars["ColumnHeaderExcel"] = readCellByColAndRowIndex(path.resolve(__dirname, '../../../uploads', "Bid_file_success_error (4).xlsx"), 0, 0, vars["ColumnCountExcel"]);
+            log.info(`Column Header from Excel at index ${vars["ColumnCountExcel"]}: ${vars["ColumnHeaderExcel"]}`);
+  
+            if (String("Correspondent Loan Number , Borrower Last Name , Original Loan Amount , Product Code").includes(String(vars["ColumnHeaderExcel"]))) {
+              await BidrequestDetailsPage.Bid_Request_Details_Text.click();
+              if (String(vars["ColumnHeaderExcel"]).includes(String("Correspondent Loan Number"))) {
+                vars["ColumnHeaderUI"] = "Corr. Loan#";
+              } else if (String(vars["ColumnHeaderExcel"]).includes(String("Borrower Last Name"))) {
+                vars["ColumnHeaderUI"] = "Last Name";
+              } else if (String(vars["ColumnHeaderExcel"]).includes(String("Original Loan Amount"))) {
+                vars["ColumnHeaderUI"] = "Loan Amount";
+              } else {
+                vars["ColumnHeaderUI"] = "Program";
+              }
+              log.info(`Mapped Excel column "${vars["ColumnHeaderExcel"]}" to UI column header "${vars["ColumnHeaderUI"]}"`);
+  
+              vars["RowsCountTable"] = String(await BidrequestDetailsPage.Rows_Count_Table_2.count());
+              log.info(`Rows count in table for column "${vars["ColumnHeaderUI"]}": ${vars["RowsCountTable"]}`);
+  
+              vars["RowCountExcel"] = "1";
+              while (parseFloat(String(vars["RowsCountTable"])) >= parseFloat(String("1"))) {
+                vars["CellDataTable"] = await BidrequestDetailsPage.Individual_Cell_Data_Table_2(vars["ColumnHeaderUI"], vars["RowsCountTable"]).textContent() || '';
+                vars["CellDataExcel"] = excelHelper.readCellByColAndRowIndex(path.resolve(__dirname, '../../../uploads', "Bid_file_success_error (4).xlsx"), 0, vars["RowCountExcel"], vars["ColumnCountExcel"]);
+                if (String(vars["ColumnHeaderUI"]) === String("Loan Amount")) {
+                  vars["CellDataExcel"] = parseFloat(String(vars["CellDataExcel"])).toFixed(0);
+                  vars["CellDataTable"] = String(vars["CellDataTable"]).trim();
+                  vars["amount1"] = String(vars["CellDataTable"]).split(",")["0"] || '';
+                  vars["amount2"] = String(vars["CellDataTable"]).split(",")["1"] || '';
+                  vars["CellDataTable"] = String(vars["amount1"]) + String(vars["amount2"]);
+                  vars["CellDataExcel"] = String("$") + String(vars["CellDataExcel"]);
+                  log.info(`Loan Amount - Excel: ${vars["CellDataExcel"]}, Table: ${vars["CellDataTable"]}`);
+                  expect(String(vars["CellDataExcel"])).toBe(vars["CellDataTable"]);
+                } else {
+                  log.info(`Column "${vars["ColumnHeaderUI"]}" Row ${vars["RowCountExcel"]} - Excel: ${vars["CellDataExcel"]}, Table: ${vars["CellDataTable"]}`);
+                  expect(String(vars["CellDataTable"])).toContain(vars["CellDataExcel"]);
+                }
+                vars["RowCountExcel"] = (parseFloat(String("1")) + parseFloat(String(vars["RowCountExcel"]))).toFixed(0);
+                vars["RowsCountTable"] = (parseFloat(String(vars["RowsCountTable"])) - parseFloat(String("1"))).toFixed(0);
+              }
+            }
+            vars["ColumnCountExcel"] = (parseFloat(String("1")) + parseFloat(String(vars["ColumnCountExcel"]))).toFixed(0);
+            if (String(vars["ColumnHeaderExcel"]).includes(String("Product Code"))) {
+              log.info('Reached "Product Code" column, breaking column iteration loop');
+              break;
+            }
+          }
+
 }
 
 /**
@@ -6697,6 +6755,7 @@ export async function stepGroup_Modifying_batches_with_5_min_prior(page: import(
  */
 export async function stepGroup_Selecting_Second_Enabled_Batch_Time_If_the_Condition_is_fail(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
+  const BidrequestCreationPage = new BidRequestCreationPage(page);
   log.info('Entering stepGroup_Selecting_Second_Enabled_Batch_Time_If_the_Condition_is_failed');
   // vars["EnabledTime"] = (await CorrPortalElem.Enabled_Time.first().textContent() || '').trim();
   // log.info(`Enabled Time from UI: "${vars["EnabledTime"]} from the stepgroup"`);
@@ -6752,10 +6811,13 @@ log.info(`Time difference calculated: "${vars["TimeDiff"]} minutes"`);
  
   if (String(vars["TimeDiff"]) >= String("3")) {
     await CorrPortalElem.Pricing_Return_Time.selectOption({ value: vars["EnabledTime"] });
+    //await BidRequestCreationPage.Pricing_ReturnTime_Dropdown.selectOption({ value: vars["EnabledTime"] });
+
   } else {
     vars["SecondEnabledTime"] = (await CorrPortalElem.Second_Enabled_Time.first().textContent() || '').trim();
     await CorrPortalElem.Pricing_Return_Time.selectOption({ value: vars["SecondEnabledTime"] });
-  }
+    //await BidrequestCreationPage.Pricing_ReturnTime_Dropdown.selectOption({ value: vars["SecondEnabledTime"] });
+}
 }
 
 /**
