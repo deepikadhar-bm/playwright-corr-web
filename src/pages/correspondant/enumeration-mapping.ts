@@ -112,16 +112,16 @@ export class EnumerationMappingPage {
     return this.page.locator(`(//div[@class="my-2" and text()="${IndividualChaseFieldName}"]/..//following-sibling::div)//div[@class="mb-2"]`);
   }
 
-  get Correspondent_Unidentified_Chase_Value(): Locator {
-    return this.page.locator("//div[text()=\"$|IndividualBidSample|\"]/ancestor::div[@class=\"mapping-card rounded-3 unchecked\"]//div[@class=\"field-pair col-3\"]//*[@title=\"\" or @title=\"[object Object]\"]");
+  Correspondent_Unidentified_Chase_Value(IndividualBidSample:string): Locator {
+    return this.page.locator(`//div[text()=\"${IndividualBidSample}\"]/ancestor::div[@class=\"mapping-card rounded-3 unchecked\"]//div[@class=\"field-pair col-3\"]//*[@title=\"\" or @title=\"[object Object]\"]`);
   }
 
-  get CorrespondentChaseValueUI(): Locator {
-    return this.page.locator("//div[not(@class=\"my-2\") and text()=\"$|ColumnHeader|\"]/ancestor::div[@class=\"mapping-card rounded-3 unchecked\"]//div[@class=\"mb-2\"]//*[@class=\"form-control p-0\" or @class=\"form-select\"]");
+  CorrespondentChaseValueUI(ColumnHeader:string): Locator {
+    return this.page.locator(`//div[not(@class=\"my-2\") and text()=\"${ColumnHeader}\"]/ancestor::div[@class=\"mapping-card rounded-3 unchecked\"]//div[@class=\"mb-2\"]//*[@class=\"form-control p-0\" or @class=\"form-select\"]`);
   }
 
-  get Customised_Bid_Sample_Field_Name_on_Enumeration_Page(): Locator {
-    return this.page.locator("//div[text()='$|SearchHeaderName|']/../..");
+  Customised_Bid_Sample_Field_Name_on_Enumeration_Page(SearchHeaderName:string): Locator {
+    return this.page.locator(`//div[text()='${SearchHeaderName}']/../..`);
   }
 
   get Default_Bid_Tape_Values_Count(): Locator {
@@ -185,8 +185,8 @@ export class EnumerationMappingPage {
     return this.page.locator("(//div[@class=\"mapping-card rounded-3 unchecked\"]//div[@class='col-2' ]//div[not(@class=\"my-2\")])[$|Count2|]");
   }
 
-  get Individual_Bid_Sample(): Locator {
-    return this.page.locator("((//div[@class=\"mapping-card rounded-3 unchecked\"]//div[@class=\"col-2\"][1])//div)[$|count|]");
+  Individual_Bid_Sample(count:string): Locator {
+    return this.page.locator(`((//div[@class=\"mapping-card rounded-3 unchecked\"]//div[@class=\"col-2\"][1])//div)[${count}]`);
   }
 
   get Individual_Bid_Sample_NameEnum_Page(): Locator {
