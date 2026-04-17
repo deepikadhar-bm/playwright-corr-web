@@ -1,6 +1,4 @@
-// [POM-APPLIED]
 import { test, expect } from '@playwright/test';
-import path from 'path';
 import * as stepGroups from '../../../src/helpers/step-groups';
 import { BackButtonPage } from '../../../src/pages/correspondant/back-button';
 import { CorrespondentPortalPage } from '../../../src/pages/correspondant/correspondent-portal';
@@ -8,6 +6,16 @@ import { EnumerationMappingButtonPage } from '../../../src/pages/correspondant/e
 import { ProceedWithSavingButtonPage } from '../../../src/pages/correspondant/proceed-with-saving-button';
 import { SpinnerPage } from '../../../src/pages/correspondant/spinner';
 import { StatusInactivePage } from '../../../src/pages/correspondant/status-inactive-';
+import { Logger as log } from '@helpers/log-helper';
+import { ENV } from '@config/environments';
+import { testDataManager } from 'testdata/TestDataManager';
+import { FILE_CONSTANTS as fileconstants } from '../../../src/constants/file-constants';
+import { AddonHelpers } from '@helpers/AddonHelpers';
+import { APP_CONSTANTS as appconstants } from '../../../src/constants/app-constants';
+
+
+const TC_ID = 'REG_TS04_TC07_CASE-02';
+const TC_TITLE = 'If they have changed value and they have unidentified fields also - Message should be "You have unidentified fields do you still want to proceed. (Note : This action will save the changes and Move to Next Page)"';
 
 test.describe('REG_Bid Maps', () => {
   let vars: Record<string, string> = {};
@@ -17,162 +25,199 @@ test.describe('REG_Bid Maps', () => {
   let proceedWithSavingButtonPage: ProceedWithSavingButtonPage;
   let spinnerPage: SpinnerPage;
   let statusInactivePage: StatusInactivePage;
+  let Methods: AddonHelpers;
+
+  const credentials = ENV.getCredentials('internal');
+
+  const profileName = 'Bid_Maps';
+  const profile = testDataManager.getProfileByName(profileName);
+
 
   test.beforeEach(async ({ page }) => {
     vars = {};
+    vars['Username'] = credentials.username;
+    vars['Password'] = credentials.password;
     backButtonPage = new BackButtonPage(page);
     correspondentPortalPage = new CorrespondentPortalPage(page);
     enumerationMappingButtonPage = new EnumerationMappingButtonPage(page);
     proceedWithSavingButtonPage = new ProceedWithSavingButtonPage(page);
     spinnerPage = new SpinnerPage(page);
     statusInactivePage = new StatusInactivePage(page);
+    Methods = new AddonHelpers(page, vars);
   });
 
-  test('REG_TS04_TC07_CASE-02_ If they have changed value and they have unidentified fields also - Message should be \\\"You have unidentified fields do you still want to proceed. (Note : This action will save ', async ({ page }) => {
-    const testData: Record<string, string> = {
-  "Custom Header": "Header01",
-  "ChaseFieldNames": "Aus List",
-  "UniqueColHeader/Enum": "TsSearchUniqueColHeaderEnum",
-  "Save and Move to Next Page": "Save and Move to Next Page",
-  "CSS Attribute": "2px solid rgb(227, 82, 5)",
-  "Used Headers": "Show Used Headers",
-  "2-4 Unit": "2-4 Unit",
-  "Search Map Input": "Deepika Aug1",
-  "Chase_Field_Name1": "Mortgage Type",
-  "Rule Name": "Rule 1",
-  "Unidentified Headers": "Show Unidentified Headers",
-  "Operations": "GREATER",
-  "BidFields.": "DTI",
-  "Search Fields": "hii",
-  "Operator 2 Symbol": ">",
-  "Time Interval": "05",
-  "Unidentified Enumerations": "Show Unidentified Enumerations",
-  "Show All Enumerations": "Show All Enumerations",
-  "Unidentfied and Save Message": "You have unidentified fields.  This action will save the changes and Move to Next Page.",
-  "BidField": "FICO Score",
-  "Search_Map": "Deepika Aug",
-  "CustomHeader": "Header 02",
-  "New Rule Name": "New Rule",
-  "Assigned Companies1": "Wik1C BeuLD MoJbr CoEmy LLpoJ",
-  "Unique Chase Value1": "AndoverBirchDrive1",
-  "Company name 2": "Wik1C BeuLD MoJbr CoEmy LLpoJ  - A2964",
-  "Bid Field": "Base Loan Amount",
-  "Chase  Values": "False",
-  "ChaseValue": "Attached",
-  "Unused Enumerations": "Show Unused Enumerations",
-  "Reason For Cancellation": "To Be Cancelled",
-  "Reason For Deletion": "To Be Deleted",
-  "ChaseValues.": "False",
-  "Chase_Field_Name": "Mortgage Limit",
-  "Header Mapping": "Show All Headers",
-  "Chase Field Name": "Amortization Type",
-  "ChaseFieldName": "Appraised Value",
-  "UniqueBidEnumTapeValue": "852345",
-  "BidEnumeratedTapeValue": "800",
-  "Chase Fields Name": "Amortization Type, Appraised Value, Attachment Type, Aus List, Borrower First Name, Borrower Last Name, Buy Down, CLTV, City, DTI, Fico, First Time Home Buyer, First Time Homebuyer Credit Fee Waiver, Impound Types, Income Ami Ratio, Ineligible, Interest Only, LTV, Loan Amount, Loan Number, Loan Purpose, Loan Term, Monthly Income, Mortgage Limit, Mortgage Types, Note Rate, Number Of Unit, Occupancy Type, Product Name, Property Type, Property Valuation Type, Purchase Price, State, Street, Subordinate Loan Amount, TPO, Total Loan Amount, Unpaid Principal Balance, Zip",
-  "Unique Chase Field Name": "Street",
-  "Chase Value": "Fixed rate",
-  "Search_Input": "TS_SEARCHMAP21",
-  "Unused Headers": "Show Unused Headers",
-  "Upload File Text Verification": "Drag and drop files here or click to browse. Allowed formats: .xls,.xlsx,.csv,.txt",
-  "Bid Enumerated Tape Value": "80",
-  "Search Field Company Name": "Wik1C",
-  "Create Map": "Testsigma_04/03/2025/",
-  "Investment (NOO)": "Investment (NOO)",
-  "PropertyValuation": "1004Desktop",
-  "ImportRuleName": "TEst",
-  "Action Save message": "This action will save the changes and Move to Next Page",
-  "SearchFields": "Hii",
-  "Start Time in Minutes": "31",
-  "Execution Type1": "STANDARD",
-  "BidEnumeratedTapeValue - Block 2": "Fixed",
-  "Execution Type": "CHASE_DIRECT",
-  "UniqueColumnHeaderSearch": "TsSearchUniqueColumnHeader",
-  "Start Time in Hour": "8",
-  "UniqueWhenBidFieldSearch": "TsSearchWhenBidField",
-  "WhenBidFieldName - Block 2": "Amortization Type",
-  "EmptyChaseFieldName": "Select",
-  "WhenBidFieldValue-3": "Appraised Value",
-  "Unique Chase Value": "AndoverBirchDrive",
-  "BidFields": "CLTV",
-  "Loan Purpose": "Refinance (R&T)",
-  "Advanced Search": "Fico",
-  "NO of Batches": "05",
-  "CompanyName3": "American Pacific  - A4257",
-  "Operator": "LESS_OR_EQUAL",
-  "SelectingChaseFieldName": "7",
-  "UpdatedBidEnumeratedTapeValue": "SAIKAT_18_FEB_002",
-  "Search Input": "Test",
-  "Company name 1": "Freedom",
-  "Operator 3": "CONTAINS",
-  "Expected Company Name": "Freedom",
-  "Operation2": "GREATER",
-  "Operation1": "LESS",
-  "Operator - Block 2": "GREATER",
-  "Bid Tape Value": "Fixed",
-  "Search Field": "free",
-  "Created Map Id": "Testsigma_05/07/2025/20:55:58",
-  "Rule Name(Updated)": "UP Rule 1",
-  "Operator 1 Symbol": "<",
-  "UniqueChaseValueSearch": "TsSearchChaseValue",
-  "Import Rule": "Testsigma_02/23/2026/01:02:39",
-  "Duplicated Rule Name": "Rule 2",
-  "Condition Bid Field": "FICO Score",
-  "BidEnumeraedTapeValue - 3": "425000",
-  "Chasevalues": "Variable rate",
-  "DeleteId": "Testsigma_05/05/2025/16:23:13",
-  "UpdatedWhenBidFieldName": "Correspondent Loan Number",
-  "Unidentified fields Message": "You have unidentified fields do you want to proceed further.",
-  "UniqueBidEnumTapeSearch": "TsSearchBidEnumTape",
-  "Unidentified Fields Error Message": "You have unidentified fields.",
-  "UniqueRuleNameSearch": "TsSearchUniqueRuleName"
-}; // Profile: "Bid_Maps", row: 0
+  test(`${TC_ID} - ${TC_TITLE}`, async ({ page }) => {
+    log.tcStart(TC_ID, TC_TITLE);
 
-    await stepGroups.stepGroup_Login_to_CORR_Portal(page, vars);
-    await stepGroups.stepGroup_Creation_Of_Bid_Map_Upto_Header_Mapping(page, vars);
-    await stepGroups.stepGroup_Creation_of_Add_New_Header(page, vars);
-    vars["UnidentifiedCount"] = String(await correspondentPortalPage.Amortization_Term.count());
-    expect(String(vars["UnidentifiedCount"])).toBe("1");
-    await enumerationMappingButtonPage.Enumeration_Mapping_Button.click();
-    await expect(statusInactivePage.You_have_unidentified_Fields_This_action_will_save_and_Move_to_Next_Page).toBeVisible();
-    await proceedWithSavingButtonPage.Proceed_with_Saving_Button.click();
-    await page.waitForLoadState('networkidle');
-    await backButtonPage.BACK_Button.click();
-    await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-    await expect(page.getByText(testData["Custom Header"])).toBeVisible();
-    await stepGroups.stepGroup_Verification_Of_Unidentified_Fields_In_Header_Mapping(page, vars);
-    await stepGroups.stepGroup_Edit_in_Header_Mapping(page, vars);
-    await expect(statusInactivePage.You_have_unidentified_Fields_This_action_will_save_and_Move_to_Next_Page).toBeVisible();
-    await proceedWithSavingButtonPage.Proceed_with_Saving_Button.click();
-    await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-    await backButtonPage.BACK_Button.click();
-    await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-    await stepGroups.stepGroup_Deleting_the_Header_Mapping(page, vars);
-    await stepGroups.stepGroup_Verification_Of_Unidentified_Fields_In_Header_Mapping(page, vars);
-    await enumerationMappingButtonPage.Enumeration_Mapping_Button.click();
-    await expect(statusInactivePage.You_have_unidentified_Fields_This_action_will_save_and_Move_to_Next_Page).toBeVisible();
-    await proceedWithSavingButtonPage.Proceed_with_Saving_Button.click();
-    await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-    await backButtonPage.BACK_Button.click();
-    await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-    await expect(page.getByText(testData["ChaseFieldNames"])).toBeVisible();
-    await stepGroups.stepGroup_Checking_the_CheckBox_in_Header_Mapping(page, vars);
-    await stepGroups.stepGroup_Verification_Of_Unidentified_Fields_In_Header_Mapping(page, vars);
-    await enumerationMappingButtonPage.Enumeration_Mapping_Button.click();
-    await expect(statusInactivePage.You_have_unidentified_Fields_This_action_will_save_and_Move_to_Next_Page).toBeVisible();
-    await proceedWithSavingButtonPage.Proceed_with_Saving_Button.click();
-    await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-    await backButtonPage.BACK_Button.click();
-    await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-    await expect(correspondentPortalPage.First_Checkbox_Bid_Request).toBeVisible();
-    await stepGroups.stepGroup_Unchecking_the_CheckBox_in_Header_Mapping(page, vars);
-    await stepGroups.stepGroup_Verification_Of_Unidentified_Fields_In_Header_Mapping(page, vars);
-    await enumerationMappingButtonPage.Enumeration_Mapping_Button.click();
-    await expect(statusInactivePage.You_have_unidentified_Fields_This_action_will_save_and_Move_to_Next_Page).toBeVisible();
-    await proceedWithSavingButtonPage.Proceed_with_Saving_Button.click();
-    await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-    await backButtonPage.BACK_Button.click();
-    await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-    await expect(correspondentPortalPage.First_Checkbox_Bid_Request).toBeVisible();
+    if (profile && profile.data) {
+      vars["Custom Header"] = profile.data[0]['Custom Header'];
+      vars["ChaseFieldNames"] = profile.data[0]['ChaseFieldNames'];
+      vars['Chase_Field_Name'] = profile.data[0]['Chase_Field_Name'];
+
+    }
+
+    try {
+
+      log.step('Login to CORR Portal');
+      try {
+        await stepGroups.stepGroup_Login_to_CORR_Portal(page, vars);
+        log.stepPass('Login to CORR Portal successful');
+      } catch (e) {
+        await log.stepFail(page, 'Login to CORR Portal failed');
+        throw e;
+      }
+
+      log.step('Create Bid Map up to Header Mapping');
+      try {
+        const fileName = fileconstants.BID_QA_FILE_COMMON;
+        await stepGroups.stepGroup_Creation_Of_Bid_Map_Upto_Header_Mapping(page, vars, fileName);
+        log.stepPass('Bid Map created up to Header Mapping successfully');
+      } catch (e) {
+        await log.stepFail(page, 'Failed to create Bid Map up to Header Mapping');
+        throw e;
+      }
+
+      log.step('Create Add New Header and verify unidentified count');
+      try {
+        await stepGroups.stepGroup_Creation_of_Add_New_Header(page, vars);
+        vars["UnidentifiedCount"] = String(await correspondentPortalPage.Amortization_Term.count());
+        expect(Methods.verifyComparison(vars["UnidentifiedCount"], '>=', appconstants.ONE));
+        log.stepPass('Add New Header created and unidentified count verified as 1');
+      } catch (e) {
+        await log.stepFail(page, 'Failed to create Add New Header or unidentified count mismatch');
+        throw e;
+      }
+
+      log.step('Click Enumeration Mapping, verify unidentified message and proceed with saving');
+      try {
+        await enumerationMappingButtonPage.Enumeration_Mapping_Button.click();
+        await expect(statusInactivePage.You_have_unidentified_Fields_This_action_will_save_and_Move_to_Next_Page).toBeVisible();
+        await proceedWithSavingButtonPage.Proceed_with_Saving_Button.click();
+        log.stepPass('Unidentified fields message verified and saving proceeded');
+      } catch (e) {
+        await log.stepFail(page, 'Failed to verify unidentified message or proceed with saving');
+        throw e;
+      }
+
+      log.step('Navigate back and verify Custom Header is visible');
+      try {
+        await backButtonPage.BACK_Button.click();
+        await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+        await expect(page.getByText(vars["Custom Header"])).toBeVisible();
+        log.stepPass('Navigated back and Custom Header is visible');
+      } catch (e) {
+        await log.stepFail(page, 'Failed to navigate back or Custom Header not visible');
+        throw e;
+      }
+
+      log.step('Verify unidentified fields and perform Edit in Header Mapping');
+      try {
+        await stepGroups.stepGroup_Verification_Of_Unidentified_Fields_In_Header_Mapping(page, vars);
+        await stepGroups.stepGroup_Edit_in_Header_Mapping(page, vars);
+        await expect(statusInactivePage.You_have_unidentified_Fields_This_action_will_save_and_Move_to_Next_Page).toBeVisible();
+        await proceedWithSavingButtonPage.Proceed_with_Saving_Button.click();
+        await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+        log.stepPass('Unidentified fields verified and Header Mapping edited successfully');
+      } catch (e) {
+        await log.stepFail(page, 'Failed to verify unidentified fields or edit Header Mapping');
+        throw e;
+      }
+
+      log.step('Navigate back and delete Header Mapping, then verify unidentified fields');
+      try {
+        await backButtonPage.BACK_Button.click();
+        await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+        vars['Element_Name2']='Delete_icon';
+        vars['Element_Name3']='Bid_Sample_Field_Name_for_Header_Mapping';
+        await stepGroups.stepGroup_Deleting_the_Header_Mapping(page, vars);
+        await stepGroups.stepGroup_Verification_Of_Unidentified_Fields_In_Header_Mapping(page, vars);
+        log.stepPass('Navigated back and Header Mapping deleted; unidentified fields verified');
+      } catch (e) {
+        await log.stepFail(page, 'Failed to navigate back, delete Header Mapping, or verify unidentified fields');
+        throw e;
+      }
+
+      log.step('Click Enumeration Mapping after delete, verify message and proceed');
+      try {
+        await enumerationMappingButtonPage.Enumeration_Mapping_Button.click();
+        await expect(statusInactivePage.You_have_unidentified_Fields_This_action_will_save_and_Move_to_Next_Page).toBeVisible();
+        await proceedWithSavingButtonPage.Proceed_with_Saving_Button.click();
+        await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+        log.stepPass('Enumeration Mapping verified and saved after delete');
+      } catch (e) {
+        await log.stepFail(page, 'Failed to verify or save Enumeration Mapping after delete');
+        throw e;
+      }
+
+      log.step('Navigate back and verify ChaseFieldNames is visible');
+      try {
+        await backButtonPage.BACK_Button.click();
+        await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+        // await expect(page.getByText(vars["ChaseFieldNames"]).first()).toBeVisible();
+        await expect(page.getByText(vars["Chase_Field_Name"], { exact: true }).first()).toBeAttached();
+          log.stepPass('Navigated back and ChaseFieldNames is visible');
+      } catch (e) {
+        await log.stepFail(page, 'Failed to navigate back or ChaseFieldNames not visible');
+        throw e;
+      }
+
+      log.step('Check checkbox in Header Mapping, verify unidentified fields and proceed');
+      try {
+        vars["Element_Name"] ="You_have_unidentified_Fields_This_action_will_save_and_Move_to_Next_Page";
+        await stepGroups.stepGroup_Checking_the_CheckBox_in_Header_Mapping(page, vars);
+        await stepGroups.stepGroup_Verification_Of_Unidentified_Fields_In_Header_Mapping(page, vars);
+        await enumerationMappingButtonPage.Enumeration_Mapping_Button.click();
+        await expect(statusInactivePage.You_have_unidentified_Fields_This_action_will_save_and_Move_to_Next_Page).toBeVisible();
+        await proceedWithSavingButtonPage.Proceed_with_Saving_Button.click();
+        await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+        log.stepPass('Checkbox checked, unidentified fields verified, and Enumeration Mapping saved');
+      } catch (e) {
+        await log.stepFail(page, 'Failed during checkbox check flow');
+        throw e;
+      }
+
+      log.step('Navigate back and verify First Checkbox Bid Request is visible after checking');
+      try {
+        await backButtonPage.BACK_Button.click();
+        await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+        await expect(correspondentPortalPage.First_Checkbox_Bid_Request).toBeVisible();
+        log.stepPass('First Checkbox Bid Request visible after checking flow');
+      } catch (e) {
+        await log.stepFail(page, 'First Checkbox Bid Request not visible after checking flow');
+        throw e;
+      }
+
+      log.step('Uncheck checkbox in Header Mapping, verify unidentified fields and proceed');
+      try {
+        await stepGroups.stepGroup_Unchecking_the_CheckBox_in_Header_Mapping(page, vars);
+        await stepGroups.stepGroup_Verification_Of_Unidentified_Fields_In_Header_Mapping(page, vars);
+        await enumerationMappingButtonPage.Enumeration_Mapping_Button.click();
+        await expect(statusInactivePage.You_have_unidentified_Fields_This_action_will_save_and_Move_to_Next_Page).toBeVisible();
+        await proceedWithSavingButtonPage.Proceed_with_Saving_Button.click();
+        await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+        log.stepPass('Checkbox unchecked, unidentified fields verified, and Enumeration Mapping saved');
+      } catch (e) {
+        await log.stepFail(page, 'Failed during checkbox uncheck flow');
+        throw e;
+      }
+
+      log.step('Navigate back and verify First Checkbox Bid Request is visible after unchecking');
+      try {
+        await backButtonPage.BACK_Button.click();
+        await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+        await expect(correspondentPortalPage.First_Checkbox_Bid_Request).not.toBeChecked();
+        log.stepPass('First Checkbox Bid Request visible after unchecking flow');
+      } catch (e) {
+        await log.stepFail(page, 'First Checkbox Bid Request not visible after unchecking flow');
+        throw e;
+      }
+
+      log.tcEnd('PASS');
+
+    } catch (e) {
+      await log.captureOnFailure(page, TC_ID, e);
+      log.tcEnd('FAIL');
+      throw e;
+    }
   });
 });

@@ -15,8 +15,8 @@ export class EnumFilterPage {
     return this.page.locator("(//div[@class=\"input-field-name text-truncate cursor-pointer\"])[1]");
   }
 
-  get First_Checkbox_Element(): Locator {
-    return this.page.locator("//div[text()=\"$|BidFieldName|\"]/ancestor::div[@class=\"mapping-card rounded-3 unchecked\"]//input[@type=\"checkbox\"]");
+  First_Checkbox_Element(BidFieldName:string): Locator {
+    return this.page.locator(`//div[text()=\"${BidFieldName}\"]/ancestor::div[@class=\"mapping-card rounded-3 unchecked\"]//input[@type=\"checkbox\"]`);
   }
 
 }

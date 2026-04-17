@@ -15,8 +15,8 @@ export class LoginPage {
     return this.page.locator("//div[@class=\"gap-2 header-grid-layout\"]");
   }
 
-  get Header_chase_name(): Locator {
-    return this.page.locator("(//div[@class=\"flex-grow-1\"]/../..//div[@class=\"gap-2 header-grid-layout\"])[$|count|]");
+  Header_chase_name(count:string): Locator {
+    return this.page.locator(`(//div[@class=\"flex-grow-1\"]/../..//div[@class=\"gap-2 header-grid-layout\"])[${count}]`);
   }
 
   get Impound(): Locator {
