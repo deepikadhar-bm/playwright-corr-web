@@ -477,7 +477,7 @@ export class CorrPortalPage {
   }
 
   get Check_box(): Locator {
-    return this.page.locator("(//input[@type=\"checkbox\"])[1]");
+    return this.page.getByRole('checkbox', { name: 'Select' });
   }
 
   get Checkbox_in_the_Header_Mapping(): Locator {
@@ -1889,7 +1889,7 @@ export class CorrPortalPage {
   }
 
   get Standard_Flow_Off_Button(): Locator {
-    return this.page.locator("(//label[normalize-space(text())='Standard Flow']/parent::div//input)[2]");
+    return this.page.locator("(//label[normalize-space(text())='Standard']/parent::div//input)[2]");
   }
 
   get Standard_Flow_On_Button(): Locator {

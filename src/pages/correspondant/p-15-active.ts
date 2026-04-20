@@ -55,8 +55,8 @@ export class P15ActivePage {
     return this.page.locator("(//input[contains(@type,'checkbox')])[15]");
   }
 
-  get Searched_Company_name(): Locator {
-    return this.page.locator("//div[contains(@class,\"cursor-pointer py\")]/../../..//span[text()=\"$|FirstCompanyname|\"]");
+  Searched_Company_name(FirstCompanyname: string): Locator {
+    return this.page.locator(`//div[contains(@class,\"cursor-pointer py\")]/../../..//span[text()=\"${FirstCompanyname}\"]`);
   }
 
   Select_Company_Names(CompanyName1: string): Locator {
