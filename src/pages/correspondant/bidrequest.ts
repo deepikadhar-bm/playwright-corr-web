@@ -11,8 +11,8 @@ export class BidrequestPage {
     return this.page.locator(`(//td[@data-title="#Loans / #Errors"]/..//td[@data-title="Bid Req. ID"])[${Count}]`);
   }
 
-  get BidTapeValueUI(): Locator {
-    return this.page.locator("(//div[text()=\"$|ColumnHeader|\" and not(@class=\"my-2\")]/../..//div[contains(@class,\"input-field-name\")])");
+  BidTapeValueUI(ColumnHeader:string): Locator {
+    return this.page.locator(`(//div[text()=\"${ColumnHeader}\" and not(@class=\"my-2\")]/../..//div[contains(@class,\"input-field-name\")])`);
   }
 
   get Column_Headers_UI(): Locator {
@@ -23,8 +23,8 @@ export class BidrequestPage {
     return this.page.locator("//div[@class=\"form-control p-0\"]//button//div");
   }
 
-  get Danger_Error_Body_Text(): Locator {
-    return this.page.locator("(//div[@class=\"tooltip-inner\"]//div[@class=\"text-secondary\"])[$|count2|]");
+  Danger_Error_Body_Text(count2:string): Locator {
+    return this.page.locator(`(//div[@class=\"tooltip-inner\"]//div[@class=\"text-secondary\"])[${count2}]`);
   }
 
   Edited_Batch(LastBeforeBatchTime: String): Locator {
@@ -67,8 +67,8 @@ export class BidrequestPage {
     return this.page.locator("//div[text()=\" Success \"]/../..//td//button[text()=\"PS\"]");
   }
 
-  get Queued_Next_Batch(): Locator {
-    return this.page.locator("//input[@type=\"checkbox\"]//..//span[@title=\"$|StatusToBeSet|\"]");
+  Queued_Next_Batch(StatusToBeSet:string): Locator {
+    return this.page.locator(`//input[@type=\"checkbox\"]//..//span[@title=\"${StatusToBeSet}\"]`);
   }
 
   get Rows_Below_Loan_Field(): Locator {

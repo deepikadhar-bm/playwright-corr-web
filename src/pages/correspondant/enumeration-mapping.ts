@@ -23,12 +23,12 @@ export class EnumerationMappingPage {
     return this.page.locator("//div[@class=\"mapping-card rounded-3 unchecked\"]//div[@class='col-2' ]//div[not(@class=\"my-2\")]");
   }
 
-  get Bid_Enumerated_Tape_Values_for_Base_Loan_amount(): Locator {
-    return this.page.locator("//span[@title='$|BidEnumerationTapeValue|']");
+  Bid_Enumerated_Tape_Values_for_Base_Loan_amount(BidEnumerationTapeValue:string): Locator {
+    return this.page.locator(`//span[@title='${BidEnumerationTapeValue}']`);
   }
 
-  get Bid_Sample_Field_Name_on_Enumeration_Mapping(): Locator {
-    return this.page.locator("//div[text()='$|customheadername|']");
+  Bid_Sample_Field_Name_on_Enumeration_Mapping(customheadername:string): Locator {
+    return this.page.locator(`//div[text()='${customheadername}']`);
   }
 
   get Bid_Sample_Field_NameEnum_mapping(): Locator {
@@ -39,8 +39,8 @@ export class EnumerationMappingPage {
     return this.page.locator("//div[@class=\"mapping-card rounded-3 unchecked\"]//div[@class='col-2' ]//div[not(@class=\"my-2\")]");
   }
 
-  get Bid_sample_from_file_to_UI(): Locator {
-    return this.page.locator("//div[text()=\"$|ColumnHeader|\" and not(@class=\"my-2\")]");
+  Bid_sample_from_file_to_UI(ColumnHeader:string): Locator {
+    return this.page.locator(`//div[text()=\"${ColumnHeader}\" and not(@class=\"my-2\")]`);
   }
 
   get_Bid_Sample_Name_2(SecondBidSampleName:string): Locator {
@@ -51,8 +51,8 @@ export class EnumerationMappingPage {
   return this.page.locator(`(//div[@class="my-2" and text()="${ChaseName}"]/../..//div)[3]`);
 }
 
-  get Bid_Tape_Value_On_Enumeration_Mapping(): Locator {
-    return this.page.locator("//div[normalize-space(text())='$|BidTapeValue|']");
+  Bid_Tape_Value_On_Enumeration_Mapping(BidTapeValue:string): Locator {
+    return this.page.locator(`//div[normalize-space(text())='${BidTapeValue}']`);
   }
 
   get Bid_Tape_Values_From_Enumeration(): Locator {
@@ -68,8 +68,8 @@ export class EnumerationMappingPage {
     return this.page.locator("//div[@class=\"my-2\"]");
   }
 
-  get Chase_Enum_Value_Text(): Locator {
-    return this.page.locator("(//div[@class=\"mb-2\"]//select)[$|count|]");
+  Chase_Enum_Value_Text(count:string): Locator {
+    return this.page.locator(`(//div[@class=\"mb-2\"]//select)[${count}]`);
   }
 
   get Chase_Enum_Values(): Locator {
@@ -80,12 +80,12 @@ export class EnumerationMappingPage {
     return this.page.locator("//div[@class=\"col-2\"][position() > 1 and position() <= last()]");
   }
 
-  get Chase_Field_Name_Enumeration_Mapping(): Locator {
-    return this.page.locator("//div[text()='$|customheadername|']//..//..//select[@title=\"$|clmfieldname|\"]");
+  Chase_Field_Name_Enumeration_Mapping(customheadername:string,clmfieldname:string): Locator {
+    return this.page.locator(`//div[text()='${customheadername}']//..//..//select[@title=\"${clmfieldname}\"]`);
   }
 
-  get Chase_Field_Of_BidSample(): Locator {
-    return this.page.locator("//div[text()=\"$|ColumnHeader|\" and not(@class=\"my-2\")]/../..//div[@class=\"my-2\"]");
+  Chase_Field_Of_BidSample(ColumnHeader:string): Locator {
+    return this.page.locator(`//div[text()=\"${ColumnHeader}\" and not(@class=\"my-2\")]/../..//div[@class=\"my-2\"]`);
   }
 
   get Chase_Value_Dropdown_Enumeration_Mapping(): Locator {
@@ -137,8 +137,8 @@ export class EnumerationMappingPage {
 }
   
 
-  get Deleted_Enumeration_Value(): Locator {
-    return this.page.locator("//select[@title=\"$|deletedEnumerationValue|\"]");
+  Deleted_Enumeration_Value(deletedEnumerationValue:string): Locator {
+    return this.page.locator(`//select[@title=\"${deletedEnumerationValue}\"]`);
   }
 
   get_Deleted_Field_In_Enumeration(BidTapeValueforBeforeDeleted:string): Locator {
@@ -161,8 +161,8 @@ export class EnumerationMappingPage {
     return this.page.locator("((//div[@class=\"field-block mb-2\"])/../../../..//div[@class=\"my-2\"])[2]");
   }
 
-  get Edited_Chase_Value_After_Save(): Locator {
-    return this.page.locator("(//button[text()=\" Add Field \"]/../div[text()=\"$|EditedChaseFieldName|\"]/../..//select)[1]");
+  Edited_Chase_Value_After_Save(EditedChaseFieldName:string): Locator {
+    return this.page.locator(`//button[text()=\" Add Field \"]/../div[text()=\"${EditedChaseFieldName}\"]/../..//select)[1]`);
   }
 
   get Enumeration_Mapping(): Locator {
@@ -181,64 +181,64 @@ export class EnumerationMappingPage {
     return this.page.locator("(//div[@class='col-2']//div)[1]");
   }
 
-  get Individual_Bid_Enum_Value(): Locator {
-    return this.page.locator("(//div[@class=\"mapping-card rounded-3 unchecked\"]//div[@class='col-2' ]//div[not(@class=\"my-2\")])[$|Count2|]");
+  Individual_Bid_Enum_Value(Count2:string): Locator {
+    return this.page.locator(`(//div[@class=\"mapping-card rounded-3 unchecked\"]//div[@class='col-2' ]//div[not(@class=\"my-2\")])[${Count2}]`);
   }
 
   Individual_Bid_Sample(count:string): Locator {
     return this.page.locator(`((//div[@class=\"mapping-card rounded-3 unchecked\"]//div[@class=\"col-2\"][1])//div)[${count}]`);
   }
 
-  get Individual_Bid_Sample_NameEnum_Page(): Locator {
-    return this.page.locator("(//div[@class=\"my-2\"])[$|count1|]/ancestor::div[contains(@class,\"mapping-card\")]//div[@class=\"col-2\"]//div[not(contains(@class,\"my-2\"))]");
+  Individual_Bid_Sample_NameEnum_Page(count1:string): Locator {
+    return this.page.locator(`(//div[@class=\"my-2\"])[${count1}]/ancestor::div[contains(@class,\"mapping-card\")]//div[@class=\"col-2\"]//div[not(contains(@class,\"my-2\"))]`);
   }
 
-  get Individual_Bid_Tape_Value(): Locator {
-    return this.page.locator("(//div[@class=\"field-block mb-2\"]//div)[$|count1|]");
+  Individual_Bid_Tape_Value(count1:string): Locator {
+    return this.page.locator(`(//div[@class=\"field-block mb-2\"]//div)[${count1}]`);
   }
 
-  get Individual_Bid_Tape_Value_2(): Locator {
-    return this.page.locator("(//div[text()=\"$|ColumnHeader|\" and not(@class=\"my-2\")]/../..//div[contains(@class,\"input-field-name\")])[$|count2|]");
+  Individual_Bid_Tape_Value_2(ColumnHeader:string,count2:string): Locator {
+    return this.page.locator(`(//div[text()=\"${ColumnHeader}\" and not(@class=\"my-2\")]/../..//div[contains(@class,\"input-field-name\")])[${count2}]`);
   }
 
-  get Individual_Chase_Enum_Name(): Locator {
-    return this.page.locator("(//div[@class=\"my-2\"])[$|count1|]");
+  Individual_Chase_Enum_Name(count1:string): Locator {
+    return this.page.locator(`(//div[@class=\"my-2\"])[${count1}]`);
   }
 
-  get Individual_Chase_Field_Value_Enumeration_mapping(): Locator {
-    return this.page.locator("(//div[@class=\"field-pair col-3\"]//select)[$|count1|]");
+  Individual_Chase_Field_Value_Enumeration_mapping(count1:string): Locator {
+    return this.page.locator(`(//div[@class=\"field-pair col-3\"]//select)[${count1}]`);
   }
 
-  get Individual_Chase_Value(): Locator {
-    return this.page.locator("(//div[@class=\"mb-2\"])[$|count|]");
+  Individual_Chase_Value(count:string): Locator {
+    return this.page.locator(`(//div[@class=\"mb-2\"])[${count}]`);
   }
 
-  get Individual_ChaseValue_of_ChaseField(): Locator {
-    return this.page.locator("((//div[@class=\"my-2\" and text()=\"$|IndividualChaseFieldName|\"]/..//following-sibling::div)//div[@class=\"mb-2\"]//*[contains(@class,\"form-control p-0\") or contains(@class,\"form-select\")])[$|count2|]");
+  Individual_ChaseValue_of_ChaseField(IndividualChaseFieldName:string,count2:string): Locator {
+    return this.page.locator(`((//div[@class=\"my-2\" and text()=\"${IndividualChaseFieldName}\"]/..//following-sibling::div)//div[@class=\"mb-2\"]//*[contains(@class,\"form-control p-0\") or contains(@class,\"form-select\")])[${count2}]`);
   }
 
-  get Individual_Checkbox_Enum(): Locator {
-    return this.page.locator("(//div[@class=\"my-2\"])[$|count1|]/ancestor::div[contains(@class,\"mapping-card\")]//input[@type=\"checkbox\"]");
+  Individual_Checkbox_Enum(count1:string): Locator {
+    return this.page.locator(`(//div[@class=\"my-2\"])[${count1}]/ancestor::div[contains(@class,\"mapping-card\")]//input[@type=\"checkbox\"]`);
   }
 
-  get Individual_Select_option(): Locator {
-    return this.page.locator("(//div[@class=\"mb-2\"]//*[contains(text(),\"Select\")])[$|count|]");
+  Individual_Select_option(count:string): Locator {
+    return this.page.locator(`(//div[@class=\"mb-2\"]//*[contains(text(),\"Select\")])[${count}]`);
   }
 
-  get Individual_Unidentified_Field(): Locator {
-    return this.page.locator("(//div[contains(@class,\"col-2\")]/../..//select)[$|count|]");
+  Individual_Unidentified_Field(count:string): Locator {
+    return this.page.locator(`(//div[contains(@class,\"col-2\")]/../..//select)[${count}]`);
   }
 
-  get Individual_Unidentified_Field_Verification(): Locator {
-    return this.page.locator("(//div[@class=\"mb-2\"]//*[contains(@aria-label,\"dropdown\")]//*[text()=\" Select\" or text()=\" [object Object] \"])[$|count|]");
+  Individual_Unidentified_Field_Verification(count:string): Locator {
+    return this.page.locator(`(//div[@class=\"mb-2\"]//*[contains(@aria-label,\"dropdown\")]//*[text()=\" Select\" or text()=\" [object Object] \"])[${count}]`);
   }
 
-  get IndividualBidTapeValue(): Locator {
-    return this.page.locator("(//div[text()=\"$|ColumnHeader|\" and not(@class=\"my-2\")]/../..//div[contains(@class,\"input-field-name\")])[$|count1|]");
+  IndividualBidTapeValue(ColumnHeader:string,count1:string): Locator {
+    return this.page.locator(`(//div[text()=\"${ColumnHeader}\" and not(@class=\"my-2\")]/../..//div[contains(@class,\"input-field-name\")])[${count1}]`);
   }
 
-  get IndividualChaseValueUI(): Locator {
-    return this.page.locator("(//div[not(@class=\"my-2\") and text()=\"$|ColumnHeader|\"]/ancestor::div[@class=\"mapping-card rounded-3 unchecked\"]//div[@class=\"mb-2\"]//*[@class=\"form-control p-0\" or @class=\"form-select\"])[$|count1|]");
+  IndividualChaseValueUI(ColumnHeader:string,count1:string): Locator {
+    return this.page.locator(`(//div[not(@class=\"my-2\") and text()=\"${ColumnHeader}\"]/ancestor::div[@class=\"mapping-card rounded-3 unchecked\"]//div[@class=\"mb-2\"]//*[@class=\"form-control p-0\" or @class=\"form-select\"])[${count1}]`);
   }
 
   get Input_Bid_Tape_Field(): Locator {
@@ -253,16 +253,16 @@ export class EnumerationMappingPage {
     return this.page.locator("(//div[text()='Loan Purpose'])[2]/../..//select[@aria-label=\"Default dropdown selection\"]");
   }
 
-  get Mapped_Bid_Tape_Value(): Locator {
-    return this.page.locator("//div[@class=\"col-2\"]//div[text()=\"@|Bid Sample Name\n|\"]/../..//div[contains(@class,\"text-truncate\")]");
+  Mapped_Bid_Tape_Value(BidSampleName:string): Locator {
+    return this.page.locator(`//div[@class=\"col-2\"]//div[text()=\"${BidSampleName}\"]/../..//div[contains(@class,\"text-truncate\")]`);
   }
 
-  get Mapped_Chase_Value_Without_Select_Tag(): Locator {
-    return this.page.locator("//div[@class=\"my-2\" and text()=\"$|ChaseName|\"]/../..//div[@class=\"flex-grow-1 text-start text-truncate\"]");
+  Mapped_Chase_Value_Without_Select_Tag(ChaseName:string): Locator {
+    return this.page.locator(`//div[@class=\"my-2\" and text()=\"${ChaseName}\"]/../..//div[@class=\"flex-grow-1 text-start text-truncate\"]`);
   }
 
-  get Mapped_Chase_ValueEnumeration(): Locator {
-    return this.page.locator("(//div[@class=\"my-2\" and text()=\"$|ChaseName|\"])/../..//select");
+  Mapped_Chase_ValueEnumeration(ChaseName:string): Locator {
+    return this.page.locator(`(//div[@class=\"my-2\" and text()=\"${ChaseName}\"])/../..//select`);
   }
 
   get New_Field_Chase_Dropdown(): Locator {
@@ -293,8 +293,8 @@ export class EnumerationMappingPage {
     return this.page.locator("(//i[@class=\"fa fas fa-trash trash-icon\"])[6]/../..//div");
   }
 
-  get To_be_edited_Chase_Value_ListEnum(): Locator {
-    return this.page.locator("(//div[text()=\"$|ChaseFieldNameTobeEdited|\"]/..//following-sibling::div//div//select)[1]");
+  To_be_edited_Chase_Value_ListEnum(ChaseFieldNameTobeEdited:string): Locator {
+    return this.page.locator(`(//div[text()=\"${ChaseFieldNameTobeEdited}\"]/..//following-sibling::div//div//select)[1]`);
   }
 
   get UnIdentified_Fields(): Locator {
@@ -305,12 +305,12 @@ export class EnumerationMappingPage {
     return this.page.locator("//div[@class=\"mb-2\"]//select[@title=\"\"]");
   }
 
-  get Unmapped_Chase_Value(): Locator {
-    return this.page.locator("//div[text()=\"$|ColumnHeader|\"]/ancestor::div[@class=\"mapping-card rounded-3 unchecked\"]//div[@class=\"field-pair col-3\"]//*[@title=\"\" or @title=\"[object Object]\"]");
+  Unmapped_Chase_Value(ColumnHeader:string): Locator {
+    return this.page.locator(`//div[text()=\"${ColumnHeader}\"]/ancestor::div[@class=\"mapping-card rounded-3 unchecked\"]//div[@class=\"field-pair col-3\"]//*[@title=\"\" or @title=\"[object Object]\"]`);
   }
 
-  get Unmapped_Chase_Value_1(): Locator {
-    return this.page.locator("(//div[text()=\"$|ColumnHeader|\"]/ancestor::div[@class=\"mapping-card rounded-3 unchecked\"]//div[@class=\"field-pair col-3\"]//*[@title=\"\" or @title=\"[object Object]\"])[$|count1|]");
+  Unmapped_Chase_Value_1(ColumnHeader:string,count1:string): Locator {
+    return this.page.locator(`(//div[text()=\"${ColumnHeader}\"]/ancestor::div[@class=\"mapping-card rounded-3 unchecked\"]//div[@class=\"field-pair col-3\"]//*[@title=\"\" or @title=\"[object Object]\"])[${count1}]`);
   }
 
   get YES_PROCEED_BUTTON(): Locator {

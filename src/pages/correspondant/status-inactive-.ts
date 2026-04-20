@@ -95,8 +95,8 @@ export class StatusInactivePage {
     return this.page.locator("(//input[contains(@type,'checkbox')])[4]");
   }
 
-  get Checking_both_chase_field_to_bid_sample_field_is_mapping(): Locator {
-    return this.page.locator("//div[contains(text(),\"@|Chase value name|\")]/../..//div[contains(text(),\"@|Bid Sample Field|\")]");
+  Checking_both_chase_field_to_bid_sample_field_is_mapping(Chasevaluename:string,BidSampleField:string): Locator {
+    return this.page.locator(`//div[contains(text(),\"${Chasevaluename}\")]/../..//div[contains(text(),\"${BidSampleField}\")]`);
   }
 
   get Checking_Enum_Values_In_Enumeration_Mapping(): Locator {

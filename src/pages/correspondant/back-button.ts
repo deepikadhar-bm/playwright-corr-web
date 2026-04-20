@@ -16,7 +16,7 @@ export class BackButtonPage {
   }
 
   get Bid_Enumerated_Tape_Values_for_DTI(): Locator {
-    return this.page.locator("(//button[contains(@class, 'dropdown-item') and contains(@class, 'd-flex')])[184]");
+    return this.page.locator("//div[contains(@class,'menu show') and @aria-labelledby='singleSelectDropDown']//button[@aria-selected]");
   }
 
   get Company_Added(): Locator {

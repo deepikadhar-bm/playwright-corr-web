@@ -116,4 +116,5 @@ export const APP_CONSTANTS = {
   DATE_FORMAT_MDYYYY: "M/d/yyyy",
   RULE_NAME_CONST1:'a',
   RULE_NAME_CONST2:'A',
+  SPLIT_COUNT_SIX:'6',
 };

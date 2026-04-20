@@ -35,8 +35,8 @@ export class WhenBidFieldPage {
     return this.page.locator("(//div[@class=\"flex-grow-1 text-start text-truncate\"]/../../../../..//button[@id=\"singleSelectDropDownWithSearch\"]//div[normalize-space(text())='Property Type'])[2]");
   }
 
-  get Option_under_When_Bid_Field(): Locator {
-    return this.page.locator("(//button[@class=\"dropdown-item d-flex\" and not(@aria-label=\"Select text option\")]//span[@class=\"pl-2\"])[$|total|]");
+  Option_under_When_Bid_Field(total:string): Locator {
+    return this.page.locator(`(//button[@class=\"dropdown-item d-flex\" and not(@aria-label=\"Select text option\")]//span[@class=\"pl-2\"])[${total}]`);
   }
 
 }

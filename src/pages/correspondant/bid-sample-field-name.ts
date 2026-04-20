@@ -11,8 +11,8 @@ export class BidSampleFieldNamePage {
     return this.page.locator("//div[text()='$|chasefieldnames|']");
   }
 
-  get Bid_Sample_Value(): Locator {
-    return this.page.locator("(//input[@aria-label=\"Enable or disable header\"]/../..//div[contains(@class,\"flex-grow\")])[$|count|]");
+  Bid_Sample_Value(count:string): Locator {
+    return this.page.locator(`(//input[@aria-label=\"Enable or disable header\"]/../..//div[contains(@class,\"flex-grow\")])[${count}]`);
   }
 
   get Common_Xpath_For_Bid_Sample(): Locator {
