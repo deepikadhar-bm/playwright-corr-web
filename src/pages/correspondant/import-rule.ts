@@ -75,8 +75,8 @@ export class ImportRulePage {
     return this.page.locator("(//input[@placeholder=\"Enter a Rule Name\"])[3]");
   }
 
-  get First_Active_Rule_Checkbox(): Locator {
-    return this.page.locator("//td[contains(text(),'$|First Active Rule Name|')]/..//input[@type=\"checkbox\"]");
+  First_Active_Rule_Checkbox(FirstActiveRuleName:string): Locator {
+    return this.page.locator(`//td[normalize-space(text())='${FirstActiveRuleName}']/..//input[@type=\"checkbox\"]`);
   }
 
   get First_Active_Rule_Multiselected_Value(): Locator {
@@ -99,8 +99,8 @@ export class ImportRulePage {
     return this.page.locator("//small[text()='searching...']");
   }
 
-  get Second_Active_Rule_Checkbox(): Locator {
-    return this.page.locator("(//td[contains(text(),'$|Second Active Rule Name|')]/..//input[@type=\"checkbox\"])[last()]");
+  Second_Active_Rule_Checkbox(SecondActiveRuleName:string): Locator {
+    return this.page.locator(`(//td[normalize-space(text())='${SecondActiveRuleName}']/..//input[@type=\"checkbox\"])[last()]`);
   }
 
   get Second_Active_Rule_Multiselected_Value(): Locator {

@@ -1501,7 +1501,7 @@
         "Rule Name(Updated)": "UP Rule 1",
         "Operator 1 Symbol": "<",
         "UniqueChaseValueSearch": "TsSearchChaseValue",
-        "Import Rule": "Testsigma_02/13/2026/01:07:43",
+        "Import Rule": "Testsigma_04/15/2026/12:01:07",
         "Duplicated Rule Name": "Rule 2",
         "Condition Bid Field": "FICO Score",
         "BidEnumeraedTapeValue - 3": "425000",
@@ -2656,6 +2656,9 @@
     "id": 65,
     "testDataName": "Enum Type Values",
     "data": [
+      {
+        "Enum Type": "Loan Purpose"
+      },
       {
         "Enum Type": "Mortgage Limit"
       },

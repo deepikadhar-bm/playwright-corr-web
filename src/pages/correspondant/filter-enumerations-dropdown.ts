@@ -7,8 +7,8 @@ import { Page, Locator } from '@playwright/test';
 export class FilterEnumerationsDropdownPage {
   constructor(private page: Page) {}
 
-  get Bid_field_Searched_for(): Locator {
-    return this.page.locator("//label[@class=\"dropdown-item d-flex\"]//*[@title=\"$|FirstBidField|\"]");
+  Bid_field_Searched_for(FirstBidField:string): Locator {
+    return this.page.locator(`//label[@class=\"dropdown-item d-flex\"]//*[@title=\"${FirstBidField}\"]`);
   }
 
   get Cancel_Search_Button(): Locator {
@@ -47,8 +47,8 @@ export class FilterEnumerationsDropdownPage {
     return this.page.locator("(//*[@aria-label=\"Filter Enumeration Dropdown\"]//input[@type=\"checkbox\"])[2]");
   }
 
-  get Individual_BidSampleChasename_In_Dropdown(): Locator {
-    return this.page.locator("//div[@class=\"dropdown-overflow\"]//*[contains(text(),\"$|ChaseName|\")]");
+  Individual_BidSampleChasename_In_Dropdown(ChaseName:string): Locator {
+    return this.page.locator(`//div[@class=\"dropdown-overflow\"]//*[contains(text(),\"${ChaseName}\")]`);
   }
 
   get Search_Box(): Locator {

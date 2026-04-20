@@ -8,7 +8,10 @@ export class P15Active2Page {
   constructor(private page: Page) {}
 
   get Apply_Selected_Button(): Locator {
-    return this.page.locator("//div[@id=\"multiSelectOptionsDropDown\"]//button[text()=\" Apply Selected \"]");
+    return this.page.locator("//div[@id=\"multiSelectOptionsDropDown\"]//button[contains(text(),'Apply Selected')]");
+  }
+   get Apply_Selected_Button_ruls(): Locator {
+    return this.page.locator("//button[@aria-label='Apply Selected']");
   }
 
   get Apply_Selected_Button_for_more_companies(): Locator {

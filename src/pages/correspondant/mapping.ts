@@ -11,8 +11,8 @@ export class MappingPage {
     return this.page.locator("(//input[@type=\"checkbox\"]/../../..//div[contains(@class,\"flex-grow\")])[14]");
   }
 
-  get Checking_Enum_Values_in_Header_Mapping2(): Locator {
-    return this.page.locator("//*[text()=\"$|EnumValues|\"]/../..//input[@type=\"checkbox\"]");
+  Checking_Enum_Values_in_Header_Mapping2(EnumValues:string): Locator {
+    return this.page.locator(`//*[text()=\"${EnumValues}\"]/../..//input[@type=\"checkbox\"]`);
   }
 
 }

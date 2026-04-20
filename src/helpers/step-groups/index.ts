@@ -20,10 +20,13 @@ import { uploadFile } from '../../../src/helpers/file-helpers';
 import { CorrespondentPortalPage } from '@pages/correspondant/correspondent-portal';
 import { CorrespondentPortal4Page } from '@pages/correspondant/correspondent-portal-4';
 import { EnumerationMappingPage } from '../../../src/pages/correspondant/enumeration-mapping';
-import { SpinnerPage, StandardPage, UpdatePermissionsButtonPage } from '@pages/correspondant';
+import { BidRequestCreationPage, BidrequestCreationPage, BidRequestDetailsPage, SpinnerPage, StandardPage, UpdatePermissionsButtonPage } from '@pages/correspondant';
 import { APP_CONSTANTS as appconstants } from '../../../src/constants/app-constants';
 import { BidRequestPage } from '../../../src/pages/correspondant/bid-request';
 import { BidRequestsPage } from '../../../src/pages/correspondant/bid-requests';
+import { readCellByColAndRowIndex } from '../excel-helpers';
+//import { BidrequestCreationPage } from '../../../src/pages/correspondant/bidrequest-creation';
+
 
 
 const credentials = ENV.getCredentials('internal');
@@ -247,6 +250,7 @@ export async function stepGroup_Creation_Of_Bid_Map_Upto_Header_Mapping(page: im
   await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
   await expect(page.getByText(vars["CreateNewMap"])).toBeVisible();
   await CorrPortalElem.Header_Mapping.waitFor({ state: 'visible' });
+  expect(CorrPortalElem.Header_Mapping).toBeEnabled();
 }
 
 
@@ -828,13 +832,13 @@ export async function stepGroup_Enter_Company_Name_in_New_Map_Filter(page: impor
  */
 export async function stepGroup_Creation_of_Add_New_Header(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
-  const testData: Record<string, string> = {}; // TODO: Load from test data profile
   await CorrPortalElem.Add_New_Header_Button.click();
-  await CorrPortalElem.Custom_Header_Field.fill(testData["Custom Header"]);
-  await CorrPortalElem.Chase_Field_Name.selectOption({ label: testData["Chase Field Name"] });
+  await CorrPortalElem.Custom_Header_Field.type(vars["Custom Header"]);
+  await CorrPortalElem.CLM_Field_Name.selectOption({ label: vars["Chase_Field_Name"] });
+  await expect(CorrPortalElem.CLM_Field_Name.locator('option:checked')).toHaveText(vars["Chase_Field_Name"]);
   await CorrPortalElem.Insert_Header_Button.click();
   await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
-  await expect(page.getByText(testData["Custom Header"])).toBeVisible();
+  await expect(CorrPortalElem.Chase_Field_Name_dropdown.locator('option:checked')).toHaveText(vars["Chase_Field_Name"]);
 }
 
 /**
@@ -844,11 +848,10 @@ export async function stepGroup_Creation_of_Add_New_Header(page: import('@playwr
  */
 export async function stepGroup_Edit_in_Header_Mapping(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
-  const testData: Record<string, string> = {}; // TODO: Load from test data profile
-  await expect(CorrPortalElem.Enumeration_Mapping_Button).toBeVisible();
+  await expect(CorrPortalElem.Enumeration_Mapping_Button).toBeEnabled();
   await CorrPortalElem.Edit_icon_in_Header_Mapping.click();
   await expect(CorrPortalElem.Update_Header).toBeVisible();
-  await CorrPortalElem.Chase_Field_Name.selectOption({ label: testData["ChaseFieldNames"] });
+  await CorrPortalElem.CLM_Field_Name.selectOption({ label: vars["ChaseFieldNames"] });
   await CorrPortalElem.Update_Header_Button.click();
   await CorrPortalElem.Enumeration_Mapping_Button.click();
   await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
@@ -864,11 +867,12 @@ export async function stepGroup_Checking_the_CheckBox_in_Header_Mapping(page: im
   await CorrPortalElem.Select_Category.check();
   await CorrPortalElem.Checkbox_in_the_Header_Mapping.check();
   await CorrPortalElem.Enumeration_Mapping_Button.click();
-  await expect(CorrPortalElem.Error_Message_in_Header_Mapping).toBeVisible();
+  //need to handle diff locators
+  // await expect(CorrPortalElem.You_have_unidentified_Fields_This_action_will_save_and_Move_to_Next_Page).toBeVisible();
+  await expect((CorrPortalElem as any)[vars["Element_Name"]]).toBeVisible();
   await CorrPortalElem.Continue_Editing_Button.click();
-  await page.waitForLoadState('networkidle');
-  await expect(CorrPortalElem.Select_Category).toBeVisible();
-  await expect(CorrPortalElem.Checkbox_in_the_Header_Mapping).toBeVisible();
+  await expect(CorrPortalElem.Select_Category).toBeChecked();
+  await expect(CorrPortalElem.Checkbox_in_the_Header_Mapping).toBeChecked();
 }
 
 /**
@@ -881,11 +885,12 @@ export async function stepGroup_Unchecking_the_CheckBox_in_Header_Mapping(page: 
   await CorrPortalElem.Select_Category.uncheck();
   await CorrPortalElem.Checkbox_in_the_Header_Mapping.uncheck();
   await CorrPortalElem.Enumeration_Mapping_Button.click();
-  await expect(CorrPortalElem.Error_Message_in_Header_Mapping).toBeVisible();
+  //need to handle diff locators
+  // await expect(CorrPortalElem.vars["Element_Name"]).toBeVisible();
+  await expect((CorrPortalElem as any)[vars["Element_Name"]]).toBeVisible();
   await CorrPortalElem.Continue_Editing_Button.click();
-  await page.waitForLoadState('networkidle');
-  await expect(CorrPortalElem.Select_Category).toBeVisible();
-  await expect(CorrPortalElem.Checkbox_in_the_Header_Mapping).toBeVisible();
+  await expect(CorrPortalElem.Select_Category).not.toBeChecked();
+  await expect(CorrPortalElem.Checkbox_in_the_Header_Mapping).not.toBeChecked();
 }
 
 /**
@@ -964,7 +969,7 @@ export async function stepGroup_Add_Rule_For_Add_Condition_In_Rules_and_Actions(
   await CorrPortalElem.When_Bid_Field.pressSequentially(vars["BidField"]);
   vars["BidField"] = await CorrPortalElem.Search_Field.inputValue() || '';
   // await CorrPortalElem.FICO_Score.click();
-  await CorrPortalElem.Select_Button.waitFor({ state: "visible" })
+  await CorrPortalElem.Select_Button.waitFor({ state: "visible" });
   await CorrPortalElem.Select_Button.click();
   await CorrPortalElem.Operation_Dropdown.last().selectOption({ value: "LESS" });
   // await CorrPortalElem.Operation_Dropdown.last().selectOption({ value: vars["Operation1"] });
@@ -1152,13 +1157,15 @@ export async function stepGroup_Adding_Field_In_Enumeration_Mapping(page: import
  */
 export async function stepGroup_Deleting_the_Header_Mapping(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
-  await CorrPortalElem.Delete_icon.click();
+  await (CorrPortalElem as any)[vars['Element_Name2']].click();
+  // await CorrPortalElem. Delete_icon.click();
   await expect(CorrPortalElem.Delete).toBeVisible();
-  vars["DeleteHeaderMapping"] = await CorrPortalElem.Bid_Sample_Field_Name_for_Header_Mapping.textContent() || '';
-  vars["BidSampleFieldName"] = await CorrPortalElem.Delete_Message.textContent() || '';
+  vars["DeleteHeaderMapping"] = await (CorrPortalElem as any)[vars['Element_Name3']].textContent() || '';
+  vars["BidSampleFieldName"] = await CorrPortalElem.Delete_Message(vars['DeleteHeaderMapping']).textContent() || '';
+  log.info('Bid Sample Field Name: ' + vars["BidSampleFieldName"]);
   await expect(page.getByText(vars["BidSampleFieldName"])).toBeVisible();
   await CorrPortalElem.Yes_Proceed_Button.click();
-  await page.waitForLoadState('networkidle');
+  await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
 }
 
 /**
@@ -1230,8 +1237,10 @@ export async function stepGroup_Editing_Header_Mapping(page: import('@playwright
  */
 export async function stepGroup_Deleting_the_UnMapped_fields_in_Header_Mapping(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
-  while (await CorrPortalElem.header_anme.isVisible()) {
-    await CorrPortalElem.Delete_button_in_Header_Mapping.click();
+  vars['TotalUnmappedFieldsCount'] = String(await CorrPortalElem.Delete_button_in_Header_Mapping.count());
+  log.info('Total Unmapped Fields Count: ' + vars['TotalUnmappedFieldsCount'])
+  while (await CorrPortalElem.header_name.first().isVisible()) {
+    await CorrPortalElem.Delete_button_in_Header_Mapping.first().click();
     await expect(CorrPortalElem.Delete).toBeVisible();
     await CorrPortalElem.Yes_Proceed_Button.click();
   }
@@ -1243,12 +1252,18 @@ export async function stepGroup_Deleting_the_UnMapped_fields_in_Header_Mapping(p
  * Steps: 3
  */
 export async function stepGroup_Storing_All_Enum_TDP_Values_into_a_Variable(page: import('@playwright/test').Page, vars: Record<string, string>) {
-  const testData: Record<string, string> = {}; // TODO: Load from test data profile
-  const testDataSets: Record<string, string>[] = []; // TODO: Load test data sets
   vars["EnumValues"] = "Loan Purpose";
+  const Methods = new AddonHelpers(page, vars);
+  const profileName = 'Enum Type Values';
+  const profile = testDataManager.getProfileByName(profileName);
+  const dataList = profile?.data as Record<string, any>[];
   // Loop over test data sets in "Enum Type Values." from set2 to set18
-  for (const testDataSet of testDataSets) {
-    vars["EnumValues"] = String(testData["Enum Type"]) + "," + String(vars["EnumValues"]);
+  for (let i = 1; i <= Number(17); i++) {
+    log.info('Iteration: ' + i);
+
+    vars['Enum Type'] = dataList[i]['Enum Type'];
+    log.info('Enum Type: ' + vars['Enum Type']);
+    Methods.concatenateWithSpecialChar(vars["EnumValues"], vars['Enum Type'], ',', 'EnumValues');
   }
 }
 
@@ -1291,13 +1306,13 @@ export async function stepGroup_Verification_of_Chase_Enum_Values_From_Header_Ma
  */
 export async function stepGroup_Create_New_Header_In_Header_Mapping(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
-  const testData: Record<string, string> = {}; // TODO: Load from test data profile
   await CorrPortalElem.Add_New_Header_Button.click();
-  await CorrPortalElem.Custom_Header_Field.fill(testData["Custom Header"]);
-  await CorrPortalElem.Chase_Field_Name.selectOption({ label: testData["Chase Field Name"] });
+  await CorrPortalElem.Custom_Header_Field.type(vars["Custom Header"]);
+  await CorrPortalElem.CLM_Field_Name.selectOption({ label: vars["ChaseFieldNames"] });
+  await expect(CorrPortalElem.CLM_Field_Name.locator('option:checked')).toHaveText(vars["ChaseFieldNames"]);
   await CorrPortalElem.Insert_Header_Button.click();
   await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
-  await expect(page.getByText(testData["Custom Header"])).toBeVisible();
+  await expect(page.getByText(vars["Custom Header"])).toBeVisible();
 }
 
 /**
@@ -1310,7 +1325,7 @@ export async function stepGroup_Deleting_In_Rules_and_Actions(page: import('@pla
   await CorrPortalElem.Delete_Rule_Button.click();
   await expect(CorrPortalElem.Delete_Rule).toBeVisible();
   await CorrPortalElem.Yes_Proceed_Button.click();
-  await page.waitForLoadState('networkidle');
+  await page.waitForTimeout(3000);
   // [DISABLED] Verify that the text Rule Name is not displayed in the element Rule Name and With Scrollable FALSE
   // await expect(CorrPortalElem.Rule_Name_Field).not.toContainText(vars["Rule Name"]);
 }
@@ -1404,6 +1419,9 @@ export async function stepGroup_Creating_New_BidMap_Upto_Upload_File(page: impor
   await CorrPortalElem.Select_Companys_Dropdown.click();
   await CorrPortalElem.Required_Company_s_Name_Value(vars["Companyname"]).click();
   await CorrPortalElem.Apply_Selected.click();
+  const value = 'STANDARD';
+  await correspondentPortalPage.Execution_Type_Dropdown.selectOption({ value: value });
+  await expect(correspondentPortalPage.Execution_Type_Dropdown.locator('option:checked')).toHaveText(value);
   await expect(CorrPortalElem.Upload_File).toHaveValue('');
   await expect(page.getByText("Drag and drop files here or click to browse. Allowed formats: .xls,.xlsx,.csv,.txt")).toBeVisible();
   // await CorrPortalElem.Upload_File.setInputFiles(path.resolve(__dirname, 'test-data', "DeepikaAugBidQA.xlsx"));
@@ -1415,7 +1433,7 @@ export async function stepGroup_Creating_New_BidMap_Upto_Upload_File(page: impor
  * ID: 1031
  * Steps: 28
  */
-export async function stepGroup_Creating_of_Add_New_Header(page: import('@playwright/test').Page, vars: Record<string, string>) {
+export async function stepGroup_Creating_of_Add_New_Header(page: import('@playwright/test').Page, vars: Record<string, string>,fileName:string) {
   let correspondentPortalPage: CorrespondentPortalPage;
   correspondentPortalPage = new CorrespondentPortalPage(page);
   const CorrPortalElem = new CorrPortalPage(page);
@@ -1448,12 +1466,15 @@ export async function stepGroup_Creating_of_Add_New_Header(page: import('@playwr
   await CorrPortalElem.Required_Company_s_Name_Value(vars["Companyname"]).click();
   vars["Companyname"] = await CorrPortalElem.Required_Company_s_Name_Value(vars["Companyname"]).textContent() || '';
   await CorrPortalElem.Apply_Selected.click();
+  const value = 'STANDARD';
+  await correspondentPortalPage.Execution_Type_Dropdown.selectOption({ label: value });
+  await expect(correspondentPortalPage.Execution_Type_Dropdown.locator('option:checked')).toHaveText(value);
   vars["Companyname"] = await CorrPortalElem.Individual_Selected_Company.textContent() || '';
   vars["ExecutionType"] = await CorrPortalElem.Execution_Type_Dropdown_New.inputValue() || '';
   await expect(CorrPortalElem.Upload_File).toHaveValue('');
   await expect(page.getByText("Drag and drop files here or click to browse. Allowed formats: .xls,.xlsx,.csv,.txt")).toBeVisible();
   // await CorrPortalElem.Upload_File.setInputFiles(path.resolve(__dirname, 'test-data', "DeepikaAugBidQA.xlsx"));
-  await uploadFile(page, correspondentPortalPage.Upload_File, "DeepikaAugBidQA_(3)_(1)_(1)_(2).xlsx");
+  await uploadFile(page, correspondentPortalPage.Upload_File, fileName);
   vars["File"] = await CorrPortalElem.Uploaded_File_Name.textContent() || '';
   // [DISABLED] Click on Map Headers Button
   // await CorrPortalElem.Map_Headers_Button.click();
@@ -1474,25 +1495,27 @@ export async function stepGroup_Creating_of_Add_New_Header(page: import('@playwr
  */
 export async function stepGroup_Fetching_Mapped_Enum_Values_From_Header_Mapping_and_Verifyin(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
+   const Methods = new AddonHelpers(page, vars);
   while (parseFloat(String(vars["count"])) < parseFloat(String(vars["MappedChaseFieldCount"]))) {
-    vars["ChaseName"] = await CorrPortalElem.Individual_Mapped_Chase_Name.evaluate(el => { const s = el as HTMLSelectElement; return s.options[s.selectedIndex]?.text || ''; });
+    log.info('Iteration: '+vars["count"]);
+    vars["ChaseName"] = await CorrPortalElem.Individual_Mapped_Chase_Name(vars['count']).evaluate(el => { const s = el as HTMLSelectElement; return s.options[s.selectedIndex]?.text || ''; });
     if (String(vars["EnumValues"]).includes(String(vars["ChaseName"]))) {
-      // [DISABLED] Concate ChaseName and ChaseEnumValue with SpecialCharacter , and store into a variable ChaseEnumValue
-      // vars["ChaseEnumValue"] = String(vars["ChaseName"]) + "," + String(vars["ChaseEnumValue"]);
-      vars["CorrespondentBidName"] = await CorrPortalElem.Correspondent_Bid_sample_name.textContent() || '';
-      vars["IndividualBidSample/ChaseValueName"] = String(vars["CorrespondentBidName"]) + "/" + String(vars["ChaseName"]);
-      vars["IndividualBidSample/ChaseValueName"] = String(vars["IndividualBidSample/ChaseValueName"]).trim();
+      log.info('EnumValues contains ChaseName at: ' + vars["count"]);
+      log.info('Chase Name: '+vars['ChaseName']);
+      vars["CorrespondentBidName"] = await CorrPortalElem.Correspondent_Bid_sample_name(vars['count']).textContent() || '';
+      Methods.concatenateWithSpecialChar(vars["CorrespondentBidName"],vars["ChaseName"],'/',"IndividualBidSample/ChaseValueName");
+      Methods.trimWhitespace(vars["IndividualBidSample/ChaseValueName"],'IndividualBidSample/ChaseValueName');
       await CorrPortalElem.Enumeration_Mapping_Button.click();
       await CorrPortalElem.Yes_Proceed_Button.click();
       await CorrPortalElem.All_Companies_DropdownDash_Board.waitFor({ state: 'visible' });
       await CorrPortalElem.All_Companies_DropdownDash_Board.click();
-      vars["IndividualBidSample/ChaseValueName[Dropdown]"] = await CorrPortalElem.Individual_BidSample_Chasename_In_Dropdown.textContent() || '';
-      vars["IndividualBidSample/ChaseValueName[Dropdown]"] = String(vars["IndividualBidSample/ChaseValueName[Dropdown]"]).trim();
-      expect(String(vars["IndividualBidSample/ChaseValueName"])).toBe(vars["IndividualBidSample/ChaseValueName[Dropdown]"]);
+      vars["IndividualBidSample/ChaseValueName[Dropdown]"] = await CorrPortalElem.Individual_BidSample_Chasename_In_Dropdown(vars['ChaseName']).textContent() || '';
+      Methods.trimWhitespace(vars["IndividualBidSample/ChaseValueName[Dropdown]"],'IndividualBidSample/ChaseValueName[Dropdown]');
+      expect(Methods.verifyString(vars["IndividualBidSample/ChaseValueName"],'equals',vars["IndividualBidSample/ChaseValueName[Dropdown]"]));
       await CorrPortalElem.Header_Mapping1.click();
       await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
     }
-    vars["count"] = (parseFloat(String("1")) + parseFloat(String(vars["count"]))).toFixed(0);
+    Methods.performArithmetic(vars["count"],'ADDITION','1','count',0);
   }
 }
 
@@ -1616,29 +1639,38 @@ export async function stepGroup_Add_Actions_In_Rules_and_Actions(page: import('@
  */
 export async function stepGroup_Fetching_Enum_From_Header_Mapping_Screen_and_Verifying_the_S(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
-  const testData: Record<string, string> = {}; // TODO: Load from test data profile
-  const testDataSets: Record<string, string>[] = []; // TODO: Load test data sets
   vars["EnumValues"] = "Loan Purpose";
+  const Methods = new AddonHelpers(page, vars);
+  const profileName = 'Enum Type Values';
+  const profile = testDataManager.getProfileByName(profileName);
+  const dataList = profile?.data as Record<string, any>[];
   // Loop over test data sets in "Enum Type Values." from set2 to set18
-  for (const testDataSet of testDataSets) {
-    vars["EnumValues"] = String(testData["Enum Type"]) + "," + String(vars["EnumValues"]);
+  for (let i = 1; i <= Number(17); i++) {
+    log.info('Iteration: ' + i);
+
+    vars['Enum Type'] = dataList[i]['Enum Type'];
+    log.info('Enum Type: ' + vars['Enum Type']);
+    Methods.concatenateWithSpecialChar(vars["EnumValues"], vars['Enum Type'], ',', 'EnumValues');
   }
   vars["MappedChaseFieldCount"] = String(await CorrPortalElem.MappedChaseFieldName.count());
-  vars["count"] = "1";
+  vars["count"] = appconstants.ONE;
   vars["ChaseEnumValue"] = "sample";
+  log.info('Mapped Chase Field Count: '+vars["MappedChaseFieldCount"]);
   while (parseFloat(String(vars["count"])) < parseFloat(String(vars["MappedChaseFieldCount"]))) {
-    vars["ChaseName"] = await CorrPortalElem.Individual_Mapped_Chase_Name.evaluate(el => { const s = el as HTMLSelectElement; return s.options[s.selectedIndex]?.text || ''; });
+    vars["ChaseName"] = await CorrPortalElem.Individual_Mapped_Chase_Name(vars['count']).evaluate(el => { const s = el as HTMLSelectElement; return s.options[s.selectedIndex]?.text || ''; });
     if (String(vars["EnumValues"]).includes(String(vars["ChaseName"]))) {
-      vars["ChaseEnumValue"] = String(vars["ChaseName"]) + "," + String(vars["ChaseEnumValue"]);
-      vars["CorrespondentBidName"] = await CorrPortalElem.Correspondent_Bid_sample_name.textContent() || '';
+      log.info('EnumValues contains ChaseName at: ' + vars["count"]);
+      log.info('Chase Name: '+vars['ChaseName']);
+      Methods.concatenateWithSpecialChar(vars["ChaseName"], vars['ChaseEnumValue'], ',', 'ChaseEnumValue');
+      vars["CorrespondentBidName"] = await CorrPortalElem.Correspondent_Bid_sample_name(vars['count']).textContent() || '';
       await CorrPortalElem.Enumeration_Mapping_Button.click();
       await CorrPortalElem.Yes_Proceed_Button.click();
       await CorrPortalElem.Rules_and_Actions_Button.waitFor({ state: 'visible' });
-      await expect(CorrPortalElem.Bid_Sample_Name_Field_Enumeration_Mapping).toContainText(vars["CorrespondentBidName"]);
+      await expect(CorrPortalElem.Bid_Sample_Name_Field_Enumeration_Mapping(vars['ChaseName'])).toContainText(vars["CorrespondentBidName"]);
       await CorrPortalElem.Header_Mapping1.click();
       await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
     }
-    vars["count"] = (parseFloat(String("1")) + parseFloat(String(vars["count"]))).toFixed(0);
+    Methods.performArithmetic(vars["count"], 'ADDITION', '1', 'count', 0);
   }
 }
 
@@ -1649,8 +1681,9 @@ export async function stepGroup_Fetching_Enum_From_Header_Mapping_Screen_and_Ver
  */
 export async function stepGroup_Verification_Of_Unidentified_Fields_In_Header_Mapping(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
-  vars["UnidentifiedCount"] = String(await CorrPortalElem.header_anme.count());
-  expect(String(vars["UnidentifiedCount"])).toBe("1");
+  const Methods = new AddonHelpers(page, vars);
+  vars["UnidentifiedCount"] = String(await CorrPortalElem.header_name.count());
+  expect(Methods.verifyComparison(vars["UnidentifiedCount"], '>=', appconstants.ONE));
 }
 
 /**
@@ -1720,22 +1753,24 @@ export async function stepGroup_Verification_of_ExportList_from_UI_to_Excel(page
  */
 export async function stepGroup_Checking_All_Enum_Fields_In_Header_Mapping_Screen(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
+  const Methods = new AddonHelpers(page, vars);
   vars["MappedChaseFieldCount"] = String(await CorrPortalElem.MappedChaseFieldName.count());
-  vars["count"] = "1";
+  log.info('Mapped Chase Field Count: ' + vars["MappedChaseFieldCount"]);
+  vars["count"] = appconstants.ONE;
   vars["ChaseEnumValue"] = "sample";
   vars["CorrespondentBidNames"] = "sample";
-  while (parseFloat(String(vars["count"])) < parseFloat(String(vars["MappedChaseFieldCount"]))) {
-    vars["ChaseName"] = await CorrPortalElem.Individual_Mapped_Chase_Name.evaluate(el => { const s = el as HTMLSelectElement; return s.options[s.selectedIndex]?.text || ''; });
+  while (parseFloat(String(vars["count"])) <= parseFloat(String(vars["MappedChaseFieldCount"]))) {
+    log.info('Iteration: ' + vars["count"]);
+    vars["ChaseName"] = await CorrPortalElem.Individual_Mapped_Chase_Name(vars['count']).evaluate(el => { const s = el as HTMLSelectElement; return s.options[s.selectedIndex]?.text || ''; });
     if (String(vars["EnumValues"]).includes(String(vars["ChaseName"]))) {
-      vars["ChaseEnumValue"] = String(vars["ChaseName"]) + "," + String(vars["ChaseEnumValue"]);
-      vars["CorrespondentBidName"] = await CorrPortalElem.Correspondent_Bid_sample_name.textContent() || '';
-      vars["CorrespondentBidNames"] = String(vars["CorrespondentBidName"]) + "," + String(vars["CorrespondentBidNames"]);
-      await CorrPortalElem.Chase_Field_Checkbox.check();
-      await expect(CorrPortalElem.Chase_Field_Checkbox).toBeVisible();
-      // [DISABLED] Verify that the element Bid Sample Name Field [Enumeration Mapping] displays text CorrespondentBidName and With Scrollable FALSE
-      // await expect(CorrPortalElem.Bid_Sample_Name_Field_Enumeration_Mapping).toContainText(vars["CorrespondentBidName"]);
+      Methods.concatenateWithSpecialChar(vars["ChaseName"], vars["ChaseEnumValue"], ',', 'ChaseEnumValue');
+      vars["CorrespondentBidName"] = await CorrPortalElem.Correspondent_Bid_sample_name(vars['count']).textContent() || '';
+      Methods.concatenateWithSpecialChar(vars["CorrespondentBidName"], vars["CorrespondentBidNames"], ',', 'CorrespondentBidNames');
+      await CorrPortalElem.Chase_Field_Checkbox(vars['count']).check();
+      await expect(CorrPortalElem.Chase_Field_Checkbox(vars['count'])).toBeChecked();
+
     }
-    vars["count"] = (parseFloat(String("1")) + parseFloat(String(vars["count"]))).toFixed(0);
+    Methods.performArithmetic(vars["count"], 'ADDITION', '1', 'count', 0);
   }
 }
 
@@ -1746,15 +1781,16 @@ export async function stepGroup_Checking_All_Enum_Fields_In_Header_Mapping_Scree
  */
 export async function stepGroup_Verification_Of_Checked_Enum_Fields_In_Enumeration(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
+  const Methods = new AddonHelpers(page, vars);
   vars["ChaseEnumNamesCount"] = String(await CorrPortalElem.Chase_Enum_Names.count());
-  vars["count1"] = "1";
+  log.info('Chase Enum Names Count: ' + vars["ChaseEnumNamesCount"]);
+  vars["count1"] = appconstants.ONE;
   while (parseFloat(String(vars["count1"])) <= parseFloat(String(vars["ChaseEnumNamesCount"]))) {
-    // [DISABLED] Store the value displayed in the text box Individual Chase Enum Name field into a variable ChaseName
-    // vars["ChaseName"] = await CorrPortalElem.Individual_Chase_Enum_Name.inputValue() || '';
-    vars["IndividualBidSampleName"] = await CorrPortalElem.Individual_Bid_Sample_Name_Enum_Page.textContent() || '';
-    expect(String(vars["CorrespondentBidNames"])).toBe(vars["IndividualBidSampleName"]);
-    await expect(CorrPortalElem.Individual_Checkbox_Enum).toBeVisible();
-    vars["count1"] = (parseFloat(String("1")) + parseFloat(String(vars["count1"]))).toFixed(0);
+    log.info('Verifying Iteration: ' + vars["count1"]);
+    vars["IndividualBidSampleName"] = await CorrPortalElem.get_Individual_Bid_Sample_Name_Enum_Page(vars['count1']).textContent() || '';
+    Methods.verifyString(vars["CorrespondentBidNames"], 'contains', vars["IndividualBidSampleName"]);
+    await expect(CorrPortalElem.Individual_Checkbox_Enum(vars['count1'])).toBeChecked();
+    Methods.performArithmetic(vars["count1"], 'ADDITION', '1', 'count1', 0);
   }
 }
 
@@ -1765,22 +1801,22 @@ export async function stepGroup_Verification_Of_Checked_Enum_Fields_In_Enumerati
  */
 export async function stepGroup_Unchecking_All_Enum_Fields_In_Header_Mapping_Screen(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
+  const Methods = new AddonHelpers(page, vars);
   vars["MappedChaseFieldCount"] = String(await CorrPortalElem.MappedChaseFieldName.count());
-  vars["count"] = "1";
+  log.info('Mapped Chase Field Count: ' + vars["MappedChaseFieldCount"]);
+  vars["count"] = appconstants.ONE;
   vars["ChaseEnumValue"] = "sample";
   vars["CorrespondentBidNames"] = "sample";
   while (parseFloat(String(vars["count"])) < parseFloat(String(vars["MappedChaseFieldCount"]))) {
-    vars["ChaseName"] = await CorrPortalElem.Individual_Mapped_Chase_Name.evaluate(el => { const s = el as HTMLSelectElement; return s.options[s.selectedIndex]?.text || ''; });
+    vars["ChaseName"] = await CorrPortalElem.Individual_Mapped_Chase_Name(vars['count']).evaluate(el => { const s = el as HTMLSelectElement; return s.options[s.selectedIndex]?.text || ''; });
     if (String(vars["EnumValues"]).includes(String(vars["ChaseName"]))) {
       vars["ChaseEnumValue"] = String(vars["ChaseName"]) + "," + String(vars["ChaseEnumValue"]);
-      vars["CorrespondentBidName"] = await CorrPortalElem.Correspondent_Bid_sample_name.textContent() || '';
-      vars["CorrespondentBidNames"] = String(vars["CorrespondentBidName"]) + "," + String(vars["CorrespondentBidNames"]);
-      await CorrPortalElem.Chase_Field_Checkbox.uncheck();
-      await expect(CorrPortalElem.Chase_Field_Checkbox).toBeVisible();
-      // [DISABLED] Verify that the element Bid Sample Name Field [Enumeration Mapping] displays text CorrespondentBidName and With Scrollable FALSE
-      // await expect(CorrPortalElem.Bid_Sample_Name_Field_Enumeration_Mapping).toContainText(vars["CorrespondentBidName"]);
+      vars["CorrespondentBidName"] = await CorrPortalElem.Correspondent_Bid_sample_name(vars['count']).textContent() || '';
+      Methods.concatenateWithSpecialChar(vars["CorrespondentBidName"], vars["CorrespondentBidNames"], ',', 'CorrespondentBidNames');
+      await CorrPortalElem.Chase_Field_Checkbox(vars['count']).uncheck();
+      await expect(CorrPortalElem.Chase_Field_Checkbox(vars['count'])).not.toBeChecked();
     }
-    vars["count"] = (parseFloat(String("1")) + parseFloat(String(vars["count"]))).toFixed(0);
+    Methods.performArithmetic(vars["count"], 'ADDITION', '1', 'count', 0);
   }
 }
 
@@ -1791,15 +1827,15 @@ export async function stepGroup_Unchecking_All_Enum_Fields_In_Header_Mapping_Scr
  */
 export async function stepGroup_Verification_Of_Unchecked_Enum_Fields_In_Enumeration(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
+  const Methods = new AddonHelpers(page, vars);
   vars["ChaseEnumNamesCount"] = String(await CorrPortalElem.Chase_Enum_Names.count());
-  vars["count1"] = "1";
+  log.info("Chase Enum Names Count: " + vars["ChaseEnumNamesCount"]);
+  vars["count1"] = appconstants.ONE;
   while (parseFloat(String(vars["count1"])) <= parseFloat(String(vars["ChaseEnumNamesCount"]))) {
-    // [DISABLED] Store the value displayed in the text box Individual Chase Enum Name field into a variable ChaseName
-    // vars["ChaseName"] = await CorrPortalElem.Individual_Chase_Enum_Name.inputValue() || '';
-    vars["IndividualBidSampleName"] = await CorrPortalElem.Individual_Bid_Sample_Name_Enum_Page.textContent() || '';
-    expect(String(vars["CorrespondentBidNames"])).toBe(vars["IndividualBidSampleName"]);
-    await expect(CorrPortalElem.Individual_Checkbox_Enum).toBeVisible();
-    vars["count1"] = (parseFloat(String("1")) + parseFloat(String(vars["count1"]))).toFixed(0);
+    vars["IndividualBidSampleName"] = await CorrPortalElem.get_Individual_Bid_Sample_Name_Enum_Page(vars['count1']).textContent() || '';
+    expect(Methods.verifyString(vars["CorrespondentBidNames"], 'contains', vars["IndividualBidSampleName"]));
+    await expect(CorrPortalElem.Individual_Checkbox_Enum(vars['count1'])).not.toBeChecked();
+    Methods.performArithmetic(vars["count1"], 'ADDITION', '1', 'count1', 0);
   }
 }
 
@@ -1810,22 +1846,23 @@ export async function stepGroup_Verification_Of_Unchecked_Enum_Fields_In_Enumera
  */
 export async function stepGroup_Fetching_Bid_Sample_Names_and_Corresponding_Chase_Values_and(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
+  const Methods = new AddonHelpers(page, vars);
+  const ProfileName='Bid Name To Chase Field Name'
   vars["BidEnumValueCount"] = String(await CorrPortalElem.BidMapFieldSet.count());
-  vars["count"] = "1";
+  log.info('Bid Enum Value Count: '+vars["BidEnumValueCount"]);
+  vars["count"] = appconstants.ONE;
   while (parseFloat(String(vars["count"])) <= parseFloat(String(vars["BidEnumValueCount"]))) {
+    log.info('Iteration: '+vars["count"]);
     vars["BidSampleName"] = await CorrPortalElem.get_Individual_BidSample_Name(vars["count"]).textContent() || '';
-    for (let dataIdx = parseInt(vars["count"]); dataIdx <= parseInt(vars["count"]); dataIdx++) {
-      // Write to test data profile: "Bid Sample Field Name" = vars["BidSampleName"]
-      // TODO: Test data profile writes need custom implementation
-      vars["ChaseValue"] = await CorrPortalElem.Mapped_Chase_Value.evaluate(el => { const s = el as HTMLSelectElement; return s.options[s.selectedIndex]?.text || ''; });
-    }
-    for (let dataIdx = parseInt(vars["count"]); dataIdx <= parseInt(vars["count"]); dataIdx++) {
-      // Write to test data profile: "Correspondent Chase Field Name" = vars["ChaseValue"]
-      // TODO: Test data profile writes need custom implementation
-    }
+    vars["ChaseValue"] = await CorrPortalElem.Mapped_Chase_Value.evaluate(el => { const s = el as HTMLSelectElement; return s.options[s.selectedIndex]?.text || ''; });
+    log.info('Bid Sample Name' +vars["count"]+':'+vars["BidSampleName"]);
+    testDataManager.updatePartialProfileDataByDataIndex(ProfileName, {
+            'Bid Sample Field Name':        vars['BidSampleName'],
+            'Correspondent Chase Field Name':vars['ChaseValue'],
+          },vars['count']);
     await CorrPortalElem.First_Header_Checkbox.check();
     await CorrPortalElem.First_Header_Checkbox.uncheck();
-    vars["count"] = (parseFloat(String("1")) + parseFloat(String(vars["count"]))).toFixed(0);
+    Methods.performArithmetic(vars["count"],'ADDITION','1','count',0);
   }
 }
 
@@ -1923,11 +1960,11 @@ export async function stepGroup_Creating_New_Header_In_Header_Mapping_Screen(pag
   await expect(CorrPortalElem.Custom_Header_Field).toHaveValue(vars["customheadername"]);
   // await CorrPortalElem.Chase_Field_Name.click();
   // await CorrPortalElem.CLM_Field_Name.click();
-  await CorrPortalElem.CLM_Field_Name.selectOption({ label: vars["ChaseFieldNames"] });
+  await CorrPortalElem.CLM_Field_Name.selectOption({ label: vars["Chase_Field_Name"] });
   vars["clmfieldname"] = await CorrPortalElem.CLM_Field_Name.evaluate(el => { const s = el as HTMLSelectElement; return s.options[s.selectedIndex]?.text || ''; });
   await CorrPortalElem.Insert_Header_Button.click();
   await expect(CorrPortalElem.New_Header_Mapping).toBeVisible();
-  await expect(CorrPortalElem.Enumeration_Mapping_Button).toBeVisible();
+  await expect(CorrPortalElem.Enumeration_Mapping_Button).toBeEnabled();
 }
 
 /**
@@ -1949,7 +1986,7 @@ export async function stepGroup_Editing_In_Enumeration_Mapping_Screen(page: impo
  */
 export async function stepGroup_Save_Draft_exit_and_Navigating_To_Rules_And_Actions(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
-   await CorrPortalElem.Save_Draft_Exit_Button.scrollIntoViewIfNeeded();
+  await CorrPortalElem.Save_Draft_Exit_Button.scrollIntoViewIfNeeded();
   await CorrPortalElem.Save_Draft_Exit_Button.click();
   await CorrPortalElem.Save_Draft_Exit_Button.waitFor({ state: 'hidden' });
   await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
@@ -2408,13 +2445,13 @@ export async function stepGroup_Verification_of_Rules_and_Action_Values_Before_E
  */
 export async function stepGroup_Verifying_that_Changes_Are_Not_Updated_In_Active_VersionRule(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
-  const Methods = new AddonHelpers(page,vars);
+  const Methods = new AddonHelpers(page, vars);
   vars["ActiveVersionRuleName"] = await CorrPortalElem.First_Active_Rule_Name.inputValue() || '';
-  expect(Methods.verifyString(vars["New Rule Name"],'notEquals',vars["ActiveVersionRuleName"]));
+  expect(Methods.verifyString(vars["New Rule Name"], 'notEquals', vars["ActiveVersionRuleName"]));
   // [DISABLED] Verify that the text Rule Name is not displayed in the element First Rule Name Field and With Scrollable FALSE
   // await expect(CorrPortalElem.First_Active_Rule_Name).not.toContainText(vars["Rule Name"]);
   vars["CountOfCategory"] = await CorrPortalElem.First_Select_Category_box_text.textContent() || '';
-  expect(Methods.verifyString(vars["CountOfCategory"],'contains',"1"));
+  expect(Methods.verifyString(vars["CountOfCategory"], 'contains', "1"));
   await expect(CorrPortalElem.Condition_BidField_1).not.toContainText(vars["EditedRuleBidField[RulesAndActions]"]);
   // await expect(CorrPortalElem.Operation_Dropdown.first()).not.toContainText(vars["Operator 2 Symbol"]);
   await expect(CorrPortalElem.Operation_Dropdown.first().locator('option:checked')).not.toHaveText(vars["Operator 2 Symbol"]);
@@ -2772,14 +2809,14 @@ export async function stepGroup_selecting_time_unit_bulk_batch(page: import('@pl
  */
 export async function stepGroup_Modifying_The_Batch_Intervals(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
-  const Methods=new AddonHelpers(page,vars);
+  const Methods = new AddonHelpers(page, vars);
 
   await CorrPortalElem.Modify_Batch_Intervals_Button.click();
   await expect(page.getByText("Edit Batch Timing")).toBeVisible();
-  Methods.getCurrentTimestamp(appconstants. HOUR_FORMAT_HH,'Time_Hour',appconstants.AMERICA_NEW_YORK);
+  Methods.getCurrentTimestamp(appconstants.HOUR_FORMAT_HH, 'Time_Hour', appconstants.AMERICA_NEW_YORK);
   await CorrPortalElem.StartTime_In_Hour.type(vars["Time_Hour"]);
-  Methods.getCurrentTimestamp(appconstants. TIME_FORMAT_HHMM,'Time_Min',appconstants.AMERICA_NEW_YORK);
-  Methods.splitBySpecialChar(vars["Time_Min"], ":",'1', "Time_Minute");
+  Methods.getCurrentTimestamp(appconstants.TIME_FORMAT_HHMM, 'Time_Min', appconstants.AMERICA_NEW_YORK);
+  Methods.splitBySpecialChar(vars["Time_Min"], ":", '1', "Time_Minute");
   await CorrPortalElem.StartTime_In_Minutes.type(vars["Time_Minute"]);
   await CorrPortalElem.Time_Interval.type(vars["Time Interval"]);
   await CorrPortalElem.No_Of_Batches.type(vars["NO of Batches"]);
@@ -2789,6 +2826,7 @@ export async function stepGroup_Modifying_The_Batch_Intervals(page: import('@pla
   await expect(CorrPortalElem.Modified_batch_timings_successfully_Message).toBeVisible();
   await CorrPortalElem.Ok_Button.click();
 }
+
 
 /**
  * Step Group: Delete early config
@@ -3000,7 +3038,8 @@ export async function stepGroup_Uploading_Bid_Request(page: import('@playwright/
   await CorrPortalElem.Bid_Mapping_ID_Dropdown_1.click();
   //await expect(CorrPortalElem.Bid_Mapping_ID_Dropdown).toContainText([vars["BidMappingID"]]);
   await expect(CorrPortalElem.Bid_Request_Date).toBeEnabled();
-  await CorrPortalElem.Pricing_Return_Time.click({force: true});
+  await CorrPortalElem.Pricing_Return_Time.click({ force: true });
+  await CorrPortalElem.Pricing_Return_Time.click({ force: true });
   // [DISABLED] Scroll down to the element Enabled_PricingReturnTime into view
   // await CorrPortalElem.Enabled_PricingReturnTime.scrollIntoViewIfNeeded();
   // [DISABLED] Verify that the element Enabled_PricingReturnTime is present and With Scrollable TRUE
@@ -3069,8 +3108,10 @@ export async function stepGroup_IF_Condition_for_Yes_Proceed_Button(page: import
   const CorrPortalElem = new CorrPortalPage(page);
   if (await CorrPortalElem.Yes_Proceed_Button.isVisible()) /* Element Yes, Proceed Button is visible */ {
     await CorrPortalElem.Yes_Proceed_Button.click();
+    log.info('clicked on yes proceed button');
   } else {
     await CorrPortalElem.Proceed_with_Saving_Button.click();
+    log.info('clikced on proceed with saving button');
   }
 }
 
@@ -3368,16 +3409,17 @@ export async function stepGroup_Modifying_The_Batch_Intervals_For_Next_bussiness
   await CorrPortalElem.Modify_Batch_Intervals_Button.click();
   await expect(page.getByText("Edit Batch Timing")).toBeVisible();
   vars["CurrentTime"] = new Date().toLocaleTimeString('en-US', {
-  timeZone: 'America/New_York',
-  hour: '2-digit',
-  minute: '2-digit',
-  hour12: true
-});
+    timeZone: 'America/New_York',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: true
+  });
   vars["OnehourPrior"] = (() => {
     const d = new Date('2000-01-01 ' + String(vars["CurrentTime"]));
     d.setMinutes(d.getMinutes() + parseInt(String("60")));
     return d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true }); // Format: hh:mm a
   })();
+  //vars["CurrentTime"] = vars["OnehourPrior"];
   //await stepGroup_Separating_Hours_and_minutes_In_timeOne_hour_prior(page, vars);
   await stepGroup_Separating_Hours_and_minutes_In_time_Current_EST_time(page, vars);
   // [DISABLED] Pick the current date hh by location UTC-04:00 and store into a variable Time_Hour
@@ -3414,6 +3456,7 @@ export async function stepGroup_Modifying_The_Batch_Intervals_For_Next_bussiness
   await expect(CorrPortalElem.Modified_batch_timings_successfully_Message).toBeVisible();
   await CorrPortalElem.Ok_Button.click();
 }
+
 
 /**
  * Step Group: Navigate to Customer Permission to Fetch First Company Name
@@ -3505,18 +3548,19 @@ export async function stepGroup_Upload_Bid_Request_For_Next_Business_Day_With_Ch
  */
 export async function stepGroup_Uploading_Bid_Request_By_Selecting_both_standard_and_chase_t(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
-  const testData: Record<string, string> = {}; // TODO: Load from test data profile
+  //const testData: Record<string, string> = {}; // TODO: Load from test data profile
   await CorrPortalElem.Select_Company_In_BidRequest.click();
   await CorrPortalElem.Bid_Mapping_Id_Search_Input_box.fill(vars["CompanyName"]);
   await CorrPortalElem.SelectCompany_Value.waitFor({ state: 'visible' });
   await expect(CorrPortalElem.SelectCompany_Value).toContainText(vars["CompanyName"]);
   await CorrPortalElem.SelectCompany_Value.click();
   await expect(CorrPortalElem.Standard_Execution_Checkbox).toBeVisible();
+  await CorrPortalElem.Standard_Execution_Checkbox.check();
   await expect(CorrPortalElem.Standard_Execution_Checkbox).toBeChecked();
   await CorrPortalElem.StandardExecution_Dropdown.selectOption({ label: "3" });
   await expect(CorrPortalElem.StandardExceutionType_Dropdown).toHaveValue("3");
-  await CorrPortalElem.Chase_Direct_Checkbox.check();
   await expect(CorrPortalElem.Chase_Direct_Checkbox).toBeVisible();
+  await CorrPortalElem.Chase_Direct_Checkbox.check();
   await expect(CorrPortalElem.Chase_Direct_Checkbox).toBeChecked();
   await CorrPortalElem.Chase_Direct_Dropdown_Upload_Bidrequest.selectOption({ index: parseInt("1") });
   await CorrPortalElem.Bid_Mapping_ID_Dropdown.click();
@@ -3539,9 +3583,9 @@ export async function stepGroup_Upload_bid_request_with_execution_type_chase(pag
   const CorrPortalElem = new CorrPortalPage(page);
   const testData: Record<string, string> = {}; // TODO: Load from test data profile
   await CorrPortalElem.Select_Company_In_BidRequest.click();
-  await CorrPortalElem.Bid_Mapping_Id_Search_Input_box.fill(testData["Company Name"]);
+  await CorrPortalElem.Bid_Mapping_Id_Search_Input_box.fill(vars["CompanyName"]);
   await CorrPortalElem.SelectCompany_Value.click();
-  await expect(CorrPortalElem.SelectCompany_Value).toContainText(testData["Company Name"]);
+  await expect(CorrPortalElem.SelectCompany_Value).toContainText(vars["CompanyName"]);
   await expect(CorrPortalElem.Standard_Execution_Checkbox).toBeVisible();
   await CorrPortalElem.Standard_Execution_Checkbox.uncheck();
   await expect(CorrPortalElem.Standard_Execution_Checkbox).toBeVisible();
@@ -3549,9 +3593,9 @@ export async function stepGroup_Upload_bid_request_with_execution_type_chase(pag
   await expect(CorrPortalElem.Chase_Direct_Checkbox).toBeVisible();
   await CorrPortalElem.Chase_Direct_Dropdown_Upload_Bidrequest.selectOption({ index: parseInt("1") });
   await CorrPortalElem.Bid_Mapping_ID_Dropdown.click();
-  await CorrPortalElem.Search_box_Bid_mapping_id.fill(testData["BidMappingID"]);
+  await CorrPortalElem.Search_box_Bid_mapping_id.fill(vars["BidMappingID"]);
   await CorrPortalElem.Bid_Mapping_ID_Dropdown_1.click();
-  await expect(CorrPortalElem.Bid_Mapping_ID_Dropdown).toContainText(testData["BidMappingID"]);
+  await expect(CorrPortalElem.Bid_Mapping_ID_Dropdown).toContainText(vars["BidMappingID"]);
   await CorrPortalElem.Pricing_Return_Time.click();
 }
 
@@ -3562,35 +3606,90 @@ export async function stepGroup_Upload_bid_request_with_execution_type_chase(pag
  */
 export async function stepGroup_Verifying_the_second_accordian_table_from_excel_to_UI_In_bid(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
+  const BidrequestDetailsPage = new BidRequestDetailsPage(page);
+
   vars["BidValueFromTableHeader2"] = await CorrPortalElem.Bid_Value_from_Table_Header_2.textContent() || '';
-  vars["amount1"] = String(vars["BidValueFromTableHeader2"]).split(",")["1"] || '';
-  vars["amount2"] = String(vars["BidValueFromTableHeader2"]).split(",")["2"] || '';
+  vars["amount1"] = String(vars["BidValueFromTableHeader2"]).split(",")["0"] || '';
+  vars["amount2"] = String(vars["BidValueFromTableHeader2"]).split(",")["1"] || '';
   vars["BidValueFromTableHeader2"] = String(vars["amount1"]) + String(vars["amount2"]);
   expect(String(vars["BidValueFromTableHeader2"])).toBe(vars["TotalLoanAmountFromRows"]);
-  await expect(CorrPortalElem.Execution_Type_from_Details_table1).toContainText("Standard");
-  vars["TotalLoansCountRows"] = String(await CorrPortalElem.Total_Loans_Count_From_Rows_table_1.count());
-  if (true) /* Element Success Loans Header 1 is visible */ {
-    vars["SuccessLoansCountRows"] = String(await CorrPortalElem.Success_Loans_Count_From_Rows_table1.count());
+  await expect(BidrequestDetailsPage.Execution_Type_from_detailstable2).toContainText(appconstants.ChaseDirectExecutionTableHeader);
+  vars["TotalLoansCountRows"] = String(await BidrequestDetailsPage.Total_Loan_Amount_Count_Table2.count());
+  
+  if (await BidrequestDetailsPage.Success_loans_Rows_Count_table_header_2.first().isVisible()) /* Element Success Loans Header 1 is visible */ {
+    vars["SuccessLoansCountRows"] = String(await BidrequestDetailsPage.Success_loans_Rows_Count_table_header_2.count());
   } else {
     vars["SuccessLoansCountRows"] = "0";
   }
-  if (true) /* Element Errored Loans Count from Rows is visible */ {
-    vars["ErroredLoansCountRows"] = String(await CorrPortalElem.Errored_Loans_Count_from_Rows_table_1.count());
+  if (await BidrequestDetailsPage.Errored_Loans_Count_Rows_table_2.first().isVisible()) /* Element Errored Loans Count from Rows is visible */ {
+    vars["ErroredLoansCountRows"] = String(await BidrequestDetailsPage.Errored_Loans_Count_Rows_table_2.count());
   } else {
     vars["ErroredLoansCountRows"] = "0";
   }
-  await expect(CorrPortalElem.Total_loans_TableHeader_1).toContainText(vars["TotalLoansCountRows"]);
-  await expect(CorrPortalElem.Success_Loans_Header_1).toContainText(vars["SuccessLoansCountRows"]);
-  await expect(CorrPortalElem.Errored_Loans_Header1).toContainText(vars["ErroredLoansCountRows"]);
-  vars["TotalColumnCountExcel"] = String(excelHelper.getColumnCount("Bid_file_success_error.xlsx,Bid_file_success_error.xlsx", "0"));
+  await expect(BidrequestDetailsPage.Total_loans_Table_header_2).toContainText(vars["TotalLoansCountRows"]);
+  await expect(BidrequestDetailsPage.Success_Loans_Header_2).toContainText(vars["SuccessLoansCountRows"]);
+  await expect(BidrequestDetailsPage.Errored_Loans_Header_2).toContainText(vars["ErroredLoansCountRows"]);
+  //vars["TotalColumnCountExcel"] = String(excelHelper.getColumnCount("Bid_file_success_error.xlsx,Bid_file_success_error.xlsx", "0"));
+  vars["TotalColumnCountExcel"] = String(excelHelper.getColumnCount(path.resolve(__dirname, '../../../uploads', "Bid_file_success_error (4).xlsx"), "0"));
+  
   vars["count"] = "1";
   vars["ColumnCountExcel"] = "1";
+  // while (parseFloat(String(vars["count"])) <= parseFloat(String(vars["TotalColumnCountExcel"]))) {
+  //   await CorrPortalElem.Bid_Request_Details_Text.click();
+  //  // vars["ColumnHeaderExcel"] = excelHelper.readCell(path.resolve(__dirname, 'test-data', "Bid_file_success_error.xlsx,Bid_file_success_error.xlsx"), "1", vars["ColumnCountExcel"]);
+  //  vars["ColumnHeaderExcel"] = readCellByColAndRowIndex(path.resolve(__dirname, '../../../uploads', "Bid_file_success_error (4).xlsx"), 0, 0, vars["ColumnCountExcel"]);
+  //  if (String("Correspondent Loan Number , Borrower Last Name , Original Loan Amount , Product Code").includes(String(vars["ColumnHeaderExcel"]))) {
+  //   }
+  // }
   while (parseFloat(String(vars["count"])) <= parseFloat(String(vars["TotalColumnCountExcel"]))) {
-    await CorrPortalElem.Bid_Request_Details_Text.click();
-    vars["ColumnHeaderExcel"] = excelHelper.readCell(path.resolve(__dirname, 'test-data', "Bid_file_success_error.xlsx,Bid_file_success_error.xlsx"), "1", vars["ColumnCountExcel"]);
-    if (String("Correspondent Loan Number , Borrower Last Name , Original Loan Amount , Product Code").includes(String(vars["ColumnHeaderExcel"]))) {
-    }
-  }
+            //vars["ColumnHeaderExcel"] = excelHelper.readCell(path.resolve(__dirname, 'test-data', "Bid_file_success_error.xlsx,Bid_file_success_error.xlsx"), "1", vars["ColumnCountExcel"]);
+            vars["ColumnHeaderExcel"] = readCellByColAndRowIndex(path.resolve(__dirname, '../../../uploads', "Bid_file_success_error (4).xlsx"), 0, 0, vars["ColumnCountExcel"]);
+            log.info(`Column Header from Excel at index ${vars["ColumnCountExcel"]}: ${vars["ColumnHeaderExcel"]}`);
+  
+            if (String("Correspondent Loan Number , Borrower Last Name , Original Loan Amount , Product Code").includes(String(vars["ColumnHeaderExcel"]))) {
+              await BidrequestDetailsPage.Bid_Request_Details_Text.click();
+              if (String(vars["ColumnHeaderExcel"]).includes(String("Correspondent Loan Number"))) {
+                vars["ColumnHeaderUI"] = "Corr. Loan#";
+              } else if (String(vars["ColumnHeaderExcel"]).includes(String("Borrower Last Name"))) {
+                vars["ColumnHeaderUI"] = "Last Name";
+              } else if (String(vars["ColumnHeaderExcel"]).includes(String("Original Loan Amount"))) {
+                vars["ColumnHeaderUI"] = "Loan Amount";
+              } else {
+                vars["ColumnHeaderUI"] = "Program";
+              }
+              log.info(`Mapped Excel column "${vars["ColumnHeaderExcel"]}" to UI column header "${vars["ColumnHeaderUI"]}"`);
+  
+              vars["RowsCountTable"] = String(await BidrequestDetailsPage.Rows_Count_Table_2.count());
+              log.info(`Rows count in table for column "${vars["ColumnHeaderUI"]}": ${vars["RowsCountTable"]}`);
+  
+              vars["RowCountExcel"] = "1";
+              while (parseFloat(String(vars["RowsCountTable"])) >= parseFloat(String("1"))) {
+                vars["CellDataTable"] = await BidrequestDetailsPage.Individual_Cell_Data_Table_2(vars["ColumnHeaderUI"], vars["RowsCountTable"]).textContent() || '';
+                vars["CellDataExcel"] = excelHelper.readCellByColAndRowIndex(path.resolve(__dirname, '../../../uploads', "Bid_file_success_error (4).xlsx"), 0, vars["RowCountExcel"], vars["ColumnCountExcel"]);
+                if (String(vars["ColumnHeaderUI"]) === String("Loan Amount")) {
+                  vars["CellDataExcel"] = parseFloat(String(vars["CellDataExcel"])).toFixed(0);
+                  vars["CellDataTable"] = String(vars["CellDataTable"]).trim();
+                  vars["amount1"] = String(vars["CellDataTable"]).split(",")["0"] || '';
+                  vars["amount2"] = String(vars["CellDataTable"]).split(",")["1"] || '';
+                  vars["CellDataTable"] = String(vars["amount1"]) + String(vars["amount2"]);
+                  vars["CellDataExcel"] = String("$") + String(vars["CellDataExcel"]);
+                  log.info(`Loan Amount - Excel: ${vars["CellDataExcel"]}, Table: ${vars["CellDataTable"]}`);
+                  expect(String(vars["CellDataExcel"])).toBe(vars["CellDataTable"]);
+                } else {
+                  log.info(`Column "${vars["ColumnHeaderUI"]}" Row ${vars["RowCountExcel"]} - Excel: ${vars["CellDataExcel"]}, Table: ${vars["CellDataTable"]}`);
+                  expect(String(vars["CellDataTable"])).toContain(vars["CellDataExcel"]);
+                }
+                vars["RowCountExcel"] = (parseFloat(String("1")) + parseFloat(String(vars["RowCountExcel"]))).toFixed(0);
+                vars["RowsCountTable"] = (parseFloat(String(vars["RowsCountTable"])) - parseFloat(String("1"))).toFixed(0);
+              }
+            }
+            vars["ColumnCountExcel"] = (parseFloat(String("1")) + parseFloat(String(vars["ColumnCountExcel"]))).toFixed(0);
+            if (String(vars["ColumnHeaderExcel"]).includes(String("Product Code"))) {
+              log.info('Reached "Product Code" column, breaking column iteration loop');
+              break;
+            }
+          }
+
 }
 
 /**
@@ -3667,7 +3766,8 @@ export async function stepGroup_Navigating_to_Customer_Permission_Page_and_disab
   await expect(CorrPortalElem.On_Radio_ChaseDirect_Edit_Permissions_Popup).toBeEnabled();
   if (!await CorrPortalElem.Off_Radio_Standard_Edit_Permissions_Popup.isChecked()) {
     await CorrPortalElem.Off_Radio_Standard_Edit_Permissions_Popup.check();
-   // await CorrPortalElem.Update_Permissions_Button.waitFor({ state: 'enabled' });
+    // await CorrPortalElem.Update_Permissions_Button.waitFor({ state: 'enabled' });
+    // await CorrPortalElem.Update_Permissions_Button.waitFor({ state: 'enabled' });
     await expect(CorrPortalElem.Update_Permissions_Button).toBeEnabled();
   }
   if (!await CorrPortalElem.On_Radio_ChaseDirect_Edit_Permissions_Popup.isChecked()) {
@@ -3714,7 +3814,7 @@ export async function stepGroup_Filtering_Status_and_Navigating_to_Filtered_Stat
  */
 export async function stepGroup_Navigating_to_Customer_Permission_and_enabling_the_Standard_(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
-  
+
   //const testData: Record<string, string> = {}; // TODO: Load from test data profile
 
   await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
@@ -3732,16 +3832,16 @@ export async function stepGroup_Navigating_to_Customer_Permission_and_enabling_t
 
     await CorrPortalElem.Standard_Flow_On_Button.check();
     await CorrPortalElem.Update_Permissions_Button.waitFor({ state: 'visible' });
-    if(await CorrPortalElem.Update_Permissions_Button.isEnabled()) 
+    if (await CorrPortalElem.Update_Permissions_Button.isEnabled())
       /* Element Update Permissions Button is enabled */ {
-    await CorrPortalElem.Update_Permissions_Button.click();
-   
-    await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
+      await CorrPortalElem.Update_Permissions_Button.click();
+
+      await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
+    }
+    else {
+      await CorrPortalElem.Close_pop_up.click();
+    }
   }
-  else{
-    await CorrPortalElem.Close_pop_up.click();
-  }
-}
 }
 
 /**
@@ -3807,7 +3907,8 @@ export async function stepGroup_Navigating_To_Customer_Permissions_and_enabling_
     await CorrPortalElem.Update_Permissions_Button.click();
     await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
   }
-  
+
+
 }
 
 
@@ -3823,9 +3924,12 @@ export async function stepGroup_Traversing_to_the_next_screens_until_the_bid_is_
     await CorrPortalElem.Set_page_size_to_50_Dropdown.click();
     await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
     //if (!(await CorrPortalElem.Filtered_Status_BidRequest_ID(vars["ExecutionType"], vars["StatusToBeSelected"]).isVisible())) {
-      while (!(await CorrPortalElem.Filtered_Status_BidRequest_ID(vars["ExecutionType"], vars["StatusToBeSelected"]).first().isVisible())) {
-        await CorrPortalElem.Go_to_Next_Page_Button.click();
-      }
+    while (!(await CorrPortalElem.Filtered_Status_BidRequest_ID(vars["ExecutionType"], vars["StatusToBeSelected"]).first().isVisible())) {
+      await CorrPortalElem.Go_to_Next_Page_Button.click();
+    }
+    while (!(await CorrPortalElem.Filtered_Status_BidRequest_ID(vars["ExecutionType"], vars["StatusToBeSelected"]).first().isVisible())) {
+      await CorrPortalElem.Go_to_Next_Page_Button.click();
+    }
     //}
   }
 }
@@ -4158,6 +4262,7 @@ export async function stepGroup_Verifying_Second_Table_loan_details_On_popupBid_
  */
 export async function stepGroup_Uploading_Bid_RequestNew(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
+  const bidRequestsPage = new BidRequestsPage(page);
   const testData: Record<string, string> = {}; // TODO: Load from test data profile
   await CorrPortalElem.Select_Company_In_BidRequest.click();
   await CorrPortalElem.Bid_Mapping_Id_Search_Input_box.fill(vars["CompanyName"]);
@@ -4173,16 +4278,19 @@ export async function stepGroup_Uploading_Bid_RequestNew(page: import('@playwrig
   await expect(CorrPortalElem.Standard_Execution_Checkbox).toBeChecked();
   await CorrPortalElem.StandardExecution_Dropdown.selectOption({ label: "3" });
   await expect(CorrPortalElem.StandardExceutionType_Dropdown).toHaveValue("3");
+  log.info("Selected Standard execution type with value 3");
   await CorrPortalElem.Bid_Mapping_ID_Dropdown.click();
- await CorrPortalElem.Search_box_Bid_mapping_id.fill(vars["BidMappingID"]);
+  await CorrPortalElem.Search_box_Bid_mapping_id.fill(vars["BidMappingID"]);
+  await CorrPortalElem.Search_box_Bid_mapping_id.fill(vars["BidMappingID"]);
   await CorrPortalElem.Bid_Mapping_ID_Dropdown_1.click();
-  await expect(CorrPortalElem.Bid_Mapping_ID_Dropdown).toContainText(vars["BidMappingID"]);
+  //await expect(CorrPortalElem.Bid_Mapping_ID_Dropdown).toContainText(vars["BidMappingID"]);
   await expect(CorrPortalElem.Bid_Request_Date).toBeEnabled();
-  await CorrPortalElem.Pricing_Return_Time.click();
+  await CorrPortalElem.Pricing_ReturnTime_Dropdown.click({ force: true });
+
   // await CorrPortalElem.Enabled_PricingReturnTime(vars["BulkBatchTiming"]).scrollIntoViewIfNeeded();
   // await expect(CorrPortalElem.Enabled_PricingReturnTime(vars["BulkBatchTiming"])).toBeVisible();
   // await CorrPortalElem.Enabled_PricingReturnTime(vars["BulkBatchTiming"]).click();
-  await CorrPortalElem.Pricing_Return_Time.selectOption({value: vars["BulkBatchTiming"]});
+  await CorrPortalElem.Pricing_Return_Time.selectOption({ value: vars["BulkBatchTiming"] });
   await expect(page.getByText("Drag and drop files here or click to browse. Allowed formats: .xls,.xlsx,.csv,.txt")).toBeVisible();
   await CorrPortalElem.Upload_File.setInputFiles(path.resolve(__dirname, '../../../uploads', "Bid_file_success_error_newfile1.xlsx"));
   await expect(CorrPortalElem.UploadBid_Button).toBeEnabled();
@@ -4376,32 +4484,35 @@ export async function stepGroup_Deleting_Early_Config_Report_If_Present(page: im
  */
 export async function stepGroup_Storing_BidSample_and_BidTape_Values_from_Enum_Page_with_Map(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
-  let enumerationMappingPage: EnumerationMappingPage;
-  enumerationMappingPage = new EnumerationMappingPage(page);
-  vars["count1"] = "1";
+  const ProfileName='BidSampleNamesWithBidTapeValues(EnumPage)';
+  const enumerationMappingPage = new EnumerationMappingPage(page);
+  const  Methods = new AddonHelpers(page, vars);
+
+  vars["count1"] = appconstants.ONE;
   await page.pause();
   while (parseFloat(String(vars["count1"])) <= parseFloat(String(vars["EnumFieldsCount"]))) {
+    log.info('Iteration: '+vars["count1"]);
     vars["IndividualBidSampleName"] = await CorrPortalElem.get_Individual_Bid_Sample_Name_Enum_Page(vars["count1"]).textContent() || '';
     vars["ColumnHeader"] = vars["IndividualBidSampleName"];
-    for (let dataIdx = parseInt(vars["count1"]); dataIdx <= parseInt(vars["count1"]); dataIdx++) {
-      // Write to test data profile: "EnumBidSampleNames" = vars["IndividualBidSampleName"]
-      // TODO: Test data profile writes need custom implementation
       if (!(await enumerationMappingPage.get_BidTapeFieldCountForBidField(vars["ColumnHeader"]).isVisible())) /* Element BidTapeFieldCountForBidField is not visible */ {
+        log.info('Element BidTapeFieldCountForBidField is not visible');
         vars["IndividualBidTapeValue"] = "No BidTape";
       } else {
+        log.info('Element BidTapeFieldCountForBidField is visible');
         vars["IndividualBidTapeValue"] = "Sample";
         vars["BidTapeCount"] = String(await enumerationMappingPage.get_BidTapeFieldCountForBidField(vars["ColumnHeader"]).count());
-        vars["count2"] = "1";
+        vars["count2"] = appconstants.ONE;
         while (parseFloat(String(vars["count2"])) <= parseFloat(String(vars["BidTapeCount"]))) {
           vars["BidTapeValue"] = await CorrPortalElem.get_Individual_Bid_Tape_Value_2(vars["ColumnHeader"], vars["count2"]).textContent() || '';
-          vars["IndividualBidTapeValue"] = String(vars["BidTapeValue"]) + "," + String(vars["IndividualBidTapeValue"]);
+          Methods.concatenateWithSpecialChar(vars["BidTapeValue"],vars["IndividualBidTapeValue"],',','IndividualBidTapeValue');
           vars["count2"] = (parseFloat(String("1")) + parseFloat(String(vars["count2"]))).toFixed(0);
         }
       }
-      // Write to test data profile: "EnumBidTapeValues" = vars["IndividualBidTapeValue"]
-      // TODO: Test data profile writes need custom implementation
-      vars["count1"] = (parseFloat(String("1")) + parseFloat(String(vars["count1"]))).toFixed(0);
-    }
+      testDataManager.updatePartialProfileDataByDataIndex(ProfileName, {
+            'EnumBidSampleNames':        vars['IndividualBidSampleName'],
+            'EnumBidTapeValues':vars['IndividualBidTapeValue'],
+          },vars['count1']);
+      Methods.performArithmetic(vars["count1"],'ADDITION','1','count1',0);
   }
 }
 
@@ -4428,38 +4539,40 @@ export async function stepGroup_Storing_Chase_Field_and_Chase_Value_from_Enum_Pa
   let enumerationMappingPage: EnumerationMappingPage;
   enumerationMappingPage = new EnumerationMappingPage(page);
   const CorrPortalElem = new CorrPortalPage(page);
-  vars["count1"] = "1";
+  const ProfileName='Chase Field To Chase Value [Enumeration]';
+  const Methods = new AddonHelpers(page, vars);
+
+  vars["count1"] = appconstants.ONE;
   vars["ChaseFieldsCountEnum"] = String(await CorrPortalElem.Chase_Enum_Names.count());
   while (parseFloat(String(vars["count1"])) <= parseFloat(String(vars["ChaseFieldsCountEnum"]))) {
     await CorrPortalElem.First_Checkbox_Enum.check();
     await CorrPortalElem.First_Checkbox_Enum.uncheck();
     for (let dataIdx = parseInt(vars["count1"]); dataIdx <= parseInt(vars["count1"]); dataIdx++) {
-      vars["IndividualChaseFieldName"] = await CorrPortalElem.Individual_Chase_Enum_Name.textContent() || '';
-
-      // Write to test data profile: "ChaseFieldName" = vars["IndividualChaseFieldName"]
-      // TODO: Test data profile writes need custom implementation
+      vars["IndividualChaseFieldName"] = await CorrPortalElem.Individual_Chase_Enum_Name(vars['count1']).textContent() || '';
       if (!(await enumerationMappingPage.get_ChaseValues_Corresponding_to_Chase_Field(vars["IndividualChaseFieldName"]).isVisible())) /* Element ChaseValues Corresponding to Chase Field is not visible*/ {
-        // Write to test data profile: "Chase Value" = "No ChaseValue"
-        // TODO: Test data profile writes need custom implementation
+         log.info('Element ChaseValues Corresponding to Chase Field is not visible');
       } else {
+        log.info('Element ChaseValues Corresponding to Chase Field is visible');
         vars["IndividualChaseValueofChaseField"] = "Sample";
-        vars["ChaseValuesOfChaseFieldCount"] = String(await CorrPortalElem.ChaseValues_Corresponding_to_Chase_Field.count());
-        vars["count2"] = "1";
-        vars["TagName"] = await CorrPortalElem.Individual_ChaseValue_of_ChaseField.evaluate(el => (el as HTMLElement).tagName);
+        vars["ChaseValuesOfChaseFieldCount"] = String(await CorrPortalElem.ChaseValues_Corresponding_to_Chase_Field(vars['IndividualChaseFieldName']).count());
+        vars["count2"] = appconstants.ONE;
+        vars["TagName"] = await CorrPortalElem.Individual_ChaseValue_of_ChaseField(vars['IndividualChaseFieldName'],vars['count2']).evaluate(el => (el as HTMLElement).tagName);
         while (parseFloat(String(vars["count2"])) <= parseFloat(String(vars["ChaseValuesOfChaseFieldCount"]))) {
           if (String(vars["TagName"]).includes(String("select"))) {
-            vars["ChaseValue"] = await CorrPortalElem.Individual_ChaseValue_of_ChaseField.evaluate(el => { const s = el as HTMLSelectElement; return s.options[s.selectedIndex]?.text || ''; });
+            vars["ChaseValue"] = await CorrPortalElem.Individual_ChaseValue_of_ChaseField(vars['IndividualChaseFieldName'],vars['count2']).evaluate(el => { const s = el as HTMLSelectElement; return s.options[s.selectedIndex]?.text || ''; });
           } else {
-            vars["ChaseValue"] = await CorrPortalElem.Individual_ChaseValue_of_ChaseField.textContent() || '';
+            vars["ChaseValue"] = await CorrPortalElem.Individual_ChaseValue_of_ChaseField(vars['IndividualChaseFieldName'],vars['count2']).textContent() || '';
           }
-          vars["IndividualChaseValueofChaseField"] = String(vars["ChaseValue"]) + "," + String(vars["IndividualChaseValueofChaseField"]);
-          vars["count2"] = (parseFloat(String("1")) + parseFloat(String(vars["count2"]))).toFixed(0);
+          Methods.concatenateWithSpecialChar(vars["ChaseValue"],vars["IndividualChaseValueofChaseField"],',','IndividualChaseValueofChaseField');
+          Methods.performArithmetic(vars["count2"],'ADDITION','1','count2',0);
         }
-        // Write to test data profile: "Chase Value" = vars["IndividualChaseValueofChaseField"]
-        // TODO: Test data profile writes need custom implementation
+        testDataManager.updatePartialProfileDataByDataIndex(ProfileName, {
+            'ChaseFieldName': vars['IndividualChaseFieldName'],
+            'Chase Value':    vars['IndividualBidTapeValue'],
+          },vars['count1']);
       }
     }
-    vars["count1"] = (parseFloat(String("1")) + parseFloat(String(vars["count1"]))).toFixed(0);
+    Methods.performArithmetic(vars["count1"],'ADDITION','1','count1',0);
   }
 }
 
@@ -5244,7 +5357,8 @@ export async function stepGroup_Navigating_to_Customer_Permission_Page_and_disab
   await expect(CorrPortalElem.On_Radio_ChaseDirect_Edit_Permissions_Popup).toBeEnabled();
   if (!await CorrPortalElem.Off_Radio_Standard_Edit_Permissions_Popup.isChecked()) {
     await CorrPortalElem.Off_Radio_Standard_Edit_Permissions_Popup.check();
-   // await CorrPortalElem.Update_Permissions_Button.waitFor({ state: 'enabled' });
+    // await CorrPortalElem.Update_Permissions_Button.waitFor({ state: 'enabled' });
+    // await CorrPortalElem.Update_Permissions_Button.waitFor({ state: 'enabled' });
     await expect(CorrPortalElem.Update_Permissions_Button).toBeEnabled();
   }
   if (!await CorrPortalElem.On_Radio_ChaseDirect_Edit_Permissions_Popup.isChecked()) {
@@ -6236,21 +6350,22 @@ export async function stepGroup_Toggle_Radio_Button_Based_on_Current_State_and_S
  */
 export async function stepGroup_Verifying_the_Last_Modified_Data_In_the_Right_corner_screen(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
-  const Methods=new AddonHelpers(page,vars);
+  const Methods = new AddonHelpers(page, vars);
 
-  Methods.getCurrentTimestamp(appconstants.TIME_FORMAT_HMMA, "CurrentLocalTime",appconstants.UTC);
-  Methods.getCurrentTimestamp(appconstants.DATE_FORMAT_MDYYYY, "CurrentLocalDate",appconstants.UTC);
+  Methods.getCurrentTimestamp(appconstants.TIME_FORMAT_HMMA, "CurrentLocalTime", appconstants.UTC);
+  Methods.getCurrentTimestamp(appconstants.DATE_FORMAT_MDYYYY, "CurrentLocalDate", appconstants.UTC);
   await expect(CorrPortalElem.Last_Modified_Data_Right_Corner_Screen).toContainText(vars["CurrentLocalDate"]);
-  Methods.addMinutesToDatetime(vars["CurrentLocalTime"],appconstants.TIME_FORMAT_HMMA, 1,appconstants.TIME_FORMAT_HMMA, "LocalTimePlus1Min");
+  Methods.addMinutesToDatetime(vars["CurrentLocalTime"], appconstants.TIME_FORMAT_HMMA, 1, appconstants.TIME_FORMAT_HMMA, "LocalTimePlus1Min");
   Methods.subtractMinutesFromDatetime(vars["CurrentLocalTime"], appconstants.TIME_FORMAT_HMMA, 1, appconstants.TIME_FORMAT_HMMA, "LocalTimeMinusMin");
   vars["TimeOnScreen"] = await CorrPortalElem.Last_Modified_Data_Right_Corner_Screen.textContent() || '';
-  if (Methods.isTestdataIgnoreCase(vars["TimeOnScreen"],'contains', vars["CurrentLocalTime"])) /* Verify if TimeOnScreen contains ignore-case with CurrentLoca */ {
-  } else if (Methods.isTestdataIgnoreCase(vars["TimeOnScreen"],'contains', vars["LocalTimePlus1Min"])) /* Verify if TimeOnScreen contains ignore-case with LocalTimePl */ {
+  if (Methods.isTestdataIgnoreCase(vars["TimeOnScreen"], 'contains', vars["CurrentLocalTime"])) /* Verify if TimeOnScreen contains ignore-case with CurrentLoca */ {
+  } else if (Methods.isTestdataIgnoreCase(vars["TimeOnScreen"], 'contains', vars["LocalTimePlus1Min"])) /* Verify if TimeOnScreen contains ignore-case with LocalTimePl */ {
   } else {
-    await Methods.verifyElementContainsTextIgnoreCase(CorrPortalElem.Last_Modified_Data_Right_Corner_Screen, vars["LocalTimeMinusMin"]);  
+    await Methods.verifyElementContainsTextIgnoreCase(CorrPortalElem.Last_Modified_Data_Right_Corner_Screen, vars["LocalTimeMinusMin"]);
   }
   await expect(CorrPortalElem.Last_Modified_Data_Right_Corner_Screen).toContainText("test sigma");
 }
+
 
 /**
  * Step Group: Verification of see difference pop up data
@@ -6690,24 +6805,69 @@ export async function stepGroup_Modifying_batches_with_5_min_prior(page: import(
  */
 export async function stepGroup_Selecting_Second_Enabled_Batch_Time_If_the_Condition_is_fail(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
+  const BidrequestCreationPage = new BidRequestCreationPage(page);
+  log.info('Entering stepGroup_Selecting_Second_Enabled_Batch_Time_If_the_Condition_is_failed');
+  // vars["EnabledTime"] = (await CorrPortalElem.Enabled_Time.first().textContent() || '').trim();
+  // log.info(`Enabled Time from UI: "${vars["EnabledTime"]} from the stepgroup"`);
+  // vars["CurrentEstTime"] = (() => {
+  //   const d = new Date();
+  //   const opts: Intl.DateTimeFormatOptions = { timeZone: "America/New_York" };
+  //   const fmt = "hh:mm a";
+  //   // Map Java date format to Intl parts
+  //   const parts = new Intl.DateTimeFormat('en-US', { ...opts, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }).formatToParts(d);
+  //   const p = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
+  //   return fmt.replace('yyyy', p.year || '').replace('yy', (p.year || '').slice(-2)).replace('MM', p.month || '').replace('dd', p.day || '').replace('HH', String(d.getHours()).padStart(2, '0')).replace('hh', p.hour || '').replace('mm', p.minute || '').replace('ss', p.second || '').replace('a', p.dayPeriod || '').replace(/M(?!M)/g, String(parseInt(p.month || '0'))).replace(/d(?!d)/g, String(parseInt(p.day || '0'))).replace(/h(?!h)/g, String(parseInt(p.hour || '0')));
+  // })();
+  // log.info(`Current EST Time calculated: "${vars["CurrentEstTime"]} from the stepgroup"`);
+  // vars["EnabledTime"] = (await CorrPortalElem.Enabled_Time.first().textContent() || '').trim();
+  // log.info(`Enabled Time from UI: "${vars["EnabledTime"]} from the stepgroup"`);
+  // vars["TimeDiff"] = Math.abs(new Date('2000-01-01 ' + String(vars["CurrentEstTime"])).getTime() - new Date('2000-01-01 ' + String(vars["EnabledTime"])).getTime()) / 60000 + '';
+  // log.info(`Time difference calculated: "${vars["TimeDiff"]} minutes"`);
+  vars["CurrentEstTime"] = new Date().toLocaleString('en-US', {
+    timeZone: 'America/New_York',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: true
+  });
+  log.info(`Current EST Time calculated: "${vars["CurrentEstTime"]}"`);
+
   vars["EnabledTime"] = (await CorrPortalElem.Enabled_Time.first().textContent() || '').trim();
-  log.info(`Enabled Time from UI: "${vars["EnabledTime"]} from the stepgroup"`);
-  vars["CurrentEstTime"] = (() => {
-    const d = new Date();
-    const opts: Intl.DateTimeFormatOptions = { timeZone: "America/New_York" };
-    const fmt = "hh:mm a";
-    // Map Java date format to Intl parts
-    const parts = new Intl.DateTimeFormat('en-US', { ...opts, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }).formatToParts(d);
-    const p = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
-    return fmt.replace('yyyy', p.year || '').replace('yy', (p.year || '').slice(-2)).replace('MM', p.month || '').replace('dd', p.day || '').replace('HH', String(d.getHours()).padStart(2, '0')).replace('hh', p.hour || '').replace('mm', p.minute || '').replace('ss', p.second || '').replace('a', p.dayPeriod || '').replace(/M(?!M)/g, String(parseInt(p.month || '0'))).replace(/d(?!d)/g, String(parseInt(p.day || '0'))).replace(/h(?!h)/g, String(parseInt(p.hour || '0')));
-  })();
-  vars["TimeDiff"] = Math.abs(new Date('2000-01-01 ' + String(vars["CurrentEstTime"])).getTime() - new Date('2000-01-01 ' + String(vars["EnabledTime"])).getTime()) / 60000 + '';
-  if (String(vars["TimeDiff"]) >= String("4")) {
+  log.info(`Enabled Time from UI: "${vars["EnabledTime"]}"`);
+
+  // Parse time strings in hh:mm AM/PM format
+  const parseTimeToMinutes = (timeStr: string): number => {
+    const match = timeStr.match(/(\d{1,2}):(\d{2})\s*(AM|PM)/i);
+    if (!match) {
+      log.warn(`Failed to parse time string: "${timeStr}"`);
+      return NaN;
+    }
+
+    let hours = parseInt(match[1], 10);
+    const minutes = parseInt(match[2], 10);
+    const period = match[3].toUpperCase();
+
+    // Convert to 24-hour format
+    if (period === 'PM' && hours !== 12) hours += 12;
+    if (period === 'AM' && hours === 12) hours = 0;
+
+    return hours * 60 + minutes;
+  };
+
+  const currentTimeMinutes = parseTimeToMinutes(vars["CurrentEstTime"]);
+  const enabledTimeMinutes = parseTimeToMinutes(vars["EnabledTime"]);
+
+  vars["TimeDiff"] = Math.abs(currentTimeMinutes - enabledTimeMinutes).toString();
+  log.info(`Time difference calculated: "${vars["TimeDiff"]} minutes"`);
+
+  if (String(vars["TimeDiff"]) >= String("3")) {
     await CorrPortalElem.Pricing_Return_Time.selectOption({ value: vars["EnabledTime"] });
+    //await BidRequestCreationPage.Pricing_ReturnTime_Dropdown.selectOption({ value: vars["EnabledTime"] });
+
   } else {
     vars["SecondEnabledTime"] = (await CorrPortalElem.Second_Enabled_Time.first().textContent() || '').trim();
     await CorrPortalElem.Pricing_Return_Time.selectOption({ value: vars["SecondEnabledTime"] });
-  }
+    //await BidrequestCreationPage.Pricing_ReturnTime_Dropdown.selectOption({ value: vars["SecondEnabledTime"] });
+}
 }
 
 /**

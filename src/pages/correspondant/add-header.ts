@@ -23,8 +23,8 @@ export class AddHeaderPage {
     return this.page.locator("//div[text()='Custom Header']/../..//input");
   }
 
-  get Individual_Company_NameBidrequest_Dropdown(): Locator {
-    return this.page.locator("//span[contains(text(),\"$|IndividualCompanyname|\")]");
+  Individual_Company_NameBidrequest_Dropdown(IndividualCompanyname: string): Locator {
+    return this.page.locator(`//span[contains(text(),\"${IndividualCompanyname}\")]`);
   }
 
   get Mapping_Between_Customised_Bid_Sample_Field_Name_and_Chase_Field_Name(): Locator {
