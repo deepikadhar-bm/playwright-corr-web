@@ -43,8 +43,8 @@ export class ActionsPage {
     return this.page.locator("//div[@id='common-table-results']/table//tr[1]//td[@data-title=\"Actions\"]");
   }
 
-  get CompanyName_Below_Dropdown(): Locator {
-    return this.page.locator("//div[contains(@class,'pill rounded-pill')]//span[contains(text(),'$|CompanyNamePartial|')]");
+  CompanyName_Below_Dropdown(CompanyNamePartial: string): Locator {
+    return this.page.locator(`//div[contains(@class,'pill rounded-pill')]//span[contains(text(), '${CompanyNamePartial}')]`);
   }
 
   get CompanyName_BidMaps(): Locator {

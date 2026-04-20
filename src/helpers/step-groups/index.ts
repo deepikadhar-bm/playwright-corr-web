@@ -1,6 +1,6 @@
 /**
  * Auto-generated step group helpers
- * Converted from Testsigma step groups
+ * Converted from Testsigma step gro ups
  */
 import { Page } from '@playwright/test';
 import { expect } from '@playwright/test';
@@ -814,7 +814,8 @@ export async function stepGroup_Enter_Company_Name_in_New_Map_Filter(page: impor
   try {
     await CorrPortalElem.Search_Input.clear();
     await expect(CorrPortalElem.Search_Input).toHaveValue('');
-    await CorrPortalElem.Search_Input.fill(vars["Company name 2"]); // vars["SecondCompanyName"]-->vars["Company name 2"]
+    log.info("Company name to search: " + vars["Company name"]);
+    await CorrPortalElem.Search_Input.fill(vars["Company name"]); // vars["SecondCompanyName"]-->vars["Company name 2"]
     // await page.waitForLoadState('networkidle');
     // [DISABLED] Verify that the current page displays text SecondCompanyName
     // await expect(page.getByText(vars["SecondCompanyName"])).toBeVisible();
@@ -989,8 +990,8 @@ export async function stepGroup_Add_Rule_For_Add_Condition_In_Rules_and_Actions(
  */
 export async function stepGroup_Store_More_Company_Name(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
-  vars["CompanyIndex"] = "1";
-  vars["FirstCompanyName"] = await CorrPortalElem.Company_Name_Customer_Permission.textContent() || '';
+  
+  vars["FirstCompanyName"] = await CorrPortalElem.Company_Name_Customer_Permission(vars["CompanyIndex"]).textContent() || '';
   vars["FirstCompanyName"] = String(vars["FirstCompanyName"]).substring(1, String(vars["FirstCompanyName"]).length - 1);
 }
 
@@ -1021,16 +1022,15 @@ export async function stepGroup_Edit_in_Header_Mapping_2(page: import('@playwrig
  */
 export async function stepGroup_Only_Chase_Direct_On_for_Company(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
-  vars["CompanyNameActionIndex"] = "1";
-  await CorrPortalElem.CompanyName_Action_Button_By_Index.click();
+  await CorrPortalElem.CompanyName_Action_Button_By_Index(vars["CompanyNameActionIndex"]).click();
   await CorrPortalElem.Edit_Permissions.waitFor({ state: 'visible' });
-  if (!(await CorrPortalElem.Standard_Flow_Off_Button.isChecked)) /* Radio button Standard_Flow_Off_Button is not selected */ {
+  if (await CorrPortalElem.Standard_Flow_On_Button.isChecked()) /* Radio button Standard_Flow_Off_Button is not selected */ {
     await CorrPortalElem.Standard_Flow_Off_Button.click();
   }
-  if (!(await CorrPortalElem.Chase_Direct_ON_button.isChecked)) /* Radio button Chase_Direct_ON_button is not selected */ {
+  if (!(await CorrPortalElem.Chase_Direct_ON_button.isChecked())) /* Radio button Chase_Direct_ON_button is not selected */ {
     await CorrPortalElem.Chase_Direct_ON_button.click();
   }
-  if (await CorrPortalElem.Update_Permissions_Button.isVisible) /* Element Update Permissions Button is enabled */ {
+  if (await CorrPortalElem.Update_Permissions_Button.isEnabled()) /* Element Update Permissions Button is enabled */ {
     await CorrPortalElem.Update_Permissions_Button.click();
   } else {
     await CorrPortalElem.Close_Model_Button.click();
@@ -1044,16 +1044,16 @@ export async function stepGroup_Only_Chase_Direct_On_for_Company(page: import('@
  */
 export async function stepGroup_Standard_and_Chase_Direct_ON_for_Company(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
-  vars["CompanyNameActionIndex"] = "1";
-  await CorrPortalElem.CompanyName_Action_Button_By_Index.click();
+  
+  await CorrPortalElem.CompanyName_Action_Button_By_Index(vars["CompanyNameActionIndex"]).click();
   await CorrPortalElem.Edit_Permissions.waitFor({ state: 'visible' });
-  if (!(await CorrPortalElem.Standard_Flow_Off_Button.isChecked)) /* Radio button Standard_Flow_On_Button is not selected */ {
+  if (!(await CorrPortalElem.Standard_Flow_On_Button.isChecked())) /* Radio button Standard_Flow_On_Button is not selected */ {
     await CorrPortalElem.Standard_Flow_On_Button.click();
   }
-  if (!(await CorrPortalElem.Chase_Direct_ON_button.isChecked)) /* Radio button Chase_Direct_ON_button is not selected */ {
+  if (!(await CorrPortalElem.Chase_Direct_ON_button.isChecked())) /* Radio button Chase_Direct_ON_button is not selected */ {
     await CorrPortalElem.Chase_Direct_ON_button.click();
   }
-  if (await CorrPortalElem.Update_Permissions_Button.isVisible) /* Element Update Permissions Button is enabled */ {
+  if (await CorrPortalElem.Update_Permissions_Button.isEnabled()) /* Element Update Permissions Button is enabled */ {
     await CorrPortalElem.Update_Permissions_Button.click();
   } else {
     await CorrPortalElem.Close_Model_Button.click();

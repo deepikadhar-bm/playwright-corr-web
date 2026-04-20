@@ -19,8 +19,9 @@ export class LoginPage {
     return this.page.locator(`(//div[@class=\"flex-grow-1\"]/../..//div[@class=\"gap-2 header-grid-layout\"])[${count}]`);
   }
 
-  get Impound(): Locator {
-    return this.page.locator("(//div[text()=\"Impound Type\"]//../..//div[@class=\"input-field-name text-truncate cursor-pointer\"])[$|number|]");
+   Impound(number:string): Locator {
+    return this.page.locator('div.group', { hasText: 'Impound Type' });
+  
   }
 
   get Mapping_Header(): Locator {
