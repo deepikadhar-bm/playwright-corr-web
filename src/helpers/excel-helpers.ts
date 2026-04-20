@@ -1117,44 +1117,68 @@ export function readCellByColAndRowIndex(
   colIndex: string | number
 ): string {
   const resolved = path.resolve(filePath);
+
   if (!fs.existsSync(resolved)) {
     throw new Error(`Excel file not found: ${resolved}`);
   }
 
-  const sheetIdx = typeof sheetIndex === 'string' ? parseInt(sheetIndex, 10) : sheetIndex;
-  const rowIdx = typeof rowIndex === 'string' ? parseInt(rowIndex, 10) : rowIndex;
-  const colIdx = typeof colIndex === 'string' ? parseInt(colIndex, 10) : colIndex;
+  const sheetIdx = Number(sheetIndex);
+  const rowIdx = Number(rowIndex);
+  const colIdx = Number(colIndex);
 
-  if (isNaN(sheetIdx)) throw new Error(`Sheet index "${sheetIndex}" is not a valid number`);
-  if (isNaN(rowIdx)) throw new Error(`Row index "${rowIndex}" is not a valid number`);
-  if (isNaN(colIdx)) throw new Error(`Column index "${colIndex}" is not a valid number`);
-
-  const wb = XLSX.readFile(resolved, { cellDates: true, cellNF: true });
-
-  if (sheetIdx < 0 || sheetIdx >= wb.SheetNames.length) {
-    throw new Error(`Sheet index ${sheetIdx} out of range. Available sheets: ${wb.SheetNames.length}`);
+  if (isNaN(sheetIdx) || sheetIdx < 0) {
+    throw new Error(`Invalid sheet index "${sheetIndex}". Sheet index must be a zero-based number (0, 1, 2...).`);
   }
 
-  const sheetName = wb.SheetNames[sheetIdx];
-  const sheet = wb.Sheets[sheetName];
+  if (isNaN(rowIdx) || rowIdx < 0) {
+    throw new Error(`Invalid row index "${rowIndex}". Row index must be a zero-based number (0, 1, 2...).`);
+  }
 
-  const rows: any[][] = XLSX.utils.sheet_to_json(sheet, {
-    header: 1,
-    defval: null,
-    blankrows: true,
+  if (isNaN(colIdx) || colIdx < 0) {
+    throw new Error(`Invalid column index "${colIndex}". Column index must be a zero-based number (0, 1, 2...).`);
+  }
+
+  const workbook = XLSX.readFile(resolved);
+
+  if (sheetIdx >= workbook.SheetNames.length) {
+    throw new Error(
+      `Sheet index ${sheetIdx} is out of range. Total sheets available: ${workbook.SheetNames.length}.`
+    );
+  }
+
+  const sheetName = workbook.SheetNames[sheetIdx];
+  const sheet = workbook.Sheets[sheetName];
+
+  if (!sheet || !sheet['!ref']) {
+    throw new Error(`Sheet "${sheetName}" is empty or invalid.`);
+  }
+
+  const range = XLSX.utils.decode_range(sheet['!ref']);
+
+  if (rowIdx > range.e.r) {
+    throw new Error(
+      `Row index ${rowIdx} is out of range in sheet "${sheetName}". Available rows: 0 to ${range.e.r}.`
+    );
+  }
+
+  if (colIdx > range.e.c) {
+    throw new Error(
+      `Column index ${colIdx} is out of range in sheet "${sheetName}". Available columns: 0 to ${range.e.c}.`
+    );
+  }
+
+  const cellAddress = XLSX.utils.encode_cell({
+    r: rowIdx,
+    c: colIdx
   });
 
-  const targetRow = rows[rowIdx];
-  if (!targetRow) {
-    throw new Error(`Row index ${rowIdx} out of range. Sheet "${sheetName}" has ${rows.length} row(s) [0 to ${rows.length - 1}].`);
-  }
+  const cell = sheet[cellAddress];
 
-  const cellValue = targetRow[colIdx];
-  if (cellValue === null || cellValue === undefined || String(cellValue).trim() === '') {
+  if (!cell || cell.v === undefined || cell.v === null || String(cell.v).trim() === '') {
     return 'null';
   }
 
-  return String(cellValue).trim();
+  return String(cell.v).trim();
 }
 /**
  * Writes a value to a cell identified by sheet index, row index, and column index.

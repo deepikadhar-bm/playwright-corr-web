@@ -1664,7 +1664,9 @@ export class CorrPortalPage {
   get Search_In_Committed_Page(): Locator {
     return this.page.locator("//div//input[@placeholder=\"Search\"]");
   }
-
+  Unmapped_Chase_Value_1(ColumnHeader:string,count1:string): Locator {
+    return this.page.locator(`(//div[text()=\"${ColumnHeader}\"]/ancestor::div[@class=\"mapping-card rounded-3 unchecked\"]//div[@class=\"field-pair col-3\"]//*[@title=\"\" or @title=\"[object Object]\"])[${count1}]`);
+  }
   get Search_Input(): Locator {
     return this.page.locator("//input[@placeholder=\"Search\"]");
   }

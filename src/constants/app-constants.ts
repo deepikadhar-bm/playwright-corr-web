@@ -120,4 +120,5 @@ export const APP_CONSTANTS = {
   EditEmailforConfig: "testemail2@sysla.com",
   RULE_NAME_CONST1:'a',
   RULE_NAME_CONST2:'A',
+  SPLIT_COUNT_SIX:'6',
 };

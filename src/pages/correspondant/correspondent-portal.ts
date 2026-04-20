@@ -900,10 +900,9 @@ export class CorrespondentPortalPage {
     return this.page.locator("(//div[text()=\" Show Selected \"])[2]");
   }
 
-  get DTI_Dropdown(): Locator {
-    return this.page.locator("(//button[contains(@class, 'dropdown-item') and contains(@class, 'd-flex')])[141]");
+  DTI_Dropdown(BidFields1:string): Locator {
+    return this.page.locator(`//div[contains(@class,'menu show') and @aria-labelledby='singleSelectDropDown']//span[text()='${BidFields1}']//ancestor::button`);
   }
-
   get Each_Batch(): Locator {
     return this.page.locator("//div[contains(@class,\"card rounded-3\")]");
   }
@@ -1023,7 +1022,9 @@ export class CorrespondentPortalPage {
   get Export_List(): Locator {
     return this.page.locator("//div[text()[normalize-space() = \"Export List\"]]");
   }
-
+get CCode_Checkbox(): Locator {
+    return this.page.locator("(//input[@type=\"checkbox\"])[2]");
+  }
   get Export_List_Maps_List_details_only_Dropdown(): Locator {
     return this.page.locator("//div[text()[normalize-space() = \"Export List\"]]");
   }
@@ -1665,7 +1666,9 @@ export class CorrespondentPortalPage {
   get Search_Field_in_Bid_Enumerated_Tape_Value(): Locator {
     return this.page.locator("(//label[text()[normalize-space() = \"Bid Enumerated Tape Value\"]]/following-sibling::div[contains(@class, 'd-flex')]//div[@aria-labelledby=\"singleSelectDropDown\"]//input[@type=\"search\"])[1]");
   }
-
+  get Search_Field(): Locator {
+    return this.page.locator("(//input[@type=\"search\"])[1]");
+  }
   get Search_Field_in_Enum(): Locator {
     return this.page.locator("(//input[@type=\"search\"])[2]");
   }
@@ -1778,7 +1781,6 @@ export class CorrespondentPortalPage {
   get Select_Companys_Dropdown(): Locator {
     return this.page.locator("//div//div[@id=\"companySelect\"]//div//button[@id=\"multiSelectDropDown\"]");
   }
-
   Select_Current_DateAdd_Config(CurrentDate: string): Locator {
     return this.page.locator(`//div[@class=\"ngb-dp-month\"]//div[@aria-label='${CurrentDate}']`);
   }
