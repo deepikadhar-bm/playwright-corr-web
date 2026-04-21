@@ -7,8 +7,8 @@ import { Page, Locator } from '@playwright/test';
 export class EarlyConfigPage {
   constructor(private page: Page) {}
 
-  get Added_Last_Batch(): Locator {
-    return this.page.locator("//td[@data-title=\"Last Batch\" and contains(text(),\"$|TimeHourMin|\")]");
+  Added_Last_Batch(TimeHourMin: string): Locator {
+    return this.page.locator(`//td[@data-title="Last Batch" and contains(text(),"${TimeHourMin}")]`);
   }
 
   Current_Date(CurrentDateCalender:String): Locator {
@@ -31,12 +31,12 @@ export class EarlyConfigPage {
     return this.page.locator("//input[@id=\"pricingMode-1-on\"]");
   }
 
-  get Delete_Button_early_config(): Locator {
-    return this.page.locator("(//td[contains(text(),\"$|TimeHourMin|\")]/..//button)[2]");
+  Delete_Button_early_config(TimeHourMin: string): Locator {
+    return this.page.locator(`(//td[contains(text(),"${TimeHourMin}")]/..//button)[2]`);
   }
 
-  get Delete_Button_Early_ConfigNext_Day(): Locator {
-    return this.page.locator("(//td[contains(text(),\" $|TomorrowsDate|\")]/..//button)[2]");
+  Delete_Button_Early_ConfigNext_Day(TomorrowsDate: string): Locator {
+    return this.page.locator(`(//td[contains(text(),\" ${TomorrowsDate}\")]/..//button)[2]`);
   }
 
   get Delete_Option_Field(): Locator {
@@ -59,12 +59,12 @@ export class EarlyConfigPage {
     return this.page.locator(`//td[contains(text(),\" ${NextBusinessDateList}\")]`);
   }
 
-  get Early_Configtomorrows_Date(): Locator {
-    return this.page.locator("//td[contains(text(),\" $|TomorrowDateList|\")]");
+  Early_Configtomorrows_Date(TomorrowDateList:String): Locator {
+    return this.page.locator(`//td[contains(text(),\"${TomorrowDateList}\")]`);
   }
 
-  get Edit_ButtonEarly_Close_Config(): Locator {
-    return this.page.locator("(//td[contains(text(),\"$|TimeHourMin|\")]/..//button)[1]");
+  Edit_ButtonEarly_Close_Config(TimeHourMin: string): Locator {
+    return this.page.locator(`(//td[contains(text(),\"${TimeHourMin}\")]/..//button)[1]`);
   }
 
   get Last_Batch_Dropdown(): Locator {
@@ -111,8 +111,8 @@ export class EarlyConfigPage {
     return this.page.locator("//input[@placeholder=\"Select Date\"]");
   }
 
-  get Tomorrow_date(): Locator {
-    return this.page.locator("//div[@aria-label=\"$|TomorrowsDateCalender|\"]");
+  Tomorrow_date(TomorrowsDateCalender: string): Locator {
+    return this.page.locator(`//div[@aria-label="${TomorrowsDateCalender}"]`);
   }
 
   get Year_Dropdown(): Locator {

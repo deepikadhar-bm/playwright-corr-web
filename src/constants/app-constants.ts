@@ -120,5 +120,12 @@ export const APP_CONSTANTS = {
   EditEmailforConfig: "testemail2@sysla.com",
   RULE_NAME_CONST1:'a',
   RULE_NAME_CONST2:'A',
+  ExpectedProductCode: "FN40",
+  MinDisplayValue: "1",
+  MaxDisplayValue: "120",
+  ProductCode2: "FN50",
+  MinDisplayValue2: "2",
+  MaxDisplayValue2: "12",
+
   SPLIT_COUNT_SIX:'6',
 };

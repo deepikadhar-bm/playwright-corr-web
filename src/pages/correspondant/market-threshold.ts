@@ -15,7 +15,7 @@ export class MarketThresholdPage {
     return this.page.locator("//input[@type=\"text\"]");
   }
 
-  Last_Max_ValueBPS(ExpectedProductCode:string): Locator {
+  Required_Max_ValueBPS(ExpectedProductCode:string): Locator {
     return this.page.locator(`//td[@data-title=\"Security Product\"]//div[contains(text(),\"${ExpectedProductCode}\")]/../..//td[@data-title=\"Max Value (BPS)\"]`);
   }
 
