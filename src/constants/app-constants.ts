@@ -126,6 +126,6 @@ export const APP_CONSTANTS = {
   ProductCode2: "FN50",
   MinDisplayValue2: "2",
   MaxDisplayValue2: "12",
-
   SPLIT_COUNT_SIX:'6',
+  CompanyName1: "Freedom"
 };
