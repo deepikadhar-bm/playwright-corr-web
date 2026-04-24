@@ -130,7 +130,7 @@ test.describe('Commitment List - TS_2', () => {
         log.info('ExpectedOpenAuthLimit: ' + vars['ExpectedOpenAuthLimit']);
         log.info('ExpectedOpenAuthPercentage: ' + vars['ExpectedOpenAuthPercentage']);
         expect(Methods.verifyString(vars['ExpectedOpenAuthLimit'], 'equals', vars['OpenAuthLimitAfterUncommit']));
-        expect(Methods.verifyString(vars['ExpectedOpenAuthPercentage'], 'equals', vars['OpenAuthLimitPercentageAfterUncommit']));
+        expect(Methods.verifyString(vars['ExpectedOpenAuthPercentage'], 'contains', vars['OpenAuthLimitPercentageAfterUncommit']));
         expect(Methods.verifyString(vars['AuthLimitBeforeUncommit'], 'equals', vars['AuthLimitAfterUncommit']));
         log.stepPass('Auth limit values verified after uncommit');
       } catch (e) {

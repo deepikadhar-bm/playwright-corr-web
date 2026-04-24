@@ -1,4 +1,3 @@
-// [POM-APPLIED]
 import { test, expect } from '@playwright/test';
 import * as stepGroups from '../../../src/helpers/step-groups';
 import { CorrespondentPortalPage } from '../../../src/pages/correspondant/correspondent-portal';
@@ -8,7 +7,8 @@ import { SpinnerPage } from '../../../src/pages/correspondant/spinner';
 import { ENV } from '@config/environments'
 import { Logger as log } from '../../../src/helpers/log-helper';
 import { testDataManager } from 'testdata/TestDataManager';
-import { APP_CONSTANTS as appconstants } from '../../../src/constants/app-constants';
+import { FILE_CONSTANTS as fileconstants } from '../../../src/constants/file-constants';
+
 
 
 const TC_ID = "REG_TS09_TC01";
@@ -39,24 +39,25 @@ test.describe('Unassigned', () => {
     try {
       log.step("Step 1: Login to CORR Portal and prepare Bid Map up to Header Mapping");
       try {
-         if (profile && profile.data) {
-        const chaseValue = profile.data[0]['Chase Value'];
-        const bidTapeValue = profile.data[0]['Bid Tape Value'];
-        vars["Chase Value"] = chaseValue;
-        vars["Bid Tape Value"] = bidTapeValue;
-        vars["Username"] = credentials.username;
-        vars["Password"] = credentials.password;
-            }
+        if (profile && profile.data) {
+          const chaseValue = profile.data[0]['Chase Value'];
+          const bidTapeValue = profile.data[0]['Bid Tape Value'];
+          vars["Chase Value"] = chaseValue;
+          vars["Bid Tape Value"] = bidTapeValue;
+          vars["Username"] = credentials.username;
+          vars["Password"] = credentials.password;
+        }
         await stepGroups.stepGroup_Login_to_CORR_Portal(page, vars);
         await stepGroups.stepGroup_Smart_Mapper_from_Off_to_On(page, vars);
-        await stepGroups.stepGroup_Creation_Of_Bid_Map_Upto_Header_Mapping(page, vars,"DeepikaAugBidQA_(3)_(1)_(1)_(2).xlsx");
+        const fileName = fileconstants.BID_QA_FILE_COMMON;
+        await stepGroups.stepGroup_Creation_Of_Bid_Map_Upto_Header_Mapping(page, vars, fileName);
         await expect(correspondentPortalPage.Rules_and_Actions_Step_4_of_4).toBeVisible();
         log.stepPass("Step 1 passed: Logged in, enabled Smart Mapper, and navigated to Rules and Actions step.");
       } catch (error) {
         log.stepFail(page, "Step 1 failed: Unable to login, enable Smart Mapper, or reach Rules and Actions step.");
         throw error;
       }
-      
+
       log.step("Step 2: Navigate to Enumeration Mapping screen");
       try {
         await enumerationMappingButtonPage.Enumeration_Mapping_Button.waitFor({ state: 'visible' });

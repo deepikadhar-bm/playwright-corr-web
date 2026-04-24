@@ -5,7 +5,7 @@ import { Page, Locator } from '@playwright/test';
  * Elements: 6
  */
 export class LoginPage {
-  constructor(private page: Page) {}
+  constructor(private page: Page) { }
 
   get Delete_button_in_Header_Mapping(): Locator {
     return this.page.locator("//div[@class=\"gap-2 header-grid-layout unidentified-header\"]/..//i[@class=\"fas fa-trash-alt text-danger\"]");
@@ -15,15 +15,16 @@ export class LoginPage {
     return this.page.locator("//div[@class=\"gap-2 header-grid-layout\"]");
   }
 
-  Header_chase_name(count:string): Locator {
+  Header_chase_name(count: string): Locator {
     return this.page.locator(`(//div[@class=\"flex-grow-1\"]/../..//div[@class=\"gap-2 header-grid-layout\"])[${count}]`);
   }
 
-   Impound(number:string): Locator {
-    return this.page.locator('div.group', { hasText: 'Impound Type' });
-  
+  Impound(number: string): Locator {
+    return this.page.locator(`(//div[text()=\"Impound Type\"]//../..//div[@class=\"input-field-name text-truncate cursor-pointer\"])[${number}]`);
   }
-
+  get ImpoundUI(): Locator {
+    return this.page.locator(`(//div[text()=\"Impound Type\"]//../..//div[@class=\"input-field-name text-truncate cursor-pointer\"])`);
+  }
   get Mapping_Header(): Locator {
     return this.page.locator("(//div[contains(@class,\"cursor-pointer\")])[$|count|]\n\n\n\n\n\n\n");
   }
