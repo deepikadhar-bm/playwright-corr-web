@@ -19,12 +19,12 @@ export class EarlyConfigPage {
     return this.page.locator("//button[@aria-label=\"Toggle Date Picker\"]");
   }
 
-  get Day_After_Tomorrow_Date_List(): Locator {
-    return this.page.locator("//td[contains(text(),\" $|DayAfterTomorrowDateList|\")]");
+  Day_After_Tomorrow_Date_List(DayAfterTomorrowDateList: String): Locator {
+    return this.page.locator(`//td[contains(text(),\" ${DayAfterTomorrowDateList}\")]`);
   }
 
-  get DayAfterTomorrows_Date_Calender(): Locator {
-    return this.page.locator("//div[@aria-label=\"$|DayAfterTomorrowsDateCalender|\"]");
+  DayAfterTomorrows_Date_Calender(DayAfterTomorrowsDateCalender: String): Locator {
+    return this.page.locator(`//div[@aria-label=\"${DayAfterTomorrowsDateCalender}\"]`);
   }
 
   get Deffered_On_Radio_Button(): Locator {
@@ -47,8 +47,8 @@ export class EarlyConfigPage {
     return this.page.locator("(//table//tr[@role=\"row\"])[position() >1 and position() <= last()]");
   }
 
-  get Early_Conf_Del_Button_other_than_today(): Locator {
-    return this.page.locator("//td[@data-title=\"Date\" and not(contains(text(),\"$|CurrentDateList|\"))]/..//button[@aria-label=\"Delete\"]");
+  Early_Conf_Del_Button_other_than_today(CurrentDateList: String): Locator {
+    return this.page.locator(`//td[@data-title="Date" and not(contains(text(),"${CurrentDateList}"))]/..//button[@aria-label="Delete"]`);
   }
 
   Early_Config_For_Current_Date(CurrentDateList:String): Locator {
