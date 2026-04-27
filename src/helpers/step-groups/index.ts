@@ -25,6 +25,7 @@ import { APP_CONSTANTS as appconstants } from '../../../src/constants/app-consta
 import { BidRequestPage } from '../../../src/pages/correspondant/bid-request';
 import { BidRequestsPage } from '../../../src/pages/correspondant/bid-requests';
 import { readCellByColAndRowIndex } from '../excel-helpers';
+import { FILE_CONSTANTS as fileconstants } from '../../../src/constants/file-constants';
 //import { BidrequestCreationPage } from '../../../src/pages/correspondant/bidrequest-creation';
 
 
@@ -537,10 +538,12 @@ export async function stepGroup_Creation_Of_New_Map(page: import('@playwright/te
  */
 export async function stepGroup_Verification_Header_Mapping_Smart_Mapper_On_to_Off(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
-  vars["IndexCount"] = "2";
+  const Methods = new AddonHelpers(page, vars);
+  vars["IndexCount"] = appconstants.TWO;
   while (parseFloat(String(vars["IndexCount"])) <= parseFloat(String("43"))) {
-    await expect(CorrPortalElem.SelectText_HedaerMapping_Field).toHaveValue("Select");
-    vars["IndexCount"] = (parseFloat(String("1")) + parseFloat(String(vars["IndexCount"]))).toFixed(0);
+    log.info('Iteration: ' + vars["IndexCount"]);
+    await expect(CorrPortalElem.SelectText_HedaerMapping_Field(vars['IndexCount'])).toHaveValue("Select");
+    Methods.MathematicalOperation(vars["IndexCount"], '+', 1, 'IndexCount');
   }
 }
 
@@ -952,7 +955,7 @@ export async function stepGroup_Selecting_the_multiple_Company_name_Creating_a_N
  */
 export async function stepGroup_Add_Rule_For_Add_Condition_In_Rules_and_Actions(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
-  const testData: Record<string, string> = {}; // TODO: Load from test data profile
+
   await CorrPortalElem.Add_Rule_Button.click();
   await CorrPortalElem.Rule_Name_Field.pressSequentially(vars["Rule Name"]);
   vars["Rule Name"] = await CorrPortalElem.Rule_Name_Field.inputValue() || '';
@@ -965,21 +968,18 @@ export async function stepGroup_Add_Rule_For_Add_Condition_In_Rules_and_Actions(
   await CorrPortalElem.When_Bid_Field_in_Add_Conditions.click();
   await CorrPortalElem.When_Bid_Field.click();
   await expect(CorrPortalElem.When_Bid_Field).toBeVisible();
-  // await CorrPortalElem.Search_Field.fill(vars["BidField"]);
   await CorrPortalElem.When_Bid_Field.pressSequentially(vars["BidField"]);
   vars["BidField"] = await CorrPortalElem.Search_Field.inputValue() || '';
-  // await CorrPortalElem.FICO_Score.click();
   await CorrPortalElem.Select_Button.waitFor({ state: "visible" });
   await CorrPortalElem.Select_Button.click();
-  await CorrPortalElem.Operation_Dropdown.last().selectOption({ value: "LESS" });
-  // await CorrPortalElem.Operation_Dropdown.last().selectOption({ value: vars["Operation1"] });
+  await CorrPortalElem.Operation_Dropdown.first().selectOption({ value: vars["Operation1"] });
   await CorrPortalElem.Bid_Enumeration_Tape_Value_in_Rule.click();
   await CorrPortalElem.Search_Field_in_Bid_Enumerated_Tape_Value.click();
   await CorrPortalElem.Bid_Enumerated_Search_Field.fill(vars["BidEnumeratedTapeValue"]);
   await expect(CorrPortalElem.Search_Field_in_Bid_Enumerated_Tape_Value).toHaveValue(vars["BidEnumeratedTapeValue"]);
   await CorrPortalElem.Select_Button.click();
   vars["RuleBidField"] = vars["BidField"];
-  vars["RuleCondition"] = await CorrPortalElem.Operation_Dropdown.last().inputValue() || '';
+  vars["RuleCondition"] = await CorrPortalElem.Operation_Dropdown.first().inputValue() || '';
   vars["RuleBidTapeValue"] = vars["BidEnumeratedTapeValue"];
 }
 
@@ -990,7 +990,7 @@ export async function stepGroup_Add_Rule_For_Add_Condition_In_Rules_and_Actions(
  */
 export async function stepGroup_Store_More_Company_Name(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
-  
+
   vars["FirstCompanyName"] = await CorrPortalElem.Company_Name_Customer_Permission(vars["CompanyIndex"]).textContent() || '';
   vars["FirstCompanyName"] = String(vars["FirstCompanyName"]).substring(1, String(vars["FirstCompanyName"]).length - 1);
 }
@@ -1044,7 +1044,7 @@ export async function stepGroup_Only_Chase_Direct_On_for_Company(page: import('@
  */
 export async function stepGroup_Standard_and_Chase_Direct_ON_for_Company(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
-  
+
   await CorrPortalElem.CompanyName_Action_Button_By_Index(vars["CompanyNameActionIndex"]).click();
   await CorrPortalElem.Edit_Permissions.waitFor({ state: 'visible' });
   if (!(await CorrPortalElem.Standard_Flow_On_Button.isChecked())) /* Radio button Standard_Flow_On_Button is not selected */ {
@@ -1092,7 +1092,7 @@ export async function stepGroup_Add_Actions_in_Rules_and_Actions(page: import('@
   await CorrPortalElem.Chase_Field_Name.selectOption({ index: parseInt("16") });
   await CorrPortalElem.Chase_Value.selectOption({ value: "false" });
   // await CorrPortalElem.Value_for_chase.click();
-  vars["ChaseFiledNameonAddActions"] = await CorrPortalElem.Add_Actions_Chase_Field_Name.evaluate(el => { const s = el as HTMLSelectElement; return s.options[s.selectedIndex]?.text || ''; });
+  vars["ChaseFieldNameonAddActions"] = await CorrPortalElem.Add_Actions_Chase_Field_Name.evaluate(el => { const s = el as HTMLSelectElement; return s.options[s.selectedIndex]?.text || ''; });
   // [DISABLED] Store the value displayed in the text box Action Chase Field Name 1 field into a variable ChaseFiledNameonAddActions
   // vars["ChaseFiledNameonAddActions"] = await CorrPortalElem.Action_Chase_Field_Name_1.inputValue() || '';
   vars["ChasevalueOnAddActions"] = await CorrPortalElem.Add_Actions_Chase_Value.evaluate(el => { const s = el as HTMLSelectElement; return s.options[s.selectedIndex]?.text || ''; });
@@ -1130,7 +1130,7 @@ export async function stepGroup_Editing_of_Add_Conditions_and_Add_Actions(page: 
 export async function stepGroup_Add_Field_in_Enumeration_Mapping(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
   await CorrPortalElem.Add_Field_Button1.click();
-  await CorrPortalElem.Bid_Tape_Add_Field.fill(Array.from({ length: 7 }, () => "abc".charAt(Math.floor(Math.random() * 3))).join(''));
+  await CorrPortalElem.Bid_Tape_Add_Field.type(Array.from({ length: 7 }, () => "abc".charAt(Math.floor(Math.random() * 3))).join(''));
   vars["BidTapeValue"] = await CorrPortalElem.Bid_Tape_Add_Field.inputValue() || '';
   await expect(CorrPortalElem.Bid_Tape_Add_Field).toHaveValue(vars["BidTapeValue"]);
 }
@@ -1295,7 +1295,7 @@ export async function stepGroup_Verification_of_Chase_Enum_Values_From_Header_Ma
   vars["count1"] = appconstants.ONE;
   while (parseFloat(String(vars["count1"])) <= parseFloat(String(vars["ChaseEnumNamesCount"]))) {
     vars["ChaseName"] = await CorrPortalElem.Individual_Chase_Enum_Name(vars['count1']).inputValue() || '';
-    expect(Methods.verifyString(vars["ChaseEnumValue"],'contains',vars["ChaseName"]));
+    expect(Methods.verifyString(vars["ChaseEnumValue"], 'contains', vars["ChaseName"]));
     Methods.MathematicalOperation(vars['count1'], '+', 1, 'count1');
   }
 }
@@ -1338,18 +1338,10 @@ export async function stepGroup_Deleting_In_Rules_and_Actions(page: import('@pla
  */
 export async function stepGroup_Edition_In_Enumeration_Mapping(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
-  const testData: Record<string, string> = {}; // TODO: Load from test data profile
-  await page.waitForLoadState('networkidle');
   await CorrPortalElem.Chase_Values_Dropdown.click();
   await CorrPortalElem.Chase_Values_Dropdown.selectOption({ index: parseInt("2") });
   vars["EditedChaseValue[Enumeration Mapping]"] = await CorrPortalElem.Chase_Values_Dropdown.evaluate(el => { const s = el as HTMLSelectElement; return s.options[s.selectedIndex]?.text || ''; });
-  await expect(page.getByText(vars["EditedChaseValue[Enumeration Mapping]"])).toBeVisible();
-  // [DISABLED] Verify that the element Chase Values Dropdown displays text EditedChaseValue[Enumeration Mapping] and With Scrollable FALSE
-  // await expect(CorrPortalElem.Chase_Values_Dropdown).toContainText(vars["EditedChaseValue[Enumeration Mapping]"]);
-  // [DISABLED] Select option by text Chasevalues in the Fixed rate Dropdown list
-  // await CorrPortalElem.Select_Dropdown_for_First_Time_Home_Buyer.selectOption({ label: testData["Chasevalues"] });
-  // [DISABLED] Store the text of the selected option from Fixed rate Dropdown list into a variable ChaseValue
-  // vars["ChaseValue"] = await CorrPortalElem.Select_Dropdown_for_First_Time_Home_Buyer.evaluate(el => { const s = el as HTMLSelectElement; return s.options[s.selectedIndex]?.text || ''; });
+  await expect(CorrPortalElem.Chase_Values_Dropdown.locator('option:checked')).toHaveText(vars["EditedChaseValue[Enumeration Mapping]"]);
 }
 
 /**
@@ -1568,22 +1560,14 @@ export async function stepGroup_Advance_Search_For_Actions(page: import('@playwr
   await expect(CorrPortalElem.Actions).toBeVisible();
   await CorrPortalElem.IF_Chase_Field.selectOption({ label: vars["ActionChaseField"] });
   await expect(page.getByText(vars["ActionChaseField"])).toBeVisible();
-  if (true) /* Element Chase Field Input box is enabled */ {
+  if (await CorrPortalElem.Chase_Field_Input_box.isEnabled()) /* Element Chase Field Input box is enabled */ {
     await CorrPortalElem.Chase_Field_Input_box.fill(vars["ActionChaseValue"]);
-  } else if (true) /* Element Chase Field Select list is enabled */ {
+  } else if (await CorrPortalElem.Chase_Field_Select_list.isEnabled()) /* Element Chase Field Select list is enabled */ {
     await CorrPortalElem.Chase_Field_Select_list.selectOption({ label: vars["ActionChaseValue"] });
   }
   await expect(CorrPortalElem.Show_Results_Button).toBeVisible();
   await CorrPortalElem.Show_Results_Button.click();
   await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
-  // [DISABLED] Verify that the current page displays an element Searched Map Name and With Scrollable FALSE
-  // await expect(CorrPortalElem.BidMap1_Advanced_Search).toBeVisible();
-  // [DISABLED] Store the count of elements identified by locator Total Bid Maps into a variable BidMapCount
-  // vars["BidMapCount"] = String(await CorrPortalElem.Bid_Maps.count());
-  // [DISABLED] Verify if BidMapCount > 1
-  // if (String(vars["BidMapCount"]) > String("1"))
-  // [DISABLED] Verify that the current page displays an element Second Bid Map and With Scrollable FALSE
-  // await expect(CorrPortalElem.Second_Bid_Map).toBeVisible();
 }
 
 /**
@@ -2045,7 +2029,7 @@ export async function stepGroup_Fetching_Enum_from_Header_Mapping_and_verifying_
  */
 export async function stepGroup_Adding_Rules_In_Rules_and_Actions_Screen(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
-  // const testData: Record<string, string> = {}; // TODO: Load from test data profile
+
   await CorrPortalElem.Add_Rule_Button.click();
   await CorrPortalElem.Rule_Name_Field.pressSequentially(vars["Rule Name"]);
   vars["Rule Name"] = await CorrPortalElem.Rule_Name_Field.inputValue() || '';
@@ -2062,8 +2046,7 @@ export async function stepGroup_Adding_Rules_In_Rules_and_Actions_Screen(page: i
   await CorrPortalElem.Select_Button.waitFor({ state: "visible" })
   await CorrPortalElem.Select_Button.click();
   expect(String(vars["BidField"])).toBe(vars["Condition Bid Field"]);
-  // await CorrPortalElem.Operation_Dropdown.last().selectOption({ label: vars["Operation1"] });
-  await CorrPortalElem.Operation_Dropdown.last().selectOption({ value: vars["Operation1"] });
+  await CorrPortalElem.Operation_Dropdown.first().selectOption({ value: vars["Operation1"] });
   await CorrPortalElem.Bid_Enumeration_Tape_Value_in_Rule.click();
   await CorrPortalElem.Search_Field_in_Bid_Enumerated_Tape_Value.click();
   await CorrPortalElem.Bid_Enumerated_Search_Field.fill(vars["BidEnumeratedTapeValue"]);
@@ -2140,7 +2123,7 @@ export async function stepGroup_Reading_Column_Data_from_XLS(page: import('@play
 export async function stepGroup_Fetching_Income_Value_From_XLS(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
   const Methods = new AddonHelpers(page, vars);
-  const ProfileDuplicateIncomeValues='Duplicate Income Values';
+  const ProfileDuplicateIncomeValues = 'Duplicate Income Values';
 
   vars["DuplicateIncome"] = appconstants.ONE;
   vars["index"] = appconstants.TWO;
@@ -2148,31 +2131,31 @@ export async function stepGroup_Fetching_Income_Value_From_XLS(page: import('@pl
   vars["Data1"] = String("Income (Monthly),2001.0,2001.0,2001.0,2001.0,2001.0");
   vars["Data2"] = String("Income (Monthly),2001.0,2001.0,2001.0,2001.0,2001.0");
   while (parseFloat(String(vars["index"])) <= parseFloat(String("4"))) {
-    Methods.splitStringByRegConditionWithPosition(vars["Data1"],',',vars["index"],'income');
-    Methods.splitStringByRegConditionWithPosition(vars["Data2"],',',vars["index1"],'income2');
-      if (String(vars["income"]) !== String(vars["income2"])) {
-        Methods.removeCharactersFromPosition(vars["income"],'0','2','income');
-        Methods.removeCharactersFromPosition(vars["income2"],'0','2','income');
-        // Write to test data profile: "Income Value" = vars["income"]
-        testDataManager.updatePartialProfileDataByDataIndex(ProfileDuplicateIncomeValues, {
-            'Income Value':        vars['income'],
-          },vars['index']);
-        Methods.performArithmetic(vars["DuplicateIncome"], 'ADDITION', '1', 'DuplicateIncome', 0);
-        Methods.performArithmetic(vars["index"], 'ADDITION', '1', 'index', 0);
-        Methods.performArithmetic(vars["index1"], 'ADDITION', '1', 'index1', 0);
-        await CorrPortalElem.Rules_and_Actions_Heading.click();
-      } else {
-        Methods.removeCharactersFromPosition(vars["income"],'0','2','income');
-        Methods.removeCharactersFromPosition(vars["income2"],'0','2','income');
-        // Write to test data profile: "same Income" = vars["income"]
-        testDataManager.updatePartialProfileDataByDataIndex(ProfileDuplicateIncomeValues, {
-            'same Income':        vars['income'],
-          },vars['index']);
-        Methods.performArithmetic(vars["DuplicateIncome"], 'ADDITION', '1', 'DuplicateIncome', 0);
-        Methods.performArithmetic(vars["index"], 'ADDITION', '1', 'index', 0);
-        Methods.performArithmetic(vars["index1"], 'ADDITION', '1', 'index1', 0);
-        await CorrPortalElem.Rules_and_Actions_Heading.click();
-      }
+    Methods.splitStringByRegConditionWithPosition(vars["Data1"], ',', vars["index"], 'income');
+    Methods.splitStringByRegConditionWithPosition(vars["Data2"], ',', vars["index1"], 'income2');
+    if (String(vars["income"]) !== String(vars["income2"])) {
+      Methods.removeCharactersFromPosition(vars["income"], '0', '2', 'income');
+      Methods.removeCharactersFromPosition(vars["income2"], '0', '2', 'income');
+      // Write to test data profile: "Income Value" = vars["income"]
+      testDataManager.updatePartialProfileDataByDataIndex(ProfileDuplicateIncomeValues, {
+        'Income Value': vars['income'],
+      }, vars['index']);
+      Methods.performArithmetic(vars["DuplicateIncome"], 'ADDITION', '1', 'DuplicateIncome', 0);
+      Methods.performArithmetic(vars["index"], 'ADDITION', '1', 'index', 0);
+      Methods.performArithmetic(vars["index1"], 'ADDITION', '1', 'index1', 0);
+      await CorrPortalElem.Rules_and_Actions_Heading.click();
+    } else {
+      Methods.removeCharactersFromPosition(vars["income"], '0', '2', 'income');
+      Methods.removeCharactersFromPosition(vars["income2"], '0', '2', 'income');
+      // Write to test data profile: "same Income" = vars["income"]
+      testDataManager.updatePartialProfileDataByDataIndex(ProfileDuplicateIncomeValues, {
+        'same Income': vars['income'],
+      }, vars['index']);
+      Methods.performArithmetic(vars["DuplicateIncome"], 'ADDITION', '1', 'DuplicateIncome', 0);
+      Methods.performArithmetic(vars["index"], 'ADDITION', '1', 'index', 0);
+      Methods.performArithmetic(vars["index1"], 'ADDITION', '1', 'index1', 0);
+      await CorrPortalElem.Rules_and_Actions_Heading.click();
+    }
   }
 }
 
@@ -2217,7 +2200,7 @@ export async function stepGroup_Editing_In_New_Map_After_Save_draft(page: import
  */
 export async function stepGroup_Creating_New_Bid_Mapping_For_search_action_based_on_the_rule(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
-  await stepGroup_Creation_Of_Bid_Map_Upto_Header_Mapping(page, vars);
+  await stepGroup_Creation_Of_Bid_Map_Upto_Header_Mapping(page, vars, fileconstants.BID_QA_FILE_COMMON);
   await CorrPortalElem.Enumeration_Mapping_Button.click();
   await CorrPortalElem.Yes_Proceed_Button.click();
   await CorrPortalElem.Rules_and_Actions_Button.waitFor({ state: 'visible' });
@@ -2299,7 +2282,7 @@ export async function stepGroup_Fetching_the_data_based_on_Enum_value_in_Header_
 
       vars["CorrespondentBidName"] = await CorrPortalElem.Correspondent_Bid_sample_name(vars['count']).textContent() || '';
       testDataManager.updatePartialProfileDataByDataIndex(profileName2, {
-         'Bid Sample Field': vars['CorrespondentBidName'],
+        'Bid Sample Field': vars['CorrespondentBidName'],
         'Chase value name': vars['ChaseName'],
       }, vars['count1']);
       Methods.MathematicalOperation(vars['count1'], '+', 1, 'count1');
@@ -2528,18 +2511,15 @@ export async function stepGroup_Add_Actions_In_Rules_and_Actions_2(page: import(
  */
 export async function stepGroup_Adding_Actions_In_Rules_and_Actions_Screen(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
-  const testData: Record<string, string> = {}; // TODO: Load from test data profile
-  await CorrPortalElem.Chase_Field_Name.selectOption({ label: testData["Unique Chase Field Name"] });
-  // [DISABLED] Select option by index 16 in the Chase Field Name list
-  // await CorrPortalElem.Chase_Field_Name.selectOption({ index: parseInt("16") });
-  // [DISABLED] Click on Chase Value
-  // await CorrPortalElem.Chase_Value.click();
+  const Methods = new AddonHelpers(page, vars);
+
+  await CorrPortalElem.Chase_Field_Name.selectOption({ label: vars["Unique Chase Field Name"] });
   await CorrPortalElem.Chase_Value_Dropdown_Rules_Actions.click();
-  await CorrPortalElem.Chase_Value_Search_field.fill(testData["Unique Chase Value"]);
+  await CorrPortalElem.Chase_Value_Search_field.fill(vars["Unique Chase Value"]);
   await CorrPortalElem.Select_text_Chase_Value.click();
   vars["ChaseFiledNameonAddActions"] = await CorrPortalElem.Add_Actions_Chase_Field_Name.evaluate(el => { const s = el as HTMLSelectElement; return s.options[s.selectedIndex]?.text || ''; });
   vars["ChasevalueOnAddActions"] = await CorrPortalElem.Add_Actions_Chase_Value_Not_a_list.textContent() || '';
-  vars["ChasevalueOnAddActions"] = String(vars["ChasevalueOnAddActions"]).trim();
+  Methods.trimtestdata(vars["ChasevalueOnAddActions"], 'ChasevalueOnAddActions');
 }
 
 /**
@@ -3618,7 +3598,7 @@ export async function stepGroup_Verifying_the_second_accordian_table_from_excel_
   expect(String(vars["BidValueFromTableHeader2"])).toBe(vars["TotalLoanAmountFromRows"]);
   await expect(BidrequestDetailsPage.Execution_Type_from_detailstable2).toContainText(appconstants.ChaseDirectExecutionTableHeader);
   vars["TotalLoansCountRows"] = String(await BidrequestDetailsPage.Total_Loan_Amount_Count_Table2.count());
-  
+
   if (await BidrequestDetailsPage.Success_loans_Rows_Count_table_header_2.first().isVisible()) /* Element Success Loans Header 1 is visible */ {
     vars["SuccessLoansCountRows"] = String(await BidrequestDetailsPage.Success_loans_Rows_Count_table_header_2.count());
   } else {
@@ -3634,7 +3614,7 @@ export async function stepGroup_Verifying_the_second_accordian_table_from_excel_
   await expect(BidrequestDetailsPage.Errored_Loans_Header_2).toContainText(vars["ErroredLoansCountRows"]);
   //vars["TotalColumnCountExcel"] = String(excelHelper.getColumnCount("Bid_file_success_error.xlsx,Bid_file_success_error.xlsx", "0"));
   vars["TotalColumnCountExcel"] = String(excelHelper.getColumnCount(path.resolve(__dirname, '../../../uploads', "Bid_file_success_error (4).xlsx"), "0"));
-  
+
   vars["count"] = "1";
   vars["ColumnCountExcel"] = "1";
   // while (parseFloat(String(vars["count"])) <= parseFloat(String(vars["TotalColumnCountExcel"]))) {
@@ -3645,53 +3625,53 @@ export async function stepGroup_Verifying_the_second_accordian_table_from_excel_
   //   }
   // }
   while (parseFloat(String(vars["count"])) <= parseFloat(String(vars["TotalColumnCountExcel"]))) {
-            //vars["ColumnHeaderExcel"] = excelHelper.readCell(path.resolve(__dirname, 'test-data', "Bid_file_success_error.xlsx,Bid_file_success_error.xlsx"), "1", vars["ColumnCountExcel"]);
-            vars["ColumnHeaderExcel"] = readCellByColAndRowIndex(path.resolve(__dirname, '../../../uploads', "Bid_file_success_error (4).xlsx"), 0, 0, vars["ColumnCountExcel"]);
-            log.info(`Column Header from Excel at index ${vars["ColumnCountExcel"]}: ${vars["ColumnHeaderExcel"]}`);
-  
-            if (String("Correspondent Loan Number , Borrower Last Name , Original Loan Amount , Product Code").includes(String(vars["ColumnHeaderExcel"]))) {
-              await BidrequestDetailsPage.Bid_Request_Details_Text.click();
-              if (String(vars["ColumnHeaderExcel"]).includes(String("Correspondent Loan Number"))) {
-                vars["ColumnHeaderUI"] = "Corr. Loan#";
-              } else if (String(vars["ColumnHeaderExcel"]).includes(String("Borrower Last Name"))) {
-                vars["ColumnHeaderUI"] = "Last Name";
-              } else if (String(vars["ColumnHeaderExcel"]).includes(String("Original Loan Amount"))) {
-                vars["ColumnHeaderUI"] = "Loan Amount";
-              } else {
-                vars["ColumnHeaderUI"] = "Program";
-              }
-              log.info(`Mapped Excel column "${vars["ColumnHeaderExcel"]}" to UI column header "${vars["ColumnHeaderUI"]}"`);
-  
-              vars["RowsCountTable"] = String(await BidrequestDetailsPage.Rows_Count_Table_2.count());
-              log.info(`Rows count in table for column "${vars["ColumnHeaderUI"]}": ${vars["RowsCountTable"]}`);
-  
-              vars["RowCountExcel"] = "1";
-              while (parseFloat(String(vars["RowsCountTable"])) >= parseFloat(String("1"))) {
-                vars["CellDataTable"] = await BidrequestDetailsPage.Individual_Cell_Data_Table_2(vars["ColumnHeaderUI"], vars["RowsCountTable"]).textContent() || '';
-                vars["CellDataExcel"] = excelHelper.readCellByColAndRowIndex(path.resolve(__dirname, '../../../uploads', "Bid_file_success_error (4).xlsx"), 0, vars["RowCountExcel"], vars["ColumnCountExcel"]);
-                if (String(vars["ColumnHeaderUI"]) === String("Loan Amount")) {
-                  vars["CellDataExcel"] = parseFloat(String(vars["CellDataExcel"])).toFixed(0);
-                  vars["CellDataTable"] = String(vars["CellDataTable"]).trim();
-                  vars["amount1"] = String(vars["CellDataTable"]).split(",")["0"] || '';
-                  vars["amount2"] = String(vars["CellDataTable"]).split(",")["1"] || '';
-                  vars["CellDataTable"] = String(vars["amount1"]) + String(vars["amount2"]);
-                  vars["CellDataExcel"] = String("$") + String(vars["CellDataExcel"]);
-                  log.info(`Loan Amount - Excel: ${vars["CellDataExcel"]}, Table: ${vars["CellDataTable"]}`);
-                  expect(String(vars["CellDataExcel"])).toBe(vars["CellDataTable"]);
-                } else {
-                  log.info(`Column "${vars["ColumnHeaderUI"]}" Row ${vars["RowCountExcel"]} - Excel: ${vars["CellDataExcel"]}, Table: ${vars["CellDataTable"]}`);
-                  expect(String(vars["CellDataTable"])).toContain(vars["CellDataExcel"]);
-                }
-                vars["RowCountExcel"] = (parseFloat(String("1")) + parseFloat(String(vars["RowCountExcel"]))).toFixed(0);
-                vars["RowsCountTable"] = (parseFloat(String(vars["RowsCountTable"])) - parseFloat(String("1"))).toFixed(0);
-              }
-            }
-            vars["ColumnCountExcel"] = (parseFloat(String("1")) + parseFloat(String(vars["ColumnCountExcel"]))).toFixed(0);
-            if (String(vars["ColumnHeaderExcel"]).includes(String("Product Code"))) {
-              log.info('Reached "Product Code" column, breaking column iteration loop');
-              break;
-            }
-          }
+    //vars["ColumnHeaderExcel"] = excelHelper.readCell(path.resolve(__dirname, 'test-data', "Bid_file_success_error.xlsx,Bid_file_success_error.xlsx"), "1", vars["ColumnCountExcel"]);
+    vars["ColumnHeaderExcel"] = readCellByColAndRowIndex(path.resolve(__dirname, '../../../uploads', "Bid_file_success_error (4).xlsx"), 0, 0, vars["ColumnCountExcel"]);
+    log.info(`Column Header from Excel at index ${vars["ColumnCountExcel"]}: ${vars["ColumnHeaderExcel"]}`);
+
+    if (String("Correspondent Loan Number , Borrower Last Name , Original Loan Amount , Product Code").includes(String(vars["ColumnHeaderExcel"]))) {
+      await BidrequestDetailsPage.Bid_Request_Details_Text.click();
+      if (String(vars["ColumnHeaderExcel"]).includes(String("Correspondent Loan Number"))) {
+        vars["ColumnHeaderUI"] = "Corr. Loan#";
+      } else if (String(vars["ColumnHeaderExcel"]).includes(String("Borrower Last Name"))) {
+        vars["ColumnHeaderUI"] = "Last Name";
+      } else if (String(vars["ColumnHeaderExcel"]).includes(String("Original Loan Amount"))) {
+        vars["ColumnHeaderUI"] = "Loan Amount";
+      } else {
+        vars["ColumnHeaderUI"] = "Program";
+      }
+      log.info(`Mapped Excel column "${vars["ColumnHeaderExcel"]}" to UI column header "${vars["ColumnHeaderUI"]}"`);
+
+      vars["RowsCountTable"] = String(await BidrequestDetailsPage.Rows_Count_Table_2.count());
+      log.info(`Rows count in table for column "${vars["ColumnHeaderUI"]}": ${vars["RowsCountTable"]}`);
+
+      vars["RowCountExcel"] = "1";
+      while (parseFloat(String(vars["RowsCountTable"])) >= parseFloat(String("1"))) {
+        vars["CellDataTable"] = await BidrequestDetailsPage.Individual_Cell_Data_Table_2(vars["ColumnHeaderUI"], vars["RowsCountTable"]).textContent() || '';
+        vars["CellDataExcel"] = excelHelper.readCellByColAndRowIndex(path.resolve(__dirname, '../../../uploads', "Bid_file_success_error (4).xlsx"), 0, vars["RowCountExcel"], vars["ColumnCountExcel"]);
+        if (String(vars["ColumnHeaderUI"]) === String("Loan Amount")) {
+          vars["CellDataExcel"] = parseFloat(String(vars["CellDataExcel"])).toFixed(0);
+          vars["CellDataTable"] = String(vars["CellDataTable"]).trim();
+          vars["amount1"] = String(vars["CellDataTable"]).split(",")["0"] || '';
+          vars["amount2"] = String(vars["CellDataTable"]).split(",")["1"] || '';
+          vars["CellDataTable"] = String(vars["amount1"]) + String(vars["amount2"]);
+          vars["CellDataExcel"] = String("$") + String(vars["CellDataExcel"]);
+          log.info(`Loan Amount - Excel: ${vars["CellDataExcel"]}, Table: ${vars["CellDataTable"]}`);
+          expect(String(vars["CellDataExcel"])).toBe(vars["CellDataTable"]);
+        } else {
+          log.info(`Column "${vars["ColumnHeaderUI"]}" Row ${vars["RowCountExcel"]} - Excel: ${vars["CellDataExcel"]}, Table: ${vars["CellDataTable"]}`);
+          expect(String(vars["CellDataTable"])).toContain(vars["CellDataExcel"]);
+        }
+        vars["RowCountExcel"] = (parseFloat(String("1")) + parseFloat(String(vars["RowCountExcel"]))).toFixed(0);
+        vars["RowsCountTable"] = (parseFloat(String(vars["RowsCountTable"])) - parseFloat(String("1"))).toFixed(0);
+      }
+    }
+    vars["ColumnCountExcel"] = (parseFloat(String("1")) + parseFloat(String(vars["ColumnCountExcel"]))).toFixed(0);
+    if (String(vars["ColumnHeaderExcel"]).includes(String("Product Code"))) {
+      log.info('Reached "Product Code" column, breaking column iteration loop');
+      break;
+    }
+  }
 
 }
 
@@ -6870,7 +6850,7 @@ export async function stepGroup_Selecting_Second_Enabled_Batch_Time_If_the_Condi
     vars["SecondEnabledTime"] = (await CorrPortalElem.Second_Enabled_Time.first().textContent() || '').trim();
     await CorrPortalElem.Pricing_Return_Time.selectOption({ value: vars["SecondEnabledTime"] });
     //await BidrequestCreationPage.Pricing_ReturnTime_Dropdown.selectOption({ value: vars["SecondEnabledTime"] });
-}
+  }
 }
 
 /**

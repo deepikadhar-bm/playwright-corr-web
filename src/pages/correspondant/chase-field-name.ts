@@ -95,8 +95,8 @@ export class ChaseFieldNamePage {
     return this.page.locator("(//label[text()=\" Bid Enumerated Tape Value \"]/..//div[contains(@class,\"flex-grow-1 text-start\")])[1]");
   }
 
-  get_Chase_Field_Name_common_one_Field(count: string): Locator {
-  return this.page.locator(`(//div[@class="my-2"])[${count}]`);
+  get_Chase_Field_Name_common_one_Field(count1: string): Locator {
+  return this.page.locator(`(//div[@class="my-2"])[${count1}]`);
 }
 
   get Chase_Field_Name_for_Add_action(): Locator {
@@ -300,7 +300,7 @@ export class ChaseFieldNamePage {
   }
 
   get UpdatingBid_EnumeratedTapeValue_1(): Locator {
-    return this.page.locator("//span[@title=\"SAIKAT_18_FEB_002\"]");
+    return this.page.locator("//div[contains(@class,'dropdown-menu show')]//button[@role='option' and contains(@class,'dropdown-item') and @aria-selected]");
   }
 
   get UpdatingWhenBidField_1(): Locator {

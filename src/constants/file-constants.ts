@@ -3,4 +3,5 @@ export const FILE_CONSTANTS = {
     BID_FILE_4LOANS:'Bid_file_success_error_newly_updated_TC6.xlsx',
     NEW_FILE_LOAN_POPUP_VERIFICATION:'NewFileLoanPopVerification.xlsx',
     Bid_Maps_File:'Bid_Maps_File.xlsx',
+    BID_MAP_TXT_FILE:'Bid_Maps_File_Txt.txt',
 };
