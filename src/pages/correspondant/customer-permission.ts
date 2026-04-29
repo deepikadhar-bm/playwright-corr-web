@@ -12,7 +12,7 @@ export class CustomerPermissionPage {
   }
 
   get Chase_StateFirst_Record(): Locator {
-    return this.page.locator("(//td[@data-title=\"Chase Direct\"]//div)[1]");
+    return this.page.locator("(//td[@data-title=\"Execution Types\"]//span)[2]");
   }
 
   Chasedirect_Execution_PermissionAllowed(CompanyName_CustomerPermissions: string): Locator {
@@ -23,20 +23,20 @@ export class CustomerPermissionPage {
     return this.page.locator(`//td[@data-title="Company Name" and text()=" ${CompanyName_CustomerPermissions} "]/ancestor::tr//td[@data-title="Chase Direct"]//div[@class="text-danger"]`);
   }
 
-  get Company_1_Chase_State(): Locator {
-    return this.page.locator("//td[@data-title=\"Company Name\" and contains(text(),\"$|ExpectedCompanyName1|\")]/following-sibling::td[@data-title=\"Chase Direct\"]//div");
+  Company_1_Chase_State(ExpectedCompanyName1: string): Locator {
+    return this.page.locator(`//td[@data-title="Company Name" and contains(text(),"${ExpectedCompanyName1}")]/ancestor::tr//td[@data-title="Execution Types"]//span[2]`);
   }
 
-  get Company_1_Standard_State(): Locator {
-    return this.page.locator("//td[@data-title=\"Company Name\" and contains(text(),\"$|ExpectedCompanyName1|\")]/following-sibling::td[@data-title=\"Standard\"]//div");
+  Company_1_Standard_State(ExpectedCompanyName1: string): Locator {
+    return this.page.locator(`//td[@data-title="Company Name" and contains(text(),"${ExpectedCompanyName1}")]/ancestor::tr//td[@data-title="Execution Types"]//span[1]`);
   }
 
-  get Company_2_Chase_State(): Locator {
-    return this.page.locator("//td[@data-title=\"Company Name\" and contains(text(),\"$|ExpectedCompanyName2|\")]/following-sibling::td[@data-title=\"Chase Direct\"]//div");
+  Company_2_Chase_State(ExpectedCompanyName2: string): Locator {
+    return this.page.locator(`//td[@data-title="Company Name" and contains(text(),"${ExpectedCompanyName2}")]/ancestor::tr//td[@data-title="Execution Types"]//span[2]`);
   }
 
-  get Company_2_Standard_State(): Locator {
-    return this.page.locator("//td[@data-title=\"Company Name\" and contains(text(),\"$|ExpectedCompanyName2|\")]/following-sibling::td[@data-title=\"Standard\"]//div");
+  Company_2_Standard_State(ExpectedCompanyName2: string): Locator {
+    return this.page.locator(`//td[@data-title="Company Name" and contains(text(),"${ExpectedCompanyName2}")]/ancestor::tr//td[@data-title="Execution Types"]//span[1]`);
   }
 
   get Company_Name1other_than_HomeSweet(): Locator {
@@ -65,7 +65,7 @@ export class CustomerPermissionPage {
   }
 
   get Edit_Permission_Buttonfirst_record(): Locator {
-    return this.page.locator("//tbody[@role=\"rowgroup\"]/tr[1]/td[8]/div[1]/button[1]/span[1]");
+    return this.page.locator("//tbody[@role=\"rowgroup\"]/tr[1]/td[7]/div[1]/button[1]");
   }
 
   get Edit_Permissions_ButtonCompany_1(): Locator {
@@ -117,7 +117,7 @@ export class CustomerPermissionPage {
   }
 
   get Standard_State_First_Record(): Locator {
-    return this.page.locator("(//td[@data-title=\"Standard\"]//div)[1]");
+    return this.page.locator("(//td[@data-title=\"Execution Types\"]//span)[1]");
   }
 
   get Third_Checkbox(): Locator {
