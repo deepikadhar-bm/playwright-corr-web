@@ -8,6 +8,10 @@ import { SpinnerPage } from '../../pages/correspondant/spinner';
 import { ENV } from '@config/environments'
 import { Logger as log } from '../../../src/helpers/log-helper';
 import { testDataManager } from 'testdata/TestDataManager';
+import { FILE_CONSTANTS as fileconstants } from '../../../src/constants/file-constants';
+
+const TC_ID = "REG_TS09_TC01";
+const TC_TITLE = "Verify that user should be able to Add new the existing bid tape value under the enum and also should be able to update the chase values";
 
 export async function runPrereq_791(page: Page, vars: Record<string, string>): Promise<void> {
   const correspondentPortalPage = new CorrespondentPortalPage(page);
@@ -17,9 +21,10 @@ export async function runPrereq_791(page: Page, vars: Record<string, string>): P
   const profileName = "Bid_Maps";
   const profile = testDataManager.getProfileByName(profileName);
   const credentials = ENV.getCredentials('internal');
+  log.tcStart(TC_ID, TC_TITLE);
 
   try {
-    log.step("Prereq 791 - Load profile data and credentials");
+    log.step("Step 1: Login to CORR Portal and prepare Bid Map up to Header Mapping");
     try {
       if (profile && profile.data) {
         const chaseValue = profile.data[0]['Chase Value'];
@@ -29,36 +34,48 @@ export async function runPrereq_791(page: Page, vars: Record<string, string>): P
         vars["Username"] = credentials.username;
         vars["Password"] = credentials.password;
       }
-      log.stepPass("Prereq 791 - Profile data and credentials loaded.");
+      await stepGroups.stepGroup_Login_to_CORR_Portal(page, vars);
+      await stepGroups.stepGroup_Smart_Mapper_from_Off_to_On(page, vars);
+      const fileName = fileconstants.BID_QA_FILE_COMMON;
+      await stepGroups.stepGroup_Creation_Of_Bid_Map_Upto_Header_Mapping(page, vars, fileName);
+      await expect(correspondentPortalPage.Rules_and_Actions_Step_4_of_4).toBeVisible();
+      log.stepPass("Step 1 passed: Logged in, enabled Smart Mapper, and navigated to Rules and Actions step.");
     } catch (error) {
-      await log.stepFail(page, "Prereq 791 - Failed to load profile data or credentials.");
+      log.stepFail(page, "Step 1 failed: Unable to login, enable Smart Mapper, or reach Rules and Actions step.");
       throw error;
     }
 
-    log.step("Prereq 791 - Login, create Bid Map up to header mapping, and add enumeration pair");
+    log.step("Step 2: Navigate to Enumeration Mapping screen");
     try {
-      await stepGroups.stepGroup_Login_to_CORR_Portal(page, vars);
-      await stepGroups.stepGroup_Smart_Mapper_from_Off_to_On(page, vars);
-      await stepGroups.stepGroup_Creation_Of_Bid_Map_Upto_Header_Mapping(page, vars,"DeepikaAugBidQA_(3)_(1)_(1)_(2).xlsx");
-      await expect(correspondentPortalPage.Rules_and_Actions_Step_4_of_4).toBeVisible();
       await enumerationMappingButtonPage.Enumeration_Mapping_Button.waitFor({ state: 'visible' });
       await enumerationMappingButtonPage.Enumeration_Mapping_Button.click();
       await correspondentPortalPage.Heading_Save_and_Move_to_Next_Page1.waitFor({ state: 'visible' });
       await correspondentPortalPage.Yes_Proceed_Button.click();
       await spinnerPage.Spinner.waitFor({ state: 'hidden' });
       await expect(correspondentPortalPage.Rules_and_Actions_Step_4_of_4).toBeVisible();
+      log.stepPass("Step 2 passed: Navigated to Enumeration Mapping and returned to Rules and Actions step.");
+    } catch (error) {
+      log.stepFail(page, "Step 2 failed: Unable to navigate to Enumeration Mapping or return to Rules and Actions step.");
+      throw error;
+    }
+
+    log.step("Step 3: Add new bid tape value under enum and save draft");
+    try {
       await correspondentPortalPage.Add_Field_Button.click();
       await correspondentPortalPage.Chase_Value.selectOption({ label: vars["Chase Value"] });
       await correspondentPortalPage.Bid_Tape_Value.fill(vars["Bid Tape Value"]);
       await correspondentPortalPage.Save_Draft_Button_in_Enumeration_Mapping.click();
       await expect(rulesAndActionsButtonPage.Rules_and_Actions_Button).toBeVisible();
-      log.stepPass("Prereq 791 - Enumeration pair created and Rules and Actions button visible.");
+      log.stepPass("Step 3 passed: New bid tape value added and draft saved successfully.");
     } catch (error) {
-      await log.stepFail(page, "Prereq 791 - Failed during login, header mapping creation, or enumeration pair creation.");
+      log.stepFail(page, "Step 3 failed: Unable to add new bid tape value or save draft.");
       throw error;
     }
+
+    log.tcEnd('PASS');
   } catch (error) {
-    await log.captureOnFailure(page, "runPrereq_791", error);
+    log.captureOnFailure(page, TC_ID, error);
+    log.tcEnd('FAIL');
     throw error;
   }
 }

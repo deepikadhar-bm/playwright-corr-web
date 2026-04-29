@@ -1,6 +1,4 @@
-// [POM-APPLIED]
 import { test, expect } from '@playwright/test';
-import path from 'path';
 import * as stepGroups from '../../../src/helpers/step-groups';
 import { BidmapPage } from '../../../src/pages/correspondant/bidmap';
 import { ChaseFieldNamePage } from '../../../src/pages/correspondant/chase-field-name';
@@ -13,8 +11,18 @@ import { ProceedWithSavingButtonPage } from '../../../src/pages/correspondant/pr
 import { RulesAndActionsButtonPage } from '../../../src/pages/correspondant/rules-and-actions-button';
 import { SaveAndPublishButtonPage } from '../../../src/pages/correspondant/save-and-publish-button';
 import { SpinnerPage } from '../../../src/pages/correspondant/spinner';
+import { AddonHelpers } from '@helpers/AddonHelpers';
+import { Logger as log } from '@helpers/log-helper';
+import { testDataManager } from 'testdata/TestDataManager';
+import { ENV } from '@config/environments';
+import { FILE_CONSTANTS as fileconstants } from '../../../src/constants/file-constants';
+import { APP_CONSTANTS as appconstants } from '../../../src/constants/app-constants';
 
-test.describe('Unassigned', () => {
+
+const TC_ID = 'REG_TS01_TC08';
+const TC_TITLE = 'Verify that user should be able to create the bid maps using the file extension txt.';
+
+test.describe('REG_Bid Maps', () => {
   let vars: Record<string, string> = {};
   let bidmapPage: BidmapPage;
   let chaseFieldNamePage: ChaseFieldNamePage;
@@ -27,9 +35,20 @@ test.describe('Unassigned', () => {
   let rulesAndActionsButtonPage: RulesAndActionsButtonPage;
   let saveAndPublishButtonPage: SaveAndPublishButtonPage;
   let spinnerPage: SpinnerPage;
+  let Methods: AddonHelpers;
+
+  const credentials = ENV.getCredentials('internal');
+
+  const profileName1 = 'Bid_Maps';
+  const profile1 = testDataManager.getProfileByName(profileName1);
+
+  const profileName2 = 'Enum Type Values';
+  const profile2 = testDataManager.getProfileByName(profileName2);
 
   test.beforeEach(async ({ page }) => {
     vars = {};
+    vars['Username'] = credentials.username;
+    vars['Password'] = credentials.password;
     bidmapPage = new BidmapPage(page);
     chaseFieldNamePage = new ChaseFieldNamePage(page);
     correspondentPortalPage = new CorrespondentPortalPage(page);
@@ -41,118 +60,153 @@ test.describe('Unassigned', () => {
     rulesAndActionsButtonPage = new RulesAndActionsButtonPage(page);
     saveAndPublishButtonPage = new SaveAndPublishButtonPage(page);
     spinnerPage = new SpinnerPage(page);
+    Methods = new AddonHelpers(page, vars);
   });
 
-  test('REG_TS01_TC08_Verify that user should be able to create the bid maps using the file extenstion txt', async ({ page }) => {
-    const testData: Record<string, string> = {
-  "Enum Type": "Loan Purpose"
-}; // Profile: "Enum Type Values.", row: 0
-    const testDataSets: Record<string, string>[] = [
-  {
-    "Enum Type": "Loan Purpose"
-  },
-  {
-    "Enum Type": "Mortgage Limit"
-  },
-  {
-    "Enum Type": "Occupancy Type"
-  },
-  {
-    "Enum Type": "Mortgage Types"
-  },
-  {
-    "Enum Type": "Amortization Type"
-  },
-  {
-    "Enum Type": "First Time Home Buyer"
-  },
-  {
-    "Enum Type": "Attachment Type"
-  },
-  {
-    "Enum Type": "Property Type"
-  },
-  {
-    "Enum Type": "Aus List"
-  },
-  {
-    "Enum Type": "Property Valuation Type"
-  },
-  {
-    "Enum Type": "Buy Down"
-  },
-  {
-    "Enum Type": "Impound Type"
-  },
-  {
-    "Enum Type": "First Time Homebuyer Credit Fee Waiver"
-  },
-  {
-    "Enum Type": "Interest Only"
-  },
-  {
-    "Enum Type": "Ineligible"
-  },
-  {
-    "Enum Type": "TPO"
-  },
-  {
-    "Enum Type": "Loan Term"
-  },
-  {
-    "Enum Type": "Product Name"
-  }
-];
+  test(`${TC_ID} - ${TC_TITLE}`, async ({ page }) => {
+    log.tcStart(TC_ID, TC_TITLE);
 
-    await stepGroups.stepGroup_Login_to_CORR_Portal(page, vars);
-    await stepGroups.stepGroup_Creation_Of_Bid_Map_Upto_Header_Mapping(page, vars);
-    vars["EnumValues"] = "Loan Purpose";
-    // Loop over test data sets in "Enum Type Values." from set2 to set18
-for (const testDataSet of testDataSets) {
-      vars["EnumValues"] = String(testData["Enum Type"]) + "," + String(vars["EnumValues"]);
+    if (profile1 && profile1.data) {
+      vars["Rule Name"] = profile1.data[0]['Rule Name'];
+      vars["BidEnumeratedTapeValue"] = profile1.data[0]['BidEnumeratedTapeValue'];
+      vars["BidField"] = profile1.data[0]['BidField'];
+      vars["Operation1"] = profile1.data[0]['Operation1'];
     }
-    vars["ChaseEnumValueCount"] = String(await headerMappingPage.MappedChaseFieldName.count());
-    vars["count"] = "1";
-    vars["ChaseEnumValue"] = "sample";
-    while (parseFloat(String(vars["count"])) < parseFloat(String(vars["ChaseEnumValueCount"]))) {
-      vars["ChaseName"] = await headerMappingPage.Individual_Mapped_Chase_Name.evaluate(el => { const s = el as HTMLSelectElement; return s.options[s.selectedIndex]?.text || ''; });
-      if (String(vars["EnumValues"]).includes(String(vars["ChaseName"]))) {
-        vars["ChaseEnumValue"] = String(vars["ChaseName"]) + "," + String(vars["ChaseEnumValue"]);
-        vars["CorrespondentBidName"] = await headerMappingPage.Correspondent_Bid_sample_name.textContent() || '';
-        await enumerationMappingButtonPage.Enumeration_Mapping_Button.click();
-        await bidmapPage.Yes_Proceed_Button_Text.click();
-        await rulesAndActionsButtonPage.Rules_and_Actions_Button.waitFor({ state: 'visible' });
-        await expect(enumerationMappingPage.Bid_Sample_Name_Field_Enumeration_Mapping).toContainText(vars["CorrespondentBidName"]);
-        await correspondentPortalPage.Header_Mapping1.click();
-        await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+
+    try {
+
+      log.step('Login to CORR portal');
+      try {
+        await stepGroups.stepGroup_Login_to_CORR_Portal(page, vars);
+        log.stepPass('Login to CORR portal successful');
+      } catch (e) {
+        await log.stepFail(page, 'Login to CORR portal failed');
+        throw e;
       }
-      vars["count"] = (parseFloat(String("1")) + parseFloat(String(vars["count"]))).toFixed(0);
+
+      log.step('Create Bid Map up to Header Mapping');
+      try {
+        await stepGroups.stepGroup_Creation_Of_Bid_Map_Upto_Header_Mapping(page, vars, fileconstants.BID_MAP_TXT_FILE);
+        log.stepPass('Bid Map created up to Header Mapping using txt file');
+      } catch (e) {
+        await log.stepFail(page, 'Failed to create Bid Map up to Header Mapping');
+        throw e;
+      }
+
+      log.step('Build EnumValues list from Enum Type Values profile');
+      try {
+        vars['EnumValues'] = 'Loan Purpose';
+        const dataList = profile2?.data as Record<string, any>[];
+        for (let i = 1; i <= 17; i++) {
+          log.info('Iteration: ' + i);
+          vars['Enum Type'] = dataList[i]['Enum Type'];
+          log.info('Enum Type: ' + vars['Enum Type']);
+          Methods.concatenateWithSpecialChar(vars['EnumValues'], vars['Enum Type'], ',', 'EnumValues');
+        }
+        log.info('Final EnumValues: ' + vars['EnumValues']);
+        log.stepPass('EnumValues list built successfully');
+      } catch (e) {
+        await log.stepFail(page, 'Failed to build EnumValues list from Enum Type Values profile');
+        throw e;
+      }
+
+      log.step('Iterate through mapped Chase fields and verify enum values in Enumeration Mapping');
+      try {
+        vars['ChaseEnumValueCount'] = String(await headerMappingPage.MappedChaseFieldName.count());
+        log.info('Chase Enum Value Count: ' + vars['ChaseEnumValueCount']);
+        vars['count'] = appconstants.ONE;
+        vars['ChaseEnumValue'] = 'sample';
+        while (parseFloat(String(vars['count'])) < parseFloat(String(vars['ChaseEnumValueCount']))) {
+          vars['ChaseName'] = await headerMappingPage.get_Individual_Mapped_Chase_Name(vars['count']).evaluate(el => {
+            const s = el as HTMLSelectElement;
+            return s.options[s.selectedIndex]?.text || '';
+          });
+          Methods.trimtestdata(vars['ChaseName'], 'ChaseName');
+          log.info('ChaseName at count ' + vars['count'] + ': ' + vars['ChaseName']);
+          if (String(vars['EnumValues']).includes(String(vars['ChaseName']))) {
+            Methods.concatenateWithSpecialChar(vars['ChaseName'], vars['ChaseEnumValue'], ',', 'ChaseEnumValue');
+            vars['CorrespondentBidName'] = await headerMappingPage.get_Correspondent_Bid_sample_name(vars['count']).textContent() || '';
+            Methods.trimtestdata(vars['CorrespondentBidName'], 'CorrespondentBidName');
+            log.info('CorrespondentBidName: ' + vars['CorrespondentBidName']);
+            await enumerationMappingButtonPage.Enumeration_Mapping_Button.click();
+            await bidmapPage.Yes_Proceed_Button_Text.click();
+            await rulesAndActionsButtonPage.Rules_and_Actions_Button.waitFor({ state: 'visible' });
+            await expect(enumerationMappingPage.get_Bid_Sample_Name_Field_Enumeration_Mapping(vars['ChaseName'])).toContainText(vars['CorrespondentBidName']);
+            await correspondentPortalPage.Header_Mapping1.click();
+            await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+          }
+          Methods.performArithmetic('1', 'ADDITION', vars['count'], 'count', 0);
+        }
+        log.stepPass('All mapped Chase fields iterated and enum values verified');
+      } catch (e) {
+        await log.stepFail(page, 'Failed to verify enum values in Enumeration Mapping at count: ' + vars['count']);
+        throw e;
+      }
+
+      log.step('Navigate to Enumeration Mapping and verify Chase Enum Names');
+      try {
+        await enumerationMappingButtonPage.Enumeration_Mapping_Button.click();
+        if (await bidmapPage.Yes_Proceed_Button_Text.isVisible()) {
+          log.info('Yes Proceed Button visible — clicking to proceed');
+          await bidmapPage.Yes_Proceed_Button_Text.click();
+        }
+        if (await proceedWithSavingButtonPage.Proceed_with_Saving_Button.isVisible()) {
+          log.info('Proceed with Saving Button visible — clicking to proceed');
+          await proceedWithSavingButtonPage.Proceed_with_Saving_Button.click();
+        }
+        vars['ChaseEnumNamesCount'] = String(await enumerationMappingPage.Chase_Enum_Names.count());
+        log.info('Chase Enum Names Count: ' + vars['ChaseEnumNamesCount']);
+        vars['count1'] = appconstants.ONE;
+        while (parseFloat(String(vars['count1'])) <= parseFloat(String(vars['ChaseEnumNamesCount']))) {
+          vars['ChaseName'] = await chaseFieldNamePage.get_Chase_Field_Name_common_one_Field(vars['count1']).textContent() || '';
+          Methods.trimtestdata(vars['ChaseName'], 'ChaseName');
+          log.info('ChaseName at count1 ' + vars['count1'] + ': ' + vars['ChaseName']);
+          Methods.verifyString(vars['ChaseEnumValue'], 'contains', vars['ChaseName']);
+          Methods.performArithmetic('1', 'ADDITION', vars['count1'], 'count1', 0);
+        }
+        log.stepPass('Chase Enum Names verified successfully against ChaseEnumValue');
+      } catch (e) {
+        await log.stepFail(page, 'Failed to verify Chase Enum Names in Enumeration Mapping');
+        throw e;
+      }
+
+      log.step('Navigate to Rules and Actions');
+      try {
+        await rulesAndActionsButtonPage.Rules_and_Actions_Button.click();
+        if (await bidmapPage.Yes_Proceed_Button_Text.isVisible()) {
+          log.info('Yes Proceed Button visible — clicking to proceed');
+          await bidmapPage.Yes_Proceed_Button_Text.click();
+        }
+        if (await proceedWithSavingButtonPage.Proceed_with_Saving_Button.isVisible()) {
+          log.info('Proceed with Saving Button visible — clicking to proceed');
+          await proceedWithSavingButtonPage.Proceed_with_Saving_Button.click();
+        }
+        log.stepPass('Navigated to Rules and Actions screen');
+      } catch (e) {
+        await log.stepFail(page, 'Failed to navigate to Rules and Actions');
+        throw e;
+      }
+
+      log.step('Save and Publish the Bid Map');
+      try {
+        await saveAndPublishButtonPage.Save_and_Publish_Button.click();
+        if (await proceedWithSavingButtonPage.Proceed_with_Saving_Button.isVisible()) {
+          log.info('Proceed with Saving Button visible — clicking to proceed');
+          await proceedWithSavingButtonPage.Proceed_with_Saving_Button.click();
+        }
+        await expect(mapNameFieldInBidMapsPage.get_Bid_Map_Name_Field_In_Row(vars['CreateNewMap'])).toBeVisible();
+        log.stepPass('Bid Map saved and published successfully');
+      } catch (e) {
+        await log.stepFail(page, 'Failed to Save and Publish the Bid Map');
+        throw e;
+      }
+
+      log.tcEnd('PASS');
+
+    } catch (e) {
+      await log.captureOnFailure(page, TC_ID, e);
+      log.tcEnd('FAIL');
+      throw e;
     }
-    await enumerationMappingButtonPage.Enumeration_Mapping_Button.click();
-    if (true) /* Element Yes Proceed Button is visible */ {
-      await bidmapPage.Yes_Proceed_Button_Text.click();
-    }
-    if (true) /* Element Proceed with Saving Button is visible */ {
-      await proceedWithSavingButtonPage.Proceed_with_Saving_Button.click();
-    }
-    vars["ChaseEnumNamesCount"] = String(await enumerationMappingPage.Chase_Enum_Names.count());
-    vars["count1"] = "1";
-    while (parseFloat(String(vars["count1"])) <= parseFloat(String(vars["ChaseEnumNamesCount"]))) {
-      vars["ChaseName"] = await chaseFieldNamePage.Chase_Field_Name_common_one_Field.inputValue() || '';
-      expect(String(vars["ChaseEnumValue"])).toBe(vars["ChaseName"]);
-      vars["count1"] = (parseFloat(String("1")) + parseFloat(String(vars["count1"]))).toFixed(0);
-    }
-    await rulesAndActionsButtonPage.Rules_and_Actions_Button.click();
-    if (true) /* Element Yes Proceed Button is visible */ {
-      await bidmapPage.Yes_Proceed_Button_Text.click();
-    }
-    if (true) /* Element Proceed with Saving Button is visible */ {
-      await proceedWithSavingButtonPage.Proceed_with_Saving_Button.click();
-    }
-    await saveAndPublishButtonPage.Save_and_Publish_Button.click();
-    if (true) /* Element Proceed with Saving Button is visible */ {
-      await proceedWithSavingButtonPage.Proceed_with_Saving_Button.click();
-    }
-    await expect(mapNameFieldInBidMapsPage.Bid_Map_Name_Field_In_Row).toBeVisible();
   });
 });

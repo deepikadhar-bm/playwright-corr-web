@@ -1,8 +1,4 @@
-// [PREREQ-APPLIED]
-// [POM-APPLIED]
 import { test, expect } from '@playwright/test';
-import path from 'path';
-import * as stepGroups from '../../../src/helpers/step-groups';
 import { AddedOnPage } from '../../../src/pages/correspondant/added-on';
 import { AddHeaderPage } from '../../../src/pages/correspondant/add-header';
 import { ChaseFieldNamePage } from '../../../src/pages/correspondant/chase-field-name';
@@ -22,7 +18,7 @@ import { runPrereq_797 } from '../../../src/helpers/prereqs/prereq-797';
 import { AddonHelpers } from '@helpers/AddonHelpers';
 import { Logger as log } from '@helpers/log-helper';
 import { testDataManager } from 'testdata/TestDataManager';
-import { ENV } from '@config/environments';
+import { APP_CONSTANTS as appconstants } from '../../../src/constants/app-constants';
 
 
 const TC_ID = 'REG_TS11_TC03';
@@ -47,15 +43,12 @@ test.describe('REG_Bid Maps', () => {
   let statusInactivePage: StatusInactivePage;
   let Methods: AddonHelpers;
 
-  const credentials = ENV.getCredentials('internal');
 
   const profileName = 'Bid_Maps';
   const profile = testDataManager.getProfileByName(profileName);
 
   test.beforeEach(async ({ page }) => {
     vars = {};
-    vars['Username'] = credentials.username;
-    vars['Password'] = credentials.password;
     await runPrereq_797(page, vars);
     addedOnPage = new AddedOnPage(page);
     addHeaderPage = new AddHeaderPage(page);
@@ -99,23 +92,23 @@ test.describe('REG_Bid Maps', () => {
 
       log.step('Navigate to Bid Map and proceed through Header Mapping, Enumeration Mapping, and Rules and Actions');
       try {
-        vars['BidMap']=vars['CreateNewMap'];
+        vars['BidMap'] = vars['CreateNewMap'];
         await correspondentPortalPage.Bid_Maps_name(vars['BidMap']).click();
         await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-        await expect(mapHeadersButtonPage.Map_Headers_Button).toBeVisible();
+        await expect(mapHeadersButtonPage.Map_Headers_Button).toBeEnabled();
         await mapHeadersButtonPage.Map_Headers_Button.click();
         await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-        await expect(enumerationMappingButtonPage.Enumeration_Mapping_Button).toBeVisible();
+        await expect(enumerationMappingButtonPage.Enumeration_Mapping_Button).toBeEnabled();
         await enumerationMappingButtonPage.Enumeration_Mapping_Button.click();
         await expect(correspondentPortalPage.Heading_Save_and_Move_to_Next_Page1).toBeVisible();
         await correspondentPortalPage.Yes_Proceed_Button.click();
         await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-        await expect(rulesAndActionsButtonPage.Rules_and_Actions_Button).toBeVisible();
+        await expect(rulesAndActionsButtonPage.Rules_and_Actions_Button).toBeEnabled();
         await rulesAndActionsButtonPage.Rules_and_Actions_Button.click();
         await expect(correspondentPortalPage.Heading_Save_and_Move_to_Next_Page1).toBeVisible();
         await correspondentPortalPage.Yes_Proceed_Button.click();
         await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-        await expect(saveAndPublishButtonPage.Save_and_Publish_Button).toBeVisible();
+        await expect(saveAndPublishButtonPage.Save_and_Publish_Button).toBeEnabled();
         await expect(correspondentPortalPage.Add_Conditions).toBeVisible();
         log.stepPass('Navigated to Rules and Actions screen');
       } catch (e) {
@@ -126,18 +119,20 @@ test.describe('REG_Bid Maps', () => {
       log.step('Update Rule Name and Category');
       try {
         vars["Rule Name"] = await correspondentPortalPage.Enter_a_Rule_Name_Field.inputValue() || '';
-        await correspondentPortalPage.Enter_a_Rule_Name_Field.fill(Array.from({ length: 2 }, () => "ab".charAt(Math.floor(Math.random() * 2))).join(''));
+        Methods.generateRandomChar('2', 'RandomChar');
+        await correspondentPortalPage.Enter_a_Rule_Name_Field.click();
+        await correspondentPortalPage.Enter_a_Rule_Name_Field.type(vars['RandomChar']);
         vars["UpdatedRuleName"] = await correspondentPortalPage.Enter_a_Rule_Name_Field.inputValue() || '';
-        Methods.verifyString(vars["Rule Name"], 'equals', vars["UpdatedRuleName"]);
+        Methods.verifyString(vars["Rule Name"], 'notEquals', vars["UpdatedRuleName"]);
         await statusInactivePage.Selected1_Dropdown.click();
         await chaseFieldNamePage.Ineligible_Category.check();
         await chaseFieldNamePage.Apply_Selected_Button_for_Category.click();
         await expect(chaseFieldNamePage.Updated_SelectCategory).toBeVisible();
         await chaseFieldNamePage.Updated_SelectCategory.click();
-        await expect(chaseFieldNamePage.Product_Category).toBeVisible();
-        await expect(chaseFieldNamePage.Ineligible_Category).toBeVisible();
+        await expect(chaseFieldNamePage.Product_Category).toBeChecked();
+        await expect(chaseFieldNamePage.Ineligible_Category).toBeChecked();
         await chaseFieldNamePage.Apply_Selected_Button_for_Category.click();
-        log.stepPass('Rule Name updated to: ' + vars["UpdatedRuleName"] + ' and Category updated');
+        log.stepPass('Successfully updated Rule Name updated and Category');
       } catch (e) {
         await log.stepFail(page, 'Failed to update Rule Name or Category');
         throw e;
@@ -145,12 +140,17 @@ test.describe('REG_Bid Maps', () => {
 
       log.step('Capture Before values of first rule block fields');
       try {
-        vars["BeforeWhenBidField1"] = await statusInactivePage.AfterWhenBidField1.inputValue() || '';
+        vars["BeforeWhenBidField1"] = await statusInactivePage.AfterWhenBidField1.textContent() || '';
+        log.info('Before When Bid Field1: ' + vars["BeforeWhenBidField1"]);
         vars["BeforeOperator1"] = await chaseFieldNamePage.BeforeOperator1.inputValue() || '';
-        vars["BeforeBidEnumTapeValue1"] = await chaseFieldNamePage.BidEnumeratedTapeValueField_1.inputValue() || '';
+        log.info('Before Operator1: ' + vars["BeforeOperator1"]);
+        vars["BeforeBidEnumTapeValue1"] = await chaseFieldNamePage.BidEnumeratedTapeValueField_1.textContent() || '';
+        log.info('Before Bid Enum Tape Value1: ' + vars["BeforeBidEnumTapeValue1"]);
         vars["BeforeActionChaseFieldName1"] = await chaseFieldNamePage.UpdatingActionChaseFieldName_1.evaluate(el => { const s = el as HTMLSelectElement; return s.options[s.selectedIndex]?.text || ''; });
+        log.info('Before Action Chase Field Name1: ' + vars["BeforeActionChaseFieldName1"]);
         vars["BeforeActionChaseValue1"] = await statusInactivePage.AfterActionChaseValue1.evaluate(el => { const s = el as HTMLSelectElement; return s.options[s.selectedIndex]?.text || ''; });
-        log.stepPass('Before values captured. WhenBidField1: ' + vars["BeforeWhenBidField1"] + ' Operator1: ' + vars["BeforeOperator1"]);
+        log.info('Before Action Chase Value1: ' + vars["BeforeActionChaseValue1"]);
+        log.stepPass('Successfully store the required values');
       } catch (e) {
         await log.stepFail(page, 'Failed to capture Before values of first rule block');
         throw e;
@@ -159,13 +159,14 @@ test.describe('REG_Bid Maps', () => {
       log.step('Edit first rule block — update When Bid Field, Operator, Tape Value, and Action fields');
       try {
         await statusInactivePage.AfterWhenBidField1.click();
-        await rulesAndActionsPage.Search_Input_under_When_Bid_Field.fill(vars["UpdatedWhenBidFieldName"]);
+        await rulesAndActionsPage.Search_Input_under_When_Bid_Field.first().fill(vars["UpdatedWhenBidFieldName"]);
         await correspondentPortalPage.UpdatedWhenBidField1.click();
         await expect(statusInactivePage.AfterWhenBidField1).toContainText(vars["UpdatedWhenBidFieldName"]);
-        await chaseFieldNamePage.BeforeOperator1.selectOption({ label: vars["Operator"] });
+        await chaseFieldNamePage.BeforeOperator1.selectOption({ value: vars["Operator"] });
         await expect(chaseFieldNamePage.BeforeOperator1).toHaveValue(vars["Operator"]);
         await chaseFieldNamePage.BidEnumeratedTapeValueField_1.click();
-        await correspondentPortalPage.Bid_EnumeratedTape_value_Existing_RowDropdown.click();
+        vars["UpdatedBidEnumeratedTapeValue"] = await chaseFieldNamePage.UpdatingBid_EnumeratedTapeValue_1.first().textContent() || '';
+        await chaseFieldNamePage.UpdatingBid_EnumeratedTapeValue_1.first().click();
         await expect(chaseFieldNamePage.BidEnumeratedTapeValueField_1).toContainText(vars["UpdatedBidEnumeratedTapeValue"]);
         vars["ActionChaseFiledNew1"] = await chaseFieldNamePage.Chase_field_Name_New_one.textContent() || '';
         Methods.trimtestdata(vars["ActionChaseFiledNew1"], "ActionChaseFiledNew1");
@@ -183,16 +184,16 @@ test.describe('REG_Bid Maps', () => {
 
       log.step('Capture After values and verify they differ from Before values');
       try {
-        vars["AfterWhenBidField1"] = await statusInactivePage.AfterWhenBidField1.inputValue() || '';
+        vars["AfterWhenBidField1"] = await statusInactivePage.AfterWhenBidField1.textContent() || '';
         vars["AfterOperator1"] = await chaseFieldNamePage.BeforeOperator1.inputValue() || '';
-        vars["AfterBidEnurmeratedTapeValue1"] = await chaseFieldNamePage.BidEnumeratedTapeValueField_1.inputValue() || '';
+        vars["AfterBidEnurmeratedTapeValue1"] = await chaseFieldNamePage.BidEnumeratedTapeValueField_1.textContent() || '';
         vars["AfterActionChaseFieldName1"] = await chaseFieldNamePage.UpdatingActionChaseFieldName_1.evaluate(el => { const s = el as HTMLSelectElement; return s.options[s.selectedIndex]?.text || ''; });
         vars["AfterActionChaseValue1"] = await statusInactivePage.AfterActionChaseValue1.evaluate(el => { const s = el as HTMLSelectElement; return s.options[s.selectedIndex]?.text || ''; });
-        Methods.verifyString(vars["BeforeWhenBidField1"], 'equals', vars["AfterWhenBidField1"]);
-        Methods.verifyString(vars["BeforeOperator1"], 'equals', vars["AfterOperator1"]);
-        Methods.verifyString(vars["BeforeBidEnumTapeValue1"], 'equals', vars["AfterBidEnurmeratedTapeValue1"]);
-        Methods.verifyString(vars["BeforeActionChaseFieldName1"], 'equals', vars["AfterActionChaseFieldName1"]);
-        Methods.verifyString(vars["BeforeActionChaseValue1"], 'equals', vars["AfterActionChaseValue1"]);
+        Methods.verifyString(vars["BeforeWhenBidField1"], 'notEquals', vars["AfterWhenBidField1"]);
+        Methods.verifyString(vars["BeforeOperator1"], 'notEquals', vars["AfterOperator1"]);
+        Methods.verifyString(vars["BeforeBidEnumTapeValue1"], 'notEquals', vars["AfterBidEnurmeratedTapeValue1"]);
+        Methods.verifyString(vars["BeforeActionChaseFieldName1"], 'notEquals', vars["AfterActionChaseFieldName1"]);
+        Methods.verifyString(vars["BeforeActionChaseValue1"], 'notEquals', vars["AfterActionChaseValue1"]);
         log.stepPass('After values verified against Before values successfully');
       } catch (e) {
         await log.stepFail(page, 'Before/After value comparison failed');
@@ -205,7 +206,7 @@ test.describe('REG_Bid Maps', () => {
         await chaseFieldNamePage.WhenBidField_3.click();
         await chaseFieldNamePage.Search_Input_under_When_Bid_Field_for_four_row.fill(vars["WhenBidFieldValue-3"]);
         await correspondentPortalPage.WhenBidFieldValue_3.click();
-        await chaseFieldNamePage.Operator_3.selectOption({ label: vars["Operator 3"] });
+        await chaseFieldNamePage.Operator_3.selectOption({ value: vars["Operator 3"] });
         await p15ActivePage.BidEnumeraedTapeValue_3.click();
         await correspondentPortalPage.BidEnumeratedTapeValue_3.click();
         await expect(chaseFieldNamePage.WhenBidField_3).toContainText(vars["WhenBidFieldValue-3"]);
@@ -225,7 +226,8 @@ test.describe('REG_Bid Maps', () => {
         await chaseFieldNamePage.Search_Input_under_When_Bid_Field_for_Add_or_block.fill(vars["WhenBidFieldName - Block 2"]);
         await correspondentPortalPage.WhenBidFieldValue_Block_2.click();
         await expect(chaseFieldNamePage.WhenBidFieldName_Block2).toContainText(vars["WhenBidFieldName - Block 2"]);
-        await chaseFieldNamePage.When_Bid_field_for_add_or_block_in_field2.selectOption({ label: vars["Operator - Block 2"] });
+        await chaseFieldNamePage.When_Bid_field_for_add_or_block_in_field2.selectOption({ value: vars["Operator - Block 2"] });
+        ///need to verify with invalid data
         await expect(chaseFieldNamePage.When_Bid_field_for_add_or_block_in_field2).toHaveValue(vars["Operator - Block 2"]);
         await chaseFieldNamePage.Bid_EnumeratedTapeField_Block_2.click();
         await correspondentPortalPage.BidEnumeratedTapeValue_Block_2.click();
@@ -239,8 +241,11 @@ test.describe('REG_Bid Maps', () => {
       log.step('Duplicate rule, capture duplicated rule name, then delete duplicated rule');
       try {
         await duplicatecopyButtonPage.DuplicateCopy_Button.click();
-        await chaseFieldNamePage.Duplicate_Rule_Name.fill(Array.from({ length: 1 }, () => "a".charAt(Math.floor(Math.random() * 1))).join(''));
+        await chaseFieldNamePage.Duplicate_Rule_Name.scrollIntoViewIfNeeded();
+        await chaseFieldNamePage.Duplicate_Rule_Name.click();
+        await chaseFieldNamePage.Duplicate_Rule_Name.type(appconstants.RULE_NAME_CONST1);
         vars["Updated Rules and Actions name"] = await chaseFieldNamePage.Duplicate_Rule_Name.inputValue() || '';
+        await rulesActionPage.Delete_last_Rule.scrollIntoViewIfNeeded();
         await rulesActionPage.Delete_last_Rule.click();
         await expect(correspondentPortalPage.Delete_Rule).toBeVisible();
         await correspondentPortalPage.Yes_Proceed_Button.click();
@@ -257,7 +262,7 @@ test.describe('REG_Bid Maps', () => {
         await statusInactivePage.AfterWhenBidField1.click();
         vars["Field"] = await chaseFieldNamePage.UpdatedWhenBidField_1.textContent() || '';
         Methods.trimtestdata(vars["Field"], "Field");
-        await rulesAndActionsPage.Search_Input_under_When_Bid_Field.fill(vars["Field"]);
+        await rulesAndActionsPage.Search_Input_under_When_Bid_Field.first().fill(vars["Field"]);
         await correspondentPortalPage.Select_under_When_field_name.click();
         await expect(statusInactivePage.AfterWhenBidField1).toContainText(vars["Field"]);
         await chaseFieldNamePage.BidEnumeratedTapeValueField_1.click();
@@ -291,13 +296,18 @@ test.describe('REG_Bid Maps', () => {
 
       log.step('Add additional Actions and Save and Publish Bid Map');
       try {
-        await stepGroups.stepGroup_Add_Actions_In_Rules_and_Actions(page, vars);
-        await expect(saveAndPublishButtonPage.Save_and_Publish_Button).toBeVisible();
+        await correspondentPortalPage.Add_Action_Button.click();
+        await correspondentPortalPage.Chase_Field_Name_in_Rule.selectOption({ index: parseInt("3") });
+        vars["Chase Fieldname_Rule"] = await correspondentPortalPage.Chase_Field_Name_in_Rule.evaluate(el => { const s = el as HTMLSelectElement; return s.options[s.selectedIndex]?.text || ''; });
+        await expect(correspondentPortalPage.Chase_Field_Name_in_Rule).toContainText(vars["Chase Fieldname_Rule"]);
+        await correspondentPortalPage.Chase_Value_in_RulesandActions.selectOption({ label: 'Attached' });
+        await expect(correspondentPortalPage.Chase_Value_in_RulesandActions).toContainText('Attached');
+        await expect(saveAndPublishButtonPage.Save_and_Publish_Button).toBeEnabled();
         await saveAndPublishButtonPage.Save_and_Publish_Button.click();
         await spinnerPage.Spinner.waitFor({ state: 'hidden' });
         await expect(correspondentPortalPage.Status).toContainText("ACTIVE");
         vars["Version"] = await correspondentPortalPage.Version.textContent() || '';
-        await expect(page.getByText(vars["Version"])).toBeVisible();
+        await expect(page.getByText(vars["Version"]).first()).toBeVisible();
         log.stepPass('Bid Map saved and published. Status: ACTIVE, Version: ' + vars["Version"]);
       } catch (e) {
         await log.stepFail(page, 'Failed to add Actions or Save and Publish Bid Map');

@@ -1200,6 +1200,16 @@ export class AddonHelpers {
     log.info(`generateRandomString | Length: ${length} | Result: "${result}" | StoredIn: ${targetVar}`);
   }
 
+  generateRandomChar(length: string, targetVar: string): void {
+    const len = parseInt(length, 10);
+    const chars = 'abcdefghijklmnopqrstuvwxyz';
+    let result = '';
+    for (let i = 0; i < len; i++) {
+      result += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    this.vars[targetVar] = result;
+    log.info(`generateRandomString | Length: ${length} | Result: "${result}" | StoredIn: ${targetVar}`);
+  }
   /**
    * Gets a CSS property value of an element and stores it into a target variable.
    *
