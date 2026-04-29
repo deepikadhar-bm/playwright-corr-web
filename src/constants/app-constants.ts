@@ -127,5 +127,7 @@ export const APP_CONSTANTS = {
   MinDisplayValue2: "2",
   MaxDisplayValue2: "12",
   SPLIT_COUNT_SIX:'6',
-  CompanyName1: "Freedom"
+  CompanyName1: "Freedom",
+  ExecutionAllowedState: "text-success",
+  ExecutionDisabledState: "text-danger",
 };
