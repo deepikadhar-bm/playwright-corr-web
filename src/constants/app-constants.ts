@@ -130,7 +130,6 @@ export const APP_CONSTANTS = {
   CompanyName1: "Freedom",
   ExecutionAllowedState: "text-success",
   ExecutionDisabledState: "text-danger",
-  CompanyName1: "Freedom",
   DATEWITHTIME_FORMAT_MDDYYYYHMMA:'M/dd/yyyy : h:mm a',
   DATEWITHTIME_FORMAT_MMDDYYYYHHMMA:'MM/dd/yyyy hh:mm a',
   READY_FOR_PRICING_TEXT:'Ready for Pricing',
