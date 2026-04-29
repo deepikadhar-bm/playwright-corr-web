@@ -1025,7 +1025,7 @@ export class CorrPortalPage {
   }
 
   get General_Settings(): Locator {
-    return this.page.locator("//*[text()[normalize-space() = \"General Settings\"]]");
+    return this.page.locator("//*[text()[normalize-space() = 'General Settings']]//parent::a[@aria-label='General Settings']");
   }
 
   get Get_Price_Button(): Locator {
@@ -1269,6 +1269,18 @@ export class CorrPortalPage {
     return this.page.locator("(//div[contains(text(),\"Last Modified\")])[1]");
   }
 
+  get Name_New_DataPop_up(): Locator {
+    return this.page.locator("(//td[@class=\"d2h-ins d2h-change\"]//span[contains(text(),\"name\" )])[1]");
+  }
+
+  get Company_Name_New_Data(): Locator {
+    return this.page.locator("((//td[@class=\"d2h-ins d2h-change\"]//span[contains(text(),\"name\" )])//ins)[1]");
+  }
+  
+  get Internal_User_Name_New_Data(): Locator {
+    return this.page.locator("(//td[@class=\"d2h-ins d2h-change\"]//span[contains(text(),\"internalUser\" )])//ins");
+  }
+
   Last_Name_Commitment_List(CommittedCorrLoan: string): Locator {
     return this.page.locator(`//button[text()=\"${CommittedCorrLoan}\"]//ancestor::tr//td[@data-title=\"Last Name\"]`);
   }
@@ -1487,10 +1499,21 @@ export class CorrPortalPage {
     return this.page.locator("(//select[@aria-label=\"Dropdown selection\"])[3]");
   }
 
+  get Name_Previous_DataPop_Up(): Locator {
+    return this.page.locator("(//td[@class=\"d2h-del d2h-change\"]//span[contains(text(),\"name\" )])[1]");
+  }
+
   get Pricing_Return_Time_Buffer(): Locator {
     return this.page.locator("//input[@id=\"pricingReturnTimeBuffer\"]");
   }
+  get Internal_User_Name_Previous_Data(): Locator {
+    return this.page.locator("(//td[@class=\"d2h-del d2h-change\"]//span[contains(text(),\"internalUser\" )])//del");
+  }
 
+  get Company_Name_Previous_Data(): Locator {
+    return this.page.locator("((//td[@class=\"d2h-del d2h-change\"]//span[contains(text(),\"name\" )])//del)[1]");
+  }
+  
   get Proceed_with_Saving_Button(): Locator {
     return this.page.locator("//button[@aria-label=\"Proceed with Saving\"]");
   }

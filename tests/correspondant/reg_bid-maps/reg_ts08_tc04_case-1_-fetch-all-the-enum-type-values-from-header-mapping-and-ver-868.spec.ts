@@ -84,9 +84,8 @@ test.describe('REG_Bid Maps', () => {
 
       log.step('Upload file and navigate to Header Mapping');
       try {
-        // await correspondentPortalPage.Execution_Type_Dropdown.selectOption({ value: appconstants.EXECUTION_TYPE_STANDARD });
-        // await expect(correspondentPortalPage.Execution_Type_Dropdown.locator('option:checked')).toHaveText(appconstants.EXECUTION_TYPE_STANDARD);
-        // await headerMappingPage.File_Input.setInputFiles(path.resolve(__dirname, 'test-data', "Bid Maps File.xlsx"));
+        await correspondentPortalPage.Execution_Type_Dropdown.selectOption({ value: appconstants.EXECUTION_TYPE_STANDARD });
+        await expect(correspondentPortalPage.Execution_Type_Dropdown.locator('option:checked')).toHaveText(appconstants.EXECUTION_TYPE_STANDARD);
         await uploadFile(page, correspondentPortalPage.Upload_File, fileconstants.Bid_Maps_File);
         await correspondentPortal16Page.File_Field.hover();
         await mapHeadersButtonPage.Map_Headers_Button.click();
@@ -138,8 +137,10 @@ test.describe('REG_Bid Maps', () => {
         for (let i = 0; i < Number(vars["Chase Enum Namescount2"]); i++) {
           log.info('Verifying row dataIdx: ' + i);
           vars['BidSampleField'] = dataList[i]['Bid Sample Field'];
+          log.info('Bid Sample Field: ' + vars['BidSampleField']);
           vars['Chasevaluename'] = dataList[i]['Chase value name'];
-          await expect(statusInactivePage.Checking_both_chase_field_to_bid_sample_field_is_mapping(vars['Chasevaluename'], vars['BidSampleField'])).toBeVisible();
+          log.info('Chase value name: ' + vars['Chasevaluename']);
+          await expect(statusInactivePage.Checking_both_chase_field_to_bid_sample_field_is_mapping(vars['Chasevaluename'], vars['BidSampleField']).first()).toBeVisible();
         }
         log.stepPass('All enum values from Header Mapping verified in Enumeration Mapping. Count: ' + vars["Chase Enum Namescount2"]);
       } catch (e) {

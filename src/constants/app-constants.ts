@@ -127,5 +127,15 @@ export const APP_CONSTANTS = {
   MinDisplayValue2: "2",
   MaxDisplayValue2: "12",
   SPLIT_COUNT_SIX:'6',
-  CompanyName1: "Freedom"
+  CompanyName1: "Freedom",
+  DATEWITHTIME_FORMAT_MDDYYYYHMMA:'M/dd/yyyy : h:mm a',
+  DATEWITHTIME_FORMAT_MMDDYYYYHHMMA:'MM/dd/yyyy hh:mm a',
+  READY_FOR_PRICING_TEXT:'Ready for Pricing',
+  COMPANY_TESTING:'Company_Testing',
+  INTERNALUSER_TESTING:'InternalUser_Testing',
+  AMERICA_LOS_ANGELES:'America/Los_Angeles',
+  CHASE_TESTING:'Chase_Testing',
+  TESTSIGMA_INTERNAL:'testsigma_internal',
+  COMPANY_CONFIG_TEXT:'Company Config',
+  USERNAME_TESTING:'Username_tesing',
 };

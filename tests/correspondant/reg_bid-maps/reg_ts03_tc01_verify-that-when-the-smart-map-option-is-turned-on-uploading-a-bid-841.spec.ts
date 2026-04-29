@@ -147,6 +147,7 @@ test.describe('REG_Bid Maps', () => {
 
       log.step('Verify Smart Map auto-selection of Chase field names');
       try {
+        await headerMappingPage.All_Fields_in_header_map.first().waitFor({ state: 'visible' });
         vars["FieldCount"] = String(await headerMappingPage.All_Fields_in_header_map.count());
         vars["count"] = appconstants.ONE;
         vars["PerfectMatchCount"] = appconstants.ZERO;

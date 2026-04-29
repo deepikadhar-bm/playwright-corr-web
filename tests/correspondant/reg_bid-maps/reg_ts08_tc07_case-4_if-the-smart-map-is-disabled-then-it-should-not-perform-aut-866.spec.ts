@@ -120,7 +120,8 @@ test.describe('REG_Bid Maps', () => {
         log.info('All Dropdown Companies Count: '+vars['AllDropdownCompaniesCount']);
         await expect(correspondentPortalPage.Apply_Selected_for_Bid_Maps).toContainText(vars["AllDropdownCompaniesCount"]);
         await correspondentPortalPage.Apply_Selected.click();
-        await expect(correspondentPortalPage.Dropdown_selection_2).toHaveValue('');
+        await correspondentPortalPage.Execution_Type_Dropdown.selectOption({ value: appconstants.EXECUTION_TYPE_STANDARD });
+        await expect(correspondentPortalPage.Execution_Type_Dropdown.locator('option:checked')).toHaveText(appconstants.EXECUTION_TYPE_STANDARD);
         await uploadFile(page, correspondentPortalPage.Upload_File, fileconstants.Bid_Maps_File);
         log.stepPass('Successfully All companies selected and File uploaded');
       } catch (e) {
@@ -134,6 +135,7 @@ test.describe('REG_Bid Maps', () => {
         await expect(thisActionWillSaveTheChangesAndMoveToNextPagePage.This_action_will_save_the_changes_and_Move_to_Next_Page).toBeVisible();
         await proceedWithSavingButtonPage.Proceed_with_Saving_Button.click();
         await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+        await correspondentPortalPage.Header_Counts.first().waitFor({ state: 'visible' });
         vars["HeaderCount"] = String(await correspondentPortalPage.Header_Counts.count());
         log.info('Header count: ' + vars["HeaderCount"]);
         await stepGroups.stepGroup_Verification_Header_Mapping_Smart_Mapper_On_to_Off(page, vars);
