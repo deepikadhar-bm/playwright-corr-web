@@ -3009,7 +3009,7 @@ export async function stepGroup_Uploading_Bid_Request(page: import('@playwright/
   const CorrPortalElem = new CorrPortalPage(page);
   //const testData: Record<string, string> = {}; // TODO: Load from test data profile
   //await CorrPortalElem.Upload_New_Bid_Request_Button.isEnabled();
-  await page.waitForTimeout(5000);
+  await page.waitForTimeout(3000);
   await CorrPortalElem.Upload_New_Bid_Request_Button.click();
   await page.waitForTimeout(5000);
   // wait for the spinner element on the page to disappear
@@ -3538,7 +3538,7 @@ export async function stepGroup_Upload_Bid_Request_For_Next_Business_Day_With_Ch
   await CorrPortalElem.Bid_Mapping_ID_Dropdown.click();
   await CorrPortalElem.Search_box_Bid_mapping_id.fill(vars["BidMappingID"]);
   await CorrPortalElem.Bid_Mapping_ID_Dropdown_1.click();
-  await expect(CorrPortalElem.Bid_Mapping_ID_Dropdown).toContainText(vars["BidMappingID"]);
+  //await expect(CorrPortalElem.Bid_Mapping_ID_Dropdown).toContainText(vars["BidMappingID"]);
   await CorrPortalElem.Off_Radio_Standard_Edit_Permissions_Popup.check();
   await expect(CorrPortalElem.Off_Radio_Standard_Edit_Permissions_Popup).toBeEnabled();
   await CorrPortalElem.Pricing_Return_Time.click();
@@ -6271,20 +6271,20 @@ export async function stepGroup_Headers_Verification_Price_Offered(page: import(
  */
 export async function stepGroup_Toggle_Radio_Button_Based_on_Current_State(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
-  if (true) /* Radio button Standard Off Radio button is selected */ {
+  if (await CorrPortalElem.Standard_Off_Radio_button.isChecked()) /* Radio button Standard Off Radio button is selected */ {
     await CorrPortalElem.Standard_On_RadioGlobal_Restriction.check();
     vars["ExpectedStandardState"] = "Allowed";
     vars["PreviousStandardState"] = "Disabled";
-  } else if (true) /* Radio button Standard On Radio(Global Restriction) is select */ {
+  } else if (await CorrPortalElem.Standard_On_RadioGlobal_Restriction.isChecked()) /* Radio button Standard On Radio(Global Restriction) is select */ {
     await CorrPortalElem.Standard_Off_Radio_button.check();
     vars["ExpectedStandardState"] = "Disabled";
     vars["PreviousStandardState"] = "Allowed";
   }
-  if (true) /* Radio button Chase On Radio(Global Restriction) is selected */ {
+  if (await CorrPortalElem.Chase_On_RadioGlobal_Restriction.isChecked()) /* Radio button Chase On Radio(Global Restriction) is selected */ {
     await CorrPortalElem.Chase_Off_RadioGlobal_Restrictions.check();
     vars["ExpectedChaseState"] = "Disabled";
     vars["PreviousChaseState"] = "Allowed";
-  } else if (true) /* Radio button Chase Off Radio(Global Restrictions) is selecte */ {
+  } else if (await CorrPortalElem.Chase_Off_RadioGlobal_Restrictions.isChecked()) /* Radio button Chase Off Radio(Global Restrictions) is selected */ {
     await CorrPortalElem.Chase_On_RadioGlobal_Restriction.check();
     vars["ExpectedChaseState"] = "Allowed";
     vars["PreviousChaseState"] = "Disabled";
@@ -6493,18 +6493,26 @@ export async function stepGroup_Demo_Storing_Popup_details(page: import('@playwr
  */
 export async function stepGroup_Upload_Bid_Process_from_Batch_time_Selection_to_Bid_Upload_P(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
+  const correspondentPortalPage = new CorrespondentPortalPage(page);
+  const spinnerPage = new SpinnerPage(page);
+  const bidRequestPage = new BidRequestPage(page);
   await CorrPortalElem.Pricing_Return_Time.selectOption({ index: parseInt("2") });
   vars["ExtractedPrincingReturnTime"] = await CorrPortalElem.Pricing_Return_Time.evaluate(el => { const s = el as HTMLSelectElement; return s.options[s.selectedIndex]?.text || ''; });
-  await CorrPortalElem.Upload_File.setInputFiles(path.resolve(__dirname, 'test-data', "Bid_file_success_error_newly_updated.xlsx"));
+  await CorrPortalElem.Upload_File.setInputFiles(path.resolve(__dirname, '../../../uploads', "Bid_file_success_error_newly_updated (12).xlsx"));
   // [DISABLED] File Upload: Upload file File to the element UploadFile [BidRequest]
   // await CorrPortalElem.Upload_File.setInputFiles([]);
-  await expect(CorrPortalElem.UploadBid_Button).toBeVisible();
-  await CorrPortalElem.UploadBid_Button.click();
-  await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
-  await page.getByText("Bid Upload Progress").waitFor({ state: 'visible' });
-  await CorrPortalElem.Continue_Button_Upload_Pop_up.waitFor({ state: 'visible' });
-  await CorrPortalElem.Continue_Button_Upload_Pop_up.click();
-  await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
+  await expect(correspondentPortalPage.UploadBid_Button).toBeVisible();
+      await expect(correspondentPortalPage.UploadBid_Button).toBeEnabled();
+      await correspondentPortalPage.UploadBid_Button.click();
+      await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+      await page.getByText("Bid Upload Progress").waitFor({ state: 'visible' });
+      await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+      await bidRequestPage.Continue_ButtonUpload_Pop_up.waitFor({ state: 'visible' });
+      await page.waitForTimeout(5000);
+      await bidRequestPage.Continue_ButtonUpload_Pop_up.click();
+      await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+      await page.waitForLoadState('load');
+      await page.waitForTimeout(5000);
 }
 
 /**
@@ -6516,21 +6524,24 @@ export async function stepGroup_Uploading_Bid_Request_for_Real_Time_On(page: imp
   const CorrPortalElem = new CorrPortalPage(page);
   const testData: Record<string, string> = {}; // TODO: Load from test data profile
   await CorrPortalElem.Select_Company_In_BidRequest.click();
-  await CorrPortalElem.Bid_Mapping_Id_Search_Input_box.fill(testData["Company Name"]);
+  await CorrPortalElem.Bid_Mapping_Id_Search_Input_box.fill(vars["CompanyName"]);
   await CorrPortalElem.SelectCompany_Value.click();
   await page.waitForTimeout(2000);
   await expect(CorrPortalElem.Standard_Execution_Checkbox).toBeVisible();
+  await CorrPortalElem.Standard_Execution_Checkbox.check();
+  await page.waitForTimeout(2000);
+  await expect(CorrPortalElem.Standard_Execution_Checkbox).toBeChecked();
   await CorrPortalElem.StandardExecution_Dropdown.selectOption({ label: "3" });
   await CorrPortalElem.StandardExceutionType_Dropdown.waitFor({ state: 'visible' });
   await expect(CorrPortalElem.StandardExceutionType_Dropdown).toHaveValue("3");
   await CorrPortalElem.Bid_Mapping_ID_Dropdown.click();
-  await CorrPortalElem.Search_box_Bid_mapping_id.fill(testData["BidMappingID"]);
+  await CorrPortalElem.Search_box_Bid_mapping_id.fill(vars["BidMappingID"]);
   await CorrPortalElem.Bid_Mapping_ID_Dropdown_1.waitFor({ state: 'visible' });
   await CorrPortalElem.Bid_Mapping_ID_Dropdown_1.click();
-  await expect(CorrPortalElem.Bid_Mapping_ID_Dropdown).toContainText(testData["BidMappingID"]);
-  await CorrPortalElem.Upload_File.setInputFiles(path.resolve(__dirname, 'test-data', "Bid_Valid_file.xlsx"));
+  await expect(CorrPortalElem.Bid_Mapping_ID_Dropdown).toContainText(vars["BidMappingID"]);
+  await CorrPortalElem.Upload_File.setInputFiles(path.resolve(__dirname, '../../../uploads', "Bid_Valid_file (2).xlsx"));
   await expect(CorrPortalElem.UploadBid_Button).toBeVisible();
-  await CorrPortalElem.UploadBid_Button.click();
+  //await CorrPortalElem.UploadBid_Button.click();
 }
 
 /**

@@ -7,6 +7,12 @@ import { BidRequestDetailsPage } from '../../../src/pages/correspondant/bid-requ
 import { BidRequestPage } from '../../../src/pages/correspondant/bid-request';
 import { CorrespondentPortalPage } from '../../../src/pages/correspondant/correspondent-portal';
 import { SpinnerPage } from '../../../src/pages/correspondant/spinner';
+import { Logger as log } from '../../../src/helpers/log-helper';
+import { ENV } from '@config/environments';
+
+const TC_ID = 'REG_TS09_TC03';
+const TC_TITLE = 'Bid Request - Add POS Validation, the Validation is for Checking the Bid Uploaded, and for the Verification';
+let reg_ts09_tc03_testFailed = false;
 
 test.describe('REG_General Settings', () => {
   let vars: Record<string, string> = {};
@@ -25,59 +31,169 @@ test.describe('REG_General Settings', () => {
     spinnerPage = new SpinnerPage(page);
   });
 
-  test('REG_TS09_TC03_Bid Request - Add POS Validation, the Validation is for Checking the Bid Uploaded, and for the Verification)', async ({ page }) => {
-    await stepGroups.stepGroup_Login_to_CORR_Portal(page, vars);
-    await correspondentPortalPage.Administration_Menu.click();
-    await correspondentPortalPage.GeneralSettings_Menu.click();
-    await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-    await bidRequestPage.Bid_Request_Config_Menu.click();
-    await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-    await correspondentPortalPage.Add_POS_Validation_Button.click();
-    await expect(bidRequestConfigPage.Newly_Added_Inputpos).toBeVisible();
-    await bidRequestConfigPage.Newly_Added_Dropdown_InputPOS.selectOption({ label: "Choice" });
-    await expect(bidRequestConfigPage.Newly_Added_Dropdown_InputPOS).toHaveValue("Choice");
-    await bidRequestConfigPage.Newly_Added_Inputpos.fill("Text");
-    await bidRequestConfigPage.Delete_Button_pos.click();
-    await expect(bidRequestConfigPage.Newly_Added_Dropdown_InputPOS).toBeVisible();
-    // [DISABLED] Select option using value Choice in the Conventional Dropdown(Bid Request Config) list
-    // await correspondentPortalPage.Pricing_Return_Time.selectOption({ label: "Choice" });
-    // [DISABLED] Verify that the Conventional Dropdown(Bid Request Config) list has option with value Choice selected and With Scrollable FALSE
-    // await expect(correspondentPortalPage.Pricing_Return_Time).toHaveValue("Choice");
-    // [DISABLED] Wait until the element Save Changes Button is enabled
-    // await correspondentPortalPage.Save_Changes_Button.waitFor({ state: 'visible' });
-    // [DISABLED] Click on Save Changes Button
-    // await bidRequestConfigPage.Save_Changes_Button.click();
-    // [DISABLED] Wait until the element Spinner is not visible
-    // await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-    // [DISABLED] Navigating to Bulk Batch Timing
-    // await stepGroups.stepGroup_Navigating_to_Bulk_Batch_Timing(page, vars);
-    // [DISABLED] Modifying The batch Intervals with current est time
-    // await stepGroups.stepGroup_Modifying_The_batch_Intervals_with_current_est_time(page, vars);
-    // [DISABLED] Navigating to Upload New Bid Request
-    // await stepGroups.stepGroup_Navigating_to_Upload_New_Bid_Request(page, vars);
-    // [DISABLED] Uploading Bid Request
-    // await stepGroups.stepGroup_Uploading_Bid_Request(page, vars);
-    // [DISABLED] Upload Bid Request from batch time selection to continue button
-    // await stepGroups.stepGroup_Upload_Bid_Request_from_batch_time_selection_to_continue_but(page, vars);
-    // [DISABLED] Store the count of elements identified by locator Rows Count Table 1 into a variable RowsCount
-    // vars["RowsCount"] = String(await bidRequestDetailsPage.Rows_Count_Table_1.count());
-    // [DISABLED] Mouseover the element First error data
-    // await bidRequestDetailsPage.First_error_data.hover();
-    // [DISABLED] Store the count of elements identified by locator Not Approved for Conventional Error Data into a variable ConventionalErrorCount
-    // vars["ConventionalErrorCount"] = String(await bidRequestDetailsPage.Not_Approved_for_Conventional_Error_Description.count());
-    // [DISABLED] Verify if RowsCount == ConventionalErrorCount
-    // expect(String(vars["RowsCount"])).toBe(vars["ConventionalErrorCount"]);
-    // [DISABLED] Navigating To Bid Request Config
-    // await stepGroups.stepGroup_Navigating_To_Bid_Request_Config(page, vars);
-    // [DISABLED] Select option using value Conventional in the Conventional Dropdown(Bid Request Config) list
-    // await correspondentPortalPage.Pricing_Return_Time.selectOption({ label: "Conventional" });
-    // [DISABLED] Wait until the element Save Changes Button is enabled
-    // await bidRequestConfigPage.Save_Changes_Button.waitFor({ state: 'visible' });
-    // [DISABLED] Click on Save Changes Button
-    // await bidRequestConfigPage.Save_Changes_Button.click();
-    // [DISABLED] Wait until the element Spinner is not visible
-    // await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-    // [DISABLED] Verify that the Conventional Dropdown(Bid Request Config) list has option with value Conventional selected and With Scrollable FALSE
-    // await expect(correspondentPortalPage.Pricing_Return_Time).toHaveValue("Conventional");
+  test('REG_TS09_TC03_Bid Request - Add POS Validation, the Validation is for Checking the Bid Uploaded, and for the Verification', async ({ page }) => {
+    
+    // ─── TC Start ────────────────────────────────────────────────────────
+    log.tcStart(TC_ID, TC_TITLE);
+
+    try {
+
+      // ── Login and credentials setup ────────────────────────────────────
+      log.step('Logging in to Correspondent Portal');
+      try {
+        const credentials = ENV.getCredentials('internal');
+        vars["Username"] = credentials.username;
+        vars["Password"] = credentials.password;
+        await stepGroups.stepGroup_Login_to_CORR_Portal(page, vars);
+        log.stepPass('Successfully logged in to Correspondent Portal');
+      } catch (e) {
+        await log.stepFail(page, 'Failed to log in to Correspondent Portal');
+        throw e;
+      }
+
+      // ── Navigate to Administration Menu ──────────────────────────────
+      log.step('Navigating to Administration Menu');
+      try {
+        await correspondentPortalPage.Administration_Menu.click();
+        log.info('Clicked Administration Menu');
+        log.stepPass('Successfully navigated to Administration Menu');
+      } catch (e) {
+        await log.stepFail(page, 'Failed to navigate to Administration Menu');
+        throw e;
+      }
+
+      // ── Navigate to General Settings Menu ───────────────────────────
+      log.step('Navigating to General Settings Menu');
+      try {
+        await correspondentPortalPage.GeneralSettings_Menu.click();
+        log.info('Clicked General Settings Menu');
+        log.stepPass('Successfully navigated to General Settings Menu');
+      } catch (e) {
+        await log.stepFail(page, 'Failed to navigate to General Settings Menu');
+        throw e;
+      }
+
+      // ── Wait for page load ─────────────────────────────────────────
+      log.step('Waiting for spinner to disappear');
+      try {
+        await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+        log.info('Spinner disappeared - page load completed');
+        log.stepPass('Page loaded successfully');
+      } catch (e) {
+        await log.stepFail(page, 'Failed to wait for spinner to disappear');
+        throw e;
+      }
+
+      // ── Navigate to Bid Request Config Menu ────────────────────────────
+      log.step('Navigating to Bid Request Config Menu');
+      try {
+        await bidRequestPage.Bid_Request_Config_Menu.click();
+        log.info('Clicked Bid Request Config Menu');
+        log.stepPass('Successfully navigated to Bid Request Config Menu');
+      } catch (e) {
+        await log.stepFail(page, 'Failed to navigate to Bid Request Config Menu');
+        throw e;
+      }
+
+      // ── Wait for page load ─────────────────────────────────────────
+      log.step('Waiting for spinner to disappear');
+      try {
+        await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+        log.info('Spinner disappeared - page load completed');
+        log.stepPass('Page loaded successfully');
+      } catch (e) {
+        await log.stepFail(page, 'Failed to wait for spinner to disappear');
+        throw e;
+      }
+
+      // ── Click Add POS Validation Button ────────────────────────────────
+      log.step('Clicking Add POS Validation Button');
+      try {
+        await correspondentPortalPage.Add_POS_Validation_Button.click();
+        log.info('Clicked Add POS Validation Button');
+        log.stepPass('Add POS Validation Button clicked successfully');
+      } catch (e) {
+        await log.stepFail(page, 'Failed to click Add POS Validation Button');
+        throw e;
+      }
+
+      // ── Verify Newly Added Input POS is visible ───────────────────────
+      log.step('Verifying Newly Added Input POS is visible');
+      try {
+        await expect(bidRequestConfigPage.Newly_Added_Inputpos).toBeVisible();
+        log.info('Newly Added Input POS is visible');
+        log.stepPass('Newly Added Input POS visibility verified');
+      } catch (e) {
+        await log.stepFail(page, 'Failed to verify Newly Added Input POS visibility');
+        throw e;
+      }
+
+      // ── Select option from Newly Added Dropdown Input POS ──────────────
+      log.step('Selecting option from Newly Added Dropdown Input POS');
+      try {
+        await bidRequestConfigPage.Newly_Added_Dropdown_InputPOS.selectOption({ label: "Choice" });
+        log.info('Selected "Choice" option from Newly Added Dropdown Input POS');
+        log.stepPass('Option selected successfully');
+      } catch (e) {
+        await log.stepFail(page, 'Failed to select option from Newly Added Dropdown Input POS');
+        throw e;
+      }
+
+      // ── Verify selected value in Newly Added Dropdown Input POS ────────
+      log.step('Verifying selected value in Newly Added Dropdown Input POS');
+      try {
+        await expect(bidRequestConfigPage.Newly_Added_Dropdown_InputPOS).toHaveValue("Choice");
+        log.info('Dropdown Input POS has value: "Choice"');
+        log.stepPass('Selected value verified successfully');
+      } catch (e) {
+        await log.stepFail(page, 'Failed to verify selected value in Newly Added Dropdown Input POS');
+        throw e;
+      }
+
+      // ── Fill Newly Added Input POS with text ───────────────────────────
+      log.step('Filling Newly Added Input POS with text');
+      try {
+        await bidRequestConfigPage.Newly_Added_Inputpos.pressSequentially("Text");
+        log.info('Filled Newly Added Input POS with: "Text"');
+        log.stepPass('Newly Added Input POS filled successfully');
+      } catch (e) {
+        await log.stepFail(page, 'Failed to fill Newly Added Input POS');
+        throw e;
+      }
+
+      // ── Click Delete Button ────────────────────────────────────────────
+      log.step('Clicking Delete Button');
+      try {
+        await bidRequestConfigPage.Delete_Button_pos.click();
+        log.info('Clicked Delete Button');
+        log.stepPass('Delete Button clicked successfully');
+      } catch (e) {
+        await log.stepFail(page, 'Failed to click Delete Button');
+        throw e;
+      }
+
+      // ── Verify Newly Added Dropdown Input POS is not visible ───────────────
+      log.step('Verifying Newly Added Dropdown Input POS is not visible');
+      try {
+        await expect(bidRequestConfigPage.Newly_Added_Dropdown_InputPOS).not.toBeVisible();
+        log.info('Newly Added Dropdown Input POS is not visible');
+        log.stepPass('Newly Added Dropdown Input POS visibility verified');
+      } catch (e) {
+        await log.stepFail(page, 'Failed to verify Newly Added Dropdown Input POS visibility');
+        throw e;
+      }
+
+      // ─── TC End: PASS ─────────────────────────────────────────────────────
+      log.tcEnd('PASS');
+
+    } catch (e) {
+      // ─── TC End: FAIL ─────────────────────────────────────────────────────
+      await log.captureOnFailure(page, TC_ID, e);
+      reg_ts09_tc03_testFailed = true;
+      log.tcEnd('FAIL');
+      throw e;
+    }
+
   });
+
 });
