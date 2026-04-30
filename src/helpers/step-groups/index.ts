@@ -542,7 +542,7 @@ export async function stepGroup_Verification_Header_Mapping_Smart_Mapper_On_to_O
   vars["IndexCount"] = appconstants.TWO;
   while (parseFloat(String(vars["IndexCount"])) <= parseFloat(String("43"))) {
     log.info('Iteration: ' + vars["IndexCount"]);
-    await expect(CorrPortalElem.SelectText_HedaerMapping_Field(vars['IndexCount'])).toHaveValue("Select");
+    await expect(CorrPortalElem.SelectText_HedaerMapping_Field(vars['IndexCount']).locator('option:checked')).toHaveText("Select");
     Methods.MathematicalOperation(vars["IndexCount"], '+', 1, 'IndexCount');
   }
 }
@@ -1292,9 +1292,11 @@ export async function stepGroup_Verification_of_Chase_Enum_Values_From_Header_Ma
   const CorrPortalElem = new CorrPortalPage(page);
   const Methods = new AddonHelpers(page, vars);
   vars["ChaseEnumNamesCount"] = String(await CorrPortalElem.Chase_Enum_Names.count());
+  log.info('Chase Enum Names Count: '+ vars["ChaseEnumNamesCount"] );
   vars["count1"] = appconstants.ONE;
   while (parseFloat(String(vars["count1"])) <= parseFloat(String(vars["ChaseEnumNamesCount"]))) {
-    vars["ChaseName"] = await CorrPortalElem.Individual_Chase_Enum_Name(vars['count1']).inputValue() || '';
+    log.info('Verification Iteration: '+vars["count1"]);
+    vars["ChaseName"] = await CorrPortalElem.Individual_Chase_Enum_Name(vars['count1']).textContent() || '';
     expect(Methods.verifyString(vars["ChaseEnumValue"], 'contains', vars["ChaseName"]));
     Methods.MathematicalOperation(vars['count1'], '+', 1, 'count1');
   }
@@ -1460,7 +1462,7 @@ export async function stepGroup_Creating_of_Add_New_Header(page: import('@playwr
   vars["Companyname"] = await CorrPortalElem.Required_Company_s_Name_Value(vars["Companyname"]).textContent() || '';
   await CorrPortalElem.Apply_Selected.click();
   const value = 'STANDARD';
-  await correspondentPortalPage.Execution_Type_Dropdown.selectOption({ label: value });
+  await correspondentPortalPage.Execution_Type_Dropdown.selectOption({ value: value });
   await expect(correspondentPortalPage.Execution_Type_Dropdown.locator('option:checked')).toHaveText(value);
   vars["Companyname"] = await CorrPortalElem.Individual_Selected_Company.textContent() || '';
   vars["ExecutionType"] = await CorrPortalElem.Execution_Type_Dropdown_New.inputValue() || '';
@@ -1839,7 +1841,7 @@ export async function stepGroup_Fetching_Bid_Sample_Names_and_Corresponding_Chas
   while (parseFloat(String(vars["count"])) <= parseFloat(String(vars["BidEnumValueCount"]))) {
     log.info('Iteration: ' + vars["count"]);
     vars["BidSampleName"] = await CorrPortalElem.get_Individual_BidSample_Name(vars["count"]).textContent() || '';
-    vars["ChaseValue"] = await CorrPortalElem.Mapped_Chase_Value.evaluate(el => { const s = el as HTMLSelectElement; return s.options[s.selectedIndex]?.text || ''; });
+    vars["ChaseValue"] = await CorrPortalElem.Mapped_Chase_Value(vars['BidSampleName']).evaluate(el => { const s = el as HTMLSelectElement; return s.options[s.selectedIndex]?.text || ''; });
     log.info('Bid Sample Name' + vars["count"] + ':' + vars["BidSampleName"]);
     testDataManager.updatePartialProfileDataByDataIndex(ProfileName, {
       'Bid Sample Field Name': vars['BidSampleName'],
@@ -1961,7 +1963,7 @@ export async function stepGroup_Editing_In_Enumeration_Mapping_Screen(page: impo
   const CorrPortalElem = new CorrPortalPage(page);
   await CorrPortalElem.Chase_Value_Dropdown_Enumeration_Mapping.selectOption({ index: parseInt("1") });
   vars["EditedChaseValue"] = await CorrPortalElem.Chase_Value_Dropdown_Enumeration_Mapping.evaluate(el => { const s = el as HTMLSelectElement; return s.options[s.selectedIndex]?.text || ''; });
-  vars["EditedChaseFieldName"] = await CorrPortalElem.Edited_Chase_Field_Name.textContent() || '';
+  vars["ChaseFieldNameTobeEdited"] = await CorrPortalElem.Edited_Chase_Field_Name.textContent() || '';
 }
 
 /**
@@ -2253,13 +2255,12 @@ export async function stepGroup_Fetching_the_data_based_on_Enum_value_in_Header_
   const CorrPortalElem = new CorrPortalPage(page);
   vars["EnumValues"] = "Loan Purpose";
   const Methods = new AddonHelpers(page, vars);
-  const profileName1 = 'Enum Type Values';
+  const profileName1 = 'Enum_Type_Values_For_Happy_Flow';
   const profile1 = testDataManager.getProfileByName(profileName1);
   const dataList1 = profile1?.data as Record<string, any>[];
 
   const profileName2 = 'Bid sample name and Chase Value from header mapping';
   const profile2 = testDataManager.getProfileByName(profileName2);
-  const dataList2 = profile2?.data as Record<string, any>[];
 
   // Loop over test data sets in "Enum_Type_Values_For_Happy_Flow" from set2 to set18
   for (let i = 1; i <= Number(17); i++) {
@@ -2274,12 +2275,13 @@ export async function stepGroup_Fetching_the_data_based_on_Enum_value_in_Header_
   vars["count"] = appconstants.ONE;
   vars["count1"] = appconstants.ONE;
   vars["ChaseEnumValue"] = "sample";
-  while (parseFloat(String(vars["count"])) < parseFloat(String(vars["MappedChaseFieldCount"]))) {
+  while (parseFloat(String(vars["count"])) <= parseFloat(String(vars["MappedChaseFieldCount"]))) {
+    log.info('Iteration: ' + vars['count']);
     await CorrPortalElem.Rules_and_Actions_Step_4_of_4.click();
     vars["ChaseName"] = await CorrPortalElem.Individual_Mapped_Chase_Name(vars['count']).evaluate(el => { const s = el as HTMLSelectElement; return s.options[s.selectedIndex]?.text || ''; });
     if (String(vars["EnumValues"]).includes(String(vars["ChaseName"]))) {
+      log.info('Enum Values contains Chase Name at: ' + vars['count'])
       Methods.concatenateWithSpecialChar(vars["ChaseName"], vars['ChaseEnumValue'], ',', 'ChaseEnumValue');
-
       vars["CorrespondentBidName"] = await CorrPortalElem.Correspondent_Bid_sample_name(vars['count']).textContent() || '';
       testDataManager.updatePartialProfileDataByDataIndex(profileName2, {
         'Bid Sample Field': vars['CorrespondentBidName'],
@@ -2287,8 +2289,8 @@ export async function stepGroup_Fetching_the_data_based_on_Enum_value_in_Header_
       }, vars['count1']);
       Methods.MathematicalOperation(vars['count1'], '+', 1, 'count1');
     }
+    Methods.MathematicalOperation(vars['count'], '+', 1, 'count');
   }
-  Methods.MathematicalOperation(vars['count'], '+', 1, 'count');
 }
 
 /**
@@ -4477,7 +4479,7 @@ export async function stepGroup_Storing_BidSample_and_BidTape_Values_from_Enum_P
     log.info('Iteration: ' + vars["count1"]);
     vars["IndividualBidSampleName"] = await CorrPortalElem.get_Individual_Bid_Sample_Name_Enum_Page(vars["count1"]).textContent() || '';
     vars["ColumnHeader"] = vars["IndividualBidSampleName"];
-    if (!(await enumerationMappingPage.get_BidTapeFieldCountForBidField(vars["ColumnHeader"]).isVisible())) /* Element BidTapeFieldCountForBidField is not visible */ {
+    if (!(await enumerationMappingPage.get_BidTapeFieldCountForBidField(vars["ColumnHeader"]).first().isVisible())) /* Element BidTapeFieldCountForBidField is not visible */ {
       log.info('Element BidTapeFieldCountForBidField is not visible');
       vars["IndividualBidTapeValue"] = "No BidTape";
     } else {
@@ -5114,11 +5116,13 @@ export async function stepGroup_Commit_All_Loans_Standard(page: import('@playwri
   const CorrPortalElem = new CorrPortalPage(page);
   await CorrPortalElem.Select_all_for_Checkbox.check();
   await CorrPortalElem.Get_Price_Button.click();
-  await CorrPortalElem.Uncommit_Selected_Button.waitFor({ state: 'visible' });
-  await CorrPortalElem.Uncommit_Selected_Button.click();
+  await CorrPortalElem.Commit_Selected_Button.waitFor({ state: 'visible' });
+  await expect(CorrPortalElem.Commit_Selected_Button).toBeEnabled();
+  await CorrPortalElem.Commit_Selected_Button.click();
   await CorrPortalElem.Yes_Commit_Button_Popup.click();
   await CorrPortalElem.Yes_Commit_Button_Popup.waitFor({ state: 'hidden' });
   await CorrPortalElem.Okay_Button_Popup.waitFor({ state: 'visible' });
+  await expect(page.getByText(appconstants.UPDATED_SUCCESSFULLY_TEXT_POPUP)).toBeVisible();
   await CorrPortalElem.Okay_Button_Popup.click();
 }
 
@@ -6357,14 +6361,14 @@ export async function stepGroup_Verifying_the_Last_Modified_Data_In_the_Right_co
  */
 export async function stepGroup_Verification_of_see_difference_pop_up_data(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
-  await expect(CorrPortalElem.Standard_Previous_Data_pop_up).toContainText(vars["StandardPreviousDataExp"]);
-  await expect(CorrPortalElem.Chase_Previous_Data_pop_up).toContainText(vars["ChasePreviousDataExp"]);
-  await expect(CorrPortalElem.Standard_previous_data_pop_up_sub_text).toHaveCSS('border', "rgba(255, 182, 186, 1)");
-  await expect(CorrPortalElem.Chase_Previous_Data_pop_up_sub_text).toHaveCSS('border', "rgba(255, 182, 186, 1)");
-  await expect(CorrPortalElem.Chase_New_Data_pop_up_sub_text).toContainText(vars["ChaseNewDataExp"]);
-  await expect(CorrPortalElem.Standard_New_Data_pop_up_sub_text).toContainText(vars["StandardNewDataExp"]);
-  await expect(CorrPortalElem.Standard_New_Data_pop_up_sub_text).toHaveCSS('border', "rgba(151, 242, 149, 1)");
-  await expect(CorrPortalElem.Chase_New_Data_pop_up_sub_text).toHaveCSS('border', "rgba(151, 242, 149, 1)");
+  await expect((CorrPortalElem as any)[vars['Element_Name1']]).toContainText(vars["testdata1"]);
+  await expect((CorrPortalElem as any)[vars['Element_Name2']]).toContainText(vars["testdata2"]);
+  await expect((CorrPortalElem as any)[vars['Element_Name3']]).toHaveCSS('background-color', "rgb(255, 182, 186)");
+  await expect((CorrPortalElem as any)[vars['Element_Name4']]).toHaveCSS('background-color', "rgb(255, 182, 186)");
+  await expect((CorrPortalElem as any)[vars['Element_Name5']]).toContainText(vars["testdata3"]);
+  await expect((CorrPortalElem as any)[vars['Element_Name6']]).toContainText(vars["testdata4"]);
+  await expect((CorrPortalElem as any)[vars['Element_Name7']]).toHaveCSS('background-color', "rgb(151, 242, 149)");
+  await expect((CorrPortalElem as any)[vars['Element_Name8']]).toHaveCSS('background-color', "rgb(151, 242, 149)");
 }
 
 /**
@@ -6871,80 +6875,112 @@ export async function stepGroup_Selecting_Second_Enabled_Batch_Time_If_the_Condi
  */
 export async function stepGroup_Creating_a_new_bid_for_price_offered_status_with_freedom_com(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
-  // [DISABLED] Login to CORR Portal
-  // await stepGroup_Login_to_CORR_Portal(page, vars);
-  await stepGroup_Deleting_Early_Config_Report_If_Present(page, vars);
-  await stepGroup_Navigating_to_Bulk_Batch_Timing(page, vars);
-  await stepGroup_Modifying_The_batch_Intervals_with_current_est_time(page, vars);
-  await stepGroup_Navigating_to_Upload_New_Bid_Request(page, vars);
-  await stepGroup_Uploading_Bid_Request(page, vars);
-  // [DISABLED] Uploading Bid Request(Latest)
-  // await stepGroup_Uploading_Bid_RequestLatest(page, vars);
-  await CorrPortalElem.Pricing_Return_Time.selectOption({ index: parseInt("2") });
-  vars["ExtractedPrincingReturnTime"] = await CorrPortalElem.Pricing_Return_Time.evaluate(el => { const s = el as HTMLSelectElement; return s.options[s.selectedIndex]?.text || ''; });
-  await CorrPortalElem.Upload_File.setInputFiles([]);
-  await expect(CorrPortalElem.UploadBid_Button).toBeVisible();
-  await CorrPortalElem.UploadBid_Button.click();
-  await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
-  await page.getByText("Bid Upload Progress").waitFor({ state: 'visible' });
-  await CorrPortalElem.Continue_Button_Upload_Pop_up.waitFor({ state: 'visible' });
-  await CorrPortalElem.Continue_Button_Upload_Pop_up.click();
-  await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
-  vars["RequestIDDetails"] = await CorrPortalElem.Request_Id_From_Details.textContent() || '';
-  vars["RequestIDDetails"] = String(vars["RequestIDDetails"]).trim();
-  await expect(CorrPortalElem.Bid_Status_From_Details).toContainText("Ready for Pricing");
-  vars["QueuedDateTime"] = await CorrPortalElem.Queued_Forbid_request_details_text_dark.textContent() || '';
-  vars["ExtractedDateTime"] = String('').split("")["3"] || '';
-  vars["QueuedTime"] = vars["ExtractedDateTime"];
-  vars["CurrentEstTime"] = (() => {
-    const d = new Date();
-    const opts: Intl.DateTimeFormatOptions = { timeZone: "America/New_York" };
-    const fmt = "hh:mm ";
-    // Map Java date format to Intl parts
-    const parts = new Intl.DateTimeFormat('en-US', { ...opts, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }).formatToParts(d);
-    const p = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
-    return fmt.replace('yyyy', p.year || '').replace('yy', (p.year || '').slice(-2)).replace('MM', p.month || '').replace('dd', p.day || '').replace('HH', String(d.getHours()).padStart(2, '0')).replace('hh', p.hour || '').replace('mm', p.minute || '').replace('ss', p.second || '').replace('a', p.dayPeriod || '').replace(/M(?!M)/g, String(parseInt(p.month || '0'))).replace(/d(?!d)/g, String(parseInt(p.day || '0'))).replace(/h(?!h)/g, String(parseInt(p.hour || '0')));
-  })();
-  vars["TimeDifference"] = Math.abs(new Date('2000-01-01 ' + String(vars["QueuedTime"])).getTime() - new Date('2000-01-01 ' + String(vars["CurrentEstTime"])).getTime()) / 60000 + '';
-  // [DISABLED] Verify if TimeDifference > 4
-  // if (String(vars["TimeDifference"]) > String("4"))
-  // [DISABLED] Store 4 in WaitTime
-  // vars["WaitTime"] = "4";
-  // [DISABLED] Step group
-  // // TODO: No template - Unknown step
-  // [DISABLED] Store TimeDifference in WaitTime
-  // vars["WaitTime"] = vars["TimeDifference"];
-  // [DISABLED] Perform multiplication on WaitTime and 60 and store the result inside a WaitTimeSeconds considering 0 decimal places
-  // vars["WaitTimeSeconds"] = (parseFloat(String(vars["WaitTime"])) * parseFloat(String("60"))).toFixed(0);
-  // [DISABLED] Perform subtraction on WaitTimeSeconds and 60 and store the result inside a WaitTimeSeconds considering 0 decimal places
-  // vars["WaitTimeSeconds"] = (parseFloat(String(vars["WaitTimeSeconds"])) - parseFloat(String("60"))).toFixed(0);
-  // [DISABLED] Wait for WaitTimeSeconds seconds
-  // await page.waitForTimeout(parseInt(vars["WaitTimeSeconds"]) * 1000);
-  await CorrPortalElem.Submit_for_Pricing_Enabled.click();
-  await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
-  await CorrPortalElem.Yes_Submit_Button.click();
-  await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
-  await CorrPortalElem.Bid_Requests_Side_Menu.click();
-  await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
-  while (!(await CorrPortalElem.Price_Offered_Status_of_searched_bid.isVisible())) {
-    await page.reload();
-    await expect(CorrPortalElem.Search_by_Bid_Request_ID_Field).toBeVisible();
-    await CorrPortalElem.Search_by_Bid_Request_ID_Field.fill(vars["RequestIDDetails"]);
-    await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
+
+  log.step('Delete early config report if present');
+  try {
+    await stepGroup_Deleting_Early_Config_Report_If_Present(page, vars);
+    log.stepPass('Early config report deleted successfully if present');
+  } catch (e) {
+    await log.stepFail(page, 'Failed to delete early config report');
+    throw e;
   }
-  vars["StatusOnScreen"] = await CorrPortalElem.BidStatus_From_List.textContent() || '';
-  if (String(vars["StatusOnScreen"]).includes(String("Price Offered"))) {
-  } else {
-    while (!(await CorrPortalElem.Price_Offered_Status_of_searched_bid.isVisible())) {
+
+  log.step('Navigate to Bulk Batch Timing and modify batch intervals with current EST time');
+  try {
+    await stepGroup_Navigating_to_Bulk_Batch_Timing(page, vars);
+    await stepGroup_Modifying_The_batch_Intervals_with_current_est_time(page, vars);
+    log.stepPass('Navigated to Bulk Batch Timing and batch intervals modified successfully');
+  } catch (e) {
+    await log.stepFail(page, 'Failed to navigate to Bulk Batch Timing or modify batch intervals');
+    throw e;
+  }
+
+  log.step('Navigate to Upload New Bid Request and upload bid file');
+  try {
+    // await stepGroup_Navigating_to_Upload_New_Bid_Request(page, vars);
+    await CorrPortalElem.BidRequests_Menu.click();
+    await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
+    await expect(page.getByText("Bid Requests").first()).toBeVisible();
+    // await stepGroup_Uploading_Bid_Request(page, vars);
+    await stepGroup_Uploading_Bid_Request_copy(page, vars);
+    await CorrPortalElem.Pricing_Return_Time.selectOption({ index: parseInt('2') });
+    vars['ExtractedPrincingReturnTime'] = await CorrPortalElem.Pricing_Return_Time.evaluate(el => { const s = el as HTMLSelectElement; return s.options[s.selectedIndex]?.text || ''; });
+    log.info('ExtractedPrincingReturnTime: ' + vars['ExtractedPrincingReturnTime']);
+    await uploadFile(page, CorrPortalElem.Upload_File, fileconstants.BID_FILE_FOR_PRICE_OFFERED_STATUS);
+    await expect(CorrPortalElem.UploadBid_Button).toBeVisible();
+    await expect(CorrPortalElem.UploadBid_Button).toBeEnabled();
+    await CorrPortalElem.UploadBid_Button.click();
+    await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
+    await page.getByText("Bid Upload Progress").waitFor({ state: 'visible' });
+    await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
+    await CorrPortalElem.Continue_Button_Upload_Pop_up.waitFor({ state: 'visible' });
+    await page.waitForTimeout(5000);
+    await CorrPortalElem.Continue_Button_Upload_Pop_up.click();
+    await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
+    await page.waitForLoadState('load');
+    await page.waitForTimeout(5000);
+    log.stepPass('Bid file uploaded successfully');
+  } catch (e) {
+    await log.stepFail(page, 'Failed to upload bid file');
+    throw e;
+  }
+
+  log.step('Capture request ID and verify bid status is Ready for Pricing');
+  try {
+    await CorrPortalElem.Request_Id_From_Details.waitFor({ state: 'visible', timeout: 30000 });
+    vars['RequestIDDetails'] = await CorrPortalElem.Request_Id_From_Details.textContent() || '';
+    vars['RequestIDDetails'] = String(vars['RequestIDDetails']).trim();
+    log.info('RequestIDDetails: ' + vars['RequestIDDetails']);
+    await expect(CorrPortalElem.Bid_Status_From_Details).toContainText(appconstants.READY_FOR_PRICING_TEXT);
+    vars['QueuedDateTime'] = await CorrPortalElem.Queued_Forbid_request_details_text_dark.textContent() || '';
+    log.info('QueuedDateTime: ' + vars['QueuedDateTime']);
+    log.stepPass('Request ID captured and bid status verified as Ready for Pricing successfully');
+  } catch (e) {
+    await log.stepFail(page, 'Failed to capture request ID or verify bid status');
+    throw e;
+  }
+
+  log.step('Submit bid for pricing and navigate to Bid Requests');
+  try {
+    await CorrPortalElem.Submit_for_Pricing_Enabled.click();
+    await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
+    await CorrPortalElem.Yes_Submit_Button.click();
+    await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
+    await CorrPortalElem.Bid_Requests_Side_Menu.click();
+    await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
+    log.stepPass('Bid submitted for pricing and navigated to Bid Requests successfully');
+  } catch (e) {
+    await log.stepFail(page, 'Failed to submit bid for pricing or navigate to Bid Requests');
+    throw e;
+  }
+
+  log.step('Wait for bid status to become Price Offered');
+  try {
+    while (!(await CorrPortalElem.Price_Offered_Status_of_searched_bid(vars['RequestIDDetails']).isVisible())) {
       await page.reload();
       await expect(CorrPortalElem.Search_by_Bid_Request_ID_Field).toBeVisible();
-      await CorrPortalElem.Search_by_Bid_Request_ID_Field.fill(vars["RequestIDDetails"]);
+      await CorrPortalElem.Search_by_Bid_Request_ID_Field.fill(vars['RequestIDDetails']);
+      await page.keyboard.press('Enter');
+      await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
     }
+    vars['StatusOnScreen'] = await CorrPortalElem.BidStatus_From_List(vars['RequestIDDetails']).textContent() || '';
+    log.info('StatusOnScreen: ' + vars['StatusOnScreen']);
+    if (!String(vars['StatusOnScreen']).includes(String('Price Offered'))) {
+      while (!(await CorrPortalElem.Price_Offered_Status_of_searched_bid(vars['RequestIDDetails']).isVisible())) {
+        await page.reload();
+        await expect(CorrPortalElem.Search_by_Bid_Request_ID_Field).toBeVisible();
+        await CorrPortalElem.Search_by_Bid_Request_ID_Field.fill(vars['RequestIDDetails']);
+        await page.keyboard.press('Enter');
+      }
+    }
+    await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
+    await expect(CorrPortalElem.BidStatus_From_List(vars['RequestIDDetails'])).toContainText('Price Offered');
+    await page.reload();
+    log.stepPass('Bid status verified as Price Offered successfully');
+  } catch (e) {
+    await log.stepFail(page, 'Failed to verify bid status as Price Offered');
+    throw e;
   }
-  await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
-  await expect(CorrPortalElem.BidStatus_From_List).toContainText("Price Offered");
-  await page.reload();
-  await page.waitForLoadState('networkidle');
 }
 
 /**
@@ -6960,7 +6996,7 @@ export async function stepGroup_Updating_Back_Username_in_Company_Config(page: i
   await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
   await CorrPortalElem.Internal_User_Username_Replacement_Input.click();
   await CorrPortalElem.Internal_User_Username_Replacement_Input.fill(String(vars["UserName"]));
-  if (true) /* Element Save Settings is enabled */ {
+  if (await CorrPortalElem.Save_Settings.isEnabled()) /* Element Save Settings is enabled */ {
     await CorrPortalElem.Save_Settings.click();
     await page.getByText("Company config updated successfully!").waitFor({ state: 'visible' });
     await CorrPortalElem.Ok_Button.waitFor({ state: 'visible' });

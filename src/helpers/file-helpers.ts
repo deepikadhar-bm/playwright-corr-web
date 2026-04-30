@@ -195,7 +195,7 @@ export async function uploadFile(
       return false; // Don't throw, just return false
     }
 
-    const allowed = ['.xlsx', '.xls', '.json', '.txt', '.csv'];
+    const allowed = ['.xlsx', '.xls', '.json', '.txt', '.csv','.png'];
     const ext = path.extname(fileName).toLowerCase();
 
     // Explicitly reject .pdf unless caller passes { force: true }

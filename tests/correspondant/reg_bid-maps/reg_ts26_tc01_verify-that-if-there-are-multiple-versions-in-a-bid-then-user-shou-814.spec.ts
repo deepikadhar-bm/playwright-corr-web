@@ -81,9 +81,17 @@ test.describe('REG_Bid Maps', () => {
     try {
 
       if (profile && profile.data) {
-        vars['Company name 1'] = profile.data[0]['Company name 1'];
+        vars['CompanyName1'] = profile.data[0]['CompanyName1'];
         vars['Rule Name'] = profile.data[0]['Rule Name'];
         vars['Chase Field Name'] = profile.data[0]['Chase Field Name'];
+        vars["BidField"] = profile.data[0]['BidField'];
+        vars["Operation1"] = profile.data[0]['Operation1'];
+        vars["BidEnumeratedTapeValue"] = profile.data[0]['BidEnumeratedTapeValue'];
+        vars["CustomHeader"] = profile.data[0]['CustomHeader'];
+        vars["customheadername"] = profile.data[0]['customheadername'];
+        vars["Chase_Field_Name"] = profile.data[0]['Chase_Field_Name'];
+        vars["BidFields"] = profile.data[0]['BidFields'];
+        vars["Bid Enumerated Tape Value"] = profile.data[0]['Bid Enumerated Tape Value'];
       }
 
       log.step('Login to CORR Portal');
@@ -98,9 +106,9 @@ test.describe('REG_Bid Maps', () => {
       log.step('Enable Smart Mapper and create Bid Map up to Header Mapping');
       try {
         await stepGroups.stepGroup_Smart_Mapper_from_Off_to_On(page, vars);
-        vars['Companyname'] = vars['Company name 1'];
-        const fileName=fileconstants.BID_QA_FILE_COMMON;
-        await stepGroups.stepGroup_Creating_of_Add_New_Header(page, vars,fileName);
+        vars['Companyname'] = vars['CompanyName1'];
+        const fileName = fileconstants.BID_QA_FILE_COMMON;
+        await stepGroups.stepGroup_Creating_of_Add_New_Header(page, vars, fileName);
         await stepGroups.stepGroup_Storing_Values_from_map_header_screen(page, vars);
         await mapHeadersButtonPage.Map_Headers_Button.click();
         await proceedWithSavingButtonPage.Proceed_with_Saving_Button.click();
@@ -129,6 +137,7 @@ test.describe('REG_Bid Maps', () => {
 
       log.step('Store Enumeration Mapping values and navigate to Rules and Actions');
       try {
+        await enumerationMappingPage.Bid_Sample_Field_NameEnum_mapping.first().waitFor({ state: 'visible' });
         vars['EnumFieldsCount'] = String(await enumerationMappingPage.Bid_Sample_Field_NameEnum_mapping.count());
         log.info('Enum Fields Count: ' + vars['EnumFieldsCount']);
         await stepGroups.stepGroup_Storing_BidSample_and_BidTape_Values_from_Enum_Page_with_Map(page, vars);
@@ -148,11 +157,11 @@ test.describe('REG_Bid Maps', () => {
         await stepGroups.stepGroup_Add_Actions_in_Rules_and_Actions(page, vars);
         await saveAndPublishButtonPage.Save_and_Publish_Button.click();
         await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-        await correspondentPortalPage.Version.waitFor({ state: 'visible' });
-        vars['Version'] = await correspondentPortalPage.Version.textContent() || '';
+        await correspondentPortalPage.Version.first().waitFor({ state: 'visible' });
+        vars['Version'] = await correspondentPortalPage.Version.first().textContent() || '';
         Methods.trimtestdata(vars['Version'], 'Version');
         log.info('Published Version: ' + vars['Version']);
-        await expect(page.getByText(vars['Version'])).toBeVisible();
+        await expect(page.getByText(vars['Version']).first()).toBeVisible();
         log.stepPass('Rules and Actions added and version 1 published: ' + vars['Version']);
       } catch (e) {
         await log.stepFail(page, 'Failed to add Rules and Actions or publish version 1');
@@ -213,13 +222,14 @@ test.describe('REG_Bid Maps', () => {
         await stepGroups.stepGroup_Editing_In_Enumeration_Mapping_Screen(page, vars);
         vars['ChaseFieldNameTobeEdited'] = await enumerationMappingPage.ChaseFieldname_To_be_edited_enum.textContent() || '';
         Methods.trimtestdata(vars['ChaseFieldNameTobeEdited'], 'ChaseFieldNameTobeEdited');
-        vars['SelectedChaseValueText'] = await enumerationMappingPage.To_be_edited_Chase_Value_ListEnum.evaluate(el => {
+        vars['SelectedChaseValueText'] = await enumerationMappingPage.To_be_edited_Chase_Value_ListEnum(vars['ChaseFieldNameTobeEdited']).evaluate(el => {
           const s = el as HTMLSelectElement;
           return s.options[s.selectedIndex]?.text || '';
         });
         Methods.trimtestdata(vars['SelectedChaseValueText'], 'SelectedChaseValueText');
-        await enumerationMappingPage.To_be_edited_Chase_Value_ListEnum.selectOption({ index: parseInt('1') });
-        vars['EditedChaseValueVersion2'] = await enumerationMappingPage.To_be_edited_Chase_Value_ListEnum.evaluate(el => {const s = el as HTMLSelectElement;return s.options[s.selectedIndex]?.text || '';
+        await enumerationMappingPage.To_be_edited_Chase_Value_ListEnum(vars['ChaseFieldNameTobeEdited']).selectOption({ index: parseInt('1') });
+        vars['EditedChaseValueVersion2'] = await enumerationMappingPage.To_be_edited_Chase_Value_ListEnum(vars['ChaseFieldNameTobeEdited']).evaluate(el => {
+          const s = el as HTMLSelectElement; return s.options[s.selectedIndex]?.text || '';
         });
         Methods.trimtestdata(vars['EditedChaseValueVersion2'], 'EditedChaseValueVersion2');
         log.info('EditedChaseValueVersion2: ' + vars['EditedChaseValueVersion2']);

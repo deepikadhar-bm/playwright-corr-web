@@ -1,7 +1,4 @@
-// [PREREQ-APPLIED]
-// [POM-APPLIED]
 import { test, expect } from '@playwright/test';
-import path from 'path';
 import * as stepGroups from '../../../src/helpers/step-groups';
 import { AuditLogPage } from '../../../src/pages/correspondant/audit-log';
 import { CorrespondentPortalPage } from '../../../src/pages/correspondant/correspondent-portal';
@@ -9,6 +6,13 @@ import { GeneralSettingPage } from '../../../src/pages/correspondant/general-set
 import { SeeDifferencePopUpPage } from '../../../src/pages/correspondant/see-difference-pop-up';
 import { SpinnerPage } from '../../../src/pages/correspondant/spinner';
 import { runPrereq_2342 } from '../../../src/helpers/prereqs/prereq-2342';
+import { Logger as log } from '@helpers/log-helper';
+import { AddonHelpers } from '@helpers/AddonHelpers';
+import { APP_CONSTANTS as appconstants } from '../../../src/constants/app-constants';
+
+
+const TC_ID = 'REG_TS15_TC05';
+const TC_TITLE = 'Company Config - Verify the Changes in the Audit Log';
 
 test.describe('REG_General Settings', () => {
   let vars: Record<string, string> = {};
@@ -17,65 +21,141 @@ test.describe('REG_General Settings', () => {
   let generalSettingPage: GeneralSettingPage;
   let seeDifferencePopUpPage: SeeDifferencePopUpPage;
   let spinnerPage: SpinnerPage;
+  let Methods: AddonHelpers;
 
   test.beforeEach(async ({ page }) => {
     vars = {};
     await runPrereq_2342(page, vars);
+    vars['Element_Name1'] = 'Name_Previous_DataPop_Up';
+    vars['Element_Name2'] = 'Internal_User_Name_Previous_Data';
+    vars['Element_Name3'] = 'Company_Name_Previous_Data';
+    vars['Element_Name4'] = 'Internal_User_Name_Previous_Data';
+    vars['Element_Name5'] = 'Name_New_DataPop_up';
+    vars['Element_Name6'] = 'Internal_User_Name_New_Data';
+    vars['Element_Name7'] = 'Company_Name_New_Data';
+    vars['Element_Name8'] = 'Internal_User_Name_New_Data';
+
+    vars["testdata1"] = vars['CompanyPreviousDataExp'];
+    vars["testdata2"] = vars['InternalUserPreviousDataExp'];
+    vars["testdata3"] = vars['CompanyNewDataExp'];
+    vars["testdata4"] = vars['InternalUserNewDataExp'];
     auditLogPage = new AuditLogPage(page);
     correspondentPortalPage = new CorrespondentPortalPage(page);
     generalSettingPage = new GeneralSettingPage(page);
     seeDifferencePopUpPage = new SeeDifferencePopUpPage(page);
     spinnerPage = new SpinnerPage(page);
+    Methods = new AddonHelpers(page, vars);
   });
 
-  test('REG_TS15_TC05_Company Config - Verify the Changes in the Audit Log', async ({ page }) => {
+  test(`${TC_ID} - ${TC_TITLE}`, async ({ page }) => {
+    log.tcStart(TC_ID, TC_TITLE);
 
-    // [DISABLED] Login to CORR Portal
-    // await stepGroups.stepGroup_Login_to_CORR_Portal(page, vars);
-    // [DISABLED] Click on Administration_Menu
-    // await correspondentPortalPage.Administration_Menu.click();
-    // [DISABLED] Click on GeneralSettings_Menu
-    // await correspondentPortalPage.GeneralSettings_Menu.click();
-    // [DISABLED] Wait until the element Spinner is not visible
-    // await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-    vars["ExpectedTimeAudit"] = vars["TimeOnScreen"];
-    vars["ExpectedTimeAudit"] = String(vars["ExpectedTimeAudit"]).substring(17, String(vars["ExpectedTimeAudit"]).length - 13);
-    vars["ExpectedTimeAudit"] = (() => {
-      const d = new Date(String(vars["ExpectedTimeAudit"]));
-      const _p = { yyyy: String(d.getFullYear()), yy: String(d.getFullYear()).slice(-2), MM: String(d.getMonth()+1).padStart(2,'0'), M: String(d.getMonth()+1), dd: String(d.getDate()).padStart(2,'0'), d: String(d.getDate()), HH: String(d.getHours()).padStart(2,'0'), hh: String(d.getHours()%12||12).toString().padStart(2,'0'), h: String(d.getHours()%12||12), mm: String(d.getMinutes()).padStart(2,'0'), ss: String(d.getSeconds()).padStart(2,'0'), a: d.getHours() >= 12 ? 'PM' : 'AM' };
-      return "MM/dd/yyyy hh:mm a".replace('yyyy',_p.yyyy).replace('yy',_p.yy).replace('MM',_p.MM).replace('dd',_p.dd).replace('HH',_p.HH).replace('hh',_p.hh).replace('mm',_p.mm).replace('ss',_p.ss).replace(/a/g,_p.a).replace(/M(?!M)/g,_p.M).replace(/d(?!d)/g,_p.d).replace(/h(?!h)/g,_p.h);
-    })();
-    await generalSettingPage.Audit_Menu.click();
-    await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-    // [DISABLED] Verify that the element Created Date & Time Column Data value contains the ExpectedTimeAudit , ignoring case
-    // expect((await generalSettingPage.Created_Date_Time_Column_Data.inputValue() || '').toLowerCase()).toContain(String('').toLowerCase());
-    expect((await generalSettingPage.Created_Date_Time_Column_Data.textContent() || '').toLowerCase()).toContain(String('').toLowerCase());
-    // [DISABLED] Verify that the element Created Date & Time Column Data displays text contains ExpectedTimeAudit and With Scrollable FALSE
-    // await expect(generalSettingPage.Created_Date_Time_Column_Data).toContainText(vars["ExpectedTimeAudit"]);
-    await expect(generalSettingPage.First_User_Name_UI).toContainText("testsigma_internal\t\r");
-    await expect(generalSettingPage.Config_Type_Column_Data).toContainText("Company Config");
-    await correspondentPortalPage.See_the_difference_Button.click();
-    await correspondentPortalPage.Side_by_side_Button.waitFor({ state: 'visible' });
-    await expect(correspondentPortalPage.Side_by_side_Button).toBeVisible();
-    await expect(correspondentPortalPage.Line_by_line_Button).toBeVisible();
-    await expect(seeDifferencePopUpPage.Side_by_Side_Tables).toBeVisible();
-    vars["SidebySideTablesCount"] = String(await seeDifferencePopUpPage.Side_by_Side_Tables.count());
-    expect(String(vars["SidebySideTablesCount"])).toBe("2");
-    await expect(seeDifferencePopUpPage.Name_Previous_DataPop_Up).toContainText(vars["CompanyPreviousDataExp"]);
-    await expect(seeDifferencePopUpPage.Internal_User_Name_Previous_Datapop_up).toContainText(vars["InternalUserPreviousDataExp"]);
-    await expect(auditLogPage.Company_Name_Previous_Data).toHaveCSS('border', "rgba(255, 182, 186, 1)");
-    await expect(auditLogPage.Internal_User_Name_Previous_Data).toHaveCSS('border', "rgba(255, 182, 186, 1)");
-    await expect(seeDifferencePopUpPage.Name_New_DataPop_up).toContainText(vars["CompanyNewDataExp"]);
-    await expect(seeDifferencePopUpPage.Inernal_User_New_Datapop_up).toContainText(vars["InternalUserNewDataExp"]);
-    await expect(seeDifferencePopUpPage.Company_Name_New_Data).toHaveCSS('border', "rgba(151, 242, 149, 1)");
-    await expect(seeDifferencePopUpPage.Internal_User_Name_New_Data).toHaveCSS('border', "rgba(151, 242, 149, 1)");
-    await correspondentPortalPage.Line_by_line_Button.click();
-    await correspondentPortalPage.Side_by_side_Button.waitFor({ state: 'visible' });
-    await expect(correspondentPortalPage.Line_by_line_Button).toBeVisible();
-    await seeDifferencePopUpPage.Line_by_line_Table.waitFor({ state: 'visible' });
-    vars["LineByLineTableCount"] = String(await seeDifferencePopUpPage.Line_by_line_Table.count());
-    expect(String(vars["LineByLineTableCount"])).toBe("1");
-    await stepGroups.stepGroup_Verification_of_see_difference_pop_up_data(page, vars);
-    await correspondentPortalPage.close_pop_up_bid_request_details.click();
+    try {
+
+      log.step('Prepare expected audit time from screen time value');
+      try {
+        vars['ExpectedTimeAudit'] = vars['TimeOnScreen'];
+        Methods.removeCharactersFromPosition(vars['ExpectedTimeAudit'], '17', '13', 'ExpectedTimeAudit');
+        Methods.convertDateFormat(vars['ExpectedTimeAudit'], appconstants.DATEWITHTIME_FORMAT_MDDYYYYHMMA, appconstants.DATEWITHTIME_FORMAT_MMDDYYYYHHMMA, 'ExpectedTimeAudit');
+        log.info('Expected Time Audit: ' + vars['ExpectedTimeAudit']);
+        log.stepPass('Expected audit time prepared successfully');
+      } catch (e) {
+        await log.stepFail(page, 'Failed to prepare expected audit time');
+        throw e;
+      }
+
+      log.step('Navigate to Audit Log and verify created date time column data');
+      try {
+        await generalSettingPage.Audit_Menu.click();
+        await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+        await Methods.verifyElementContainsTextIgnoreCase(generalSettingPage.Created_Date_Time_Column_Data.first(), vars['ExpectedTimeAudit']);
+        log.stepPass('Navigated to Audit Log and date time column data verified successfully');
+      } catch (e) {
+        await log.stepFail(page, 'Failed to navigate to Audit Log or verify date time column data');
+        throw e;
+      }
+
+      log.step('Verify audit log user name and config type column data');
+      try {
+        await expect(generalSettingPage.First_User_Name_UI.first()).toContainText(appconstants.TESTSIGMA_INTERNAL);
+        await expect(generalSettingPage.Config_Type_Column_Data.first()).toContainText(appconstants.COMPANY_CONFIG_TEXT);
+        log.stepPass('Audit log user name and config type verified successfully');
+      } catch (e) {
+        await log.stepFail(page, 'Failed to verify audit log user name or config type');
+        throw e;
+      }
+
+      log.step('Open See the Difference popup and verify Side by Side view');
+      try {
+        await correspondentPortalPage.See_the_difference_Button.click();
+        await correspondentPortalPage.Side_by_side_Button.waitFor({ state: 'visible' });
+        await expect(correspondentPortalPage.Side_by_side_Button).toBeDisabled();
+        await expect(correspondentPortalPage.Line_by_line_Button).toBeEnabled();
+        await expect(seeDifferencePopUpPage.Side_by_Side_Tables.first()).toBeVisible();
+        vars['SidebySideTablesCount'] = String(await seeDifferencePopUpPage.Side_by_Side_Tables.count());
+        log.info('Side by Side Tables Count: ' + vars['SidebySideTablesCount']);
+        expect(Methods.verifyString(vars['SidebySideTablesCount'], 'equals', appconstants.TWO));
+        log.stepPass('See the Difference popup opened and Side by Side view verified successfully');
+      } catch (e) {
+        await log.stepFail(page, 'Failed to open See the Difference popup or verify Side by Side view');
+        throw e;
+      }
+
+      log.step('Verify previous data values and CSS background-colors in Side by Side view');
+      try {
+        await expect(seeDifferencePopUpPage.Name_Previous_DataPop_Up).toContainText(vars['CompanyPreviousDataExp']);
+        await expect(seeDifferencePopUpPage.Internal_User_Name_Previous_Datapop_up).toContainText(vars['InternalUserPreviousDataExp']);
+        await expect(auditLogPage.Company_Name_Previous_Data).toHaveCSS('background-color', 'rgb(255, 182, 186)');
+        await expect(auditLogPage.Internal_User_Name_Previous_Data).toHaveCSS('background-color', 'rgb(255, 182, 186)');
+        log.stepPass('Previous data values and CSS background-colors verified successfully');
+      } catch (e) {
+        await log.stepFail(page, 'Failed to verify previous data values or CSS background-colors');
+        throw e;
+      }
+
+      log.step('Verify new data values and CSS background-colors in Side by Side view');
+      try {
+        await expect(seeDifferencePopUpPage.Name_New_DataPop_up).toContainText(vars['CompanyNewDataExp']);
+        await expect(seeDifferencePopUpPage.Inernal_User_New_Datapop_up).toContainText(vars['InternalUserNewDataExp']);
+        await expect(seeDifferencePopUpPage.Company_Name_New_Data).toHaveCSS('background-color', 'rgb(151, 242, 149)');
+        await expect(seeDifferencePopUpPage.Internal_User_Name_New_Data).toHaveCSS('background-color', 'rgb(151, 242, 149)');
+        log.stepPass('New data values and CSS background-colors verified successfully');
+      } catch (e) {
+        await log.stepFail(page, 'Failed to verify new data values or CSS background-colors');
+        throw e;
+      }
+
+      log.step('Switch to Line by Line view and verify table count');
+      try {
+        await correspondentPortalPage.Line_by_line_Button.click();
+        await correspondentPortalPage.Side_by_side_Button.waitFor({ state: 'visible' });
+        await expect(correspondentPortalPage.Line_by_line_Button).toBeVisible();
+        await seeDifferencePopUpPage.Line_by_line_Table.waitFor({ state: 'visible' });
+        vars['LineByLineTableCount'] = String(await seeDifferencePopUpPage.Line_by_line_Table.count());
+        log.info('Line By Line Table Count: ' + vars['LineByLineTableCount']);
+        expect(Methods.verifyString(vars['LineByLineTableCount'], 'equals', appconstants.ONE));
+        log.stepPass('Switched to Line by Line view and table count verified successfully');
+      } catch (e) {
+        await log.stepFail(page, 'Failed to switch to Line by Line view or verify table count');
+        throw e;
+      }
+
+      log.step('Verify see difference popup data and close popup');
+      try {
+        await stepGroups.stepGroup_Verification_of_see_difference_pop_up_data(page, vars);
+        await correspondentPortalPage.close_pop_up_bid_request_details.click();
+        log.stepPass('See difference popup data verified and popup closed successfully');
+      } catch (e) {
+        await log.stepFail(page, 'Failed to verify see difference popup data or close popup');
+        throw e;
+      }
+
+      log.tcEnd('PASS');
+
+    } catch (e) {
+      await log.captureOnFailure(page, TC_ID, e);
+      log.tcEnd('FAIL');
+      throw e;
+    }
   });
 });
