@@ -7,6 +7,7 @@ import { SpinnerPage } from '../../pages/correspondant/spinner';
 import { runPrereq_1381 } from './prereq-1381';
 import { Logger as log } from '@helpers/log-helper';
 import { ENV } from '@config/environments';
+import { APP_CONSTANTS as appconstants } from '../../../src/constants/app-constants';
 
 
 const TC_ID = 'PRE_REQ_2396(REG_TS15_TC06)';
@@ -50,10 +51,11 @@ export async function runPrereq_2396(page: Page, vars: Record<string, string>): 
 
     log.step('Capture current internal username, update to test value and save');
     try {
+      await expect(correspondentPortalPage.Internal_User_Username_Replacement_Input).toHaveValue(/.+/);
       vars['UserName'] = await correspondentPortalPage.Internal_User_Username_Replacement_Input.inputValue() || '';
       log.info('UserName (before edit): ' + vars['UserName']);
       await correspondentPortalPage.Internal_User_Username_Replacement_Input.click();
-      vars['UsernameUpdated'] = 'Username_tesing';
+      vars['UsernameUpdated'] = appconstants.USERNAME_TESTING;
       log.info('UsernameUpdated: ' + vars['UsernameUpdated']);
       await correspondentPortalPage.Internal_User_Username_Replacement_Input.clear();
       await correspondentPortalPage.Internal_User_Username_Replacement_Input.type(String(vars['UsernameUpdated']));

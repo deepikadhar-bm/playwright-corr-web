@@ -1394,7 +1394,7 @@ export class CorrPortalPage {
   }
 
   get New_Field_Chase_Dropdown2(): Locator {
-    return this.page.locator("(//input[@class=\"input-field-edit\"]/../../../../..//select[@class=\"form-select\"])[2]");
+    return this.page.locator(`//input[@class="input-field-edit"]/following::select[normalize-space(@title)='']`);
   }
 
   get New_Header_Mapping(): Locator {

@@ -99,7 +99,7 @@ test.describe('REG_General Settings', () => {
         throw e;
       }
 
-      log.step('Commit all loans');
+      log.step('Commit all loans in price offered screen');
       try {
         await stepGroups.stepGroup_Commit_All_Loans_Standard(page, vars);
         log.stepPass('All loans committed successfully');
@@ -116,14 +116,13 @@ test.describe('REG_General Settings', () => {
         await priceOfferedPage.Search_Dropdown.type(vars['RequestIDDetails']);
         await priceOfferedPage.Bid_Request_ID_DropdownCommitment_List_Page.click();
         await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+        await commitmentListPage.Commitment_Letter.first().click()
         Methods.getCurrentTimestamp(appconstants.PATH_DATEFORMAT, 'CurrentTimeStamp', appconstants.ASIA_KOLKATA);
-        const [download] = await Promise.all([page.waitForEvent('download'), commitmentListPage.Commitment_Letter.first().click()]);
+        const [download] = await Promise.all([page.waitForEvent('download'), commitmentListPage.First_Commitment_Letter.first().click()]);
         Methods.concatenateWithSpecialChar(vars['CurrentTimeStamp'], download.suggestedFilename(), '_', 'SavedFileName');
         vars['FilePath'] = path.join(vars['DownloadDir'], vars['SavedFileName']);
         await download.saveAs(vars['FilePath']);
-        await download.saveAs(vars['FilePath']);
         log.info('FilePath: ' + vars['FilePath']);
-        await commitmentListPage.First_Commitment_Letter.click();
         log.stepPass('Navigated to Commitment List and Commitment Letter downloaded successfully');
       } catch (e) {
         await log.stepFail(page, 'Failed to navigate to Commitment List or download Commitment Letter');
@@ -135,9 +134,8 @@ test.describe('REG_General Settings', () => {
         vars['CoverLetterUserName'] = excelHelper.readCellByColAndRowIndex(vars['FilePath'], 0, 3, 4);
         log.info('CoverLetterUserName: ' + vars['CoverLetterUserName']);
         log.info('UsernameUpdated: ' + vars['UsernameUpdated']);
-        // expect(String(vars['CoverLetterUserName'])).toBe(vars['UsernameUpdated']);
         expect(Methods.verifyString(vars['CoverLetterUserName'], 'equals', vars['UsernameUpdated']));
-        await okButtonPage.Ok_Button.click();
+        await correspondentPortalPage.Close_ButtonCommitment_List.click();
         log.stepPass('Cover letter username verified successfully');
       } catch (e) {
         await log.stepFail(page, 'Failed to verify cover letter username');
