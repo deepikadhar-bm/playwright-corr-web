@@ -55,8 +55,8 @@ export class StatusInactive2Page {
     return this.page.locator("//input[@type=\"text\" and contains(@class, 'input-field-edit')]");
   }
 
-  get Bid_Map_In_List_Screen(): Locator {
-    return this.page.locator("//button[contains(.,'$|Create New Map|')]");
+  Bid_Map_In_List_Screen(CreateNewMap:string): Locator {
+    return this.page.locator(`//button[contains(.,'${CreateNewMap}')]`);
   }
 
   get checkbox_in_Enumeration_Mapping(): Locator {

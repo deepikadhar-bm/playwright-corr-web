@@ -57,6 +57,7 @@ test.describe('Unassigned', () => {
 
       log.step('Capture current internal username, update to test value and save');
       try {
+        await expect(correspondentPortalPage.Internal_User_Username_Replacement_Input).toHaveValue(/.+/);
         vars['UserName'] = await correspondentPortalPage.Internal_User_Username_Replacement_Input.inputValue() || '';
         log.info('UserName (before edit): ' + vars['UserName']);
         await correspondentPortalPage.Internal_User_Username_Replacement_Input.click();

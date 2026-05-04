@@ -89,7 +89,6 @@ test.describe('REG_Bid Maps', () => {
         vars["BidEnumeratedTapeValue"] = profile.data[0]['BidEnumeratedTapeValue'];
         vars["CustomHeader"] = profile.data[0]['CustomHeader'];
         vars["customheadername"] = profile.data[0]['customheadername'];
-        vars["Chase_Field_Name"] = profile.data[0]['Chase_Field_Name'];
         vars["BidFields"] = profile.data[0]['BidFields'];
         vars["Bid Enumerated Tape Value"] = profile.data[0]['Bid Enumerated Tape Value'];
       }
@@ -170,7 +169,8 @@ test.describe('REG_Bid Maps', () => {
 
       log.step('Create version 2 — select new execution type and map headers');
       try {
-        await statusInactive2Page.Bid_Map_In_List_Screen.click();
+        vars['CreateNewMap'] = vars['Create New Map'];
+        await statusInactive2Page.Bid_Map_In_List_Screen(vars['CreateNewMap']).click();
         await expect(page.getByText(vars['Create New Map'])).toBeVisible();
         await mapHeaderPage.Execution_Type_Dropdown_New.selectOption({ index: parseInt('2') });
         vars['ExecutionVersion2'] = await mapHeaderPage.Execution_Type_Dropdown_New.evaluate(el => {
@@ -190,14 +190,18 @@ test.describe('REG_Bid Maps', () => {
 
       log.step('Create, edit and delete headers in Header Mapping for version 2');
       try {
+        vars["Chase_Field_Name"] = vars['Chase Field Name'];
         await stepGroups.stepGroup_Creating_New_Header_In_Header_Mapping_Screen(page, vars);
+        if (profile && profile.data) {
+          vars["Chase_Field_Name"] = profile.data[0]['Chase_Field_Name'];
+        }
         await stepGroups.stepGroup_Editing_Header_Mapping(page, vars);
         vars['EditedChaseFieldNameVersion2'] = vars['UpdatedChaseFieldNameHeaderMapping'];
         vars['DeletedHeader[HeaderMapping]'] = await headerMappingPage.Deleting_Header.textContent() || '';
-        Methods.trimtestdata(vars['DeletedHeader[HeaderMapping]'], 'DeletedHeader[HeaderMapping]');
-        log.info('DeletedHeader: ' + vars['DeletedHeader[HeaderMapping]']);
+        Methods.trimtestdata(vars['DeletedHeader[HeaderMapping]'], 'DeletedHeaderHeaderMapping');
+        log.info('Deleted Header: ' + vars['DeletedHeaderHeaderMapping']);
         await stepGroups.stepGroup_Delete_a_Header_In_Header_Mapping(page, vars);
-        await expect(headerMappingPage.get_Deleted_Header_In_HeaderMaping(vars['DeletedHeaderHeaderMapping'])).toBeVisible();
+        await expect(headerMappingPage.get_Deleted_Header_In_HeaderMaping(vars['DeletedHeaderHeaderMapping'])).not.toBeVisible();
         await headerMappingPage.First_Header_Checkbox.check();
         vars['FirstHeaderName'] = await headerMappingPage.First_Header_Bid_Sample_Name.textContent() || '';
         Methods.trimtestdata(vars['FirstHeaderName'], 'FirstHeaderName');
@@ -261,12 +265,14 @@ test.describe('REG_Bid Maps', () => {
         await duplicatecopyButtonPage.DuplicateCopy_Button.click();
         await duplicatecopyButtonPage.DuplicateCopy_Button.click();
         await expect(rulesAndActionsButtonPage.Added_Rule_Block).toHaveCount(parseInt('3'));
+        await statusInactive2Page.Rule_Name.click();
         await statusInactive2Page.Rule_Name.clear();
-        await statusInactive2Page.Rule_Name.fill('Rule 2');
+        await statusInactive2Page.Rule_Name.type('Rule 2');
         vars['SecondRuleName'] = await statusInactive2Page.Rule_Name.inputValue() || '';
         Methods.trimtestdata(vars['SecondRuleName'], 'SecondRuleName');
+        await statusInactivePage.Enter_Rule_Name.click();
         await statusInactivePage.Enter_Rule_Name.clear();
-        await statusInactivePage.Enter_Rule_Name.fill('Rule 3');
+        await statusInactivePage.Enter_Rule_Name.type('Rule 3');
         vars['ThirdRuleName'] = await statusInactivePage.Enter_Rule_Name.inputValue() || '';
         Methods.trimtestdata(vars['ThirdRuleName'], 'ThirdRuleName');
         vars['LastRuleName'] = vars['ThirdRuleName'];

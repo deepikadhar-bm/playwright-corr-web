@@ -1146,7 +1146,7 @@ export async function stepGroup_Adding_Field_In_Enumeration_Mapping(page: import
   await CorrPortalElem.Bid_Tape_Add_Field.fill(Array.from({ length: 7 }, () => "abc".charAt(Math.floor(Math.random() * 3))).join(''));
   vars["AddedBidTapeValue[EnumerationMapping]"] = await CorrPortalElem.Bid_Tape_Add_Field.inputValue() || '';
   // await CorrPortalElem.New_Field_Chase_Dropdown2.click();
-  await CorrPortalElem.New_Field_Chase_Dropdown2.selectOption({ index: parseInt("2") });
+  await CorrPortalElem.New_Field_Chase_Dropdown2.first().selectOption({ index: parseInt("2") });
 }
 
 
@@ -4534,7 +4534,7 @@ export async function stepGroup_Storing_Chase_Field_and_Chase_Value_from_Enum_Pa
     await CorrPortalElem.First_Checkbox_Enum.uncheck();
     for (let dataIdx = parseInt(vars["count1"]); dataIdx <= parseInt(vars["count1"]); dataIdx++) {
       vars["IndividualChaseFieldName"] = await CorrPortalElem.Individual_Chase_Enum_Name(vars['count1']).textContent() || '';
-      if (!(await enumerationMappingPage.get_ChaseValues_Corresponding_to_Chase_Field(vars["IndividualChaseFieldName"]).isVisible())) /* Element ChaseValues Corresponding to Chase Field is not visible*/ {
+      if (!(await enumerationMappingPage.get_ChaseValues_Corresponding_to_Chase_Field(vars["IndividualChaseFieldName"]).first().isVisible())) /* Element ChaseValues Corresponding to Chase Field is not visible*/ {
         log.info('Element ChaseValues Corresponding to Chase Field is not visible');
       } else {
         log.info('Element ChaseValues Corresponding to Chase Field is visible');
