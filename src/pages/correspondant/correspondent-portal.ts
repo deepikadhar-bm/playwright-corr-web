@@ -179,7 +179,7 @@ export class CorrespondentPortalPage {
     return this.page.locator("(//td[@data-title=\"Added On\"])[1]");
   }
 
-  Added_Timing_In_Batch(BulkBatchTiming:string): Locator {
+  Added_Timing_In_Batch(BulkBatchTiming: string): Locator {
     return this.page.locator(`//*[contains(text(),\"Batch\")]/../..//h5[contains(text(),\"${BulkBatchTiming}\")]`);
   }
 
@@ -419,7 +419,7 @@ export class CorrespondentPortalPage {
     return this.page.locator("(//span[@class='active']/../../..//td[@data-title=\"Map Name\"])[1]");
   }
 
-  Bid_Map_Name_with_ExistingName(ExistingBidMapName:string): Locator {
+  Bid_Map_Name_with_ExistingName(ExistingBidMapName: string): Locator {
     return this.page.locator(`//span[contains(text(),\"${ExistingBidMapName}\")]`);
   }
 
@@ -440,7 +440,7 @@ export class CorrespondentPortalPage {
     return this.page.locator("(//div[contains(.,'already exists')][last()])[6]");
   }
 
-   BidMap_Download(BidMapName:string): Locator {
+  BidMap_Download(BidMapName: string): Locator {
     return this.page.locator(`//td[@data-title='Map Name'][contains(.,'${BidMapName}')]/following-sibling::td[@data-title='Actions']//a[@ngbtooltip=\"Download Map\"]`);
   }
 
@@ -496,7 +496,7 @@ export class CorrespondentPortalPage {
     return this.page.locator("//div[contains(@class, 'd-flex') and contains(@class, 'small')]/following-sibling::div[contains(@class, 'd-flex')]//select[contains(@class, 'form-select')]");
   }
 
-  get_Chase_Field_Name_Drowpdown(count:number): Locator {
+  get_Chase_Field_Name_Drowpdown(count: number): Locator {
     return this.page.locator(`(//div[@class='parent']//fieldset//select[@class='form-select'])[${count}]`);
   }
 
@@ -604,15 +604,15 @@ export class CorrespondentPortalPage {
     return this.page.locator("//label[contains(text(),\"Commit Correction Cut-off\")]//following::input[contains(@id,\"CorrectionCutOfHours\")]");
   }
 
-  Commitment_OrderCommitment_List(CommitID:string): Locator {
+  Commitment_OrderCommitment_List(CommitID: string): Locator {
     return this.page.locator(`//div[text()=\"${CommitID}\"]//preceding-sibling::div[contains(text(),\"Commitment Order\")]`);
   }
 
-  Commitment_OrderCommitment_List_2(CommitID:string): Locator {
+  Commitment_OrderCommitment_List_2(CommitID: string): Locator {
     return this.page.locator(`//div[text()=\"${CommitID}\"]//preceding-sibling::div[contains(text(),\"Commitment Order\")]`);
   }
 
-  Commitment_Rows_Count(CommitmentID:string): Locator {
+  Commitment_Rows_Count(CommitmentID: string): Locator {
     return this.page.locator(`//div[normalize-space(text())=\"Commit. ID\"]//following-sibling::h5[normalize-space(text())=\"${CommitmentID}\"]//following::table[1]//tbody//tr[@role=\"row\"]`);
   }
 
@@ -624,7 +624,7 @@ export class CorrespondentPortalPage {
     return this.page.locator("(//label[@class='dropdown-item d-flex'])");
   }
 
-   Company_Check_Box(CompanyName:string): Locator {
+  Company_Check_Box(CompanyName: string): Locator {
     return this.page.locator(`//span[contains(text(),\"${CompanyName}\")]/../..//input[@type=\"checkbox\"]`);
   }
 
@@ -644,7 +644,7 @@ export class CorrespondentPortalPage {
     return this.page.locator("(//div[@id=\"common-table-results\"]//following-sibling::td[@data-title=\"Actions\"])[2]//button[@aria-label=\"Edit Permission\"]");
   }
 
-  Company_Name_Customer_Permission(CompanyIndex:string): Locator {
+  Company_Name_Customer_Permission(CompanyIndex: string): Locator {
     return this.page.locator(`//div[@id='common-table-results']/table//tr[${CompanyIndex}]//td[@data-title=\"Company Name\"]`);
   }
 
@@ -652,7 +652,7 @@ export class CorrespondentPortalPage {
     return this.page.locator("//td[@data-title='Company'][contains(.,'@|Company Name.|')]");
   }
 
-   CompanyName_Action_Button_By_Index(CompanyIndex:string): Locator {
+  CompanyName_Action_Button_By_Index(CompanyIndex: string): Locator {
     return this.page.locator(`(//div[@id=\"common-table-results\"]//following-sibling::td[@data-title=\"Actions\"])[${CompanyIndex}]//button[@aria-label=\"Edit Permission\"]`);
   }
 
@@ -677,7 +677,7 @@ export class CorrespondentPortalPage {
   }
 
   get Cross_button_in_Bid_Map(): Locator {
-  return this.page.getByRole('button', { name: 'Remove ' }).first();
+    return this.page.getByRole('button', { name: 'Remove ' }).first();
   }
 
   get Cross_Button_in_Header_Mapping(): Locator {
@@ -692,7 +692,7 @@ export class CorrespondentPortalPage {
     return this.page.locator("//i[contains(@class, 'fa-lg') and contains(@class, 'color-primary') and contains(@class, 'fa-times')]");
   }
 
-  Curr_GrossCommitment_List(CommittedCorrLoan:string): Locator {
+  Curr_GrossCommitment_List(CommittedCorrLoan: string): Locator {
     return this.page.locator(`//button[text()=\"${CommittedCorrLoan}\"]//ancestor::tr//td[@data-title=\"Curr Gross\"]`);
   }
 
@@ -704,7 +704,7 @@ export class CorrespondentPortalPage {
     return this.page.locator("//input[@placeholder=\"Select Date\"]");
   }
 
-  Current_Month_Requested_DateIndividual(count1:string): Locator {
+  Current_Month_Requested_DateIndividual(count1: string): Locator {
     return this.page.locator(`(//div[contains(@aria-label,\"Requested Date:\")])[${count1}]`);
   }
 
@@ -820,7 +820,7 @@ export class CorrespondentPortalPage {
     return this.page.locator("//div[text()=' Base Loan Amount ']/ancestor::div[@class=\"rules-conditions\"]//button[contains(@class,\"btn bg-transparent text-danger fas fa-trash\")]");
   }
 
-  Delete_Existing_Company_Name(ExistingBidMapName:string): Locator {
+  Delete_Existing_Company_Name(ExistingBidMapName: string): Locator {
     return this.page.locator(`//td[@data-title=\"Map Name\"][contains(.,'${ExistingBidMapName}')]/following-sibling::td[@data-title=\"Actions\"]//button[@ngbtooltip=\"Delete Map Delete Map\"]`);
   }
 
@@ -852,7 +852,7 @@ export class CorrespondentPortalPage {
     return this.page.locator("//button[@aria-label=\"Download Grid\"]");
   }
 
-  Download_Map(MapNames:string): Locator {
+  Download_Map(MapNames: string): Locator {
     return this.page.locator(`//h5[text()[normalize-space() =\"Download Map - ${MapNames}\"]]`);
   }
 
@@ -900,7 +900,7 @@ export class CorrespondentPortalPage {
     return this.page.locator("(//div[text()=\" Show Selected \"])[2]");
   }
 
-  DTI_Dropdown(BidFields1:string): Locator {
+  DTI_Dropdown(BidFields1: string): Locator {
     return this.page.locator(`//div[contains(@class,'menu show') and @aria-labelledby='singleSelectDropDown']//span[text()='${BidFields1}']//ancestor::button`);
   }
   get Each_Batch(): Locator {
@@ -1007,7 +1007,7 @@ export class CorrespondentPortalPage {
     return this.page.locator("//table[contains(@class,'table table-hover')]/tbody[1]/tr[1]/td[@data-title=\"Map Name\"]");
   }
 
-   Expand_Button(Count:string): Locator {
+  Expand_Button(Count: string): Locator {
     return this.page.locator(`(//a[contains(@class,\"expand\")])[${Count}]`);
   }
 
@@ -1022,7 +1022,10 @@ export class CorrespondentPortalPage {
   get Export_List(): Locator {
     return this.page.locator("//div[text()[normalize-space() = \"Export List\"]]");
   }
-get CCode_Checkbox(): Locator {
+  get First_BidMap_Checkbox(): Locator {
+    return this.page.locator("(//tbody//input[@type='checkbox'])[1]");
+  }
+  get CCode_Checkbox(): Locator {
     return this.page.locator("(//input[@type=\"checkbox\"])[2]");
   }
   get Export_List_Maps_List_details_only_Dropdown(): Locator {
@@ -1065,7 +1068,7 @@ get CCode_Checkbox(): Locator {
     return this.page.locator("//input[@type=\"checkbox\"]/..//input[@class=\"mr-2 cursor-pointer\"]");
   }
 
-  Filter_Enumerations_Drowpdown_Data(Count:string): Locator {
+  Filter_Enumerations_Drowpdown_Data(Count: string): Locator {
     return this.page.locator(`((//div[@class='d-flex']/following-sibling::div)[2]//span[@class='pl-2'])[${Count}]`);
   }
 
@@ -1138,7 +1141,7 @@ get CCode_Checkbox(): Locator {
     return this.page.locator("//span[@title=\"Freedom A4187\"]/..");
   }
 
-  Future_Date_In_Colander(FutureDate:string): Locator {
+  Future_Date_In_Colander(FutureDate: string): Locator {
     return this.page.locator(`//div[@aria-label=\"${FutureDate}\"]`);
   }
 
@@ -1176,7 +1179,7 @@ get CCode_Checkbox(): Locator {
     return this.page.locator("(//select[contains(@class,'form-select')])[8]");
   }
 
-  Header_Mapping_for_Unidentified_Headers(Headercount:string): Locator {
+  Header_Mapping_for_Unidentified_Headers(Headercount: string): Locator {
     return this.page.locator(`(//select[contains(@class, 'form-select')])[${Headercount}]`);
   }
 
@@ -1196,7 +1199,7 @@ get CCode_Checkbox(): Locator {
     return this.page.locator("(//div[@class='parent']//fieldset)[2]//select[@id=\"id\"]");
   }
 
-  Header_Data_Name(HeaderMappingCount:string): Locator {
+  Header_Data_Name(HeaderMappingCount: string): Locator {
     return this.page.locator(`(//div[@class='col-2']//div)[${HeaderMappingCount}]`);
   }
 
@@ -1220,7 +1223,7 @@ get CCode_Checkbox(): Locator {
     return this.page.locator("//div[contains(@class, 'scrollable-page')]/div[1]/app-mapping-wizard-container[1]/app-header-mapping-container[1]/app-header-mapping[1]/div[1]");
   }
 
-   Headers_Name(Count:string): Locator {
+  Headers_Name(Count: string): Locator {
     return this.page.locator(`(//a[contains(@class,\"download\")]/../../..//div[contains(@class,\"items\")]//h5)[${Count}]`);
   }
 
@@ -1280,7 +1283,7 @@ get CCode_Checkbox(): Locator {
     return this.page.locator("//input[@id=\"TEst - 0\"]");
   }
 
-  Individual_Download_Button(Count:string): Locator {
+  Individual_Download_Button(Count: string): Locator {
     return this.page.locator(`(//a[contains(@class,\"download\")])[${Count}]`);
   }
 
@@ -1360,7 +1363,7 @@ get CCode_Checkbox(): Locator {
     return this.page.locator("//td[@data-title=\"Version Number\"]");
   }
 
-   Mark_Adj_Values(Count:string): Locator {
+  Mark_Adj_Values(Count: string): Locator {
     return this.page.locator(`(//td[contains(@data-title, \"Mark Adj\")])[${Count}]`);
   }
 
@@ -1463,7 +1466,7 @@ get CCode_Checkbox(): Locator {
     return this.page.locator("//select[@id='id']");
   }
 
-  Operations_Dropdown_Rules(count:string): Locator {
+  Operations_Dropdown_Rules(count: string): Locator {
     return this.page.locator(`(//select[contains(normalize-space(),\"Select = != > < >= <= contains\")])[${count}]`);
   }
 
@@ -1547,11 +1550,11 @@ get CCode_Checkbox(): Locator {
     return this.page.locator("//span[text()[normalize-space() = \"Queued For: 07/30/2025 08:09 AM ET\"]]");
   }
 
-  Random_BidRequest(RandomNumber : String): Locator {
+  Random_BidRequest(RandomNumber: String): Locator {
     return this.page.locator(`(//td[@data-title=\"Bid Req. ID\"]//button)[${RandomNumber}]`);
   }
 
-  Random_BidRequest_Checkbox(RandomNumber : String): Locator {
+  Random_BidRequest_Checkbox(RandomNumber: String): Locator {
     return this.page.locator(`(//tbody//input[@type=\"checkbox\"])[${RandomNumber}]`);
   }
 
@@ -1587,11 +1590,11 @@ get CCode_Checkbox(): Locator {
     return this.page.locator("//span[text()[normalize-space() = \"Reports\"]]");
   }
 
-  Required_Companys_Name_Value(Companyname:string): Locator {
+  Required_Companys_Name_Value(Companyname: string): Locator {
     return this.page.locator(`//span[@class='pl-2'][contains(.,'${Companyname}')]`);
   }
 
-  Required_Product_Code_Value(ExpectedProductCode:string): Locator {
+  Required_Product_Code_Value(ExpectedProductCode: string): Locator {
     return this.page.locator(`//td[@data-title=\"Security Product\"]//div[contains(text(),\"${ExpectedProductCode}\")]/../..//td[@data-title=\"Security Product\"]`);
   }
 
@@ -1698,7 +1701,7 @@ get CCode_Checkbox(): Locator {
     return this.page.locator("//input[@id='searchBox']");
   }
 
-   Searched_Company(CompanyName:string): Locator {
+  Searched_Company(CompanyName: string): Locator {
     return this.page.locator(`//span[contains(text(),\"${CompanyName}\")]`);
   }
 
@@ -1785,7 +1788,7 @@ get CCode_Checkbox(): Locator {
     return this.page.locator(`//div[@class=\"ngb-dp-month\"]//div[@aria-label='${CurrentDate}']`);
   }
 
-  Select_Date_From_Calenderyesterday(YesterdaysDate : String): Locator {
+  Select_Date_From_Calenderyesterday(YesterdaysDate: String): Locator {
     return this.page.locator(`//span[normalize-space(text())='${YesterdaysDate}' and @class=\"custom-day\"]`);
   }
 
@@ -1889,7 +1892,7 @@ get CCode_Checkbox(): Locator {
     return this.page.locator("//table[contains(@class, 'table')]/tbody[1]/tr[2]/td[4]/a[1]");
   }
 
-  SelectText_HedaerMapping_Field(IndexCount:string): Locator {
+  SelectText_HedaerMapping_Field(IndexCount: string): Locator {
     return this.page.locator(`(//div[contains(@class,\"gap-2 header-grid-layout\")]/..//select)[${IndexCount}]`);
   }
 
@@ -1924,8 +1927,8 @@ get CCode_Checkbox(): Locator {
   get Show_All_Headers(): Locator {
     return this.page.locator("//select[@id=\"id\"]");
   }
-  get Show_All_Headers_field():Locator{
-return this.page.getByRole('region', { name: 'Page Actions' }).getByLabel('Default dropdown selection');
+  get Show_All_Headers_field(): Locator {
+    return this.page.getByRole('region', { name: 'Page Actions' }).getByLabel('Default dropdown selection');
   }
 
   get Show_All_Headers_in_Header_Mappings(): Locator {
@@ -2144,7 +2147,7 @@ return this.page.getByRole('region', { name: 'Page Actions' }).getByLabel('Defau
     return this.page.locator("//label[text()[normalize-space() = \"When Bid Field\"]]/following-sibling::div[contains(@class, 'd-flex')]//div[text()[normalize-space() = \"Select\"]]");
   }
 
-   When_Bid_Field_Search_List(BidField:string): Locator {
+  When_Bid_Field_Search_List(BidField: string): Locator {
     return this.page.locator(`(//span[@title='${BidField}'])[2]`);
   }
 

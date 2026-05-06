@@ -60,18 +60,15 @@ test.describe('Commitment List - TS_1', () => {
       try {
         await correspondentPortalPage.Commitments_Side_Menu.click();
         await commitmentListPage.Committed_List_Dropdown.click();
-        await page.waitForLoadState('networkidle');
         await spinnerPage.Spinner.waitFor({ state: 'hidden' });
         await priceOfferedPage.Search_Dropdown.click();
         await priceOfferedPage.Search_Dropdown.type(vars["CommitmentId"]);
         await priceOfferedPage.Commitment_Id_DropdownCommitment_List_Page.click();
         await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-        await page.waitForLoadState('networkidle');
         await commitmentListPage.First_Commitment_IDCommitment_List.first().waitFor({ state: 'visible' });
         await page.waitForTimeout(6000);
         await commitmentListPage.First_Commitment_IDCommitment_List.first().click();
         await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-        await page.waitForLoadState('networkidle');
         await expect(commitmentListPage.Total_LoansCommitment_List).toBeVisible();
         log.stepPass("successful");
       }
@@ -136,7 +133,6 @@ test.describe('Commitment List - TS_1', () => {
       try {
         await commitmentListPage.Total_LoansCommitment_List.click();
         await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-        await page.waitForLoadState('networkidle');
         await expect(priceOfferedPage.Open_Auth_Limit).toBeVisible();
         vars["ColumnHeadersDetailsScreenUI"] = String(await priceOfferedPage.Column_Headers_Details_ScreenUI.count());
         vars["count"] = "1";
@@ -147,7 +143,6 @@ test.describe('Commitment List - TS_1', () => {
           log.info('verifying Ascending order for headername:' + vars["IndividualHeaderScreenDetails"]);
           await commitmentListPage.Individual_Column_Header_Details_Screen_Commitment_List(vars["count"]).click();
           await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-          await page.waitForLoadState('networkidle');
           await expect(correspondentPortalPage.Header_Sort_Down).toBeVisible();
           await page.waitForTimeout(1000);
           await priceOfferedPage.Column_Header_Data(vars["IndividualHeaderScreenDetails"]).waitFor({ state: 'visible' });

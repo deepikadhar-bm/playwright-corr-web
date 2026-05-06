@@ -75,6 +75,8 @@ test.describe('Commitment List - TS_2', () => {
         await priceOfferedPage.Yes_Commit_ButtonPopup.click();
         Methods.getCurrentTimestamp(appconstants.DATE_FORMAT_MMDDYYYY, 'ExpectedCommitDate', appconstants.UTC);
         Methods.getCurrentTimestamp(appconstants.TIME_FORMAT1_HHMMA, 'CommitTimePriceOffered', appconstants.UTC);
+        Methods.addMinutesToDatetime(vars['CommitTimePriceOffered'],appconstants.TIME_FORMAT_HMMA,1,appconstants.TIME_FORMAT_HMMA,'CommitTimePriceOfferedPluseOneMin');
+        Methods.subtractMinutesFromDatetime(vars['CommitTimePriceOffered'],appconstants.TIME_FORMAT_HMMA,1,appconstants.TIME_FORMAT_HMMA,'CommitTimePriceOfferedMinusOneMin')
         await priceOfferedPage.Yes_Commit_ButtonPopup.waitFor({ state: 'hidden' });
         await expect(priceOfferedPage.Yes_Commit_ButtonPopup).not.toBeVisible();
         await priceOfferedPage.Okay_ButtonPopup.waitFor({ state: 'visible' });

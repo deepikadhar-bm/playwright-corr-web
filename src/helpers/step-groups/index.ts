@@ -1121,7 +1121,6 @@ export async function stepGroup_Editing_of_Add_Conditions_and_Add_Actions(page: 
   expect(String(vars["BidField"])).toBe(vars["Bid Enumerated Tape Value"]);
   vars["EditedRuleBidTape[RulesAndActions]"] = await CorrPortalElem.Condition_BidTape1.textContent() || '';
 }
-
 /**
  * Step Group: Add Field in Enumeration Mapping
  * ID: 945
@@ -1292,10 +1291,10 @@ export async function stepGroup_Verification_of_Chase_Enum_Values_From_Header_Ma
   const CorrPortalElem = new CorrPortalPage(page);
   const Methods = new AddonHelpers(page, vars);
   vars["ChaseEnumNamesCount"] = String(await CorrPortalElem.Chase_Enum_Names.count());
-  log.info('Chase Enum Names Count: '+ vars["ChaseEnumNamesCount"] );
+  log.info('Chase Enum Names Count: ' + vars["ChaseEnumNamesCount"]);
   vars["count1"] = appconstants.ONE;
   while (parseFloat(String(vars["count1"])) <= parseFloat(String(vars["ChaseEnumNamesCount"]))) {
-    log.info('Verification Iteration: '+vars["count1"]);
+    log.info('Verification Iteration: ' + vars["count1"]);
     vars["ChaseName"] = await CorrPortalElem.Individual_Chase_Enum_Name(vars['count1']).textContent() || '';
     expect(Methods.verifyString(vars["ChaseEnumValue"], 'contains', vars["ChaseName"]));
     Methods.MathematicalOperation(vars['count1'], '+', 1, 'count1');
@@ -1860,14 +1859,24 @@ export async function stepGroup_Fetching_Bid_Sample_Names_and_Corresponding_Chas
  */
 export async function stepGroup_Verification_Of_BidSampleNames_In_Header_Mapping_From_TDP(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
-  const testData: Record<string, string> = {}; // TODO: Load from test data profile
+  const Methods = new AddonHelpers(page, vars)
+  const profileName = "Bid Name To Chase Field Name";
+  const profile = testDataManager.getProfileByName(profileName);
+  const dataList = profile?.data as Record<string, any>[];
   vars["BidEnumValueCount"] = String(await CorrPortalElem.BidMapFieldSet.count());
-  vars["count"] = "1";
-  for (let dataIdx = 1; dataIdx <= parseInt(vars["BidEnumValueCount"]); dataIdx++) {
-    await expect(CorrPortalElem.Individual_BidSample_Name).toContainText(testData["Bid Sample Field Name"]);
-    vars["ChaseValue"] = await CorrPortalElem.Mapped_Chase_Value_2.evaluate(el => { const s = el as HTMLSelectElement; return s.options[s.selectedIndex]?.text || ''; });
-    expect(String(vars["ChaseValue"])).toBe(testData["Correspondent Chase Field Name"]);
-    vars["count"] = (parseFloat(String("1")) + parseFloat(String(vars["count"]))).toFixed(0);
+  log.info('Bid Enum Value Count: ' + vars["BidEnumValueCount"]);
+  vars["count"] = appconstants.ONE;
+  for (let i = 0; i < Number(vars['BidEnumValueCount']); i++) {
+    log.info('Iteration: ' + vars["count"]);
+    vars['Bid Sample Field Name'] = dataList[i]['Bid Sample Field Name'];
+    log.info('Bid Sample Field Name: ' + vars["Bid Sample Field Name"]);
+    vars['Correspondent Chase Field Name'] = dataList[i]['Correspondent Chase Field Name'];
+    log.info('Correspondent Chase Field Name: ' + vars["Correspondent Chase Field Name"]);
+    await expect(CorrPortalElem.get_Individual_BidSample_Name(vars['count'])).toContainText(vars["Bid Sample Field Name"]);
+    vars['BidSampleFieldName'] = vars['Bid Sample Field Name'];
+    vars["ChaseValue"] = await CorrPortalElem.Mapped_Chase_Value_2(vars['BidSampleFieldName']).evaluate(el => { const s = el as HTMLSelectElement; return s.options[s.selectedIndex]?.text || ''; });
+    expect(Methods.verifyString(vars['ChaseValue'], 'equals', vars['Correspondent Chase Field Name']));
+    Methods.MathematicalOperation(vars['count'], '+', 1, 'count');
     await CorrPortalElem.First_Header_Checkbox.check();
     await CorrPortalElem.First_Header_Checkbox.uncheck();
   }
@@ -1965,7 +1974,6 @@ export async function stepGroup_Editing_In_Enumeration_Mapping_Screen(page: impo
   vars["EditedChaseValue"] = await CorrPortalElem.Chase_Value_Dropdown_Enumeration_Mapping.evaluate(el => { const s = el as HTMLSelectElement; return s.options[s.selectedIndex]?.text || ''; });
   vars["ChaseFieldNameTobeEdited"] = await CorrPortalElem.Edited_Chase_Field_Name.textContent() || '';
 }
-
 /**
  * Step Group: Save Draft exit and Navigating To Rules And Actions
  * ID: 1097
@@ -2416,14 +2424,13 @@ export async function stepGroup_Editing_All_Fields_In_a_Rule(page: import('@play
  */
 export async function stepGroup_Verification_of_Rules_and_Action_Values_Before_EditingActive(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
-  await expect(CorrPortalElem.Rule_Name_Field).toHaveValue(vars["Rule Name"]);
+  await expect(CorrPortalElem.Rule_Name_Field).toHaveValue(vars["First Rule Name"]);
   await expect(CorrPortalElem.Condition_BidField_1).toContainText(vars["RuleBidField"]);
   await expect(CorrPortalElem.Operation_Dropdown).toHaveValue(vars["RuleCondition"]);
   await expect(CorrPortalElem.Condition_BidTape1).toContainText(vars["RuleBidTapeValue"]);
-  await expect(CorrPortalElem.Add_Actions_Chase_Field_Name).toHaveValue(vars["ActionChaseFieldName"]);
-  await expect(CorrPortalElem.Add_Actions_Chase_Value).toHaveValue(vars["ActionChaseValue"]);
+  await expect(CorrPortalElem.Add_Actions_Chase_Field_Name.locator('option:checked')).toHaveText(vars["ChaseFieldNameonAddActions"]);
+  await expect(CorrPortalElem.Add_Actions_Chase_Value.locator('option:checked')).toHaveText(vars["ChasevalueOnAddActions"]);
 }
-
 /**
  * Step Group: Verifying that Changes Are Not Updated In Active Version[Rules and Actions] 
  * ID: 1144
@@ -4355,31 +4362,42 @@ export async function stepGroup_Separating_Hours_and_minutes_In_time_Current_EST
  */
 export async function stepGroup_Verifying_the_bidsample_to_bidtape_mapping_in_Enumpage_from_(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
-  const testData: Record<string, string> = {}; // TODO: Load from test data profile
-  vars["count1"] = "1";
+  const profileName = 'BidSampleNamesWithBidTapeValues(EnumPage)';
+  const profile = testDataManager.getProfileByName(profileName);
+  const dataList = profile?.data as Record<string, any>[];
+  const Methods = new AddonHelpers(page, vars);
+
+  vars["count1"] = appconstants.ONE;
   vars["EnumFieldsCount"] = String(await CorrPortalElem.Chase_Enum_Names.count());
+  log.info('Enum Fields Count: ' + vars["EnumFieldsCount"]);
   while (parseFloat(String(vars["count1"])) <= parseFloat(String(vars["EnumFieldsCount"]))) {
-    for (let dataIdx = parseInt(vars["count1"]); dataIdx <= parseInt(vars["count1"]); dataIdx++) {
-      vars["IndividualBidSampleName"] = await CorrPortalElem.Individual_Bid_Sample_Name_Enum_Page.textContent() || '';
-      expect(String(vars["IndividualBidSampleName"])).toBe(testData["EnumBidSampleNames"]);
+    log.info('Iteration: ' + vars["count1"]);
+    for (let i = 0; i < Number(vars["EnumFieldsCount"]); i++) {
+      log.info('Testdata Iteration: ' + vars["count1"]);
+      vars['EnumBidSampleNames'] = dataList[i]['EnumBidSampleNames'];
+      log.info('Enum Bid Sample Field Names: ' + vars["EnumBidSampleNames"]);
+      vars['EnumBidTapeValues'] = dataList[i]['EnumBidTapeValues'];
+      log.info('Enum Bid Tape Values: ' + vars["EnumBidTapeValues"]);
+      vars["IndividualBidSampleName"] = await CorrPortalElem.get_Individual_Bid_Sample_Name_Enum_Page(vars['count1']).textContent() || '';
+      expect(Methods.verifyString(vars['IndividualBidSampleName'], 'contains', vars['EnumBidSampleNames']));
       vars["ColumnHeader"] = vars["IndividualBidSampleName"];
-      if (true) /* Element BidTapeFieldCountForBidField is not visible */ {
+      /* Element BidTapeFieldCountForBidField is not visible */
+      if (!(await CorrPortalElem.BidTapeFieldCountForBidField(vars['ColumnHeader']).first().isVisible())) {
+        log.info('BidTapeFieldCountForBidField is not visible');
         vars["IndividualBidTapeValue"] = "No BidTape";
       } else {
         vars["IndividualBidTapeValue"] = "Sample";
-        vars["BidTapeCount"] = String(await CorrPortalElem.BidTapeFieldCountForBidField.count());
-        vars["count2"] = "1";
+        vars["BidTapeCount"] = String(await CorrPortalElem.BidTapeFieldCountForBidField(vars['ColumnHeader']).count());
+        log.info('Bid Tape Count: ' + vars["BidTapeCount"]);
+        vars["count2"] = appconstants.ONE;
         while (parseFloat(String(vars["count2"])) <= parseFloat(String(vars["BidTapeCount"]))) {
-          vars["BidTapeValue"] = await CorrPortalElem.Individual_Bid_Tape_Value_2.textContent() || '';
-          vars["IndividualBidTapeValue"] = String(vars["BidTapeValue"]) + "," + String(vars["IndividualBidTapeValue"]);
-          vars["count2"] = (parseFloat(String("1")) + parseFloat(String(vars["count2"]))).toFixed(0);
-          // [DISABLED] Write value IndividualBidTapeValue to BidSampleNamesWithBidTapeValues(EnumPage) column EnumBidTapeValues
-          // // Write to test data profile: "EnumBidTapeValues" = vars["IndividualBidTapeValue"]
-          // // TODO: Test data profile writes need custom implementation
+          vars["BidTapeValue"] = await CorrPortalElem.get_Individual_Bid_Tape_Value_2(vars['ColumnHeader'], vars['count2']).textContent() || '';
+          Methods.concatenateWithSpecialChar(vars["BidTapeValue"], vars["IndividualBidTapeValue"], ',', 'IndividualBidTapeValue');
+          Methods.MathematicalOperation(vars['count2'], '+', 1, 'count2');
         }
       }
-      expect(String(vars["IndividualBidTapeValue"])).toBe(testData["EnumBidTapeValues"]);
-      vars["count1"] = (parseFloat(String("1")) + parseFloat(String(vars["count1"]))).toFixed(0);
+      expect(Methods.verifyString(vars['IndividualBidTapeValue'], 'contains', vars['EnumBidTapeValues']));
+      Methods.MathematicalOperation(vars['count1'], '+', 1, 'count1');
     }
   }
 }
@@ -4391,35 +4409,63 @@ export async function stepGroup_Verifying_the_bidsample_to_bidtape_mapping_in_En
  */
 export async function stepGroup_Verifying_the_Mapping_of_ChaseField_and_ChaseValues_in_Enum_(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
-  const testData: Record<string, string> = {}; // TODO: Load from test data profile
-  vars["count1"] = "1";
+  const profileName = 'Chase Field To Chase Value [Enumeration]';
+  const profile = testDataManager.getProfileByName(profileName);
+  const dataList = profile?.data as Record<string, any>[];
+  const Methods = new AddonHelpers(page, vars);
+
+  vars["count1"] = appconstants.ONE;
   vars["ChaseFieldsCountEnum"] = String(await CorrPortalElem.Chase_Enum_Names.count());
+  log.info("Chase Fields Count Enum: " + vars["ChaseFieldsCountEnum"]);
+
   while (parseFloat(String(vars["count1"])) <= parseFloat(String(vars["ChaseFieldsCountEnum"]))) {
+    log.info("Iteration: " + vars["count1"]);
+
     await CorrPortalElem.First_Checkbox_Enum.check();
     await CorrPortalElem.First_Checkbox_Enum.uncheck();
-    for (let dataIdx = parseInt(vars["count1"]); dataIdx <= parseInt(vars["count1"]); dataIdx++) {
-      vars["IndividualChaseFieldName"] = await CorrPortalElem.Individual_Chase_Enum_Name.textContent() || '';
-      expect(String(testData["ChaseFieldName"])).toBe(vars["IndividualChaseFieldName"]);
-      if (true) /* Element ChaseValues Corresponding to Chase Field is not visi */ {
+
+    for (let i = 0; i < Number(vars["ChaseFieldsCountEnum"]); i++) {
+      log.info('Testdata Iteration: ' + vars["count1"]);
+
+      vars['ChaseFieldName'] = dataList[i]['ChaseFieldName'];
+      log.info('Chase Field Name: ' + vars["ChaseFieldName"]);
+
+      vars['Chase Value'] = dataList[i]['Chase Value'];
+      log.info('Chase Value: ' + vars["Chase Value"]);
+
+      vars["IndividualChaseFieldName"] = await CorrPortalElem.Individual_Chase_Enum_Name(vars['count1']).textContent() || '';
+      expect(Methods.verifyString(vars["ChaseFieldName"], 'contains', vars["IndividualChaseFieldName"]));
+
+      if (!(await CorrPortalElem.ChaseValues_Corresponding_to_Chase_Field(vars['IndividualChaseFieldName']).first().isVisible())) {
+        log.info('ChaseValues Corresponding to Chase Field is not visible');
         vars["IndividualChaseValueofChaseField"] = "No ChaseValue";
       } else {
         vars["IndividualChaseValueofChaseField"] = "Sample";
-        vars["ChaseValuesOfChaseFieldCount"] = String(await CorrPortalElem.ChaseValues_Corresponding_to_Chase_Field.count());
-        vars["count2"] = "1";
+        vars["ChaseValuesOfChaseFieldCount"] = String(await CorrPortalElem.ChaseValues_Corresponding_to_Chase_Field(vars['IndividualChaseFieldName']).count());
+        vars["count2"] = appconstants.ONE;
+
         while (parseFloat(String(vars["count2"])) <= parseFloat(String(vars["ChaseValuesOfChaseFieldCount"]))) {
-          vars["TagName"] = await CorrPortalElem.Individual_ChaseValue_of_ChaseField.evaluate(el => (el as HTMLElement).tagName);
-          if (String(vars["TagName"]) === String("select")) {
-            vars["ChaseValue"] = await CorrPortalElem.Individual_ChaseValue_of_ChaseField.evaluate(el => { const s = el as HTMLSelectElement; return s.options[s.selectedIndex]?.text || ''; });
+          log.info('Chase Values Of Chase Field Count: ' + vars["ChaseValuesOfChaseFieldCount"]);
+
+          vars["TagName"] = await CorrPortalElem.Individual_ChaseValue_of_ChaseField(vars['IndividualChaseFieldName'], vars['count2']).evaluate(el => (el as HTMLElement).tagName);
+          log.info('Tag Name: ' + vars["TagName"]);
+          if (String(vars["TagName"]) === String("SELECT")) {
+            vars["ChaseValue"] = await CorrPortalElem.Individual_ChaseValue_of_ChaseField(vars['IndividualChaseFieldName'], vars['count2']).evaluate(el => {
+              const s = el as HTMLSelectElement;
+              return s.options[s.selectedIndex]?.text || '';
+            });
           } else {
-            vars["ChaseValue"] = await CorrPortalElem.Individual_ChaseValue_of_ChaseField.textContent() || '';
+            vars["ChaseValue"] = await CorrPortalElem.Individual_ChaseValue_of_ChaseField(vars['IndividualChaseFieldName'], vars['count2']).textContent() || '';
           }
-          vars["IndividualChaseValueofChaseField"] = String(vars["ChaseValue"]) + "," + String(vars["IndividualChaseValueofChaseField"]);
-          vars["count2"] = (parseFloat(String("1")) + parseFloat(String(vars["count2"]))).toFixed(0);
+
+          Methods.concatenateWithSpecialChar(vars["ChaseValue"], vars["IndividualChaseValueofChaseField"], ',', 'IndividualChaseValueofChaseField');
+          Methods.MathematicalOperation(vars['count2'], '+', 1, 'count2');
         }
       }
-      expect(String(vars["IndividualChaseValueofChaseField"])).toBe(testData["Chase Value"]);
+
+      expect(Methods.verifyString(vars['IndividualChaseValueofChaseField'], 'contains', vars['Chase Value']));
+      Methods.MathematicalOperation(vars['count1'], '+', 1, 'count1');
     }
-    vars["count1"] = (parseFloat(String("1")) + parseFloat(String(vars["count1"]))).toFixed(0);
   }
 }
 
@@ -4472,9 +4518,7 @@ export async function stepGroup_Storing_BidSample_and_BidTape_Values_from_Enum_P
   const ProfileName = 'BidSampleNamesWithBidTapeValues(EnumPage)';
   const enumerationMappingPage = new EnumerationMappingPage(page);
   const Methods = new AddonHelpers(page, vars);
-
   vars["count1"] = appconstants.ONE;
-  await page.pause();
   while (parseFloat(String(vars["count1"])) <= parseFloat(String(vars["EnumFieldsCount"]))) {
     log.info('Iteration: ' + vars["count1"]);
     vars["IndividualBidSampleName"] = await CorrPortalElem.get_Individual_Bid_Sample_Name_Enum_Page(vars["count1"]).textContent() || '';
@@ -4487,10 +4531,11 @@ export async function stepGroup_Storing_BidSample_and_BidTape_Values_from_Enum_P
       vars["IndividualBidTapeValue"] = "Sample";
       vars["BidTapeCount"] = String(await enumerationMappingPage.get_BidTapeFieldCountForBidField(vars["ColumnHeader"]).count());
       vars["count2"] = appconstants.ONE;
+      log.info('Bid Tape Count: ' + vars["BidTapeCount"]);
       while (parseFloat(String(vars["count2"])) <= parseFloat(String(vars["BidTapeCount"]))) {
         vars["BidTapeValue"] = await CorrPortalElem.get_Individual_Bid_Tape_Value_2(vars["ColumnHeader"], vars["count2"]).textContent() || '';
         Methods.concatenateWithSpecialChar(vars["BidTapeValue"], vars["IndividualBidTapeValue"], ',', 'IndividualBidTapeValue');
-        vars["count2"] = (parseFloat(String("1")) + parseFloat(String(vars["count2"]))).toFixed(0);
+        Methods.performArithmetic(vars["count2"], 'ADDITION', '1', 'count2', 0);
       }
     }
     testDataManager.updatePartialProfileDataByDataIndex(ProfileName, {
@@ -4529,33 +4574,37 @@ export async function stepGroup_Storing_Chase_Field_and_Chase_Value_from_Enum_Pa
 
   vars["count1"] = appconstants.ONE;
   vars["ChaseFieldsCountEnum"] = String(await CorrPortalElem.Chase_Enum_Names.count());
+  log.info('Chase Fields Count Enum: ' + vars["ChaseFieldsCountEnum"]);
   while (parseFloat(String(vars["count1"])) <= parseFloat(String(vars["ChaseFieldsCountEnum"]))) {
+    log.info('Iteration: ' + vars["count1"]);
     await CorrPortalElem.First_Checkbox_Enum.check();
     await CorrPortalElem.First_Checkbox_Enum.uncheck();
-    for (let dataIdx = parseInt(vars["count1"]); dataIdx <= parseInt(vars["count1"]); dataIdx++) {
-      vars["IndividualChaseFieldName"] = await CorrPortalElem.Individual_Chase_Enum_Name(vars['count1']).textContent() || '';
-      if (!(await enumerationMappingPage.get_ChaseValues_Corresponding_to_Chase_Field(vars["IndividualChaseFieldName"]).first().isVisible())) /* Element ChaseValues Corresponding to Chase Field is not visible*/ {
-        log.info('Element ChaseValues Corresponding to Chase Field is not visible');
-      } else {
-        log.info('Element ChaseValues Corresponding to Chase Field is visible');
-        vars["IndividualChaseValueofChaseField"] = "Sample";
-        vars["ChaseValuesOfChaseFieldCount"] = String(await CorrPortalElem.ChaseValues_Corresponding_to_Chase_Field(vars['IndividualChaseFieldName']).count());
-        vars["count2"] = appconstants.ONE;
-        vars["TagName"] = await CorrPortalElem.Individual_ChaseValue_of_ChaseField(vars['IndividualChaseFieldName'], vars['count2']).evaluate(el => (el as HTMLElement).tagName);
-        while (parseFloat(String(vars["count2"])) <= parseFloat(String(vars["ChaseValuesOfChaseFieldCount"]))) {
-          if (String(vars["TagName"]).includes(String("select"))) {
-            vars["ChaseValue"] = await CorrPortalElem.Individual_ChaseValue_of_ChaseField(vars['IndividualChaseFieldName'], vars['count2']).evaluate(el => { const s = el as HTMLSelectElement; return s.options[s.selectedIndex]?.text || ''; });
-          } else {
-            vars["ChaseValue"] = await CorrPortalElem.Individual_ChaseValue_of_ChaseField(vars['IndividualChaseFieldName'], vars['count2']).textContent() || '';
-          }
-          Methods.concatenateWithSpecialChar(vars["ChaseValue"], vars["IndividualChaseValueofChaseField"], ',', 'IndividualChaseValueofChaseField');
-          Methods.performArithmetic(vars["count2"], 'ADDITION', '1', 'count2', 0);
+    vars["IndividualChaseFieldName"] = await CorrPortalElem.Individual_Chase_Enum_Name(vars['count1']).textContent() || '';
+    log.info('Individual Chase Field Name: ' + vars["IndividualChaseFieldName"]);
+    if (!(await enumerationMappingPage.get_ChaseValues_Corresponding_to_Chase_Field(vars["IndividualChaseFieldName"]).first().isVisible())) /* Element ChaseValues Corresponding to Chase Field is not visible*/ {
+      log.info('Element ChaseValues Corresponding to Chase Field is not visible');
+    } else {
+      log.info('Element ChaseValues Corresponding to Chase Field is visible');
+      vars["IndividualChaseValueofChaseField"] = "Sample";
+      vars["ChaseValuesOfChaseFieldCount"] = String(await CorrPortalElem.ChaseValues_Corresponding_to_Chase_Field(vars['IndividualChaseFieldName']).count());
+      log.info('Chase Values Of Chase Field Count: ' + vars["ChaseValuesOfChaseFieldCount"]);
+      vars["count2"] = appconstants.ONE;
+      vars["TagName"] = await CorrPortalElem.Individual_ChaseValue_of_ChaseField(vars['IndividualChaseFieldName'], vars['count2']).evaluate(el => (el as HTMLElement).tagName);
+      while (parseFloat(String(vars["count2"])) <= parseFloat(String(vars["ChaseValuesOfChaseFieldCount"]))) {
+        log.info('TagName: ' + vars["TagName"]);
+        if (String(vars["TagName"]).includes(String("SELECT"))) {
+          vars["ChaseValue"] = await CorrPortalElem.Individual_ChaseValue_of_ChaseField(vars['IndividualChaseFieldName'], vars['count2']).evaluate(el => { const s = el as HTMLSelectElement; return s.options[s.selectedIndex]?.text || ''; });
+        } else {
+          vars["ChaseValue"] = await CorrPortalElem.Individual_ChaseValue_of_ChaseField(vars['IndividualChaseFieldName'], vars['count2']).textContent() || '';
         }
-        testDataManager.updatePartialProfileDataByDataIndex(ProfileName, {
-          'ChaseFieldName': vars['IndividualChaseFieldName'],
-          'Chase Value': vars['IndividualBidTapeValue'],
-        }, vars['count1']);
+        log.info('ChaseValue: ' + vars["ChaseValue"]);
+        Methods.concatenateWithSpecialChar(vars["ChaseValue"], vars["IndividualChaseValueofChaseField"], ',', 'IndividualChaseValueofChaseField');
+        Methods.performArithmetic(vars["count2"], 'ADDITION', '1', 'count2', 0);
       }
+      testDataManager.updatePartialProfileDataByDataIndex(ProfileName, {
+        'ChaseFieldName': vars['IndividualChaseFieldName'],
+        'Chase Value': vars['IndividualChaseValueofChaseField'],
+      }, vars['count1']);
     }
     Methods.performArithmetic(vars["count1"], 'ADDITION', '1', 'count1', 0);
   }
@@ -6486,17 +6535,17 @@ export async function stepGroup_Upload_Bid_Process_from_Batch_time_Selection_to_
   // [DISABLED] File Upload: Upload file File to the element UploadFile [BidRequest]
   // await CorrPortalElem.Upload_File.setInputFiles([]);
   await expect(correspondentPortalPage.UploadBid_Button).toBeVisible();
-      await expect(correspondentPortalPage.UploadBid_Button).toBeEnabled();
-      await correspondentPortalPage.UploadBid_Button.click();
-      await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-      await page.getByText("Bid Upload Progress").waitFor({ state: 'visible' });
-      await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-      await bidRequestPage.Continue_ButtonUpload_Pop_up.waitFor({ state: 'visible' });
-      await page.waitForTimeout(5000);
-      await bidRequestPage.Continue_ButtonUpload_Pop_up.click();
-      await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-      await page.waitForLoadState('load');
-      await page.waitForTimeout(5000);
+  await expect(correspondentPortalPage.UploadBid_Button).toBeEnabled();
+  await correspondentPortalPage.UploadBid_Button.click();
+  await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+  await page.getByText("Bid Upload Progress").waitFor({ state: 'visible' });
+  await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+  await bidRequestPage.Continue_ButtonUpload_Pop_up.waitFor({ state: 'visible' });
+  await page.waitForTimeout(5000);
+  await bidRequestPage.Continue_ButtonUpload_Pop_up.click();
+  await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+  await page.waitForLoadState('load');
+  await page.waitForTimeout(5000);
 }
 
 /**

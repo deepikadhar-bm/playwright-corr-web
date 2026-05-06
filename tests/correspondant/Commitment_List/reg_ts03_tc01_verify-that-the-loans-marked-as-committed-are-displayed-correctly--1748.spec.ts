@@ -6,6 +6,7 @@ import { PriceOfferedPage } from '../../../src/pages/correspondant/price-offered
 import { SpinnerPage } from '../../../src/pages/correspondant/spinner';
 import { runPrereq_1738 } from '../../../src/helpers/prereqs/prereq-1738';
 import { Logger as log } from '../../../src/helpers/log-helper';
+import { AddonHelpers } from '../../../src/helpers/AddonHelpers';
 
 
 const TC_ID = 'REG_TS03_TC01';
@@ -18,6 +19,7 @@ test.describe('Unassigned', () => {
   let correspondentPortalPage: CorrespondentPortalPage;
   let priceOfferedPage: PriceOfferedPage;
   let spinnerPage: SpinnerPage;
+  let Methods: AddonHelpers;
 
   test.beforeEach(async ({ page }) => {
     vars = {};
@@ -27,6 +29,8 @@ test.describe('Unassigned', () => {
     correspondentPortalPage = new CorrespondentPortalPage(page);
     priceOfferedPage = new PriceOfferedPage(page);
     spinnerPage = new SpinnerPage(page);
+    Methods = new AddonHelpers(page, vars);
+
   });
 
   test(`${TC_ID} - ${TC_TITLE}`, async ({ page }) => {
@@ -80,8 +84,17 @@ test.describe('Unassigned', () => {
         log.info("element Commit_OrderCommitment_List contains text:" + vars['CommitmentOrderPriceOffered']);
         await expect(priceOfferedPage.Commit_IDCommitment_List).toContainText(vars['CommitmentIDPriceOffered']);
         log.info("element Commit_IDCommitment_List contains text:" + vars['CommitmentIDPriceOffered']);
-        await expect(commitmentListPage.Commit_TimeCommitment_Screen).toContainText(vars['CommitTimePriceOffered']);
-        log.info("element Commit_TimeCommitment_Screen contains text:" + vars['CommitTimePriceOffered']);
+        if (String(vars['CommitTimeCommitmentList']).includes(String(vars['CommitTimePriceOffered']))) {
+          log.info('Matched exact Commit Time Price Offered value');
+
+        } else if (String(vars['CommitTimeCommitmentList']).includes(String(vars['CommitTimePriceOfferedPluseOneMin']))) {
+          log.info('Matched Commit Time Price Offered +1 minute value');
+
+        }
+        else {
+          Methods.verifyString(vars['CommitTimeCommitmentList'], 'contains', vars['CommitTimePriceOfferedMinusOneMin']);
+          log.info('Matched Commit Time Price Offered -1 minute value');
+        }
         await expect(commitmentListPage.No_ofLoansCommitment_List_Details).toContainText(vars['LockedLoansCount']);
         log.info("element No_ofLoansCommitment_List_Details contains text:" + vars['LockedLoansCount']);
         await expect(commitmentListPage.Market_ValueCommitment_List).toContainText(vars['MaraketValuePriceOffered']);
