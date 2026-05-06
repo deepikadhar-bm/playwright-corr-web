@@ -7,4 +7,5 @@ export const FILE_CONSTANTS = {
     NEW_LOGO:'Newlogo.png',
     LOGO:'logo.png',
     BID_FILE_FOR_PRICE_OFFERED_STATUS:'Bid_file_success_error_newly_updated (12).xlsx',
+    Duplicate_Loan_File:'Bid_file_success_error_duplicate_loan.xlsx',
 };

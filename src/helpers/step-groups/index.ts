@@ -3029,7 +3029,7 @@ export async function stepGroup_Uploading_Bid_Request(page: import('@playwright/
   //await expect(CorrPortalElem.Bid_Mapping_ID_Dropdown).toContainText([vars["BidMappingID"]]);
   await expect(CorrPortalElem.Bid_Request_Date).toBeEnabled();
   await CorrPortalElem.Pricing_Return_Time.click({ force: true });
-  await CorrPortalElem.Pricing_Return_Time.click({ force: true });
+  //await CorrPortalElem.Pricing_Return_Time.click({ force: true });
   // [DISABLED] Scroll down to the element Enabled_PricingReturnTime into view
   // await CorrPortalElem.Enabled_PricingReturnTime.scrollIntoViewIfNeeded();
   // [DISABLED] Verify that the element Enabled_PricingReturnTime is present and With Scrollable TRUE
@@ -6429,7 +6429,9 @@ export async function stepGroup_Upload_Bid_Request_from_batch_time_selection_to_
   const CorrPortalElem = new CorrPortalPage(page);
   await CorrPortalElem.Pricing_Return_Time.selectOption({ index: parseInt("2") });
   vars["ExtractedPrincingReturnTime"] = await CorrPortalElem.Pricing_Return_Time.evaluate(el => { const s = el as HTMLSelectElement; return s.options[s.selectedIndex]?.text || ''; });
-  await CorrPortalElem.Upload_File.setInputFiles([]);
+ // await CorrPortalElem.Upload_File.setInputFiles([]);
+   await CorrPortalElem.Upload_File.setInputFiles(path.resolve(__dirname, '../../../uploads', fileconstants.Duplicate_Loan_File));
+
   await expect(CorrPortalElem.UploadBid_Button).toBeVisible();
   await CorrPortalElem.UploadBid_Button.click();
   await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
@@ -6586,18 +6588,21 @@ export async function stepGroup_Uploading_Bid_Request_For_both_Real_and_Differed
   const CorrPortalElem = new CorrPortalPage(page);
   const testData: Record<string, string> = {}; // TODO: Load from test data profile
   await CorrPortalElem.Select_Company_In_BidRequest.click();
-  await CorrPortalElem.Bid_Mapping_Id_Search_Input_box.fill(testData["Company Name"]);
+  await CorrPortalElem.Bid_Mapping_Id_Search_Input_box.fill(vars["CompanyName"]);
   await CorrPortalElem.SelectCompany_Value.click();
   await page.waitForTimeout(2000);
   await expect(CorrPortalElem.Standard_Execution_Checkbox).toBeVisible();
+  await CorrPortalElem.Standard_Execution_Checkbox.check();
+  await page.waitForTimeout(2000);
+  await expect(CorrPortalElem.Standard_Execution_Checkbox).toBeChecked(); 
   await CorrPortalElem.StandardExecution_Dropdown.selectOption({ label: "3" });
   await CorrPortalElem.StandardExceutionType_Dropdown.waitFor({ state: 'visible' });
   await expect(CorrPortalElem.StandardExceutionType_Dropdown).toHaveValue("3");
   await CorrPortalElem.Bid_Mapping_ID_Dropdown.click();
-  await CorrPortalElem.Search_box_Bid_mapping_id.fill(testData["BidMappingID"]);
+  await CorrPortalElem.Search_box_Bid_mapping_id.fill(vars["BidMappingID"]);
   await CorrPortalElem.Bid_Mapping_ID_Dropdown_1.waitFor({ state: 'visible' });
   await CorrPortalElem.Bid_Mapping_ID_Dropdown_1.click();
-  await expect(CorrPortalElem.Bid_Mapping_ID_Dropdown).toContainText(testData["BidMappingID"]);
+  await expect(CorrPortalElem.Bid_Mapping_ID_Dropdown).toContainText(vars["BidMappingID"]);
   await expect(CorrPortalElem.Real_Time_Radio_ButtonUpload_Bid).toBeVisible();
   await expect(CorrPortalElem.Deferred_Radio_ButtonUpload_Bid).toBeVisible();
 }
@@ -7077,7 +7082,7 @@ export async function stepGroup_updating_back_text_to_Delegated_Conventional_Man
  */
 export async function stepGroup_Deleting_added_email_from_email_config(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
-  await CorrPortalElem.Required_Delete_Email_Button.click();
+  await CorrPortalElem.Required_Delete_Email_Button(vars["ExpectedEmail"]).click();
   await CorrPortalElem.Yes_Go_ahead_Button.waitFor({ state: 'visible' });
   await CorrPortalElem.Yes_Go_ahead_Button.click();
   await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
