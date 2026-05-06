@@ -11,8 +11,7 @@ import { Logger as log } from '@helpers/log-helper';
 import { testDataManager } from 'testdata/TestDataManager';
 import { APP_CONSTANTS as appconstants } from '../../../src/constants/app-constants';
 import { AddonHelpers } from '@helpers/AddonHelpers';
-import { ENV } from '@config/environments';
-import * as stepGroups from '../../../src/helpers/step-groups';
+
 
 const TC_ID = 'PREREQ_1404(REG_TS02_TC02)';
 const TC_TITLE = 'Verify that bid records data are displayed in the Price Offered screen once their status is updated to "Price Offered"';
@@ -26,16 +25,11 @@ export async function runPrereq_1404(page: Page, vars: Record<string, string>): 
   const priceOfferedPage = new PriceOfferedPage(page);
   const spinnerPage = new SpinnerPage(page);
   const Methods = new AddonHelpers(page, vars);
-  const credentials = ENV.getCredentials('internal');
-  vars['Username'] = credentials.username;
-  vars['Password'] = credentials.password;
   const profileName = 'Price Offered';
+
 
   log.tcStart(TC_ID, TC_TITLE);
   try {
-    // await stepGroups.stepGroup_Login_to_CORR_Portal(page, vars);
-    // vars['RequestIDDetails'] = '87U0D1EA430A';
-    // await correspondentPortalPage.Bid_Requests.click();
     log.step('search for bid request');
     try {
       await expect(bidRequestsPage.Search_by_Bid_Request_ID_Field).toBeVisible();
