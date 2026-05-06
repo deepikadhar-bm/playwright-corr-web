@@ -152,7 +152,7 @@ export class CorrPortalPage {
     return this.page.locator("//a[contains(text(),\"Commitment List\")]//i[contains(@class,\"fas fa-arrow-left \")]");
   }
 
-  BatchTime(BatchNum:string): Locator {
+  BatchTime(BatchNum: string): Locator {
     return this.page.locator(`(//h6[@class=\"card-subtitle text-body-secondary flex-grow-1 mb-0\"]/../..//h5)[${BatchNum}]`);
   }
 
@@ -168,7 +168,7 @@ export class CorrPortalPage {
     return this.page.locator("//h6[@class=\"card-subtitle text-body-secondary flex-grow-1 mb-0\"]");
   }
 
-  BidMap1_Advanced_Search(BidMapName1:string): Locator {
+  BidMap1_Advanced_Search(BidMapName1: string): Locator {
     return this.page.locator(`(//td//button[text()=\" ${BidMapName1} \"])`);
   }
 
@@ -192,7 +192,7 @@ export class CorrPortalPage {
     return this.page.locator("//span[text()[normalize-space() = \"Bid Requests\"] and contains(@class, 'hide-text')]");
   }
 
-  BidStatus_From_List(RequestIDDetails:string): Locator {
+  BidStatus_From_List(RequestIDDetails: string): Locator {
     return this.page.locator(`//button[contains(text(),\"${RequestIDDetails}\")]/../..//td[@data-title=\"Status\"]`);
   }
 
@@ -220,7 +220,7 @@ export class CorrPortalPage {
     return this.page.locator("//a[@href=\"#/admin/general-settings/bidmap-creation\"]");
   }
 
-  get_Bid_Map_Name_Field_In_Row(CreateNewMap:string): Locator {
+  get_Bid_Map_Name_Field_In_Row(CreateNewMap: string): Locator {
     return this.page.locator(`//td[@data-title=\"Map Name\"]//button[normalize-space(text())=\"${CreateNewMap}\"]`);
   }
 
@@ -228,8 +228,8 @@ export class CorrPortalPage {
   //   return this.page.locator("//div[text()[normalize-space() = \"Select Mapping\"]]");
   // }
   get Bid_Mapping_ID_Dropdown(): Locator {
-  return this.page.locator('//*[@id="selectBidMappingIdDropdown"]//div[contains(@class,"text-start")]');
-}
+    return this.page.locator('//*[@id="selectBidMappingIdDropdown"]//div[contains(@class,"text-start")]');
+  }
   get Bid_Mapping_ID_Dropdown_1(): Locator {
     return this.page.locator("//span[text()[normalize-space() =\"Deepika Aug1\"]]");
   }
@@ -294,11 +294,11 @@ export class CorrPortalPage {
     return this.page.locator("//i[@class=\"fas fa-pencil-alt\"]");
   }
 
-  Bid_Sample_Name_1(FirstBidSampleName:string): Locator {
+  Bid_Sample_Name_1(FirstBidSampleName: string): Locator {
     return this.page.locator(`(//div[@class=\"col-2\"]//div[text()=\"${FirstBidSampleName}\"])[1]/../..//input[@type=\"checkbox\"]`);
   }
 
-  Bid_Sample_Name_Field_Enumeration_Mapping(ChaseName:string): Locator {
+  Bid_Sample_Name_Field_Enumeration_Mapping(ChaseName: string): Locator {
     return this.page.locator(`(//div[@class=\"my-2\" and text()=\"${ChaseName}\"]/../..//div)[3]`);
   }
 
@@ -352,7 +352,7 @@ export class CorrPortalPage {
     return this.page.locator("(//label[normalize-space(text())='Chase Direct']/parent::div//input)[2]");
   }
 
-  ChaseFieldValue_Popup(ChaseFieldNamePopup:string): Locator {
+  ChaseFieldValue_Popup(ChaseFieldNamePopup: string): Locator {
     return this.page.locator(`(//div[@class=\"border-bottom p-2\" and normalize-space((text())=\"${ChaseFieldNamePopup}\")]/following-sibling::div)[1]`);
   }
 
@@ -360,11 +360,11 @@ export class CorrPortalPage {
     return this.page.locator("//div[@class=\"border-bottom p-2\"]");
   }
 
-  ChaseValuePopup_AllLoans(ChaseFieldNamePopupAllLoans:string): Locator {
+  ChaseValuePopup_AllLoans(ChaseFieldNamePopupAllLoans: string): Locator {
     return this.page.locator(`(//div[@class=\"border-bottom p-2\" and contains(text(),\"${ChaseFieldNamePopupAllLoans}\")]/following-sibling::div)[1]`);
   }
 
-  ChaseValues_Corresponding_to_Chase_Field(IndividualChaseFieldName:string): Locator {
+  ChaseValues_Corresponding_to_Chase_Field(IndividualChaseFieldName: string): Locator {
     return this.page.locator(`(//div[@class=\"my-2\" and text()=\"${IndividualChaseFieldName}\"]/..//following-sibling::div)//div[@class=\"mb-2\"]`);
   }
 
@@ -384,7 +384,11 @@ export class CorrPortalPage {
     return this.page.locator("//div[@class=\"my-2\"]");
   }
 
-  Chase_Field_Checkbox(count:string): Locator {
+  BidTapeFieldCountForBidField(columnHeader: string): Locator {
+    return this.page.locator(`//div[text()="${columnHeader}" and not(@class="my-2")]/../..//div[contains(@class,"input-field-name")]`);
+  }
+
+  Chase_Field_Checkbox(count: string): Locator {
     return this.page.locator(`(//fieldset//div[@class=\"gap-2 header-grid-layout\"]//select)[${count}]/../../..//input[@type=\"checkbox\"]`);
   }
 
@@ -464,7 +468,7 @@ export class CorrPortalPage {
     return this.page.locator("//div[@aria-labelledby=\"rulesGroup\"]/following-sibling::div//*[@aria-label=\"LP Field Value\"]//select");
   }
 
-  Chase_value_2026(ChaseFieldNameBeforeSubmit:string): Locator {
+  Chase_value_2026(ChaseFieldNameBeforeSubmit: string): Locator {
     return this.page.locator(`//div[contains(@class,'border-bottom p-2') and contains(normalize-space(.),'${ChaseFieldNameBeforeSubmit}')]/following-sibling::div[1]`);
   }
 
@@ -492,7 +496,7 @@ export class CorrPortalPage {
     return this.page.locator(`//div[@class="flex-grow-1" and text()="${FirstCheckedBidName}"]`);
   }
 
-   Checked_header_2(SecondCheckedBidName: string): Locator {
+  Checked_header_2(SecondCheckedBidName: string): Locator {
     return this.page.locator(`//div[@class="flex-grow-1" and text()="${SecondCheckedBidName}"]`);
   }
 
@@ -580,7 +584,7 @@ export class CorrPortalPage {
     return this.page.locator("(//label[@class='dropdown-item d-flex'])");
   }
 
-  CompanyName_Action_Button_By_Index(CompanyIndex:string): Locator {
+  CompanyName_Action_Button_By_Index(CompanyIndex: string): Locator {
     return this.page.locator(`(//div[@id=\"common-table-results\"]//following-sibling::td[@data-title=\"Actions\"])[${CompanyIndex}]//button[@aria-label=\"Edit Permission\"]`);
   }
 
@@ -608,7 +612,7 @@ export class CorrPortalPage {
     return this.page.locator("//div[@id='common-table-results']/table//tr[1]//td[@data-title=\"Company Name\"]");
   }
 
-  Company_Name_Customer_Permission(CompanyIndex:string): Locator {
+  Company_Name_Customer_Permission(CompanyIndex: string): Locator {
     return this.page.locator(`//div[@id='common-table-results']/table//tr[${CompanyIndex}]//td[@data-title=\"Company Name\"]`);
   }
 
@@ -640,7 +644,7 @@ export class CorrPortalPage {
     return this.page.locator("//span[text()[normalize-space() = \"Continue Editing\"]]");
   }
 
-  Correspondent_Bid_sample_name(count:string): Locator {
+  Correspondent_Bid_sample_name(count: string): Locator {
     return this.page.locator(`(//fieldset//div[@class=\"gap-2 header-grid-layout\"]//select)[${count}]/../../..//div[@class=\"flex-grow-1\"]`);
   }
 
@@ -730,7 +734,7 @@ export class CorrPortalPage {
     return this.page.locator("(//button[@aria-label=\"Delete Batch Time\"])[last()]");
   }
 
-  Delete_Early_Config_Button(CurrentDateList:String): Locator {
+  Delete_Early_Config_Button(CurrentDateList: String): Locator {
     return this.page.locator(`(//td[@data-title='Date' and contains(text(), '${CurrentDateList}')]/..//button[2])`);
   }
 
@@ -742,7 +746,7 @@ export class CorrPortalPage {
     return this.page.locator("(//div[contains(@class,\"input-field-name text\")]/..//button[@type=\"button\"])[1]");
   }
 
-  Delete_Message(DeleteHeaderMapping:string): Locator {
+  Delete_Message(DeleteHeaderMapping: string): Locator {
     return this.page.locator(`//div[text()[normalize-space() = 'You have selected to delete \"${DeleteHeaderMapping}\" mapping. Do you want to proceed?']]`);
   }
 
@@ -784,7 +788,7 @@ export class CorrPortalPage {
     return this.page.locator("(//div[@class=\"block\"])[2]");
   }
 
-  Deleted_Field_In_Enumeration(BidTapeValueforBeforeDeleted:string): Locator {
+  Deleted_Field_In_Enumeration(BidTapeValueforBeforeDeleted: string): Locator {
     return this.page.locator(`(//div[@class=\"field-block mb-2\"])//div[text()=\" ${BidTapeValueforBeforeDeleted} \"]`);
   }
 
@@ -816,7 +820,7 @@ export class CorrPortalPage {
     return this.page.locator("(//table//tr[@role=\"row\"])[position() >1 and position() <= last()]");
   }
 
-  Early_Conf_Del_Button_other_than_today(CurrentDateList:string): Locator {
+  Early_Conf_Del_Button_other_than_today(CurrentDateList: string): Locator {
     return this.page.locator(`//td[@data-title=\"Date\" and not(contains(text(),\"${CurrentDateList}\"))]/..//button[@aria-label=\"Delete\"]`);
   }
 
@@ -824,7 +828,7 @@ export class CorrPortalPage {
     return this.page.locator(`//td[contains(text(),\" ${CurrentDateList}\")]`);
   }
 
-  Early_Config_tomorrows_Date(TomorrowDateList:string): Locator {
+  Early_Config_tomorrows_Date(TomorrowDateList: string): Locator {
     return this.page.locator(`//td[contains(text(),\" ${TomorrowDateList}\")]`);
   }
 
@@ -852,7 +856,7 @@ export class CorrPortalPage {
     return this.page.locator("((//div[@class=\"field-block mb-2\"])/../../../..//div[@class=\"my-2\"])[2]");
   }
 
-  Edited_Chase_Value_After_Save(EditedChaseFieldName:string): Locator {
+  Edited_Chase_Value_After_Save(EditedChaseFieldName: string): Locator {
     return this.page.locator(`(//button[text()=\" Add Field \"]/../div[text()=\"${EditedChaseFieldName}\"]/../..//select)[1]`);
   }
 
@@ -948,7 +952,7 @@ export class CorrPortalPage {
     return this.page.locator("//span[text()[normalize-space() = \"Filter\"]]");
   }
 
-  Filtered_Lastmonth_Uploaded_Date(LastMonth:string): Locator {
+  Filtered_Lastmonth_Uploaded_Date(LastMonth: string): Locator {
     return this.page.locator(`//td[@data-title=\"Uploaded\"]//div[starts-with(text(),\" ${LastMonth}\")]`);
   }
 
@@ -1047,7 +1051,7 @@ export class CorrPortalPage {
   // Gross_Price_price_offered_screen_table(count1: string): Locator {
   //   return this.page.locator(`( //table[@aria-label=\"Data Table\"]//tr[@role=\"row\"]//td[@data-title=\"Gross Price\"]/div)[${count1}]`);
   // }
-   Gross_Price_price_offered_screen_table(count1: string): Locator {
+  Gross_Price_price_offered_screen_table(count1: string): Locator {
     return this.page.locator(`(//tr[@role=\"row\"]//td[@data-title=\"Gross Price\"]/div)[${count1}]`);
   }
 
@@ -1061,16 +1065,16 @@ export class CorrPortalPage {
 
   get Header_Mapping_Dropdown(): Locator {
     // return this.page.locator("//select[contains(normalize-space(),\"Select Show All Headers Show Unidentified Headers (10) Show Unused Headers Show Used Headers\")]");
-  // return this.page.locator("//app-single-select-dropdown[@aria-label='Header Status Dropdown']//select");
-  // return this.page.getByRole('region', { name: 'Page Actions' }).getByLabel('Default dropdown selection');
-  return this.page.getByRole('region', { name: 'Page Actions' }).getByLabel('Default dropdown selection');
+    // return this.page.locator("//app-single-select-dropdown[@aria-label='Header Status Dropdown']//select");
+    // return this.page.getByRole('region', { name: 'Page Actions' }).getByLabel('Default dropdown selection');
+    return this.page.getByRole('region', { name: 'Page Actions' }).getByLabel('Default dropdown selection');
   }
 
   get Header_Mapping_Show_Unidentified_Header(): Locator {
     return this.page.locator("//select[@class=\"form-select\"]/../..//option[@value=\"Show Unidentified Headers\"]/..//span[text()=\"(10)\"]");
   }
 
-  Header_Mapping_for_Unidentified_Headers(Headercount:string): Locator {
+  Header_Mapping_for_Unidentified_Headers(Headercount: string): Locator {
     return this.page.locator(`(//select[contains(@class, 'form-select')])[${Headercount}]`);
   }
 
@@ -1101,7 +1105,7 @@ export class CorrPortalPage {
   // Hedge_Ratio_price_offered_screen_table(count1: string): Locator {
   //   return this.page.locator(`( //table[@aria-label=\"Data Table\"]//tr[@role=\"row\"]//td[@data-title=\"Hedge Ratio\"]/div)[${count1}]`);
   // }
-   Hedge_Ratio_price_offered_screen_table(count1: string): Locator {
+  Hedge_Ratio_price_offered_screen_table(count1: string): Locator {
     return this.page.locator(`(//tr[@role=\"row\"]//td[@data-title=\"Hedge Ratio\"]/div)[${count1}]`);
   }
 
@@ -1121,7 +1125,7 @@ export class CorrPortalPage {
     return this.page.locator("//input[@id=\"TEst - 0\"]");
   }
 
-  Individual_BidSample_Chasename_In_Dropdown(ChaseName:string): Locator {
+  Individual_BidSample_Chasename_In_Dropdown(ChaseName: string): Locator {
     return this.page.locator(`//div[@class=\"dropdown-overflow\"]//*[contains(text(),\"${ChaseName}\")]`);
   }
 
@@ -1138,7 +1142,7 @@ export class CorrPortalPage {
     return this.page.locator(`(//div[text()="${columnHeader}" and not(@class="my-2")]/../..//div[contains(@class,"input-field-name")])[${count2}]`);
   }
 
-  Individual_Cell_Data(RowsCount:string,ColumnCount:string): Locator {
+  Individual_Cell_Data(RowsCount: string, ColumnCount: string): Locator {
     return this.page.locator(`(//tr[${RowsCount}]//td)[${ColumnCount}]`);
   }
 
@@ -1158,7 +1162,7 @@ export class CorrPortalPage {
     return this.page.locator(`(//tbody//tr[${RowCountUI}]//td)[${ColumnCountUI}]`);
   }
 
-  Individual_ChaseValue_of_ChaseField(IndividualChaseFieldName:string,count2:string): Locator {
+  Individual_ChaseValue_of_ChaseField(IndividualChaseFieldName: string, count2: string): Locator {
     return this.page.locator(`((//div[@class=\"my-2\" and text()=\"${IndividualChaseFieldName}\"]/..//following-sibling::div)//div[@class=\"mb-2\"]//*[contains(@class,\"form-control p-0\") or contains(@class,\"form-select\")])[${count2}]`);
   }
 
@@ -1166,7 +1170,7 @@ export class CorrPortalPage {
     return this.page.locator(`(//div[@class=\"my-2\"])[${count1}]`);
   }
 
-  Individual_Chase_Field_Name_Popup(count:string): Locator {
+  Individual_Chase_Field_Name_Popup(count: string): Locator {
     return this.page.locator(`(//div[@class=\"border-bottom p-2\"])[${count}]`);
   }
 
@@ -1174,7 +1178,7 @@ export class CorrPortalPage {
     return this.page.locator(`(//div[@class=\"border-bottom p-2\" and contains(text(),\"${ChaseFieldNameBeforeSubmit}\")]/following-sibling::div)[1]`);
   }
 
-   Individual_Chase_Value_popup2(ChaseFieldPopupAfterSubmit: string): Locator {
+  Individual_Chase_Value_popup2(ChaseFieldPopupAfterSubmit: string): Locator {
     return this.page.locator(`(//div[@class=\"border-bottom p-2\" and contains(text(),\"${ChaseFieldPopupAfterSubmit}\")]/following-sibling::div)[1]`);
   }
 
@@ -1182,7 +1186,7 @@ export class CorrPortalPage {
     return this.page.locator(`(//div[@class=\"my-2\"])[${count1}]/ancestor::div[contains(@class,\"mapping-card\")]//input[@type=\"checkbox\"]`);
   }
 
-  Individual_Column_Name(count:string): Locator {
+  Individual_Column_Name(count: string): Locator {
     return this.page.locator(`//th[position() >1 and position() < last()][${count}]`);
   }
 
@@ -1222,7 +1226,7 @@ export class CorrPortalPage {
     return this.page.locator("//label[text()=\"Select Company/s\"]/..//div[@class=\"pill rounded-pill relative\"]//span");
   }
 
-  Individual_Status_On_Popup(count:string): Locator {
+  Individual_Status_On_Popup(count: string): Locator {
     return this.page.locator(`(//td[@data-title=\"Status\"]//span)[${count}]`);
   }
 
@@ -1276,7 +1280,7 @@ export class CorrPortalPage {
   get Company_Name_New_Data(): Locator {
     return this.page.locator("((//td[@class=\"d2h-ins d2h-change\"]//span[contains(text(),\"name\" )])//ins)[1]");
   }
-  
+
   get Internal_User_Name_New_Data(): Locator {
     return this.page.locator("(//td[@class=\"d2h-ins d2h-change\"]//span[contains(text(),\"internalUser\" )])//ins");
   }
@@ -1309,11 +1313,11 @@ export class CorrPortalPage {
     return this.page.locator("//div[@class=\"d2h-file-diff\"]//table");
   }
 
-  Loan_Numbers_Expect_the_Current_Loan(count:string): Locator {
+  Loan_Numbers_Expect_the_Current_Loan(count: string): Locator {
     return this.page.locator(`(//button[contains(@aria-label,\"View loan details\")])[not(position()=${count})]`);
   }
 
-   LockedLoans_ChaseFieldValuePopup(ChaseFieldPopupLockedLoans:string): Locator {
+  LockedLoans_ChaseFieldValuePopup(ChaseFieldPopupLockedLoans: string): Locator {
     return this.page.locator(`(//div[@class=\"border-bottom p-2\" and contains(text(),\"${ChaseFieldPopupLockedLoans}\")]/following-sibling::div)[1]`);
   }
 
@@ -1341,12 +1345,12 @@ export class CorrPortalPage {
     return this.page.locator("//fieldset//div[@class=\"gap-2 header-grid-layout\"]//select");
   }
 
-  Mapped_Chase_Value(BidSampleName:string): Locator {
+  Mapped_Chase_Value(BidSampleName: string): Locator {
     return this.page.locator(`//div[@class=\"flex-grow-1\" and text()=\"${BidSampleName}\"]/..//select`);
   }
 
-  get Mapped_Chase_Value_2(): Locator {
-    return this.page.locator("//div[@class=\"flex-grow-1\" and text()=\"@|Bid Sample Field Name|\"]/..//select");
+  Mapped_Chase_Value_2(BidSampleFieldName:string): Locator {
+    return this.page.locator(`//div[@class=\"flex-grow-1\" and text()=\"${BidSampleFieldName}\"]/..//select`);
   }
 
   get Mappings(): Locator {
@@ -1452,7 +1456,7 @@ export class CorrPortalPage {
   get Operation_Dropdown(): Locator {
     return this.page.locator("//select[contains(normalize-space(),\"Select = != > < >= <= contains\")]");
   }
-    get Operation_Dropdown1(): Locator {
+  get Operation_Dropdown1(): Locator {
     return this.page.locator("(//div[@class='block'])[1]//select[contains(normalize-space(),'Select = != > < >= <= contains')]");
   }
   get Operations_Dropdown_2(): Locator {
@@ -1463,7 +1467,7 @@ export class CorrPortalPage {
     return this.page.locator("//div[@aria-labelledby=\"rulesGroup\"]/following-sibling::div//*[@aria-label=\"Operator\"]//select");
   }
 
-  Option_in_PricingReturn_Dropdown(BatchTime:string): Locator {
+  Option_in_PricingReturn_Dropdown(BatchTime: string): Locator {
     return this.page.locator(`//option[contains(text(),\"${BatchTime}\")]`);
   }
 
@@ -1487,7 +1491,7 @@ export class CorrPortalPage {
     return this.page.locator("//input[@type=\"password\"]");
   }
 
-  Price_Offered_Status_of_searched_bid(RequestIDDetails:string): Locator {
+  Price_Offered_Status_of_searched_bid(RequestIDDetails: string): Locator {
     return this.page.locator(`//button[contains(text(),\"${RequestIDDetails}\")]/../..//td[@data-title=\"Status\"]//span[contains(text(),\"Price Offered\")]`);
   }
 
@@ -1513,7 +1517,7 @@ export class CorrPortalPage {
   get Company_Name_Previous_Data(): Locator {
     return this.page.locator("((//td[@class=\"d2h-del d2h-change\"]//span[contains(text(),\"name\" )])//del)[1]");
   }
-  
+
   get Proceed_with_Saving_Button(): Locator {
     return this.page.locator("//button[@aria-label=\"Proceed with Saving\"]");
   }
@@ -1537,7 +1541,7 @@ export class CorrPortalPage {
   // get Ref_Sec_Price_price_offered_screen_table(): Locator {
   //   return this.page.locator("( //table[@aria-label=\"Data Table\"]//tr[@role=\"row\"]//td[@data-title=\"Ref Sec Price\"]/div)[$|count1|]");
   // }
-   Ref_Sec_Price_price_offered_screen_table(count1:string): Locator {
+  Ref_Sec_Price_price_offered_screen_table(count1: string): Locator {
     return this.page.locator(`(//tr[@role="row"]//td[@data-title="Ref Sec Price"]/div)[${count1}]`);
   }
 
@@ -1573,7 +1577,7 @@ export class CorrPortalPage {
     return this.page.locator(`//div[@role='gridcell' and @aria-label='${DateFormatFilter}']`);
   }
 
-  Required_Delete_Email_Button(ExpectedEmail:string): Locator {
+  Required_Delete_Email_Button(ExpectedEmail: string): Locator {
     return this.page.locator(`(//td[@data-title=\"Email\" and contains(text(),\"${ExpectedEmail}\")])/..//button[2]`);
   }
 
@@ -1652,7 +1656,7 @@ export class CorrPortalPage {
   get Search_Field(): Locator {
     return this.page.locator("(//input[@type=\"search\"])[1]");
   }
-    get Search_Field2(): Locator {
+  get Search_Field2(): Locator {
     return this.page.locator("(//input[@type=\"search\"])[2]");
   }
 
@@ -1687,7 +1691,7 @@ export class CorrPortalPage {
   get Search_In_Committed_Page(): Locator {
     return this.page.locator("//div//input[@placeholder=\"Search\"]");
   }
-  Unmapped_Chase_Value_1(ColumnHeader:string,count1:string): Locator {
+  Unmapped_Chase_Value_1(ColumnHeader: string, count1: string): Locator {
     return this.page.locator(`(//div[text()=\"${ColumnHeader}\"]/ancestor::div[@class=\"mapping-card rounded-3 unchecked\"]//div[@class=\"field-pair col-3\"]//*[@title=\"\" or @title=\"[object Object]\"])[${count1}]`);
   }
   get Search_Input(): Locator {
@@ -1734,7 +1738,7 @@ export class CorrPortalPage {
     return this.page.locator("(//span[contains(@class,'pl-2')])[1]");
   }
 
-  SelectText_HedaerMapping_Field(IndexCount:string): Locator {
+  SelectText_HedaerMapping_Field(IndexCount: string): Locator {
     return this.page.locator(`(//div[contains(@class,\"gap-2 header-grid-layout\")]/..//select)[${IndexCount}]`);
   }
 
@@ -1783,7 +1787,7 @@ export class CorrPortalPage {
     return this.page.locator("//div[text()[normalize-space() = \"Select\"]]");
   }
 
-  get_Select_Company_Names(CompanyName1:string): Locator {
+  get_Select_Company_Names(CompanyName1: string): Locator {
     return this.page.locator(`//span[@class='pl-2'][contains(.,'${CompanyName1}')]`);
   }
 
@@ -1999,7 +2003,7 @@ export class CorrPortalPage {
     return this.page.locator("//button[@aria-label=\"Toggle Date Picker\"]");
   }
 
-  Tomorrow_date(TomorrowsDateCalender:string): Locator {
+  Tomorrow_date(TomorrowsDateCalender: string): Locator {
     return this.page.locator(`//div[@aria-label=\"${TomorrowsDateCalender}\"]`);
   }
 

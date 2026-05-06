@@ -10,7 +10,6 @@ import { AddonHelpers } from '../../AddonHelpers';
 import { Logger as log } from '../../log-helper';
 import { APP_CONSTANTS as appconstants } from '../../../constants/app-constants';
 import { testDataManager } from 'testdata/TestDataManager';
-import * as stepGroups from '../../../../src/helpers/step-groups';
 import { ENV } from '@config/environments';
 
 
@@ -65,6 +64,8 @@ export async function runPrereq_1738(page: Page, vars: Record<string, string>): 
       await priceOfferedPage.Yes_Commit_ButtonPopup.click();
       Methods.getCurrentTimestamp(appconstants.DATE_FORMAT_MMDDYYYY, 'ExpectedCommitDate', appconstants.UTC);
       Methods.getCurrentTimestamp(appconstants.TIME_FORMAT_HMMA, 'CommitTimePriceOffered', appconstants.UTC);
+      Methods.addMinutesToDatetime(vars['CommitTimePriceOffered'], appconstants.TIME_FORMAT_HMMA, 1, appconstants.TIME_FORMAT_HMMA, 'CommitTimePriceOfferedPluseOneMin');
+      Methods.subtractMinutesFromDatetime(vars['CommitTimePriceOffered'], appconstants.TIME_FORMAT_HMMA, 1, appconstants.TIME_FORMAT_HMMA, 'CommitTimePriceOfferedMinusOneMin')
       await priceOfferedPage.Yes_Commit_ButtonPopup.waitFor({ state: 'hidden' });
       await priceOfferedPage.Okay_ButtonPopup.waitFor({ state: 'visible' });
       vars['CommitmentIDPriceOffered'] = await priceOfferedPage.Commitment_IdPrice_Offered.textContent() || '';
@@ -158,7 +159,7 @@ export async function runPrereq_1738(page: Page, vars: Record<string, string>): 
       log.stepFail(page, 'Failed to verify commitment data');
       throw e;
     }
-  log.tcEnd('PASS');
+    log.tcEnd('PASS');
   } catch (e) {
     await log.captureOnFailure(page, TC_ID, e);
     log.tcEnd('FAIL');

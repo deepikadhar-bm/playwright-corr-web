@@ -24,7 +24,7 @@ import { ENV } from '@config/environments';
 import { FILE_CONSTANTS as fileconstants } from '../../../src/constants/file-constants';
 
 
-const TC_ID = 'REG_TS26_TC01';
+const TC_ID = 'PRE_REQ_814(REG_TS26_TC01)';
 const TC_TITLE = 'Verify that if there are multiple versions in a bid, then user should be able to restore the required active map version.';
 
 export async function runPrereq_814(page: Page, vars: Record<string, string>): Promise<void> {
@@ -174,6 +174,7 @@ export async function runPrereq_814(page: Page, vars: Record<string, string>): P
         vars["Chase_Field_Name"] = profile.data[0]['Chase_Field_Name'];
       }
       await stepGroups.stepGroup_Editing_Header_Mapping(page, vars);
+      vars['UpdatedBidSampleNameHeaderMapping']=vars["UpdatedBidSampleName[HeaderMapping]"];
       vars['EditedChaseFieldNameVersion2'] = vars['UpdatedChaseFieldNameHeaderMapping'];
       vars['DeletedHeader[HeaderMapping]'] = await headerMappingPage.Deleting_Header.textContent() || '';
       Methods.trimtestdata(vars['DeletedHeader[HeaderMapping]'], 'DeletedHeaderHeaderMapping');

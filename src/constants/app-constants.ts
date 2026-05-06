@@ -140,4 +140,6 @@ export const APP_CONSTANTS = {
   TESTSIGMA_INTERNAL:'testsigma_internal',
   COMPANY_CONFIG_TEXT:'Company Config',
   USERNAME_TESTING:'Username_tesing',
+  ACTIVE_DRAFT_TEXT:'ACTIVEDRAFT',
+  HEDER_NAME_CCODE:'CCode',
 };

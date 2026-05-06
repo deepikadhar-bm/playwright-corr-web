@@ -1748,56 +1748,52 @@
     "testDataName": "BidSampleNamesWithBidTapeValues(EnumPage)",
     "data": [
       {
-        "EnumBidTapeValues": " Fixed ,Sample",
-        "EnumBidSampleNames": "Amortization Type"
+        "EnumBidSampleNames": "Amortization Type",
+        "EnumBidTapeValues": " Fixed ,Sample"
       },
       {
-        "EnumBidTapeValues": " Y ,Sample",
-        "EnumBidSampleNames": "FTHB Waiver"
+        "EnumBidSampleNames": "FTHB Waiver",
+        "EnumBidTapeValues": " Y ,Sample"
       },
       {
-        "EnumBidTapeValues": " 44562 ,Sample",
-        "EnumBidSampleNames": "First Payment Date"
+        "EnumBidSampleNames": "First Payment Date",
+        "EnumBidTapeValues": " 44562 ,Sample"
       },
       {
-        "EnumBidTapeValues": " Taxes only , NoImpounds , Ins only ,Sample",
-        "EnumBidSampleNames": "Impound Type"
+        "EnumBidSampleNames": "Impound Type",
+        "EnumBidTapeValues": " Taxes only , NoImpounds , Ins only ,Sample"
       },
       {
-        "EnumBidTapeValues": " N ,Sample",
-        "EnumBidSampleNames": "Interest Only"
+        "EnumBidSampleNames": "Interest Only",
+        "EnumBidTapeValues": " N ,Sample"
       },
       {
-        "EnumBidTapeValues": " Refinance ,Sample",
-        "EnumBidSampleNames": "Loan Purpose"
+        "EnumBidSampleNames": "Loan Purpose",
+        "EnumBidTapeValues": " Refinance ,Sample"
       },
       {
-        "EnumBidTapeValues": " 360 months ,Sample",
-        "EnumBidSampleNames": "Loan Term"
+        "EnumBidSampleNames": "Loan Term",
+        "EnumBidTapeValues": " 360 months ,Sample"
       },
       {
-        "EnumBidTapeValues": " Conventional ,Sample",
-        "EnumBidSampleNames": "Loan Type"
+        "EnumBidSampleNames": "Loan Type",
+        "EnumBidTapeValues": " Conventional ,Sample"
       },
       {
-        "EnumBidTapeValues": " Second Home ,Sample",
-        "EnumBidSampleNames": "Occupancy Type"
+        "EnumBidSampleNames": "Occupancy Type",
+        "EnumBidTapeValues": " Second Home ,Sample"
       },
       {
-        "EnumBidTapeValues": " 214_25/30 Yr Freddie Mac Fixed , 105_20/25/30 Yr FHA Fixed-GNMA I ,Sample",
-        "EnumBidSampleNames": "Product Code"
+        "EnumBidSampleNames": "Product Code",
+        "EnumBidTapeValues": " 214_25/30 Yr Freddie Mac Fixed , 105_20/25/30 Yr FHA Fixed-GNMA I ,Sample"
       },
       {
-        "EnumBidTapeValues": " PUD ,Sample",
-        "EnumBidSampleNames": "Property Type"
+        "EnumBidSampleNames": "Property Type",
+        "EnumBidTapeValues": " PUD ,Sample"
       },
       {
-        "EnumBidTapeValues": " N ,Sample",
-        "EnumBidSampleNames": "TPO"
-      },
-      {
-        "EnumBidTapeValues": " N ,Sample",
-        "EnumBidSampleNames": "TPO"
+        "EnumBidSampleNames": "TPO",
+        "EnumBidTapeValues": " N ,Sample"
       }
     ],
     "createdById": 24,
@@ -2238,51 +2234,47 @@
     "data": [
       {
         "ChaseFieldName": "Amortization Type",
-        "Chase Value": " N ,Sample"
+        "Chase Value": "Fixed rate,Sample"
       },
       {
         "ChaseFieldName": "First Time Homebuyer Credit Fee Waiver",
-        "Chase Value": " N ,Sample"
+        "Chase Value": "True,Sample"
       },
       {
         "ChaseFieldName": "First Time Home Buyer",
-        "Chase Value": " N ,Sample"
+        "Chase Value": "Select,Sample"
       },
       {
         "ChaseFieldName": "Attachment Type",
-        "Chase Value": " N ,Sample"
+        "Chase Value": "Select,Select,Select,Sample"
       },
       {
         "ChaseFieldName": "Interest Only",
-        "Chase Value": " N ,Sample"
+        "Chase Value": "False,Sample"
       },
       {
         "ChaseFieldName": "Loan Purpose",
-        "Chase Value": " N ,Sample"
+        "Chase Value": "Refinance (R&T),Sample"
       },
       {
         "ChaseFieldName": "Loan Term",
-        "Chase Value": " N ,Sample"
+        "Chase Value": " 360 ,Sample"
       },
       {
         "ChaseFieldName": "Property Valuation Type",
-        "Chase Value": " N ,Sample"
+        "Chase Value": "Select,Sample"
       },
       {
         "ChaseFieldName": "Occupancy Type",
-        "Chase Value": " N ,Sample"
+        "Chase Value": "Select,Sample"
       },
       {
         "ChaseFieldName": "Product Name",
-        "Chase Value": " N ,Sample"
+        "Chase Value": " 214_25/30 Yr Freddie Mac Fixed , 105_20/25/30 Yr FHA Fixed-GNMA I ,Sample"
       },
       {
         "ChaseFieldName": "Property Type",
-        "Chase Value": " N ,Sample"
-      },
-      {
-        "ChaseFieldName": "TPO",
-        "Chase Value": " N ,Sample"
+        "Chase Value": "Select,Sample"
       },
       {
         "ChaseFieldName": "TPO",

@@ -103,7 +103,8 @@ test.describe('REG_Bid Maps', () => {
 
       log.step('Select Bid Map checkbox and export list');
       try {
-        await correspondentPortalPage. CCode_Checkbox.check();
+        await correspondentPortalPage.First_BidMap_Checkbox.check();
+        await expect(correspondentPortalPage.First_BidMap_Checkbox).toBeChecked();
         await expect(p1MoreButtonPage.Export_Selected_Dropdown).toBeEnabled();
         await p1MoreButtonPage.Export_Selected_Dropdown.click();
         Methods.getCurrentTimestamp(appconstants.PATH_DATEFORMAT, 'TimeStamp', appconstants.ASIA_KOLKATA);
@@ -120,113 +121,84 @@ test.describe('REG_Bid Maps', () => {
         throw e;
       }
 
-      log.step('Read exported file and capture Bid Mapping headers and values');
+      log.step('Verify the headers from the UI with the Excel headers data');
       try {
-        vars["Bid Mapping"] = excelHelper.readEntireRow(vars['FilePathExportList'], "0", "0", 'Bid Mapping');
-        vars["Bid Mapping Values"] = excelHelper.readEntireRow(vars['FilePathExportList'], "0", "1", 'Bid Mapping Values');
-        vars["MapNameFromUI"] = await bidRequestsPage.MapNameFromUI.first().textContent() || '';
-        Methods.trimtestdata(vars["MapNameFromUI"], "MapNameFromUI");
-        log.stepPass('Exported file read. Map Name from UI: ' + vars["MapNameFromUI"]);
+        vars["ColumnCount"] = appconstants.ONE;
+        vars["EntireHeadersExcel"] = excelHelper.readEntireRow(vars['FilePathExportList'], "0", "0", 'BidMappingHeadersExcel');
+        vars['TotalColumnCountUI'] = String(await bidRequestsPage.ColumnCountUI.count());
+        log.info('Total Column Count UI: ' + vars["TotalColumnCountUI"]);
+        while (parseFloat(String(vars["ColumnCount"])) <= parseFloat(String(vars["TotalColumnCountUI"]))) {
+          log.info('Headers Verification Iteration: ' + vars["ColumnCount"]);
+          vars["IndividualHeaderNameUI"] = await bidRequestsPage.IndividualHeadersUI(vars['ColumnCount']).textContent() || '';
+          log.info('Individual Header Name UI: ' + vars["IndividualHeaderNameUI"]);
+          Methods.splitStringByRegConditionWithPosition(vars["EntireHeadersExcel"], ',', vars["ColumnCount"], 'IndividualHeaderNameExcel');
+          Methods.trimtestdata(vars["IndividualHeaderNameUI"], 'IndividualHeaderNameUI');
+          expect(Methods.verifyTestdataIgnoreCase(vars['IndividualHeaderNameUI'], 'equals', vars['IndividualHeaderNameExcel']))
+          Methods.performArithmetic(vars["ColumnCount"], 'ADDITION', '1', 'ColumnCount', 0);
+        }
+
+        log.stepPass('Successfully verified headers from UI with Excel');
       } catch (e) {
-        await log.stepFail(page, 'Failed to read exported file or capture Bid Mapping data');
+        await log.stepFail(page, 'Verification failed for headers from UI to Excel headers');
         throw e;
       }
 
-      log.step('Verify exported file column headers and row data against UI');
+      log.step('Verify exported file column and row data with the UI');
       try {
-        vars["split"] = appconstants.ONE;
-        vars["split1"] = appconstants.SPLIT_COUNT_SIX;
-        vars["columnCount"] = appconstants.NINE;
-        while (parseFloat(String(vars["split"])) <= parseFloat(String(vars["columnCount"]))) {
-          log.info('Iteration split: ' + vars["split"] + ' columnCount: ' + vars["columnCount"]);
-          if (String(vars["split"]) === String("6")) {
-            if (String(vars["Bid Mapping Values"]).includes(String("ACTIVE, DRAFT"))) {
-              vars["split"] = appconstants.FIVE;
-              await correspondentPortalPage.Heading_Mappings.click();
-              Methods.splitBySpecialChar(vars["Bid Mapping"],',',vars["split"],'TableHeadersFromFile');
-              Methods.trimtestdata(vars["TableHeadersFromFile"], "TableHeadersFromFile");
-              vars["split"] = appconstants.SPLIT_COUNT_SIX;
-              Methods.splitBySpecialChar(vars["Bid Mapping Values"],',',vars["split"],'RowDataFromBidMap');
-              Methods.trimtestdata(vars["RowDataFromBidMap"], "RowDataFromBidMap");
-            }
-          } else {
-            await correspondentPortalPage.Heading_Mappings.click();
-            if (String(vars["split"]) === String("10")) {
-              vars["split"] = (parseFloat(String(vars["split"])) - parseFloat(String("1"))).toFixed(0);
-              Methods.splitBySpecialChar(vars["Bid Mapping"],',',vars["split"],'TableHeadersFromFile');
-              Methods.trimtestdata(vars["TableHeadersFromFile"], "TableHeadersFromFile");
-              vars["split"] = (parseFloat(String(vars["split"])) + parseFloat(String("1"))).toFixed(0);
-              if (String(vars["TableHeadersFromFile"]) === String("Last Modified By")) {
-                vars["split"] = (parseFloat(String(vars["split"])) - parseFloat(String("1"))).toFixed(0);
+        vars['TotalSelectedRowsCountUI'] = String(await bidRequestsPage.SelectedRowsCountUI.count());
+        log.info('Total Selected Rows Count UI: ' + vars["TotalSelectedRowsCountUI"]);
+        vars["RowCount"] = appconstants.ONE;
+        while (parseFloat(String(vars["RowCount"])) <= parseFloat(String(vars["TotalSelectedRowsCountUI"]))) {
+          vars["EntireRowDataExcel"] = excelHelper.readEntireRow(vars['FilePathExportList'], "0", "1", 'EntireRowDataExcel');
+          vars['TotalColumnCountUI'] = String(await bidRequestsPage.ColumnCountUI.count());
+          vars['ColumnCount'] = appconstants.ONE;
+          vars['SplitCount'] = appconstants.ONE;
+          log.info('Row Iteration: ' + vars['RowCount']);
+          log.info('Total Column Count UI: ' + vars["TotalColumnCountUI"]);
+          while (parseFloat(String(vars["ColumnCount"])) <= parseFloat(String(vars["TotalColumnCountUI"]))) {
+            log.info('Column Iteration: ' + vars['ColumnCount']);
+            vars["IndividualHeaderNameUI"] = await bidRequestsPage.IndividualHeadersUI(vars['ColumnCount']).textContent() || '';
+            log.info('Individual Header Name UI: ' + vars["IndividualHeaderNameUI"]);
+            Methods.trimtestdata(vars["IndividualHeaderNameUI"], 'IndividualHeaderNameUI');
+            vars["IndividualColumnDataUI"] = await bidRequestsPage.IndividualColumnDataUI(vars['RowCount'], vars['ColumnCount']).textContent() || '';
+            log.info('Individual Column Data UI: ' + vars["IndividualColumnDataUI"]);
+            Methods.trimtestdata(vars["IndividualColumnDataUI"], 'IndividualColumnDataUI');
+            Methods.splitStringByRegConditionWithPosition(vars["EntireRowDataExcel"], ',', vars["SplitCount"], 'IndividualColumnDataExcel');
+            log.info('IndividualColumnDataExcel: ' + vars['IndividualColumnDataExcel']);
+            if (String(vars['IndividualColumnDataExcel']) === String('null')) {
+              log.info('Excel column Data match with null');
+              if (String(vars["IndividualHeaderNameUI"]) === String(appconstants.HEDER_NAME_CCODE)) {
+                log.info('Individual Header Name UI match with CCode');
+                vars['IndividualColumnDataUI'] = 'null';
               }
-            }
-            if (String(vars["split"]) === String("11")) {
-              vars["split"] = appconstants.TEN;
-              Methods.splitBySpecialChar(vars["Bid Mapping Values"],',',vars["split"],'RowDataFromBidMap');
-              Methods.trimtestdata(vars["RowDataFromBidMap"], "RowDataFromBidMap");
-              vars["split"] = appconstants.NINE;
-              Methods.splitBySpecialChar(vars["Bid Mapping"],',',vars["split"],'TableHeadersFromFile');
-              Methods.trimtestdata(vars["TableHeadersFromFile"], "TableHeadersFromFile");
-              vars["split"] = appconstants.ELEVEN;
-            } else {
-              Methods.splitBySpecialChar(vars["Bid Mapping"],',',vars["split"],'TableHeadersFromFile');
-              Methods.trimtestdata(vars["TableHeadersFromFile"], "TableHeadersFromFile");
-            }
-            if (String(vars["split"]) === String("7")) {
-              await correspondentPortalPage.Heading_Mappings.click();
-              if (String(vars["Bid Mapping Values"]).includes(String("ACTIVE, DRAFT"))) {
-                vars["split"] = appconstants.SPLIT_COUNT_SIX;
-                Methods.splitBySpecialChar(vars["Bid Mapping"],',',vars["split"],'TableHeadersFromFile');
-                Methods.trimtestdata(vars["TableHeadersFromFile"], "TableHeadersFromFile");
-                vars["split"] = "7";
-                Methods.splitBySpecialChar(vars["Bid Mapping Values"],',',vars["split"],'RowDataFromBidMap');
-                Methods.trimtestdata(vars["RowDataFromBidMap"], "RowDataFromBidMap");
+              else {
+                vars['IndividualColumnDataExcel'] = '-';
               }
+
             }
-            if (String(vars["split"]) === String("8")) {
-              if (String(vars["Bid Mapping Values"]).includes(String("ACTIVE, DRAFT"))) {
-                vars["split"] = "7";
-                Methods.splitBySpecialChar(vars["Bid Mapping"],',',vars["split"],'TableHeadersFromFile');
-                Methods.trimtestdata(vars["TableHeadersFromFile"], "TableHeadersFromFile");
-                vars["split"] = "8";
-                Methods.splitBySpecialChar(vars["Bid Mapping Values"],',',vars["split"],'RowDataFromBidMap');
-                Methods.trimtestdata(vars["RowDataFromBidMap"], "RowDataFromBidMap");
-              }
-            } else {
-              if (String(vars["split"]) !== String("11")) {
-                Methods.splitBySpecialChar(vars["Bid Mapping Values"],',',vars["split"],'RowDataFromBidMap');
-                Methods.trimtestdata(vars["RowDataFromBidMap"], "RowDataFromBidMap");
-              }
+            else if (String(vars['IndividualColumnDataUI']) === String(appconstants.ACTIVE_DRAFT_TEXT)) {
+              log.info('Individual Column Data UI match with ACTIVE DRAFT');
+              Methods.performArithmetic(vars["SplitCount"], 'ADDITION', '1', 'SplitCount', 0);
+              Methods.splitStringByRegConditionWithPosition(vars["EntireRowDataExcel"], ',', vars["SplitCount"], 'IndividualColumnDataExcel1');
+              Methods.concatenate(vars['IndividualColumnDataExcel'], vars['IndividualColumnDataExcel1'], 'IndividualColumnDataExcel');
+              Methods.trimWhitespace(vars['IndividualColumnDataExcel'], 'IndividualColumnDataExcel');
             }
+
+            else if (String(vars['IndividualColumnDataExcel']).includes(String(appconstants.ET))) {
+              log.info('Excel Data row data contains ET');
+              Methods.removeCharactersFromPosition(vars['IndividualColumnDataExcel'], '0', '9', 'IndividualColumnDataExcel');
+            }
+
+            expect(Methods.verifyString(vars['IndividualColumnDataUI'], 'equals', vars['IndividualColumnDataExcel']));
+
+            Methods.performArithmetic(vars["ColumnCount"], 'ADDITION', '1', 'ColumnCount', 0);
+            Methods.performArithmetic(vars["SplitCount"], 'ADDITION', '1', 'SplitCount', 0);
           }
-          if (String(vars["split"]) === String("9")) {
-            if (String(vars["Bid Mapping Values"]).includes(String("ACTIVE, DRAFT"))) {
-              vars["split"] = "8";
-              Methods.splitBySpecialChar(vars["Bid Mapping"],',',vars["split"],'TableHeadersFromFile');
-              Methods.trimtestdata(vars["TableHeadersFromFile"], "TableHeadersFromFile");
-              vars["split"] = appconstants.NINE;
-              Methods.splitBySpecialChar(vars["Bid Mapping Values"],',',vars["split"],'RowDataFromBidMap');
-              Methods.trimtestdata(vars["RowDataFromBidMap"], "RowDataFromBidMap");
-              if (String(vars["Bid Mapping Values"]).includes(String("ACTIVE, DRAFT"))) {
-                vars["split"] = appconstants.TEN;
-                vars["columnCount"] = appconstants.ELEVEN;
-              }
-            }
-          } else {
-            if (String(vars["split"]) !== String("11")) {
-              Methods.splitBySpecialChar(vars["Bid Mapping Values"],',',vars["split"],'RowDataFromBidMap');
-              Methods.trimtestdata(vars["RowDataFromBidMap"], "RowDataFromBidMap");
-            }
-          }
-          if (String(vars["TableHeadersFromFile"]) === String("Ccode")) {
-            vars["TableHeadersFromFile"] = "CCode";
-          }
-          log.info('Column: ' + vars["TableHeadersFromFile"] + ' | Value: ' + vars["RowDataFromBidMap"]);
-          Methods.performArithmetic(vars["split"], 'ADDITION', '1', 'split', 0);
+          Methods.performArithmetic(vars["RowCount"], 'ADDITION', '1', 'RowCount', 0);
         }
-        log.stepPass('Exported file column headers and row data verified successfully');
+        log.stepPass('Exported file row data verified successfully');
       } catch (e) {
-        await log.stepFail(page, 'Exported file column header or row data verification failed at split: ' + vars["split"]);
+        await log.stepFail(page, 'Exported file row data verification failed at column: ' + vars["ColumnCount"] + 'Row: ' + vars["RowCount"]);
         throw e;
       }
 

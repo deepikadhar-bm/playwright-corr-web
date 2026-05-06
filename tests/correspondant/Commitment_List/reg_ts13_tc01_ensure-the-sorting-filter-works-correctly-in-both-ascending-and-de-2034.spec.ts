@@ -47,7 +47,6 @@ test.describe('Commitment List - TS_1', () => {
       }
       await correspondentPortalPage.Commitments_Side_Menu.click();
       await commitmentListPage.Committed_List_Dropdown.click();
-      await page.waitForLoadState('networkidle');
       await spinnerPage.Spinner.waitFor({ state: 'hidden' });
       log.step('Verification of list screen screen sorting order both ascending and descending');
       try {
@@ -62,7 +61,6 @@ test.describe('Commitment List - TS_1', () => {
 
           if (vars["HeadersUI"].includes(vars["IndividualHeaderUI"])) {
             log.info("if condition passed:" + vars["IndividualHeaderUI"]);
-            await page.waitForLoadState('networkidle');
             await commitmentListPage.Individual_Column_Header_UI_Commitment_List(vars["count"]).click();
             await spinnerPage.Spinner.waitFor({ state: 'hidden' });
             await expect(correspondentPortalPage.Header_Sort_Down).toBeVisible();
@@ -80,7 +78,6 @@ test.describe('Commitment List - TS_1', () => {
 
           } else if (vars["HeadersUI1"].includes(vars["IndividualHeaderUI"])) {
             log.info("else if condition passed:" + vars["IndividualHeaderUI"]);
-            await page.waitForLoadState('networkidle');
             await commitmentListPage.Individual_Column_Header_UI_Commitment_List(vars["count"]).click();
             await spinnerPage.Spinner.waitFor({ state: 'hidden' });
             await expect(correspondentPortalPage.Header_Sort_Down).toBeVisible();

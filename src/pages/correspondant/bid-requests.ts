@@ -5,7 +5,7 @@ import { Page, Locator } from '@playwright/test';
  * Elements: 30
  */
 export class BidRequestsPage {
-  constructor(private page: Page) {}
+  constructor(private page: Page) { }
 
   get All_Bid_RequestsBid_Requests(): Locator {
     return this.page.locator("//table[@aria-label=\"Data Table\"]//tr[@role=\"row\"]//td[@data-title=\"Bid Req. ID\"]//button");
@@ -51,8 +51,23 @@ export class BidRequestsPage {
     return this.page.locator("//table[@aria-label=\"Data Table\"]//td[@data-title=\"#Loans / #Errors\"]//div");
   }
 
-  LoansErrorStatus_From_List(RequestIDDetails:String): Locator {
+  LoansErrorStatus_From_List(RequestIDDetails: String): Locator {
     return this.page.locator(`//button[contains(text(),\"${RequestIDDetails}\")]/../..//td[@data-title=\"#Loans / #Errors\"]`);
+  }
+  get SelectedRowsCountUI(): Locator {
+    return this.page.locator("//tr[contains(@class,'row')]");
+  }
+
+  get ColumnCountUI(): Locator {
+    return this.page.locator("(//div[contains(@aria-label,'Sort by')])[position()!=10]");
+  }
+
+  IndividualHeadersUI(ColumnCount: string): Locator {
+    return this.page.locator(`((//div[contains(@aria-label,'Sort by')])[position()!=10])[${ColumnCount}]`);
+  }
+
+  IndividualColumnDataUI(RowCount: string, ColumnCount: string): Locator {
+    return this.page.locator(`((//tr[contains(@class,'row')][${RowCount}]//td[@role='cell'])[position()!=1 and position()!=11])[${ColumnCount}]`);
   }
 
   get MapNameFromUI(): Locator {

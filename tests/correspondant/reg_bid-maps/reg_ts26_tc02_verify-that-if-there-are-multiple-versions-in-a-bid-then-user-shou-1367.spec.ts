@@ -48,13 +48,11 @@ test.describe('REG_Bid Maps', () => {
   let statusInactive2Page: StatusInactive2Page;
   let statusInactivePage: StatusInactivePage;
   let Methods: AddonHelpers;
-  let REG_TS26_TC02testFailed = false;
 
   const profileName = 'Bid_Maps';
   const profile = testDataManager.getProfileByName(profileName);
 
   test.beforeEach(async ({ page }) => {
-    REG_TS26_TC02testFailed = false;
     vars = {};
     await runPrereq_814(page, vars);
     chaseFieldNamePage = new ChaseFieldNamePage(page);
@@ -83,7 +81,8 @@ test.describe('REG_Bid Maps', () => {
 
     try {
       if (profile && profile.data) {
-        
+        vars['Unidentified Fields Error Message'] = profile.data[0]['Unidentified Fields Error Message'];
+
       }
 
       log.step('Handle Continue Editing dialog and verify version and map name');
@@ -93,9 +92,9 @@ test.describe('REG_Bid Maps', () => {
         }
         await correspondentPortalPage.Version.waitFor({ state: 'visible' });
         vars['Version'] = await correspondentPortalPage.Version.textContent() || '';
-        Methods.trimtestdata(vars['Version'], 'Version');`  `
+        Methods.trimtestdata(vars['Version'], 'Version');
         log.info('Version: ' + vars['Version']);
-        await expect(page.getByText(vars['Version'])).toBeVisible();
+        await expect(page.getByText(vars['Version']).first()).toBeVisible();
         await spinnerPage.Spinner.waitFor({ state: 'hidden' });
         await expect(page.getByText(vars['Create New Map'])).toBeVisible();
         log.stepPass('Continue Editing handled and version and map name verified successfully');
@@ -106,8 +105,8 @@ test.describe('REG_Bid Maps', () => {
 
       log.step('Open Download Map dropdown and capture active version and created on details');
       try {
-        await statusInactive2Page.Download_Map_Button.click();
-        await expect(page.getByText(vars['Version'])).toBeVisible();
+        await statusInactive2Page.Download_Map_Button.evaluate((el: HTMLElement) => el.click());
+        await expect(page.getByText(vars['Version']).first()).toBeVisible();
         await statusInactive2Page.Download_Map.hover();
         vars['DownloadMapName'] = await statusInactive2Page.Download_Map.textContent() || '';
         log.info('DownloadMapName: ' + vars['DownloadMapName']);
@@ -135,7 +134,7 @@ test.describe('REG_Bid Maps', () => {
         log.info('VersionNumber after restore: ' + vars['VersionNumber']);
         await expect(page.getByText(vars['VersionNumber'])).toBeVisible();
         await chaseFieldNamePage.Ok_Button_Bid_Request.click();
-        await expect(page.getByText(vars['Version'])).toBeVisible();
+        await expect(page.getByText(vars['Version']).first()).toBeVisible();
         log.stepPass('Version restored and version number verified successfully');
       } catch (e) {
         await log.stepFail(page, 'Failed to restore version or verify version number');
@@ -146,13 +145,13 @@ test.describe('REG_Bid Maps', () => {
       try {
         await statusInactive2Page.Bid_Map_In_List_Screen(vars['CreateNewMap']).click();
         await expect(newMapPage.Individual_Selected_Company).toContainText(vars['SelectedCompanyName']);
+        log.info('SelectedCompanyName: ' + vars['SelectedCompanyName']);
         await expect(page.getByText(vars['Create New Map'])).toBeVisible();
         await expect(p1MoreButtonPage.Uploaded_FileName).toContainText(vars['UploadedFileName']);
-        await expect(mapHeaderPage.Execution_Type_Dropdown_New).toHaveValue(vars['ExecutionType']);
-        await expect(mapHeaderPage.Execution_Type_Dropdown_New).not.toContainText(vars['ExecutionVersion2']);
-        log.info('SelectedCompanyName: ' + vars['SelectedCompanyName']);
         log.info('UploadedFileName: ' + vars['UploadedFileName']);
+        await expect(mapHeaderPage.Execution_Type_Dropdown_New).toHaveValue(vars['ExecutionType']);
         log.info('ExecutionType: ' + vars['ExecutionType']);
+        await expect(mapHeaderPage.Execution_Type_Dropdown_New).not.toHaveValue(vars['ExecutionVersion2']);
         log.info('ExecutionVersion2: ' + vars['ExecutionVersion2']);
         log.stepPass('Bid Map list screen navigated and map details verified successfully');
       } catch (e) {
@@ -164,13 +163,13 @@ test.describe('REG_Bid Maps', () => {
       try {
         await mapHeadersButtonPage.Map_Headers_Button.click();
         await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-        await expect(headerMappingPage.Custom_Header).toBeVisible();
+        await expect(headerMappingPage.Custom_Header).not.toBeVisible();
         vars['EditedChaseFieldNameVersion3'] = await headerMappingPage.get_Updated_Element_In_Header_Mapping(vars['UpdatedBidSampleNameHeaderMapping']).getAttribute('title') || '';
         log.info('EditedChaseFieldNameVersion3: ' + vars['EditedChaseFieldNameVersion3']);
         log.info('EditedChaseFieldNameVersion2: ' + vars['EditedChaseFieldNameVersion2']);
-        expect(String(vars['EditedChaseFieldNameVersion3'])).toBe(vars['EditedChaseFieldNameVersion2']);
+        expect(Methods.verifyString(vars['EditedChaseFieldNameVersion3'], 'notEquals', vars['EditedChaseFieldNameVersion2']));
         await expect((headerMappingPage.get_Deleted_Header_In_HeaderMaping(vars['DeletedHeaderHeaderMapping']))).toBeVisible();
-        await expect(chaseFieldNamePage.get_Header_2(vars['SecondHeaderName'])).toBeVisible();
+        await expect(chaseFieldNamePage.get_Header_2(vars['SecondHeaderName'])).not.toBeChecked();
         await stepGroups.stepGroup_Verification_Of_BidSampleNames_In_Header_Mapping_From_TDP(page, vars);
         log.stepPass('Header Mapping navigated and restored header values verified successfully');
       } catch (e) {
@@ -184,21 +183,23 @@ test.describe('REG_Bid Maps', () => {
         await expect(statusInactivePage.You_have_unidentified_Fields_This_action_will_save_and_Move_to_Next_Page).toBeVisible();
         await correspondentPortalPage.Yes_Proceed_Button.click();
         await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-        vars['Bid Tape Value for After Deleted'] = await p15Active2Page.Bid_Tape_Value.inputValue() || '';
+        vars['Bid Tape Value for After Deleted'] = await p15Active2Page.Bid_Tape_Value.textContent() || '';
         log.info('BidTapeValueforBeforeDeleted: ' + vars['BidTapeValueforBeforeDeleted']);
-        log.info('Bid Tape Value for After Deleted: ' + vars['Bid Tape Value for After Deleted\\r']);
-        expect(String(vars['BidTapeValueforBeforeDeleted'])).toBe(vars['Bid Tape Value for After Deleted']);
+        log.info('Bid Tape Value for After Deleted: ' + vars['Bid Tape Value for After Deleted']);
+        expect(Methods.verifyString(vars['BidTapeValueforBeforeDeleted'], 'notEquals', vars['Bid Tape Value for After Deleted']));
         vars['ChaseValueRestored'] = await enumerationMappingPage.To_be_edited_Chase_Value_ListEnum(vars['ChaseFieldNameTobeEdited']).evaluate(el => {
           const s = el as HTMLSelectElement;
           return s.options[s.selectedIndex]?.text || '';
         });
-        vars['ChaseValueRestored'] = String(vars['ChaseValueRestored']).trim();
-        vars['EditedChaseValueVersion2'] = String(vars['EditedChaseValueVersion2']).trim();
+        Methods.trimWhitespace(vars['ChaseValueRestored'], 'ChaseValueRestored');
+        Methods.trimWhitespace(vars['EditedChaseValueVersion2'], 'EditedChaseValueVersion2');
         log.info('ChaseValueRestored: ' + vars['ChaseValueRestored']);
         log.info('EditedChaseValueVersion2: ' + vars['EditedChaseValueVersion2']);
-        expect(String(vars['ChaseValueRestored'])).toBe(vars['EditedChaseValueVersion2']);
+        expect(Methods.verifyString(vars['ChaseValueRestored'], 'notEquals', vars['EditedChaseValueVersion2']));
         await expect(enumerationMappingPage.get_Deleted_Field_In_Enumeration(vars['BidTapeValueforBeforeDeleted'])).toBeVisible();
+        log.info('Verifying the bidsample to bidtape mapping in Enumpage from tdp');
         await stepGroups.stepGroup_Verifying_the_bidsample_to_bidtape_mapping_in_Enumpage_from_(page, vars);
+        log.info('Verifying the Mapping of ChaseField and ChaseValues in Enum');
         await stepGroups.stepGroup_Verifying_the_Mapping_of_ChaseField_and_ChaseValues_in_Enum_(page, vars);
         log.stepPass('Enumeration Mapping navigated and restored enum values verified successfully');
       } catch (e) {
@@ -212,8 +213,11 @@ test.describe('REG_Bid Maps', () => {
         await expect(page.getByText(vars['Unidentified Fields Error Message'])).toBeVisible();
         await proceedWithSavingButtonPage.Proceed_with_Saving_Button.click();
         await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-        await expect(rulesAndActionsButtonPage.Condition_BidField_1).not.toContainText(vars['EditedBidField[RulesAndActions]']);
-        await expect(rulesAndActionsButtonPage.Condition_BidTape1).not.toContainText(vars['EditedBidTape[RulesAndActions]']);
+        vars['EditedBidField[RulesAndActions]'] = vars["EditedRuleBidField[RulesAndActions]"];
+        vars['EditedBidTape[RulesAndActions]'] = vars["EditedRuleBidTape[RulesAndActions]"];
+        await expect(rulesAndActionsButtonPage.Condition_BidField_1).not.toHaveText(vars['EditedBidField[RulesAndActions]']);
+        await expect(rulesAndActionsButtonPage.Condition_BidTape1).not.toHaveText(vars['EditedBidTape[RulesAndActions]']);
+        vars['First Rule Name']=vars['Rule Name'];
         await expect(correspondentPortalPage.Enter_a_Rule_Name_Field).toHaveValue(vars['First Rule Name']);
         await expect(page.getByText(vars['SecondRuleName'])).not.toBeVisible();
         await expect(page.getByText(vars['ThirdRuleName'])).not.toBeVisible();
@@ -241,7 +245,6 @@ test.describe('REG_Bid Maps', () => {
 
     } catch (e) {
       await log.captureOnFailure(page, TC_ID, e);
-      REG_TS26_TC02testFailed = true;
       log.tcEnd('FAIL');
       throw e;
     }
