@@ -84,12 +84,12 @@ export class CustomerPermissionPage {
     return this.page.locator("//td[@data-title=\"Company Name\" and text()=\" Freedom A4187 \"]/..//td[@data-title=\"Standard\"]//div");
   }
 
-  get Individual_Column_Header_Data(): Locator {
-    return this.page.locator("((//thead//th)[position() >1 and position() <= 7])[$|Count1|]");
+  Individual_Column_Header_Data(Count1: String): Locator {
+    return this.page.locator(`((//thead//th)[position() >1 and position() <= 6])[${Count1}]`);
   }
 
-  get IndividualCellDataUI(): Locator {
-    return this.page.locator("(//tbody//tr[$|RowIndexUI|]//td[position() > 1 and position() <= 7])[$|Count|]");
+  IndividualCellDataUI(RowIndexUI: String, Count: String): Locator {
+    return this.page.locator(`(//tbody//tr[${RowIndexUI}]//td[position() > 1 and position() <= 7])[${Count}]`);
   }
 
   get Last_Modified_Data_List(): Locator {
