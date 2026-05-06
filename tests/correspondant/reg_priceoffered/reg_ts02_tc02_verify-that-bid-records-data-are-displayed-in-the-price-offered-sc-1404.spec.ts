@@ -1,5 +1,4 @@
 import { test, expect } from '@playwright/test';
-import * as stepGroups from '../../../src/helpers/step-groups';
 import { BidRequestDetailsPage } from '../../../src/pages/correspondant/bid-request-details';
 import { BidRequestPage } from '../../../src/pages/correspondant/bid-request';
 import { BidRequestsPage } from '../../../src/pages/correspondant/bid-requests';
@@ -10,13 +9,14 @@ import { AddonHelpers } from '@helpers/AddonHelpers';
 import { Logger as log } from '@helpers/log-helper';
 import { testDataManager } from 'testdata/TestDataManager';
 import { APP_CONSTANTS as appconstants } from '../../../src/constants/app-constants';
+import { runPrereq_1389 } from '../../../src/helpers/prereqs/prereq-1389';
 
 
 const TC_ID = 'REG_TS02_TC02';
 const TC_TITLE = 'Verify that bid records data are displayed in the Price Offered screen once their status is updated to "Price Offered"';
 
 
-test.describe('Commitment List - TS_2', () => {
+test.describe('Price Offered', () => {
 
   let vars: Record<string, string> = {};
   let bidRequestDetailsPage: BidRequestDetailsPage;
@@ -30,7 +30,7 @@ test.describe('Commitment List - TS_2', () => {
   const profileName = 'Price Offered';
 
   test.beforeEach(async ({ page }) => {
-    vars = {};
+    await runPrereq_1389(page, vars);
     bidRequestDetailsPage = new BidRequestDetailsPage(page);
     bidRequestPage = new BidRequestPage(page);
     bidRequestsPage = new BidRequestsPage(page);
@@ -46,6 +46,7 @@ test.describe('Commitment List - TS_2', () => {
       log.step('search for bid request');
       try {
         await expect(bidRequestsPage.Search_by_Bid_Request_ID_Field).toBeVisible();
+        log.info('Request ID Details: '+vars['RequestIDDetails']);
         testDataManager.updateProfileData(profileName, { 'RequestIDCreated2ndScenario': vars['RequestIDDetails'] });
         await bidRequestsPage.Search_by_Bid_Request_ID_Field.fill(vars['RequestIDDetails']);
         await page.keyboard.press('Enter');
@@ -65,7 +66,6 @@ test.describe('Commitment List - TS_2', () => {
         await spinnerPage.Spinner.waitFor({ state: 'hidden' });
         await expect(page.getByText("Bid Request Details")).toBeVisible();
         vars['CCode(bid request details)'] = await correspondentPortalPage.CCode_Valuebid_request_details.first().textContent() || '';
-        // Methods.trimtestdata(vars['CCode(bid request details)'], 'CCode(bid request details)');
         log.info('CCode: ' + vars['CCode(bid request details)']);
         vars['Company(bid request details)'] = await bidRequestDetailsPage.Company_ValueBid_Request_Details.first().textContent() || '';
         Methods.removeCharactersFromPosition(vars['Company(bid request details)'], '1', '1', 'Company(bid request details)');
