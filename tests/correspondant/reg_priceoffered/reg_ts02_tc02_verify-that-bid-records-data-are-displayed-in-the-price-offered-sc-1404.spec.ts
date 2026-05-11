@@ -16,7 +16,7 @@ const TC_ID = 'REG_TS02_TC02';
 const TC_TITLE = 'Verify that bid records data are displayed in the Price Offered screen once their status is updated to "Price Offered"';
 
 
-test.describe('Price Offered', () => {
+test.describe('REG_PriceOffered', () => {
 
   let vars: Record<string, string> = {};
   let bidRequestDetailsPage: BidRequestDetailsPage;

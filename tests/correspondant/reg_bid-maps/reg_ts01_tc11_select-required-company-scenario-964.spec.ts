@@ -1,6 +1,4 @@
-// [POM-APPLIED]
 import { test, expect } from '@playwright/test';
-import path from 'path';
 import * as stepGroups from '../../../src/helpers/step-groups';
 import { BidRequestPage } from '../../../src/pages/correspondant/bid-request';
 import { ChaseFieldNamePage } from '../../../src/pages/correspondant/chase-field-name';
@@ -10,6 +8,15 @@ import { SpinnerPage } from '../../../src/pages/correspondant/spinner';
 import { StatusInactive2Page } from '../../../src/pages/correspondant/status-inactive--2';
 import { StatusInactive3Page } from '../../../src/pages/correspondant/status-inactive--3';
 import { StatusInactivePage } from '../../../src/pages/correspondant/status-inactive-';
+import { Logger as log } from '@helpers/log-helper';
+import { ENV } from '@config/environments';
+import { AddonHelpers } from '@helpers/AddonHelpers';
+import { testDataManager } from 'testdata/TestDataManager';
+import { APP_CONSTANTS as appconstants } from '../../../src/constants/app-constants';
+
+
+const TC_ID = 'REG_TS01_TC11';
+const TC_TITLE = 'Select Required Company Scenario';
 
 test.describe('REG_Bid Maps', () => {
   let vars: Record<string, string> = {};
@@ -21,9 +28,21 @@ test.describe('REG_Bid Maps', () => {
   let statusInactive2Page: StatusInactive2Page;
   let statusInactive3Page: StatusInactive3Page;
   let statusInactivePage: StatusInactivePage;
+  let Methods: AddonHelpers;
+  const credentials = ENV.getCredentials('internal');
+
+  const profileName = 'Bid_Maps';
+  const profile = testDataManager.getProfileByName(profileName);
+
+
+  const profileNameCompanyNames = 'Company names from Customer permissions';
+  const profile2 = testDataManager.getProfileByName(profileNameCompanyNames);
+  const dataList = profile2?.data as Record<string, any>[];
+
 
   test.beforeEach(async ({ page }) => {
-    vars = {};
+    vars['Username'] = credentials.username;
+    vars['Password'] = credentials.password;
     bidRequestPage = new BidRequestPage(page);
     chaseFieldNamePage = new ChaseFieldNamePage(page);
     correspondentPortalPage = new CorrespondentPortalPage(page);
@@ -32,156 +51,137 @@ test.describe('REG_Bid Maps', () => {
     statusInactive2Page = new StatusInactive2Page(page);
     statusInactive3Page = new StatusInactive3Page(page);
     statusInactivePage = new StatusInactivePage(page);
+    Methods = new AddonHelpers(page, vars);
   });
 
-  test('REG_TS01_TC11_Select Required Company Scenario', async ({ page }) => {
-    const testData: Record<string, string> = {
-  "All Company Name": "",
-  "UniqueColHeader/Enum": "TsSearchUniqueColHeaderEnum",
-  "Save and Move to Next Page": "Save and Move to Next Page",
-  "CSS Attribute": "2px solid rgb(227, 82, 5)",
-  "Used Headers": "Show Used Headers",
-  "2-4 Unit": "2-4 Unit",
-  "Search Map Input": "Deepika Aug1",
-  "Chase_Field_Name1": "Mortgage Type",
-  "Rule Name": "Rule 1",
-  "Unidentified Headers": "Show Unidentified Headers",
-  "Operations": "GREATER",
-  "BidFields.": "DTI",
-  "Search Fields": "hii",
-  "Operator 2 Symbol": ">",
-  "Time Interval": "05",
-  "Unidentified Enumerations": "Show Unidentified Enumerations",
-  "Show All Enumerations": "Show All Enumerations",
-  "Unidentfied and Save Message": "You have unidentified fields.  This action will save the changes and Move to Next Page.",
-  "BidField": "FICO Score",
-  "Search_Map": "Deepika Aug",
-  "CustomHeader": "Header 02",
-  "New Rule Name": "New Rule",
-  "Assigned Companies1": "Wik1C BeuLD MoJbr CoEmy LLpoJ",
-  "Unique Chase Value1": "AndoverBirchDrive1",
-  "Company name 2": "Wik1C BeuLD MoJbr CoEmy LLpoJ  - A2964",
-  "Bid Field": "Base Loan Amount",
-  "Chase  Values": "False",
-  "ChaseValue": "Attached",
-  "Unused Enumerations": "Show Unused Enumerations",
-  "Reason For Cancellation": "To Be Cancelled",
-  "Reason For Deletion": "To Be Deleted",
-  "ChaseValues.": "False",
-  "Chase_Field_Name": "Mortgage Limit",
-  "Header Mapping": "Show All Headers",
-  "Chase Field Name": "Amortization Type",
-  "ChaseFieldName": "Appraised Value",
-  "UniqueBidEnumTapeValue": "852345",
-  "BidEnumeratedTapeValue": "800",
-  "Chase Fields Name": "Amortization Type, Appraised Value, Attachment Type, Aus List, Borrower First Name, Borrower Last Name, Buy Down, CLTV, City, DTI, Fico, First Time Home Buyer, First Time Homebuyer Credit Fee Waiver, Impound Types, Income Ami Ratio, Ineligible, Interest Only, LTV, Loan Amount, Loan Number, Loan Purpose, Loan Term, Monthly Income, Mortgage Limit, Mortgage Types, Note Rate, Number Of Unit, Occupancy Type, Product Name, Property Type, Property Valuation Type, Purchase Price, State, Street, Subordinate Loan Amount, TPO, Total Loan Amount, Unpaid Principal Balance, Zip",
-  "Unique Chase Field Name": "Street",
-  "Chase Value": "Fixed rate",
-  "Search_Input": "TS_SEARCHMAP21",
-  "Unused Headers": "Show Unused Headers",
-  "Upload File Text Verification": "Drag and drop files here or click to browse. Allowed formats: .xls,.xlsx,.csv,.txt",
-  "Bid Enumerated Tape Value": "80",
-  "Search Field Company Name": "Wik1C",
-  "Create Map": "Testsigma_04/03/2025/",
-  "Custom Header": "Header01",
-  "Investment (NOO)": "Investment (NOO)",
-  "PropertyValuation": "1004Desktop",
-  "ImportRuleName": "TEst",
-  "Action Save message": "This action will save the changes and Move to Next Page",
-  "SearchFields": "Hii",
-  "Start Time in Minutes": "31",
-  "Execution Type1": "STANDARD",
-  "BidEnumeratedTapeValue - Block 2": "Fixed",
-  "Execution Type": "CHASE_DIRECT",
-  "UniqueColumnHeaderSearch": "TsSearchUniqueColumnHeader",
-  "Start Time in Hour": "8",
-  "UniqueWhenBidFieldSearch": "TsSearchWhenBidField",
-  "WhenBidFieldName - Block 2": "Amortization Type",
-  "EmptyChaseFieldName": "Select",
-  "WhenBidFieldValue-3": "Appraised Value",
-  "Unique Chase Value": "AndoverBirchDrive",
-  "BidFields": "CLTV",
-  "Loan Purpose": "Refinance (R&T)",
-  "Advanced Search": "Fico",
-  "ChaseFieldNames": "Aus List",
-  "NO of Batches": "05",
-  "CompanyName3": "American Pacific  - A4257",
-  "Operator": "LESS_OR_EQUAL",
-  "SelectingChaseFieldName": "7",
-  "UpdatedBidEnumeratedTapeValue": "SAIKAT_18_FEB_002",
-  "Search Input": "Test",
-  "Company name 1": "Freedom",
-  "Operator 3": "CONTAINS",
-  "Expected Company Name": "Freedom",
-  "Operation2": "GREATER",
-  "Operation1": "LESS",
-  "Operator - Block 2": "GREATER",
-  "Bid Tape Value": "Fixed",
-  "Search Field": "free",
-  "Created Map Id": "Testsigma_05/07/2025/20:55:58",
-  "Rule Name(Updated)": "UP Rule 1",
-  "Operator 1 Symbol": "<",
-  "UniqueChaseValueSearch": "TsSearchChaseValue",
-  "Import Rule": "Testsigma_02/23/2026/01:02:39",
-  "Duplicated Rule Name": "Rule 2",
-  "Condition Bid Field": "FICO Score",
-  "BidEnumeraedTapeValue - 3": "425000",
-  "Chasevalues": "Variable rate",
-  "DeleteId": "Testsigma_05/05/2025/16:23:13",
-  "UpdatedWhenBidFieldName": "Correspondent Loan Number",
-  "Unidentified fields Message": "You have unidentified fields do you want to proceed further.",
-  "UniqueBidEnumTapeSearch": "TsSearchBidEnumTape",
-  "Unidentified Fields Error Message": "You have unidentified fields.",
-  "UniqueRuleNameSearch": "TsSearchUniqueRuleName"
-}; // Profile: "Bid_Maps", row: 0
+  test(`${TC_ID} - ${TC_TITLE}`, async ({ page }) => {
+    log.tcStart(TC_ID, TC_TITLE);
 
-    await stepGroups.stepGroup_Login_to_CORR_Portal(page, vars);
-    await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-    vars["count"] = "1";
-    await correspondentPortalPage.Administration_Menu.click();
-    await correspondentPortalPage.GeneralSettings_Menu.click();
-    await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-    await customerPermissionPage.CustomerPermission_Menu.click();
-    vars["CompanyNames"] = String(await statusInactivePage.Company_Names.count());
-    for (let dataIdx = -1; dataIdx <= parseInt(vars["CompanyNames"]); dataIdx++) {
-      vars["All_Company_Name"] = await chaseFieldNamePage.Individual_Company_in_Customer_permission.textContent() || '';
-      // Write to test data profile: "All Company Name" = vars["All_Company_Name"]
-      vars["count"] = (parseFloat(String("1")) + parseFloat(String(vars["count"]))).toFixed(0);
-    }
-    // await page.waitForLoadState('networkidle');
-    await correspondentPortalPage.Administration_Menu.click();
-    await correspondentPortalPage.Bid_Maps_Menu.click();
-    await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-    await expect(page.getByText("Mappings")).toBeVisible();
-    await correspondentPortalPage.Add_New_Mapping_Button.click();
-    vars["Create New Map"] = new Date().toLocaleDateString('en-US') /* format: dd/MM/yyyy/HH:mm:ss */;
-    vars["Create New Map"] = "Testsigma_" + vars["Create New Map"];
-    await correspondentPortalPage.Create_New_Map_Field.fill(vars["Create New Map"]);
-    await correspondentPortalPage.Create_Button.click();
-    await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-    await correspondentPortalPage.Select_Companys_Dropdown.click();
-    for (let dataIdx = -1; dataIdx <= parseInt(vars["CompanyNames"]); dataIdx++) {
-      vars["Companyname"] = String(testData["All Company Name"]).split("-")["1"] || '';
-      vars["Companyname"] = String(vars["Companyname"]).trim();
-      await expect(chaseFieldNamePage.After_entering_Company_name_is_displayed).toContainText(vars["Companyname"]);
-    }
-    await expect(bidRequestPage.Bid_Mapping_IdSearch_Input_box).toBeVisible();
-    vars["Companyname"] = await statusInactive2Page.Selecting_Companies_From_Dropdown.inputValue() || '';
-    await bidRequestPage.Bid_Mapping_IdSearch_Input_box.fill(vars["Companyname"]);
-    await expect(statusInactive3Page.Searched_Company_Name).toBeVisible();
-    vars["After entering company name_count"] = String(await chaseFieldNamePage.Company_Names_In_DropdownBidRequest.count());
-    await correspondentPortalPage.Cross_In_Search_Field.click();
-    await expect(bidRequestPage.Bid_Mapping_IdSearch_Input_box).toHaveValue('');
-    vars["After Clearing company name_count"] = String(await chaseFieldNamePage.Company_Names_In_DropdownBidRequest.count());
-    expect(String(vars["After entering company name_count"])).toBe(vars["After Clearing company name_count"]);
-    vars["Number"] = String(Math.floor(Math.random() * (20 - 1 + 1)) + 1);
-    for (let dataIdx = parseInt(vars["Number"]); dataIdx <= parseInt(vars["Number"]); dataIdx++) {
-      vars["Companyname"] = String(testData["All Company Name"]).trim();
-      await bidRequestPage.Bid_Mapping_IdSearch_Input_box.fill(vars["Companyname"]);
-      await chaseFieldNamePage.Company_name_for_Select_Companys.check();
-      await correspondentPortalPage.Apply_Selected.click();
-      await expect(statusInactivePage._1_Selected_for_Companys).toBeVisible();
-      await expect(chaseFieldNamePage.After_entering_Company_name_is_displayed).toBeVisible();
+    try {
+      if (profile && profile.data) {
+        vars['All Company Name'] = profile.data[0]['All Company Name'];
+        vars['UniqueColHeader/Enum'] = profile.data[0]['UniqueColHeader/Enum'];
+        vars['Save and Move to Next Page'] = profile.data[0]['Save and Move to Next Page'];
+      }
+      log.step('Login to CORR Portal');
+      try {
+        await stepGroups.stepGroup_Login_to_CORR_Portal(page, vars);
+        await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+        log.stepPass('Login to CORR Portal successful');
+      } catch (e) {
+        await log.stepFail(page, 'Login to CORR Portal failed');
+        throw e;
+      }
+
+      log.step('Navigate to Customer Permission and capture all company names');
+      try {
+        vars['count'] = appconstants.ONE;
+        await correspondentPortalPage.Administration_Menu.click();
+        await correspondentPortalPage.GeneralSettings_Menu.click();
+        await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+        await customerPermissionPage.CustomerPermission_Menu.click();
+        vars['CompanyNamesCount'] = String(await statusInactivePage.Company_Names.count());
+        log.info('CompanyNames count: ' + vars['CompanyNamesCount']);
+        while (parseFloat(String(vars["count"])) <= parseFloat(String(vars["CompanyNamesCount"]))) {
+          vars['All_Company_Name'] = await chaseFieldNamePage.Individual_Company_in_Customer_permission(vars['count']).textContent() || '';
+          log.info('Individual company name: ' + vars['All_Company_Name']);
+          testDataManager.updatePartialProfileDataByDataIndex(profileNameCompanyNames, {
+            'All Company Name': vars["All_Company_Name"],
+          }, vars['count']);
+          Methods.performArithmetic(vars["count"], 'ADDITION', appconstants.ONE, "count", 0);
+
+        }
+        log.stepPass('Navigated to Customer Permission and company names captured successfully');
+      } catch (e) {
+        await log.stepFail(page, 'Failed to navigate to Customer Permission or capture company names');
+        throw e;
+      }
+
+      log.step('Navigate to Bid Maps and create a new mapping');
+      try {
+        await correspondentPortalPage.Administration_Menu.click();
+        await correspondentPortalPage.Bid_Maps_Menu.click();
+        await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+        await expect(page.getByRole('heading', { name: 'Mappings' })).toBeVisible();
+        await correspondentPortalPage.Add_New_Mapping_Button.click();
+        Methods.getCurrentTimestamp(appconstants.DATE_FORMAT_SLASH, 'CurrentDate', appconstants.ASIA_KOLKATA); /* format: dd/MM/yyyy/HH:mm:ss */;
+        Methods.concatenate(appconstants.Testsigma_, vars['CurrentDate'], 'Create New Map');
+        await correspondentPortalPage.Create_New_Map_Field.fill(vars["Create New Map"]);
+        log.info('Create New Map: ' + vars['Create New Map']);
+        await expect(correspondentPortalPage.Create_Button).toBeEnabled();
+        await correspondentPortalPage.Create_Button.click();
+        await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+        log.stepPass('Navigated to Bid Maps and new mapping created successfully');
+      } catch (e) {
+        await log.stepFail(page, 'Failed to navigate to Bid Maps or create new mapping');
+        throw e;
+      }
+
+      log.step('Open Select Companies dropdown and verify all company names are displayed');
+      try {
+
+        await correspondentPortalPage.Select_Companys_Dropdown.click();
+        for (let i = 0; i < parseInt(vars['CompanyNamesCount']); i++) {
+          log.info('Testdata Iteration: ' + i)
+          vars['All Company Name'] = dataList[i]['All Company Name'];
+          Methods.splitBySpecialChar(vars['All Company Name'], '-', '0', 'Companyname');
+          Methods.trimtestdata(vars['Companyname'], 'Companyname');
+          await expect(chaseFieldNamePage.After_entering_Company_name_is_displayed(vars['Companyname']).first()).toContainText(vars['Companyname']);
+        }
+        log.info('Companyname (from split): ' + vars['Companyname']);
+        log.stepPass('Select Companies dropdown opened and all company names verified successfully');
+      } catch (e) {
+        await log.stepFail(page, 'Failed to open Select Companies dropdown or verify company names');
+        throw e;
+      }
+
+      log.step('Search for company, verify count and clear search field');
+      try {
+        await expect(bidRequestPage.Bid_Mapping_IdSearch_Input_box).toBeVisible();
+        vars['Companyname'] = await statusInactive2Page.Selecting_Companies_From_Dropdown.textContent() || '';
+        log.info('Companyname (search): ' + vars['Companyname']);
+        await bidRequestPage.Bid_Mapping_IdSearch_Input_box.fill(vars['Companyname']);
+        await expect(statusInactive3Page.Searched_Company_Name(vars['Companyname'])).toBeVisible();
+        vars['After entering company name_count'] = String(await chaseFieldNamePage.Company_Names_In_DropdownBidRequest.count());
+        log.info('After entering company name count: ' + vars['After entering company name_count']);
+        await correspondentPortalPage.Cross_In_Search_Field.click();
+        await expect(bidRequestPage.Bid_Mapping_IdSearch_Input_box).toHaveValue('');
+        vars['After Clearing company name_count'] = String(await chaseFieldNamePage.Company_Names_In_DropdownBidRequest.count());
+        log.info('After clearing company name count: ' + vars['After Clearing company name_count']);
+        expect(Methods.verifyComparison(vars['After entering company name_count'], '<', vars['After Clearing company name_count']));
+        log.stepPass('Company search verified and search field cleared successfully');
+      } catch (e) {
+        await log.stepFail(page, 'Failed to search for company or verify count after clearing search');
+        throw e;
+      }
+
+      log.step('Select a random company and verify selection');
+      try {
+        Methods.generateRandomInteger(1, 20, 'Number');
+        log.info('Random Number: ' + vars['Number']);
+        for (let i = parseInt(vars['Number']); i <= parseInt(vars['Number']); i++) {
+          vars['All Company Name'] = dataList[i]['All Company Name'];
+          Methods.trimtestdata(vars['Companyname'], 'Companyname');
+          log.info('Companyname (selected): ' + vars['Companyname']);
+          await bidRequestPage.Bid_Mapping_IdSearch_Input_box.fill(vars['Companyname']);
+          await chaseFieldNamePage.Company_name_for_Select_Companys(vars['Companyname']).check();
+          await expect(correspondentPortalPage.Apply_Selected).toBeEnabled();
+          await correspondentPortalPage.Apply_Selected.click();
+          await expect(statusInactivePage._1_Selected_for_Companys).toBeVisible();
+          await expect(chaseFieldNamePage.After_entering_Company_name_is_displayed(vars['Companyname']).first()).toBeVisible();
+        }
+        log.stepPass('Random company selected and verified successfully');
+      } catch (e) {
+        await log.stepFail(page, 'Failed to select random company or verify selection');
+        throw e;
+      }
+
+      log.tcEnd('PASS');
+
+    } catch (e) {
+      await log.captureOnFailure(page, TC_ID, e);
+      log.tcEnd('FAIL');
+      throw e;
     }
   });
 });

@@ -24,8 +24,6 @@ test.describe('Commitment List - TS_2', () => {
 
 
   test.beforeEach(async ({ page }) => {
-    test.setTimeout(1_200_000);
-    vars = {};
     await runPrereq_1394(page, vars);
     bidRequestsPage = new BidRequestsPage(page);
     commitmentListPage = new CommitmentListPage(page);
