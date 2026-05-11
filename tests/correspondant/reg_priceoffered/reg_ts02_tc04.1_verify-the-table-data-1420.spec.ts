@@ -19,7 +19,7 @@ const standardProfile = testDataManager.getProfileByName(standardProfileName);
 const chaseProfileName = 'Chase Direct Loan Details Table';
 const chaseProfile = testDataManager.getProfileByName(chaseProfileName);
 
-test.describe('REG_Bid Maps', () => {
+test.describe('REG_PriceOffered', () => {
   let vars: Record<string, string> = {};
   let bidRequestsPage: BidRequestsPage;
   let correspondentPortalPage: CorrespondentPortalPage;

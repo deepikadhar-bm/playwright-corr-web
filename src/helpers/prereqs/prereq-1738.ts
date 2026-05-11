@@ -10,8 +10,6 @@ import { AddonHelpers } from '../AddonHelpers';
 import { Logger as log } from '../log-helper';
 import { APP_CONSTANTS as appconstants } from '../../constants/app-constants';
 import { testDataManager } from 'testdata/TestDataManager';
-import * as stepGroups from '../../../src/helpers/step-groups';
-import { ENV } from '@config/environments';
 
 
 const TC_ID = 'PREREQ_1738(REG_TS01_TC01)';
@@ -25,10 +23,6 @@ export async function runPrereq_1738(page: Page, vars: Record<string, string>): 
   const priceOfferedPage = new PriceOfferedPage(page);
   const spinnerPage = new SpinnerPage(page);
   const Methods = new AddonHelpers(page, vars);
-  const crederntials = ENV.getCredentials('internal');
-
-  vars["Username"] = crederntials.username;
-  vars["Password"] = crederntials.password;
 
 
   log.tcStart(TC_ID, TC_TITLE);

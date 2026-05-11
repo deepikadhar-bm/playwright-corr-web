@@ -14,7 +14,7 @@ import { Logger as log } from '@helpers/log-helper';
 const TC_ID = 'REG_TS02_TC04';
 const TC_TITLE = 'Verify the table data';
 
-test.describe('REG_Bid Maps', () => {
+test.describe('REG_PriceOffered', () => {
   let vars: Record<string, string> = {};
   let bidRequestDetailsPage: BidRequestDetailsPage;
   let bidRequestsPage: BidRequestsPage;

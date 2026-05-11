@@ -35,8 +35,8 @@ export class ChaseFieldNamePage {
     return this.page.locator("(//h5[@class=\"modal-title fw-semibold\"]/../../..//td[@data-title=\"Added On\"])[3]");
   }
 
-  get After_entering_Company_name_is_displayed(): Locator {
-    return this.page.locator("//span[contains(text(),\"$|Companyname|\")]");
+  After_entering_Company_name_is_displayed(Companyname:string): Locator {
+    return this.page.locator(`//span[contains(text(),\"${Companyname}\")]`);
   }
 
   get All_Companies_DropdownDash_Board(): Locator {
@@ -135,8 +135,8 @@ export class ChaseFieldNamePage {
     return this.page.locator("//input[@id='commitCreationCutOffTime']");
   }
 
-  get Company_name_for_Select_Companys(): Locator {
-    return this.page.locator("//span[contains(text(),\"$|Companyname|\")]/../..//input[@type=\"checkbox\"]");
+  Company_name_for_Select_Companys(Companyname:string): Locator {
+    return this.page.locator(`//span[contains(text(),\"${Companyname}\")]/../..//input[@type=\"checkbox\"]`);
   }
 
   get Cross_Button_in_Select_companys(): Locator {

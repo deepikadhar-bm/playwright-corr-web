@@ -17,7 +17,7 @@ const TC_ID = 'REG_TS02_TC03';
 const TC_TITLE = 'Verify the data present in the summary';
 
 
-test.describe('Price Offered', () => {
+test.describe('REG_PriceOffered', () => {
 
   let vars: Record<string, string> = {};
   let bidRequestsPage: BidRequestsPage;

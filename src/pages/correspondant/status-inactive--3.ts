@@ -11,8 +11,8 @@ export class StatusInactive3Page {
     return this.page.locator("//input[@placeholder=\"Search / Filter\"]");
   }
 
-  get Searched_Company_Name(): Locator {
-    return this.page.locator("//div[contains(@class,\"cursor-pointer py\")]/../../..//span[text()=\"$|Companyname|\"]");
+  Searched_Company_Name(Companyname:string): Locator {
+    return this.page.locator(`//div[contains(@class,\"cursor-pointer py\")]/../../..//span[text()=\"${Companyname}\"]`);
   }
 
   get Selected1_Companys_Dropdown(): Locator {
