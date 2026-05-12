@@ -903,13 +903,12 @@ export async function stepGroup_Unchecking_the_CheckBox_in_Header_Mapping(page: 
  */
 export async function stepGroup_Add_New_Header(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
-  const testData: Record<string, string> = {}; // TODO: Load from test data profile
   await CorrPortalElem.Add_New_Header_Button.click();
-  await CorrPortalElem.Custom_Header_Field.fill(testData["CustomHeader"]);
-  await CorrPortalElem.Chase_Field_Name.selectOption({ label: testData["ChaseFieldNames"] });
+  await CorrPortalElem.Custom_Header_Field.type(vars["CustomHeader"]);
+  await CorrPortalElem.CLM_Field_Name.selectOption({ label: vars["ChaseFieldNames"] });
   await CorrPortalElem.Insert_Header_Button.click();
   await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
-  await expect(page.getByText(testData["CustomHeader"])).toBeVisible();
+  await expect(page.getByText(vars["CustomHeader"])).toBeVisible();
 }
 
 /**
@@ -1578,24 +1577,25 @@ export async function stepGroup_Advance_Search_For_Actions(page: import('@playwr
  */
 export async function stepGroup_Create_NewMap(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
-  await page.waitForLoadState('networkidle');
+  const correspondentPortalPage = new CorrespondentPortalPage(page);
+  const Methods = new AddonHelpers(page, vars);
   await stepGroup_Navigation_to_Customer_Permission(page, vars);
   await CorrPortalElem.Administration_Menu.click();
   await CorrPortalElem.Bid_Maps_Menu.click();
   await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
   await CorrPortalElem.Add_New_Mapping_Button.click();
-  vars["SearchMapNumber"] = String(Math.floor(Math.random() * (50 - 22 + 1)) + 22);
-  vars["SearchFieldInputMap"] = "TS_SEARCHMAP" + vars["SearchMapNumber"];
+  Methods.generateRandomNumber('2', "SearchMapNumber");
+  Methods.concatenate(appconstants.TS_SEARCHMAP, vars["SearchMapNumber"], 'SearchFieldInputMap');
   await CorrPortalElem.Map_Name_Field_in_Bid_Maps.fill(vars["SearchFieldInputMap"]);
-  await expect(CorrPortalElem.Compare_Button).toBeVisible();
+  await expect(CorrPortalElem.Compare_Button).toBeEnabled();
   await CorrPortalElem.Compare_Button.click();
   await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
-  // [DISABLED] Verify that the element Bid Maps Name displays text contains TS_SEARCH and With Scrollable FALSE
-  // await expect(CorrPortalElem.Bid_Maps_Name).toContainText("TS_SEARCH");
   await CorrPortalElem.Select_Companys_Dropdown.click();
-  await CorrPortalElem.Required_Company_s_Name_Value.click();
+  await CorrPortalElem.Required_Company_s_Name_Value(vars['Companyname']).first().click();
+  await expect(CorrPortalElem.Apply_Selected).toBeEnabled();
   await CorrPortalElem.Apply_Selected.click();
-  await CorrPortalElem.Upload_File.setInputFiles(path.resolve(__dirname, 'test-data', "DeepikaAugBidQA.xlsx"));
+  await correspondentPortalPage.Execution_Type_Dropdown.selectOption({ value: appconstants.EXECUTION_TYPE_STANDARD });
+  await uploadFile(page, CorrPortalElem.Upload_File, fileconstants.BID_QA_FILE_COMMON);
   await CorrPortalElem.Map_Headers_Button.click();
   await expect(CorrPortalElem.This_action_will_save_the_changes_and_Move_to_Next_Page).toBeVisible();
   await CorrPortalElem.Proceed_with_Saving_Button.click();
@@ -1611,8 +1611,8 @@ export async function stepGroup_Add_Actions_In_Rules_and_Actions(page: import('@
   const CorrPortalElem = new CorrPortalPage(page);
   await CorrPortalElem.Chase_Field_Name.selectOption({ index: parseInt("2") });
   await CorrPortalElem.Chase_Value.click();
-  await CorrPortalElem.Chase_Value.click();
-  await CorrPortalElem.Search_Field_in_Add_Condition.fill("TS_SEARCH");
+  await CorrPortalElem.Chase_Value_Field.click();
+  await CorrPortalElem.Search_Field_in_Add_Condition.fill(appconstants.TS_SEARCH);
   await CorrPortalElem.Select_Button.click();
   vars["ChaseFiledNameonAddActions"] = await CorrPortalElem.Add_Actions_Chase_Field_Name.evaluate(el => { const s = el as HTMLSelectElement; return s.options[s.selectedIndex]?.text || ''; });
   vars["ChaseFiledNameonAddActions"] = await CorrPortalElem.Action_Chase_Field_Name_1.inputValue() || '';
@@ -1700,35 +1700,47 @@ export async function stepGroup_Verifying_ChaseValue_In_EnumerationMapping(page:
  */
 export async function stepGroup_Verification_of_ExportList_from_UI_to_Excel(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
-  await CorrPortalElem.Export_List.click();
-  await page.waitForTimeout(5000);
-  vars["FileName"] = vars['_lastDownloadPath'] || '';
-  // [DISABLED] Copy the latest downloaded file and save the file path in runtime-variable FileName
-  // if (vars['_lastDownloadPath']) { require('fs').copyFileSync(vars['_lastDownloadPath'], vars['_lastDownloadPath'] + '.copy'); }
-  // [DISABLED] Store the recent downloaded file name to variable FileName
-  // vars[""] = vars['_lastDownloadPath'] ? require('path').basename(vars['_lastDownloadPath']) : '';
+  const Methods = new AddonHelpers(page, vars);
+  vars['DownloadDir'] = path.join(process.cwd(), 'downloads');
+
+  await CorrPortalElem.Export_List.waitFor({ state: 'visible' });
+  const [download2] = await Promise.all([
+    page.waitForEvent('download'),
+    CorrPortalElem.Export_List.click()
+  ]);
+  Methods.getCurrentTimestamp(appconstants.PATH_DATEFORMAT, 'TimeStamp', appconstants.ASIA_KOLKATA);
+  vars['SavedFileName'] = vars['TimeStamp'] + '_' + download2.suggestedFilename();
+  vars['FilePathExportList'] = path.join(vars['DownloadDir'], vars['SavedFileName']);
+  await download2.saveAs(vars['FilePathExportList']);
+  log.info('SavedFileName: ' + vars['SavedFileName']);
+  log.info('FilePathExportList: ' + vars['FilePathExportList']);
   vars["RowsCount"] = String(await CorrPortalElem.Total_Rows_Count.count());
-  vars["RowCountUI"] = "1";
-  vars["RowCountExcel"] = "1";
+  log.info('Total Rows Count: ' + vars['RowsCount']);
+  vars["RowCountUI"] = appconstants.ONE;
+  vars["RowCountExcel"] = appconstants.ONE;
   while (parseFloat(String(vars["RowCountUI"])) <= parseFloat(String(vars["RowsCount"]))) {
-    vars["ColumnCountUI"] = "2";
-    vars["ColumnCountExcel"] = "0";
-    while (parseFloat(String(vars["ColumnCountUI"])) <= parseFloat(String("10"))) {
+    log.info('Row Iteration: ' + vars["RowCountUI"]);
+    vars["ColumnCountUI"] = appconstants.TWO;
+    vars["ColumnCountExcel"] = appconstants.ZERO;
+    while (parseFloat(String(vars["ColumnCountUI"])) <= parseFloat(String(appconstants.TEN))) {
+      log.info('Column Iteration: ' + vars["ColumnCountUI"]);
       await CorrPortalElem.Show_20.click();
-      await CorrPortalElem.Individual_Cell_Value_UI.hover();
-      vars["CellValueInExcel"] = excelHelper.readCell(vars['_lastDownloadPath'] || '', vars["RowCountExcel"], vars["ColumnCountExcel"], "0");
-      if (String(vars["CellValueInExcel"]) === String("Key_blank")) {
+      await CorrPortalElem.Individual_Cell_Value_UI(vars['RowCountUI'], vars['ColumnCountUI']).hover();
+      vars["CellValueInExcel"] = excelHelper.readCellByColAndRowIndex(vars['FilePathExportList'], 0, vars['RowCountExcel'], vars['ColumnCountExcel']);
+      log.info('Cell Value In Excel: ' + vars['CellValueInExcel']);
+      if (String(vars["CellValueInExcel"]) === String("null")) {
         vars["CellValueInExcel"] = "-";
       }
-      vars["CellValueInExcel"] = String(vars["CellValueInExcel"]).trim();
-      vars["CellValueInUI"] = await CorrPortalElem.Individual_Cell_Value_UI.textContent() || '';
-      vars["CellValueInUI"] = String(vars["CellValueInUI"]).trim();
-      expect(String(vars["CellValueInExcel"])).toBe(vars["CellValueInUI"]);
-      vars["ColumnCountExcel"] = (parseFloat(String("1")) + parseFloat(String(vars["ColumnCountExcel"]))).toFixed(0);
-      vars["ColumnCountUI"] = (parseFloat(String("1")) + parseFloat(String(vars["ColumnCountUI"]))).toFixed(0);
+      Methods.trimWhitespace(vars["CellValueInExcel"], 'CellValueInExcel');
+      vars["CellValueInUI"] = await CorrPortalElem.Individual_Cell_Value_UI(vars['RowCountUI'], vars['ColumnCountUI']).textContent() || '';
+      Methods.trimWhitespace(vars["CellValueInUI"], 'CellValueInUI');
+      log.info('Cell Value In UI: ' + vars['CellValueInUI']);
+      expect(Methods.verifyString(vars["CellValueInExcel"], 'contains', vars['CellValueInUI']));
+      Methods.performArithmetic(vars["ColumnCountExcel"], 'ADDITION', '1', 'ColumnCountExcel', 0);
+      Methods.performArithmetic(vars["ColumnCountUI"], 'ADDITION', '1', 'ColumnCountUI', 0);
     }
-    vars["RowCountExcel"] = (parseFloat(String("1")) + parseFloat(String(vars["RowCountExcel"]))).toFixed(0);
-    vars["RowCountUI"] = (parseFloat(String("1")) + parseFloat(String(vars["RowCountUI"]))).toFixed(0);
+    Methods.performArithmetic(vars["RowCountExcel"], 'ADDITION', '1', 'RowCountExcel', 0);
+    Methods.performArithmetic(vars["RowCountUI"], 'ADDITION', '1', 'RowCountUI', 0);
   }
 }
 
@@ -2321,42 +2333,23 @@ export async function stepGroup_Add_Actions_in_Rules_and_ActionsDuplicated_Rule(
  */
 export async function stepGroup_Creating_New_Bid_Map(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
-  await page.waitForLoadState('networkidle');
-  // [DISABLED] Navigation to Customer Permission
-  // await stepGroup_Navigation_to_Customer_Permission(page, vars);
+  const profileName = 'Search Functionality BidMaps';
+  const Methods = new AddonHelpers(page, vars);
+
   await CorrPortalElem.Administration_Menu.click();
   await CorrPortalElem.Bid_Maps_Menu.click();
   await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
   await CorrPortalElem.Add_New_Mapping_Button.click();
-  vars["Common KeyWord"] = "Testsigma_" + vars["RandomName"];
-  vars["LastName"] = ['Smith', 'Johnson', 'Williams', 'Brown', 'Jones', 'Davis', 'Miller', 'Wilson'][Math.floor(Math.random() * 8)];
-  vars["BidMap Name"] = "Testsigma_" + vars["RandomName"] + "_" + vars["LastName"] + "_" + "SeachField";
+  Methods.concatenate(appconstants.Testsigma_, vars["RandomString"], 'Common KeyWord');
+  Methods.generateRandomNumber('3', 'RandomNumber');
+  vars["BidMap Name"] = appconstants.Testsigma_ + vars["RandomString"] + "_" + vars["RandomNumber"] + "_" + "SeachField";
   await CorrPortalElem.Map_Name_Field_in_Bid_Maps.fill(vars["BidMap Name"]);
   await expect(CorrPortalElem.Compare_Button).toBeVisible();
   await CorrPortalElem.Compare_Button.click();
-  for (let dataIdx = parseInt(vars["count"]); dataIdx <= parseInt(vars["count"]); dataIdx++) {
-    // Write to test data profile: "Search Functionality BidMaps" = vars["BidMap Name"]
-    // TODO: Test data profile writes need custom implementation
-  }
+  testDataManager.updatePartialProfileDataByDataIndex(profileName, {
+    'Search Functionality BidMaps': vars["BidMap Name"],
+  }, vars['count']);
   await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
-  // [DISABLED] Verify that the element Bid Maps Name displays text contains TS_SEARCH and With Scrollable FALSE
-  // await expect(CorrPortalElem.Bid_Maps_Name).toContainText("TS_SEARCH");
-  // [DISABLED] Click on Select Company/s Dropdown
-  // await CorrPortalElem.Select_Companys_Dropdown.click();
-  // [DISABLED] Click on Required Company/s Name Value
-  // await CorrPortalElem.Required_Company_s_Name_Value.click();
-  // [DISABLED] Click on Apply Selected
-  // await CorrPortalElem.Apply_Selected.click();
-  // [DISABLED] Upload file DeepikaAugBidQA.xlsx,DeepikaAugBidQA.xlsx using the element Upload File
-  // await CorrPortalElem.Upload_File.setInputFiles(path.resolve(__dirname, 'test-data', "DeepikaAugBidQA.xlsx"));
-  // [DISABLED] Click on Map Headers Button
-  // await CorrPortalElem.Map_Headers_Button.click();
-  // [DISABLED] Verify that the element This action will save the changes and Move to Next Page is displayed and With Scrollable FALSE
-  // await expect(CorrPortalElem.This_action_will_save_the_changes_and_Move_to_Next_Page).toBeVisible();
-  // [DISABLED] Click on Proceed with Saving Button
-  // await CorrPortalElem.Proceed_with_Saving_Button.click();
-  // [DISABLED] Wait until the element Spinner is not visible
-  // await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
 }
 
 /**
@@ -2462,11 +2455,20 @@ export async function stepGroup_Verifying_that_Changes_Are_Not_Updated_In_Active
  */
 export async function stepGroup_Deleting_All_Advanced_Search_Bid_Maps(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
-  while (await CorrPortalElem.Advanced_Search_Bid_maps_Delete_Button_1.isVisible()) {
-    await CorrPortalElem.Advanced_Search_Bid_maps_Delete_Button_1.click();
+  const Methods = new AddonHelpers(page, vars);
+
+  vars['TotalMapsCount'] = String(await CorrPortalElem.Advanced_Search_Bid_maps_Delete_Button(vars['CommonKeyword']).count());
+  log.info('Total Maps Count: ' + vars['TotalMapsCount']);
+  vars['count'] = appconstants.ONE;
+  while (parseFloat(String(vars["count"])) <= parseFloat(String(vars["TotalMapsCount"]))) {
+    log.info('Map Deletion Iteration: ' + vars['count']);
+    await CorrPortalElem.Advanced_Search_Bid_maps_Delete_Button(vars['CommonKeyword']).first().waitFor({ state: 'visible' });
+    await CorrPortalElem.Advanced_Search_Bid_maps_Delete_Button(vars['CommonKeyword']).first().click();
+    await CorrPortalElem.Yes_Proceed_Button.waitFor({ state: 'visible' });
     await CorrPortalElem.Yes_Proceed_Button.click();
     await CorrPortalElem.Yes_Proceed_Button.waitFor({ state: 'hidden' });
     await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
+    Methods.MathematicalOperation(vars['count'], '+', 1, 'count');
   }
 }
 
@@ -2583,36 +2585,58 @@ export async function stepGroup_Deleting_BidMaps_After_Test_StepsAdvance_Search(
  */
 export async function stepGroup_New_Export_List_Advance_Search(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
-  vars["RowsCount"] = String(await CorrPortalElem.Total_Rows_Count.count());
-  vars["RowCountUI"] = "1";
-  vars["RowCountExcel"] = "1";
-  while (parseFloat(String(vars["RowCountUI"])) <= parseFloat(String(vars["RowsCount"]))) {
-    vars["index"] = "1";
-    vars["ColumnCountUI"] = "2";
-    while (parseFloat(String(vars["ColumnCountUI"])) <= parseFloat(String("10"))) {
-      vars["RowDataExcel"] = excelHelper.readRow(vars['_lastDownloadPath'] || '', vars["RowCountExcel"], "0");
-      if (String(vars["index"]) === String("5")) {
-        if (String(vars["RowDataExcel"]).includes(String("ACTIVE, DRAFT"))) {
-          vars["ExcelValue1"] = String(vars["RowDataExcel"]).split(",")[parseInt(String(vars["index"]))] || '';
-          vars["index"] = (parseFloat(String("1")) + parseFloat(String(vars["index"]))).toFixed(0);
-          vars["ExcelValue2"] = String(vars["RowDataExcel"]).split(",")[parseInt(String(vars["index"]))] || '';
-          vars["CellValueInExcel"] = String(vars["ExcelValue1"]) + String(vars["ExcelValue2"]);
-          vars["CellValueInExcel"] = String(vars["CellValueInExcel"]).trim();
+  const Methods = new AddonHelpers(page, vars);
+
+  vars['RowsCount'] = String(await CorrPortalElem.Total_Rows_Count.count());
+  log.info('Total Rows Count UI: ' + vars['RowsCount']);
+  vars['RowCountUI'] = appconstants.ONE;
+  vars['RowCountExcel'] = appconstants.ONE;
+  while (parseFloat(String(vars['RowCountUI'])) <= parseFloat(String(vars['RowsCount']))) {
+    log.info('Row iteration: ' + vars['RowCountUI']);
+    vars['RowDataExcel'] = excelHelper.readEntireRow(vars['FilePathExportList'], '0', vars['RowCountExcel'], 'RowDataExcel');
+    vars['index'] = appconstants.ONE;
+    vars['ColumnCountUI'] = appconstants.TWO;
+    while (parseFloat(String(vars['ColumnCountUI'])) <= parseFloat(String(appconstants.TEN))) {
+      log.info('Column iteration: ' + vars['ColumnCountUI']);
+      if (String(vars['index']) === String(appconstants.FIVE)) {
+        if (String(vars['RowDataExcel']).includes(String('ACTIVE, DRAFT'))) {
+          log.info('Row data Excel contains ACTIVE, DRAFT at index: ' + vars['index']);
+          Methods.splitStringByRegConditionWithPosition(vars['RowDataExcel'], ',', vars['index'], 'ExcelValue1');
+          Methods.performArithmetic(vars['index'], 'ADDITION', '1', 'index', 0);
+          Methods.splitStringByRegConditionWithPosition(vars['RowDataExcel'], ',', vars['index'], 'ExcelValue2');
+          Methods.concatenate(vars['ExcelValue1'], vars['ExcelValue2'], 'CellValueInExcel');
+          Methods.trimWhitespace(vars['CellValueInExcel'], 'CellValueInExcel');
         } else {
-          vars["CellValueInExcel"] = String(vars["RowDataExcel"]).split(",")[parseInt(String(vars["index"]))] || '';
+          Methods.splitStringByRegConditionWithPosition(vars['RowDataExcel'], ',', vars['index'], 'CellValueInExcel');
+          Methods.trimWhitespace(vars['CellValueInExcel'], 'CellValueInExcel');
         }
       } else {
-        vars["CellValueInExcel"] = String(vars["RowDataExcel"]).split(",")[parseInt(String(vars["index"]))] || '';
+        Methods.splitStringByRegConditionWithPosition(vars['RowDataExcel'], ',', vars['index'], 'CellValueInExcel');
+        Methods.trimWhitespace(vars['CellValueInExcel'], 'CellValueInExcel');
       }
-      vars["CellValueInExcel"] = String(vars["CellValueInExcel"]).trim();
-      vars["CellValueInUI"] = await CorrPortalElem.Individual_Cell_Value_UI.textContent() || '';
-      vars["CellValueInUI"] = String(vars["CellValueInUI"]).trim();
-      if (String(vars["CellValueInExcel"]) === String("N/A")) {
-        vars["CellValueInExcel"] = "-";
+      vars['CellValueInUI'] = await CorrPortalElem.Individual_Cell_Value_UI(vars['RowCountUI'], vars['ColumnCountUI']).textContent() || '';
+      Methods.trimWhitespace(vars['CellValueInUI'], 'CellValueInUI');
+      log.info('CellValueInExcel: ' + vars['CellValueInExcel'] + ' | CellValueInUI: ' + vars['CellValueInUI']);
+      if (String(vars['CellValueInExcel']) === String('null')) {
+        log.info('Cell Value In Excel is null at index: ' + vars['index']);
+        vars['CellValueInExcel'] = '-';
       }
-      if (String(vars["CellValueInExcel"]).includes(String("ET"))) {
+      if (String(vars['CellValueInExcel']).includes(String(appconstants.ET))) {
+        log.info('Cell Value In Excel contains ET at index: ' + vars['index']);
+        Methods.removeCharactersFromPosition(vars['CellValueInExcel'], '10', '2', 'CellValueInExcelTime');
+        Methods.removeCharactersFromPosition(vars['CellValueInExcel'], '0', '7', 'CellValueInExcelDate');
+        Methods.concatenateWithSpace(vars['CellValueInExcelDate'], vars['CellValueInExcelTime'], 'ExcelDateTime');
+        Methods.addMinutesToDatetime(vars['ExcelDateTime'], appconstants.DATE_TIME_FORMAT_EXCEL_EST, 240, appconstants.DATE_TIME_FORMAT_EXCEL_EST, 'CurrentLocalTime');
+        Methods.removeCharactersFromPosition(vars['CurrentLocalTime'], '0', '6', 'CurrentLocalDate');
+        vars['CellValueInExcel'] = vars['CurrentLocalDate'];
       }
+
+      expect(Methods.verifyString(vars['CellValueInExcel'], 'equals', vars['CellValueInUI']));
+      Methods.performArithmetic(vars['index'], 'ADDITION', '1', 'index', 0);
+      Methods.performArithmetic(vars['ColumnCountUI'], 'ADDITION', '1', 'ColumnCountUI', 0);
     }
+    Methods.performArithmetic(vars['RowCountUI'], 'ADDITION', '1', 'RowCountUI', 0);
+    Methods.performArithmetic(vars['RowCountExcel'], 'ADDITION', '1', 'RowCountExcel', 0);
   }
 }
 
@@ -6429,8 +6453,8 @@ export async function stepGroup_Upload_Bid_Request_from_batch_time_selection_to_
   const CorrPortalElem = new CorrPortalPage(page);
   await CorrPortalElem.Pricing_Return_Time.selectOption({ index: parseInt("2") });
   vars["ExtractedPrincingReturnTime"] = await CorrPortalElem.Pricing_Return_Time.evaluate(el => { const s = el as HTMLSelectElement; return s.options[s.selectedIndex]?.text || ''; });
- // await CorrPortalElem.Upload_File.setInputFiles([]);
-   await CorrPortalElem.Upload_File.setInputFiles(path.resolve(__dirname, '../../../uploads', fileconstants.Duplicate_Loan_File));
+  // await CorrPortalElem.Upload_File.setInputFiles([]);
+  await CorrPortalElem.Upload_File.setInputFiles(path.resolve(__dirname, '../../../uploads', fileconstants.Duplicate_Loan_File));
 
   await expect(CorrPortalElem.UploadBid_Button).toBeVisible();
   await CorrPortalElem.UploadBid_Button.click();
@@ -6594,7 +6618,7 @@ export async function stepGroup_Uploading_Bid_Request_For_both_Real_and_Differed
   await expect(CorrPortalElem.Standard_Execution_Checkbox).toBeVisible();
   await CorrPortalElem.Standard_Execution_Checkbox.check();
   await page.waitForTimeout(2000);
-  await expect(CorrPortalElem.Standard_Execution_Checkbox).toBeChecked(); 
+  await expect(CorrPortalElem.Standard_Execution_Checkbox).toBeChecked();
   await CorrPortalElem.StandardExecution_Dropdown.selectOption({ label: "3" });
   await CorrPortalElem.StandardExceutionType_Dropdown.waitFor({ state: 'visible' });
   await expect(CorrPortalElem.StandardExceutionType_Dropdown).toHaveValue("3");

@@ -11,8 +11,8 @@ export class BidmapsPage {
     return this.page.locator("(//*[@aria-label=\"Bid Map Search and Filter\"]//*[text()=\"Action\"]/../following-sibling::div//a)[1]");
   }
 
-  get Required_Bid_Map_CheckBox(): Locator {
-    return this.page.locator("//td[@data-title=\"Map Name\"]//button[contains(text(),\"$|UniqueBidMapName|\")]/../preceding-sibling::td//input[@type=\"checkbox\"]");
+  Required_Bid_Map_CheckBox(UniqueBidMapName:string): Locator {
+    return this.page.locator(`//td[@data-title=\"Map Name\"]//button[contains(text(),\"${UniqueBidMapName}\")]/../preceding-sibling::td//input[@type=\"checkbox\"]`);
   }
 
   get RuleName_Search_Filter_ValueText(): Locator {

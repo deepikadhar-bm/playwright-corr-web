@@ -35,12 +35,12 @@ export class BidmapPage {
     return this.page.locator("//button[@class=\"text-primary pointer border-0 bg-transparent\"]");
   }
 
-  get headerForBidMapDetails(): Locator {
-    return this.page.locator("(//th[@role=\"columnheader\"])[$|count|]");
+  headerForBidMapDetails(count:string): Locator {
+    return this.page.locator(`(//th[@role=\"columnheader\"])[${count}]`);
   }
 
-  get KeyWord_Related_Bid_Maps(): Locator {
-    return this.page.locator("//span[contains(text(),'$|Common KeyWord|')]/parent::a");
+  KeyWord_Related_Bid_Maps(CommonKeyWord:string): Locator {
+    return this.page.locator(`//span[contains(text(),'${CommonKeyWord}')]/parent::a`);
   }
 
   get modificationTimezone_of_Header_and_BidMap_Data(): Locator {

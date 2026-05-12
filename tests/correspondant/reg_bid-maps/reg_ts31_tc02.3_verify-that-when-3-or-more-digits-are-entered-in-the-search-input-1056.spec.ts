@@ -1,7 +1,4 @@
-// [PREREQ-APPLIED]
-// [POM-APPLIED]
 import { test, expect } from '@playwright/test';
-import path from 'path';
 import * as stepGroups from '../../../src/helpers/step-groups';
 import { BidmapPage } from '../../../src/pages/correspondant/bidmap';
 import { ChaseFieldNamePage } from '../../../src/pages/correspondant/chase-field-name';
@@ -16,8 +13,14 @@ import { SpinnerPage } from '../../../src/pages/correspondant/spinner';
 import { StatusInactive2Page } from '../../../src/pages/correspondant/status-inactive--2';
 import { StatusInactivePage } from '../../../src/pages/correspondant/status-inactive-';
 import { runPrereq_1053 } from '../../../src/helpers/prereqs/prereq-1053';
+import { Logger as log } from '@helpers/log-helper';
+import { testDataManager } from 'testdata/TestDataManager';
 
-test.describe('Unassigned', () => {
+
+const TC_ID = 'REG_TS31_TC02.3';
+const TC_TITLE = 'Verify that when 3 or more digits are entered in the search input, bid map records are displayed in the popup, showing matching keywords within the categories of Enum .[Column Header]';
+
+test.describe('REG_Bid Maps', () => {
   let vars: Record<string, string> = {};
   let bidmapPage: BidmapPage;
   let chaseFieldNamePage: ChaseFieldNamePage;
@@ -32,8 +35,10 @@ test.describe('Unassigned', () => {
   let statusInactive2Page: StatusInactive2Page;
   let statusInactivePage: StatusInactivePage;
 
+  const profileName = 'Bid_Maps';
+  const profile = testDataManager.getProfileByName(profileName);
+
   test.beforeEach(async ({ page }) => {
-    vars = {};
     await runPrereq_1053(page, vars);
     bidmapPage = new BidmapPage(page);
     chaseFieldNamePage = new ChaseFieldNamePage(page);
@@ -49,137 +54,119 @@ test.describe('Unassigned', () => {
     statusInactivePage = new StatusInactivePage(page);
   });
 
-  test('REG_TS31_TC02.3_Verify that when 3 or more digits are entered in the search input, bid map records are displayed in the popup, showing matching keywords within the categories of Enum .[Column Header]', async ({ page }) => {
+  test(`${TC_ID} - ${TC_TITLE}`, async ({ page }) => {
+    log.tcStart(TC_ID, TC_TITLE);
 
-    const testData: Record<string, string> = {
-  "UniqueColumnHeaderSearch": "TsSearchUniqueColumnHeader",
-  "Unidentified fields Message": "You have unidentified fields do you want to proceed further.",
-  "UniqueColHeader/Enum": "TsSearchUniqueColHeaderEnum",
-  "Save and Move to Next Page": "Save and Move to Next Page",
-  "CSS Attribute": "2px solid rgb(227, 82, 5)",
-  "Used Headers": "Show Used Headers",
-  "2-4 Unit": "2-4 Unit",
-  "Search Map Input": "Deepika Aug1",
-  "Chase_Field_Name1": "Mortgage Type",
-  "Rule Name": "Rule 1",
-  "Unidentified Headers": "Show Unidentified Headers",
-  "Operations": "GREATER",
-  "BidFields.": "DTI",
-  "Search Fields": "hii",
-  "Operator 2 Symbol": ">",
-  "Time Interval": "05",
-  "Unidentified Enumerations": "Show Unidentified Enumerations",
-  "Show All Enumerations": "Show All Enumerations",
-  "Unidentfied and Save Message": "You have unidentified fields.  This action will save the changes and Move to Next Page.",
-  "BidField": "FICO Score",
-  "Search_Map": "Deepika Aug",
-  "CustomHeader": "Header 02",
-  "New Rule Name": "New Rule",
-  "Assigned Companies1": "Wik1C BeuLD MoJbr CoEmy LLpoJ",
-  "Unique Chase Value1": "AndoverBirchDrive1",
-  "Company name 2": "Wik1C BeuLD MoJbr CoEmy LLpoJ  - A2964",
-  "Bid Field": "Base Loan Amount",
-  "Chase  Values": "False",
-  "ChaseValue": "Attached",
-  "Unused Enumerations": "Show Unused Enumerations",
-  "Reason For Cancellation": "To Be Cancelled",
-  "Reason For Deletion": "To Be Deleted",
-  "ChaseValues.": "False",
-  "Chase_Field_Name": "Mortgage Limit",
-  "Header Mapping": "Show All Headers",
-  "Chase Field Name": "Amortization Type",
-  "ChaseFieldName": "Appraised Value",
-  "UniqueBidEnumTapeValue": "852345",
-  "BidEnumeratedTapeValue": "800",
-  "Chase Fields Name": "Amortization Type, Appraised Value, Attachment Type, Aus List, Borrower First Name, Borrower Last Name, Buy Down, CLTV, City, DTI, Fico, First Time Home Buyer, First Time Homebuyer Credit Fee Waiver, Impound Types, Income Ami Ratio, Ineligible, Interest Only, LTV, Loan Amount, Loan Number, Loan Purpose, Loan Term, Monthly Income, Mortgage Limit, Mortgage Types, Note Rate, Number Of Unit, Occupancy Type, Product Name, Property Type, Property Valuation Type, Purchase Price, State, Street, Subordinate Loan Amount, TPO, Total Loan Amount, Unpaid Principal Balance, Zip",
-  "Unique Chase Field Name": "Street",
-  "Chase Value": "Fixed rate",
-  "Search_Input": "TS_SEARCHMAP21",
-  "Unused Headers": "Show Unused Headers",
-  "Upload File Text Verification": "Drag and drop files here or click to browse. Allowed formats: .xls,.xlsx,.csv,.txt",
-  "Bid Enumerated Tape Value": "80",
-  "Search Field Company Name": "Wik1C",
-  "Create Map": "Testsigma_04/03/2025/",
-  "Custom Header": "Header01",
-  "Investment (NOO)": "Investment (NOO)",
-  "PropertyValuation": "1004Desktop",
-  "ImportRuleName": "TEst",
-  "Action Save message": "This action will save the changes and Move to Next Page",
-  "SearchFields": "Hii",
-  "Start Time in Minutes": "31",
-  "Execution Type1": "STANDARD",
-  "BidEnumeratedTapeValue - Block 2": "Fixed",
-  "Execution Type": "CHASE_DIRECT",
-  "Start Time in Hour": "8",
-  "UniqueWhenBidFieldSearch": "TsSearchWhenBidField",
-  "WhenBidFieldName - Block 2": "Amortization Type",
-  "EmptyChaseFieldName": "Select",
-  "WhenBidFieldValue-3": "Appraised Value",
-  "Unique Chase Value": "AndoverBirchDrive",
-  "BidFields": "CLTV",
-  "Loan Purpose": "Refinance (R&T)",
-  "Advanced Search": "Fico",
-  "ChaseFieldNames": "Aus List",
-  "NO of Batches": "05",
-  "CompanyName3": "American Pacific  - A4257",
-  "Operator": "LESS_OR_EQUAL",
-  "SelectingChaseFieldName": "7",
-  "UpdatedBidEnumeratedTapeValue": "SAIKAT_18_FEB_002",
-  "Search Input": "Test",
-  "Company name 1": "Freedom",
-  "Operator 3": "CONTAINS",
-  "Expected Company Name": "Freedom",
-  "Operation2": "GREATER",
-  "Operation1": "LESS",
-  "Operator - Block 2": "GREATER",
-  "Bid Tape Value": "Fixed",
-  "Search Field": "free",
-  "Created Map Id": "Testsigma_05/07/2025/20:55:58",
-  "Rule Name(Updated)": "UP Rule 1",
-  "Operator 1 Symbol": "<",
-  "UniqueChaseValueSearch": "TsSearchChaseValue",
-  "Import Rule": "Testsigma_02/23/2026/01:02:39",
-  "Duplicated Rule Name": "Rule 2",
-  "Condition Bid Field": "FICO Score",
-  "BidEnumeraedTapeValue - 3": "425000",
-  "Chasevalues": "Variable rate",
-  "DeleteId": "Testsigma_05/05/2025/16:23:13",
-  "UpdatedWhenBidFieldName": "Correspondent Loan Number",
-  "UniqueBidEnumTapeSearch": "TsSearchBidEnumTape",
-  "Unidentified Fields Error Message": "You have unidentified fields.",
-  "UniqueRuleNameSearch": "TsSearchUniqueRuleName"
-}; // Profile: "Bid_Maps", row: 0
+    try {
+        if (profile && profile.data) {
+          vars['UniqueColumnHeaderSearch'] = profile.data[0]['UniqueColumnHeaderSearch'];
+          vars['Unidentified fields Message'] = profile.data[0]['Unidentified fields Message'];
+          log.info('UniqueColumnHeaderSearch: ' + vars['UniqueColumnHeaderSearch']);
+          log.info('Unidentified fields Message: ' + vars['Unidentified fields Message']);
+        }
 
-    await correspondentPortalPage.Cross_button_in_Bid_Map.click();
-    await page.waitForLoadState('networkidle');
-    await statusInactive2Page.SearchFilter_Fields.click();
-    await statusInactive2Page.SearchFilter_Fields.fill(testData["UniqueColumnHeaderSearch"]);
-    await page.waitForLoadState('networkidle');
-    await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-    await expect(statusInactivePage.Column_Header_In_SeachField).toBeVisible();
-    await expect(columnheaderrulePage.column_Header_Rule).toContainText("col:");
-    await statusInactivePage.Column_Header_In_SeachField.hover();
-    await correspondentPortalPage.Show_All_ColumnHeader.click();
-    await page.waitForLoadState('networkidle');
-    await statusInactivePage.BidMap_list_Screen.click();
-    await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-    await mapHeadersButtonPage.Map_Headers_Button.click();
-    await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-    await expect(page.getByText(vars["UniqueBidMapName"])).toBeVisible();
-    await expect(page.getByText(testData["UniqueColumnHeaderSearch"])).toBeVisible();
-    await enumerationMappingButtonPage.Enumeration_Mapping_Button.click();
-    await expect(page.getByText(testData["Unidentified fields Message"])).toBeVisible();
-    await correspondentPortalPage.Yes_Proceed_Button.click();
-    await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-    await rulesAndActionsButtonPage.Rules_and_Actions_Button.click();
-    await expect(page.getByText(testData["Unidentified fields Message"])).toBeVisible();
-    await correspondentPortalPage.Yes_Proceed_Button.click();
-    await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-    await saveAndPublishButtonPage.Save_and_Publish_Button.click();
-    await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-    await expect(bidmapPage.First_Bid_Map_Name).toContainText(vars["UniqueBidMapName"]);
-    await chaseFieldNamePage.Select_all_for_Checkbox.click();
-    await p1MoreButtonPage.Export_Selected_Dropdown.click();
-    await stepGroups.stepGroup_Verification_of_ExportList_from_UI_to_Excel(page, vars);
+      log.step('Clear current search and search for Bid Map using unique column header');
+      try {
+        await correspondentPortalPage.Cross_button_in_Bid_Map.click();
+        await statusInactive2Page.SearchFilter_Fields.click();
+        await statusInactive2Page.SearchFilter_Fields.type(vars['UniqueColumnHeaderSearch']);
+        await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+        log.info('UniqueBidMapName: ' + vars['UniqueBidMapName']);
+        log.stepPass('Search cleared and Bid Map searched using unique column header successfully');
+      } catch (e) {
+        await log.stepFail(page, 'Failed to clear search or search using unique column header');
+        throw e;
+      }
+
+      log.step('Verify column header search result and show all column header results');
+      try {
+        await expect(statusInactivePage.Column_Header_In_SeachField).toBeVisible();
+        await expect(columnheaderrulePage.column_Header_Rule).toContainText('col:');
+        await statusInactivePage.Column_Header_In_SeachField.hover();
+        await correspondentPortalPage.Show_All_ColumnHeader.click();
+        log.stepPass('Column header search result verified and all column header results shown successfully');
+      } catch (e) {
+        await log.stepFail(page, 'Failed to verify column header search result or show all column header results');
+        throw e;
+      }
+
+      log.step('Navigate to Bid Map and open Header Mapping');
+      try {
+        await statusInactivePage.BidMap_list_Screen.click();
+        await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+        await mapHeadersButtonPage.Map_Headers_Button.click();
+        await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+        await expect(page.getByText(vars['UniqueBidMapName'])).toBeVisible();
+        await expect(page.getByText(vars['UniqueColumnHeaderSearch'])).toBeVisible();
+        log.stepPass('Navigated to Bid Map and Header Mapping opened successfully');
+      } catch (e) {
+        await log.stepFail(page, 'Failed to navigate to Bid Map or open Header Mapping');
+        throw e;
+      }
+
+      log.step('Navigate to Enumeration Mapping and proceed with unidentified fields');
+      try {
+        await enumerationMappingButtonPage.Enumeration_Mapping_Button.click();
+        await expect(page.getByText(vars['Unidentified fields Message'])).toBeVisible();
+        await correspondentPortalPage.Yes_Proceed_Button.click();
+        await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+        log.stepPass('Navigated to Enumeration Mapping and proceeded with unidentified fields successfully');
+      } catch (e) {
+        await log.stepFail(page, 'Failed to navigate to Enumeration Mapping or proceed with unidentified fields');
+        throw e;
+      }
+
+      log.step('Navigate to Rules and Actions and proceed with unidentified fields');
+      try {
+        await rulesAndActionsButtonPage.Rules_and_Actions_Button.click();
+        await expect(page.getByText(vars['Unidentified fields Message'])).toBeVisible();
+        await correspondentPortalPage.Yes_Proceed_Button.click();
+        await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+        log.stepPass('Navigated to Rules and Actions and proceeded with unidentified fields successfully');
+      } catch (e) {
+        await log.stepFail(page, 'Failed to navigate to Rules and Actions or proceed with unidentified fields');
+        throw e;
+      }
+
+      log.step('Save and publish Bid Map and verify Bid Map name in list');
+      try {
+        await saveAndPublishButtonPage.Save_and_Publish_Button.click();
+        await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+        await expect(bidmapPage.First_Bid_Map_Name.first()).toContainText(vars['UniqueBidMapName']);
+        log.info('UniqueBidMapName verified in list: ' + vars['UniqueBidMapName']);
+        log.stepPass('Bid Map saved and published and Bid Map name verified in list successfully');
+      } catch (e) {
+        await log.stepFail(page, 'Failed to save and publish Bid Map or verify Bid Map name in list');
+        throw e;
+      }
+
+      log.step('Select all Bid Maps and open Export Selected dropdown');
+      try {
+        await chaseFieldNamePage.Select_all_for_Checkbox.check();
+        await expect(chaseFieldNamePage.Select_all_for_Checkbox).toBeChecked();
+        await expect(p1MoreButtonPage.Export_Selected_Dropdown).toBeEnabled();
+        await p1MoreButtonPage.Export_Selected_Dropdown.click();
+        log.stepPass('All Bid Maps selected and Export Selected dropdown opened successfully');
+      } catch (e) {
+        await log.stepFail(page, 'Failed to select all Bid Maps or open Export Selected dropdown');
+        throw e;
+      }
+
+      log.step('Verify export list from UI to Excel');
+      try {
+        await stepGroups.stepGroup_Verification_of_ExportList_from_UI_to_Excel(page, vars);
+        log.stepPass('Export list verified from UI to Excel successfully');
+      } catch (e) {
+        await log.stepFail(page, 'Failed to verify export list from UI to Excel');
+        throw e;
+      }
+
+      log.tcEnd('PASS');
+
+    } catch (e) {
+      await log.captureOnFailure(page, TC_ID, e);
+      log.tcEnd('FAIL');
+      throw e;
+    }
   });
 });
