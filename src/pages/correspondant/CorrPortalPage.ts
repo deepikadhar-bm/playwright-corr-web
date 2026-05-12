@@ -93,6 +93,10 @@ export class CorrPortalPage {
     return this.page.locator("//tbody//td[@data-title=\"Map Name\"]//*[contains(text(),\"TS_AdvanceSearch\")]/../..//button[@aria-label=\"Delete Map\"]");
   }
 
+  Advanced_Search_Bid_maps_Delete_Button(CommonKeyword:string): Locator {
+    return this.page.locator(`//tbody//td[@data-title=\"Map Name\"]//*[contains(text(),"${CommonKeyword}")]/../..//button[@aria-label=\"Delete Map\"]`);
+  }
+
   get Advanced_Search_Filter(): Locator {
     return this.page.locator("//*[text()[normalize-space() = \"Advanced Search/Filter\"]]");
   }
@@ -434,6 +438,10 @@ export class CorrPortalPage {
 
   get Chase_Value(): Locator {
     return this.page.locator("(//select[@class=\"form-select\" and @id=\"id\"])[last()]");
+  }
+
+  get Chase_Value_Field(): Locator {
+    return this.page.locator("(//label[text()='Chase Value']//following::div[contains(@class,'dropdown')])[1]");
   }
 
   get Chase_Value_Dropdown_Enumeration_Mapping(): Locator {
@@ -2119,7 +2127,7 @@ export class CorrPortalPage {
   }
 
   get Yes_Proceed_Button(): Locator {
-    return this.page.locator("(//button[@type=\"button\"])[last()]");
+    return this.page.locator("//button[@aria-label='Yes, Proceed']");
   }
 
   get Yes_Submit_Button(): Locator {

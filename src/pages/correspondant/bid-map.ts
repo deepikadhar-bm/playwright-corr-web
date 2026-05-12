@@ -7,8 +7,8 @@ import { Page, Locator } from '@playwright/test';
 export class BidMapPage {
   constructor(private page: Page) {}
 
-  get BidMaps_Count_on_Mappings_Page(): Locator {
-    return this.page.locator("//button[contains(text(),'$|Common KeyWord|')]");
+  BidMaps_Count_on_Mappings_Page(CommonKeyWord:string): Locator {
+    return this.page.locator(`//button[contains(text(),'${CommonKeyWord}')]`);
   }
 
   get error_message_popup(): Locator {
@@ -39,8 +39,8 @@ export class BidMapPage {
     return this.page.locator("(//input[@class=\"input-field-edit\"]/../../../../..//select[@class=\"form-select\"])[2]");
   }
 
-  get Newly_Created_BidMap(): Locator {
-    return this.page.locator("//button[contains(@aria-label,\"Edit map\") and contains(text(),'@|Search Functionality BidMaps|')]");
+  Newly_Created_BidMap(SearchFunctionalityBidMaps:string): Locator {
+    return this.page.locator(`//button[contains(@aria-label,\"Edit map\") and contains(text(),'${SearchFunctionalityBidMaps}')]`);
   }
 
   get Required_Company_Checkbox_Bidmap_Company_dropdown(): Locator {
