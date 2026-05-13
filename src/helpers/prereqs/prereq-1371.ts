@@ -26,10 +26,11 @@ export async function runPrereq_1371(page: Page, vars: Record<string, string>): 
   const rulesAndActionsButtonPage = new RulesAndActionsButtonPage(page);
   const saveAndPublishButtonPage = new SaveAndPublishButtonPage(page);
   const spinnerPage = new SpinnerPage(page);
+  let REG_TS31_TC02_testFailed = false;
 
   const credentials = ENV.getCredentials('internal');
-    vars['Username'] = credentials.username;
-    vars['Password'] = credentials.password;
+  vars['Username'] = credentials.username;
+  vars['Password'] = credentials.password;
 
   const profileName = 'Bid_Maps';
   const profile = testDataManager.getProfileByName(profileName);
@@ -47,6 +48,7 @@ export async function runPrereq_1371(page: Page, vars: Record<string, string>): 
       vars["BidEnumeratedTapeValue"] = profile.data[0]['UniqueBidEnumTapeSearch'];
       vars['Companyname'] = profile.data[0]['UniqueBidEnumTapeSearch'];
       vars["Companyname"] = profile.data[0]["CompanyName1"];
+      vars['UniqueChaseValueSearch'] = profile.data[0]["UniqueChaseValueSearch"];
     }
 
     log.step('Login to CORR Portal and enable Smart Mapper');
@@ -125,7 +127,24 @@ export async function runPrereq_1371(page: Page, vars: Record<string, string>): 
 
   } catch (e) {
     await log.captureOnFailure(page, TC_ID, e);
+    REG_TS31_TC02_testFailed = true;
     log.tcEnd('FAIL');
     throw e;
+  }
+  finally {
+    log.afterTestSteps(TC_ID, REG_TS31_TC02_testFailed);
+    if (REG_TS31_TC02_testFailed) {
+      try {
+        log.step('Executing after-test steps: Deleting the created maps');
+        await correspondentPortalPage.Administration_Menu.click();
+        await correspondentPortalPage.Bid_Maps_Menu.click();
+        await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+        await stepGroups.stepGroup_Deleting_All_Advanced_Search_Bid_Maps(page, vars);
+        log.stepPass('After-test steps executed successfully. All maps deleted');
+      } catch (e) {
+        await log.stepFail(page, 'Failed to Delete maps');
+        throw e;
+      }
+    }
   }
 }
