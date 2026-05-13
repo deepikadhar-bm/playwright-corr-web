@@ -27,6 +27,7 @@ test.describe('REG_Bid Maps', () => {
   let showAllPage: ShowAllPage;
   let spinnerPage: SpinnerPage;
   let statusInactive2Page: StatusInactive2Page;
+  let REG_TS31_TC02_2testFailed=false;
 
   test.beforeEach(async ({ page }) => {
     await runPrereq_1371(page, vars);
@@ -110,8 +111,25 @@ test.describe('REG_Bid Maps', () => {
 
     } catch (e) {
       await log.captureOnFailure(page, TC_ID, e);
+      REG_TS31_TC02_2testFailed=true;
       log.tcEnd('FAIL');
       throw e;
     }
   });
+   test.afterEach(async ({ page }) => {
+      log.afterTestSteps(TC_ID, REG_TS31_TC02_2testFailed);
+      if (REG_TS31_TC02_2testFailed) {
+        try {
+          log.step('Executing after-test steps: Deleting the created maps');
+          await correspondentPortalPage.Administration_Menu.click();
+          await correspondentPortalPage.Bid_Maps_Menu.click();
+          await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+          await stepGroups.stepGroup_Deleting_All_Advanced_Search_Bid_Maps(page, vars);
+          log.stepPass('After-test steps executed successfully. All maps deleted');
+        } catch (e) {
+          await log.stepFail(page, 'Failed to Delete maps');
+          throw e;
+        }
+      }
+    });
 });

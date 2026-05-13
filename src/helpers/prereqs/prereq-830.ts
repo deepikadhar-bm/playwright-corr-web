@@ -137,6 +137,9 @@ export async function runPrereq_830(page: Page, vars: Record<string, string>): P
     if (REG_TS31_TC01_testFailed) {
       try {
         log.step('Executing after-test steps: Deleting the created maps');
+        await correspondentPortalPage.Administration_Menu.click();
+        await correspondentPortalPage.Bid_Maps_Menu.click();
+        await spinnerPage.Spinner.waitFor({ state: 'hidden' });
         await stepGroups.stepGroup_Deleting_All_Advanced_Search_Bid_Maps(page, vars);
         log.stepPass('After-test steps executed successfully. All maps deleted');
       } catch (e) {

@@ -34,6 +34,7 @@ test.describe('REG_Bid Maps', () => {
   let spinnerPage: SpinnerPage;
   let statusInactive2Page: StatusInactive2Page;
   let statusInactivePage: StatusInactivePage;
+  let REG_TS31_TC02_3testFailed=false;
 
   const profileName = 'Bid_Maps';
   const profile = testDataManager.getProfileByName(profileName);
@@ -58,12 +59,12 @@ test.describe('REG_Bid Maps', () => {
     log.tcStart(TC_ID, TC_TITLE);
 
     try {
-        if (profile && profile.data) {
-          vars['UniqueColumnHeaderSearch'] = profile.data[0]['UniqueColumnHeaderSearch'];
-          vars['Unidentified fields Message'] = profile.data[0]['Unidentified fields Message'];
-          log.info('UniqueColumnHeaderSearch: ' + vars['UniqueColumnHeaderSearch']);
-          log.info('Unidentified fields Message: ' + vars['Unidentified fields Message']);
-        }
+      if (profile && profile.data) {
+        vars['UniqueColumnHeaderSearch'] = profile.data[0]['UniqueColumnHeaderSearch'];
+        vars['Unidentified fields Message'] = profile.data[0]['Unidentified fields Message'];
+        log.info('UniqueColumnHeaderSearch: ' + vars['UniqueColumnHeaderSearch']);
+        log.info('Unidentified fields Message: ' + vars['Unidentified fields Message']);
+      }
 
       log.step('Clear current search and search for Bid Map using unique column header');
       try {
@@ -165,8 +166,25 @@ test.describe('REG_Bid Maps', () => {
 
     } catch (e) {
       await log.captureOnFailure(page, TC_ID, e);
+      REG_TS31_TC02_3testFailed=true;
       log.tcEnd('FAIL');
       throw e;
+    }
+  });
+  test.afterEach(async ({ page }) => {
+    log.afterTestSteps(TC_ID, REG_TS31_TC02_3testFailed);
+    if (REG_TS31_TC02_3testFailed) {
+      try {
+        log.step('Executing after-test steps: Deleting the created maps');
+        await correspondentPortalPage.Administration_Menu.click();
+        await correspondentPortalPage.Bid_Maps_Menu.click();
+        await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+        await stepGroups.stepGroup_Deleting_All_Advanced_Search_Bid_Maps(page, vars);
+        log.stepPass('After-test steps executed successfully. All maps deleted');
+      } catch (e) {
+        await log.stepFail(page, 'Failed to Delete maps');
+        throw e;
+      }
     }
   });
 });

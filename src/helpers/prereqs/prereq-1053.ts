@@ -29,6 +29,7 @@ export async function runPrereq_1053(page: Page, vars: Record<string, string>): 
   const showAllPage = new ShowAllPage(page);
   const spinnerPage = new SpinnerPage(page);
   const statusInactive2Page = new StatusInactive2Page(page);
+  let REG_TS31_TC02_2_testFailed = false;
 
 
   log.tcStart(TC_ID, TC_TITLE);
@@ -99,7 +100,24 @@ export async function runPrereq_1053(page: Page, vars: Record<string, string>): 
 
   } catch (e) {
     await log.captureOnFailure(page, TC_ID, e);
+    REG_TS31_TC02_2_testFailed = true;
     log.tcEnd('FAIL');
     throw e;
+  }
+  finally {
+    log.afterTestSteps(TC_ID, REG_TS31_TC02_2_testFailed);
+    if (REG_TS31_TC02_2_testFailed) {
+      try {
+        log.step('Executing after-test steps: Deleting the created maps');
+        await correspondentPortalPage.Administration_Menu.click();
+        await correspondentPortalPage.Bid_Maps_Menu.click();
+        await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+        await stepGroups.stepGroup_Deleting_All_Advanced_Search_Bid_Maps(page, vars);
+        log.stepPass('After-test steps executed successfully. All maps deleted');
+      } catch (e) {
+        await log.stepFail(page, 'Failed to Delete maps');
+        throw e;
+      }
+    }
   }
 }

@@ -1585,6 +1585,7 @@ export async function stepGroup_Create_NewMap(page: import('@playwright/test').P
   await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
   await CorrPortalElem.Add_New_Mapping_Button.click();
   Methods.generateRandomNumber('2', "SearchMapNumber");
+  vars['CommonKeyword']=appconstants.TS_SEARCHMAP;
   Methods.concatenate(appconstants.TS_SEARCHMAP, vars["SearchMapNumber"], 'SearchFieldInputMap');
   await CorrPortalElem.Map_Name_Field_in_Bid_Maps.fill(vars["SearchFieldInputMap"]);
   await expect(CorrPortalElem.Compare_Button).toBeEnabled();
@@ -1612,7 +1613,7 @@ export async function stepGroup_Add_Actions_In_Rules_and_Actions(page: import('@
   await CorrPortalElem.Chase_Field_Name.selectOption({ index: parseInt("2") });
   await CorrPortalElem.Chase_Value.click();
   await CorrPortalElem.Chase_Value_Field.click();
-  await CorrPortalElem.Search_Field_in_Add_Condition.fill(appconstants.TS_SEARCH);
+  await CorrPortalElem.Search_Field_in_Add_Condition.type(vars['UniqueChaseValueSearch']);
   await CorrPortalElem.Select_Button.click();
   vars["ChaseFiledNameonAddActions"] = await CorrPortalElem.Add_Actions_Chase_Field_Name.evaluate(el => { const s = el as HTMLSelectElement; return s.options[s.selectedIndex]?.text || ''; });
   vars["ChaseFiledNameonAddActions"] = await CorrPortalElem.Action_Chase_Field_Name_1.inputValue() || '';
