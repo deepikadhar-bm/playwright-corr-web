@@ -15,12 +15,12 @@ export class AdvanceSearchPage {
     return this.page.locator("((//input[@class=\"form-control rounded-0 border-0 border-bottom p-3 bg-light ng-untouched ng-pristine ng-valid\"]/../../../../../../../../../..//div[@class=\"mb-2\"])//select)[1]");
   }
 
-  get BidMap2_Advance_Search(): Locator {
-    return this.page.locator("(//td//button[text()=\" $|BidMapName2| \"])");
+  BidMap2_Advance_Search(BidMapName2: string): Locator {
+    return this.page.locator(`(//td//button[text()=\" ${BidMapName2} \"])`);
   }
 
-  get BidMap3_Advance_Search(): Locator {
-    return this.page.locator("(//td//button[text()=\" $|BidMapName3| \"])");
+  BidMap3_Advance_Search(BidMapName3: string): Locator {
+    return this.page.locator(`(//td//button[text()=\" ${BidMapName3} \"])`);
   }
 
   get Chase_Field_Input_box(): Locator {

@@ -19,8 +19,8 @@ export class MappingListPage {
     return this.page.locator("//tbody//tr");
   }
 
-  get BidMap1_Advanced_Search(): Locator {
-    return this.page.locator("(//td//button[text()=\" $|BidMapName1| \"])");
+  BidMap1_Advanced_Search(BidMapName1: string): Locator {
+    return this.page.locator(`(//td//button[text()=\" ${BidMapName1} \"])`);
   }
 
   get checkbox_Element(): Locator {
