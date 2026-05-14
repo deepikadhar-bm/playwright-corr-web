@@ -1,5 +1,4 @@
 import { Page, Locator } from '@playwright/test';
-
 /**
  * Page Object: CorrPortalPage
  * Elements: 508
@@ -92,7 +91,9 @@ export class CorrPortalPage {
   get Advanced_Search_Bid_maps_Delete_Button_1(): Locator {
     return this.page.locator("//tbody//td[@data-title=\"Map Name\"]//*[contains(text(),\"TS_AdvanceSearch\")]/../..//button[@aria-label=\"Delete Map\"]");
   }
-
+  get Advanced_Search_Bid_maps_Delete_Button_New(): Locator {
+    return this.page.locator(`//tbody//td[@data-title="Map Name"]//*[contains(text(),"TS_AdvanceSearch")]/../..//button[@aria-label="Delete Map"]`);
+  }
   Advanced_Search_Bid_maps_Delete_Button(CommonKeyword:string): Locator {
     return this.page.locator(`//tbody//td[@data-title=\"Map Name\"]//*[contains(text(),"${CommonKeyword}")]/../..//button[@aria-label=\"Delete Map\"]`);
   }
