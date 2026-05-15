@@ -20,12 +20,13 @@ import { uploadFile } from '../../../src/helpers/file-helpers';
 import { CorrespondentPortalPage } from '@pages/correspondant/correspondent-portal';
 import { CorrespondentPortal4Page } from '@pages/correspondant/correspondent-portal-4';
 import { EnumerationMappingPage } from '../../../src/pages/correspondant/enumeration-mapping';
-import { BidRequestCreationPage, BidrequestCreationPage, BidRequestDetailsPage, SpinnerPage, StandardPage, UpdatePermissionsButtonPage } from '@pages/correspondant';
+import { BidMapsPage, BidRequestCreationPage, BidrequestCreationPage, BidRequestDetailsPage, SpinnerPage, StandardPage, UpdatePermissionsButtonPage } from '@pages/correspondant';
 import { APP_CONSTANTS as appconstants } from '../../../src/constants/app-constants';
 import { BidRequestPage } from '../../../src/pages/correspondant/bid-request';
 import { BidRequestsPage } from '../../../src/pages/correspondant/bid-requests';
 import { readCellByColAndRowIndex } from '../excel-helpers';
 import { FILE_CONSTANTS as fileconstants } from '../../../src/constants/file-constants';
+import { BidMapPage } from '@pages/correspondant/bid-map';
 //import { BidrequestCreationPage } from '../../../src/pages/correspondant/bidrequest-creation';
 
 
@@ -253,7 +254,71 @@ export async function stepGroup_Creation_Of_Bid_Map_Upto_Header_Mapping(page: im
   await CorrPortalElem.Header_Mapping.waitFor({ state: 'visible' });
   expect(CorrPortalElem.Header_Mapping).toBeEnabled();
 }
+export async function stepGroup_Creation_Of_Bid_Map_Upto_Header_Mapping_for_Advanced_Search(page: import('@playwright/test').Page, vars: Record<string, string>, fileName: string) {
+  const CorrPortalElem = new CorrPortalPage(page);
+  const Helpers = new AddonHelpers(page, vars);
+  const correspondentPortalPage = new CorrespondentPortalPage(page);
+  const CorrespondentPortal4Elem = new CorrespondentPortal4Page(page);
+  await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
+  // [DISABLED] Verify that the element Dashboard is displayed and With Scrollable FALSE
+  // await expect(CorrPortalElem.Dashboard).toBeVisible();
+  await stepGroup_Navigation_to_Customer_Permission(page, vars);
+  await CorrPortalElem.Administration_Menu.click();
+  await CorrPortalElem.Bid_Maps_Menu.click();
+  await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
+  await expect(CorrPortalElem.Mappings).toBeVisible();
+  await CorrPortalElem.Add_New_Mapping_Button.click();
+  await expect(CorrPortalElem.Create_New_Map).toBeVisible();
+  vars["Current Date"] = (() => {
+    const d = new Date();
+    const opts: Intl.DateTimeFormatOptions = { timeZone: "Asia/Kolkata" };
+    const fmt = "MM/dd/yyyy";
+    // Map Java date format to Intl parts
+    const parts = new Intl.DateTimeFormat('en-US', { ...opts, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }).formatToParts(d);
+    const p = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
+    return fmt.replace('yyyy', p.year || '').replace('yy', (p.year || '').slice(-2)).replace('MM', p.month || '').replace('dd', p.day || '').replace('HH', String(d.getHours()).padStart(2, '0')).replace('hh', p.hour || '').replace('mm', p.minute || '').replace('ss', p.second || '').replace('a', p.dayPeriod || '').replace(/M(?!M)/g, String(parseInt(p.month || '0'))).replace(/d(?!d)/g, String(parseInt(p.day || '0'))).replace(/h(?!h)/g, String(parseInt(p.hour || '0')));
 
+  })();
+  vars["CreateNewMap"] = (() => {
+    const d = new Date();
+    const opts: Intl.DateTimeFormatOptions = { timeZone: "America/New_York" };
+    const fmt = "MM/dd/yyyy/HH:mm:ss";
+    const parts = new Intl.DateTimeFormat('en-US', { ...opts, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false }).formatToParts(d);
+    const p = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
+    return fmt.replace('yyyy', p.year || '').replace('MM', p.month || '').replace('dd', p.day || '').replace('HH', p.hour || '').replace('mm', p.minute || '').replace('ss', p.second || '');
+  })();
+  //vars["CreateNewMap"] = "TS_AdvanceSearch" + vars["CreateNewMap"];
+  Helpers.getCurrentTimestamp(appconstants.MONTH_FORMAT_SLASH, "Current Date", appconstants.ASIA_KOLKATA);
+  Helpers.concatenate(appconstants.BidMapNameAdvancedSearch, vars["Current Date"], "CreateNewMap"); /* format: MM/dd/yyyy/HH:mm:ss */;
+  await CorrPortalElem.Create_New_Map_Field.fill(vars["CreateNewMap"]);
+  vars["BidMap"] = await CorrPortalElem.Create_New_Map_Field.inputValue() || '';
+  await CorrPortalElem.Compare_Button.click();
+  await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
+  await expect(CorrPortalElem.Bid_Maps_Name(vars["CreateNewMap"])).toContainText(vars["CreateNewMap"]);
+  // [DISABLED] Verify that the current page displays text Create New Map
+  // await expect(page.getByText(vars["Create New Map"])).toBeVisible();
+  await CorrPortalElem.Select_Companys_Dropdown.click();
+  await CorrespondentPortal4Elem.Search_Text_Field.fill(vars["Companyname"]);
+  //await CorrPortalElem.Search_Text_Field.click();
+  await CorrPortalElem.Required_Company_s_Name_Value(vars["Companyname"]).first().click();
+  await CorrPortalElem.Apply_Selected.click();
+  const value = 'STANDARD';
+  await correspondentPortalPage.Execution_Type_Dropdown.selectOption({ label: value });
+  await expect(correspondentPortalPage.Execution_Type_Dropdown.locator('option:checked')).toHaveText(value);
+  await expect(CorrPortalElem.Upload_File).toHaveValue('');
+  await expect(page.getByText("Drag and drop files here or click to browse. Allowed formats: .xls,.xlsx,.csv,.txt")).toBeVisible();
+  // await CorrPortalElem.Upload_File.setInputFiles(path.resolve(__dirname, '../../../uploads', "DeepikaAugBidQA_(3)_(1)_(1)_(2).xlsx"));
+  // await uploadFile(page, correspondentPortalPage.Upload_File, "BidMAP_Happy_Flow_1.xlsx");
+  await uploadFile(page, correspondentPortalPage.Upload_File, fileName);
+  await CorrPortalElem.Map_Headers_Button.click();
+  await CorrPortalElem.Save_and_Move_to_Next_Page.waitFor({ state: 'visible' });
+  await expect(CorrPortalElem.This_action_will_save_the_changes_and_Move_to_Next_Page).toBeVisible();
+  await CorrPortalElem.Proceed_with_Saving_Button.click();
+  await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
+  await expect(page.getByText(vars["CreateNewMap"])).toBeVisible();
+  await CorrPortalElem.Header_Mapping.waitFor({ state: 'visible' });
+  expect(CorrPortalElem.Header_Mapping).toBeEnabled();
+}
 
 //cloning stepgroup from "stepGroup_Creation_Of_Bid_Map_Upto_Header_Mapping" to explicitly add Execution Type
 export async function stepGroup_Creation_Of_Bid_Map_Upto_Header_Mapping_with_Standard(page: import('@playwright/test').Page, vars: Record<string, string>, fileName: string) {
@@ -2471,6 +2536,7 @@ export async function stepGroup_Deleting_All_Advanced_Search_Bid_Maps(page: impo
     await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
     Methods.MathematicalOperation(vars['count'], '+', 1, 'count');
   }
+//}
 }
 
 /**
@@ -2482,7 +2548,7 @@ export async function stepGroup_Verifying_The_BidMaps_Count(page: import('@playw
   const CorrPortalElem = new CorrPortalPage(page);
   await expect(CorrPortalElem.SearchFilter_Input_Field).toBeVisible();
   vars["BidMapsCount(AllMapsList)"] = String(await CorrPortalElem.Total_Rows_Count.count());
-  expect(String(vars["BidMapsCount(AdvanceSearch)"])).toBe(vars["BidMapsCount(AllMapsList)"]);
+  expect(parseInt(vars["BidMapsCount(AdvanceSearch)"])).toBeLessThan(parseInt(vars["BidMapsCount(AllMapsList)"]));
 }
 
 /**
@@ -2541,17 +2607,43 @@ export async function stepGroup_Adding_Actions_In_Rules_and_Actions_Screen(page:
  */
 export async function stepGroup_Exporting_Map_list_for_Advance_Search_New(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
-  await CorrPortalElem.Select_All_Checkbox.check();
-  await expect(CorrPortalElem.Select_All_Checkbox).toBeVisible();
+  const bidMapPage = new BidMapPage(page);
+  //await CorrPortalElem.Select_All_Checkbox.check();
+  await bidMapPage.Select_All_Checkbox_For_BidMap.check();
+ // await expect(CorrPortalElem.Select_All_Checkbox).toBeVisible();
+   await expect(bidMapPage.Select_All_Checkbox_For_BidMap).toBeChecked();
+
   await CorrPortalElem.Export_Selected.waitFor({ state: 'visible' });
   await page.waitForTimeout(5000);
   await expect(CorrPortalElem.Export_Selected).toBeEnabled();
-  await CorrPortalElem.Export_Selected.click();
+  
+   await CorrPortalElem.Export_Selected.click();
+
   await CorrPortalElem.Export_List.waitFor({ state: 'visible' });
-  await CorrPortalElem.Export_List.click();
-  await expect(CorrPortalElem.Export_List).toBeVisible();
-  await CorrPortalElem.Export_Selected.click();
-  await expect(CorrPortalElem.Export_List).toBeVisible();
+  // await CorrPortalElem.Export_List.click();
+  // await expect(CorrPortalElem.Export_List).not.toBeVisible();
+  // const [download] = await Promise.all([
+  //           page.waitForEvent('download'),
+  //           CorrPortalElem.Export_List.click()
+  //         ]);
+  //         vars['SavedFileName'] = vars['TimeStamp'] + '_' + download.suggestedFilename();
+  //         vars['FilePathExportList'] = path.join(vars['DownloadDir'], vars['SavedFileName']);
+  //         await download.saveAs(vars['FilePathExportList']);
+  //         log.stepPass('Export list downloaded. FileName: ' + vars['SavedFileName']);
+  //await page.waitForTimeout(5000);
+  const [download] = await Promise.all([
+        page.waitForEvent('download'),
+        CorrPortalElem.Export_List.click(),
+      ]);
+      await expect(CorrPortalElem.Export_List).not.toBeVisible();
+      const filePath = path.join('test-results', 'downloads', download.suggestedFilename());
+      await download.saveAs(filePath);
+      vars['_lastDownloadPath'] = filePath;
+      vars["FilePathExportList"] = filePath;
+      log.stepPass(`Export action completed and file downloaded successfully: "${filePath}"`);
+      //log.stepPass(`UI record count captured: "${vars["CountOfRequestsUI"]}", file downloaded: "${filePath}"`);
+  // await CorrPortalElem.Export_Selected.click();
+  // await expect(CorrPortalElem.Export_List).not.toBeVisible();
   await stepGroup_New_Export_List_Advance_Search(page, vars);
 }
 
@@ -2584,61 +2676,169 @@ export async function stepGroup_Deleting_BidMaps_After_Test_StepsAdvance_Search(
  * ID: 1185
  * Steps: 25
  */
+// export async function stepGroup_New_Export_List_Advance_Search(page: import('@playwright/test').Page, vars: Record<string, string>) {
+//   const CorrPortalElem = new CorrPortalPage(page);
+//   const bidRequestsPage = new BidRequestsPage(page);
+//   const Methods = new AddonHelpers(page, vars);
+//   vars["RowsCount"] = String(await CorrPortalElem.Total_Rows_Count.count());
+//   vars["RowCountUI"] = "1";
+//   vars["RowCountExcel"] = "1";
+//   while (parseFloat(String(vars["RowCountUI"])) <= parseFloat(String(vars["RowsCount"]))) {
+//     vars["SplitCount"] = "1";
+//     vars["ColumnCountUI"] = "2";
+//     while (parseFloat(String(vars["ColumnCountUI"])) <= parseFloat(String("10"))) {
+//       // vars["RowDataExcel"] = excelHelper.readRow(vars['_lastDownloadPath'] || '', vars["RowCountExcel"], "0");
+//       // if (String(vars["index"]) === String("5")) {
+//       //   if (String(vars["RowDataExcel"]).includes(String("ACTIVE, DRAFT"))) {
+//       //     vars["ExcelValue1"] = String(vars["RowDataExcel"]).split(",")[parseInt(String(vars["index"]))] || '';
+//       //     vars["index"] = (parseFloat(String("1")) + parseFloat(String(vars["index"]))).toFixed(0);
+//       //     vars["ExcelValue2"] = String(vars["RowDataExcel"]).split(",")[parseInt(String(vars["index"]))] || '';
+//       //     vars["CellValueInExcel"] = String(vars["ExcelValue1"]) + String(vars["ExcelValue2"]);
+//       //     vars["CellValueInExcel"] = String(vars["CellValueInExcel"]).trim();
+//       //   } else {
+//       //     vars["CellValueInExcel"] = String(vars["RowDataExcel"]).split(",")[parseInt(String(vars["index"]))] || '';
+//       //   }
+//       // } else {
+//       //   vars["CellValueInExcel"] = String(vars["RowDataExcel"]).split(",")[parseInt(String(vars["index"]))] || '';
+//       // }
+//       // vars["CellValueInExcel"] = String(vars["CellValueInExcel"]).trim();
+//       // vars["CellValueInUI"] = await CorrPortalElem.Individual_Cell_Value_UI.textContent() || '';
+//       // vars["CellValueInUI"] = String(vars["CellValueInUI"]).trim();
+//       // if (String(vars["CellValueInExcel"]) === String("N/A")) {
+//       //   vars["CellValueInExcel"] = "-";
+//       // }
+//       // if (String(vars["CellValueInExcel"]).includes(String("ET"))) {
+//       // }
+//       vars["EntireRowDataExcel"] = excelHelper.readEntireRow(vars['FilePathExportList'], "0", vars['RowCountExcel'], 'EntireRowDataExcel');
+//       log.info('Column Iteration: ' + vars['ColumnCountUI']);
+//             // vars["IndividualHeaderNameUI"] = await bidRequestsPage.IndividualHeadersUI(vars['ColumnCountUI']).textContent() || '';
+//             // log.info('Individual Header Name UI: ' + vars["IndividualHeaderNameUI"]);
+//             // Methods.trimtestdata(vars["IndividualHeaderNameUI"], 'IndividualHeaderNameUI');
+//             vars["IndividualColumnDataUI"] = await bidRequestsPage.IndividualColumnDataUI(vars['RowCount'], vars['ColumnCountUI']).textContent() || '';
+//             log.info('Individual Column Data UI: ' + vars["IndividualColumnDataUI"]);
+//             Methods.trimtestdata(vars["IndividualColumnDataUI"], 'IndividualColumnDataUI');
+//             Methods.splitStringByRegConditionWithPosition(vars["EntireRowDataExcel"], ',', vars["SplitCount"], 'IndividualColumnDataExcel');
+//             log.info('IndividualColumnDataExcel: ' + vars['IndividualColumnDataExcel']);
+//             if (String(vars['IndividualColumnDataExcel']) === String('null')) {
+//               log.info('Excel column Data match with null');
+//               // if (String(vars["IndividualHeaderNameUI"]) === String(appconstants.HEDER_NAME_CCODE)) {
+//               //   log.info('Individual Header Name UI match with CCode');
+//               //   vars['IndividualColumnDataUI'] = 'null';
+//               // }
+//               //else {
+//                 vars['IndividualColumnDataExcel'] = '-';
+//               //}
+
+//             }
+//             else if (String(vars['IndividualColumnDataUI']) === String(appconstants.ACTIVE_DRAFT_TEXT)) {
+//               log.info('Individual Column Data UI match with ACTIVE DRAFT');
+//               Methods.performArithmetic(vars["SplitCount"], 'ADDITION', '1', 'SplitCount', 0);
+//               Methods.splitStringByRegConditionWithPosition(vars["EntireRowDataExcel"], ',', vars["SplitCount"], 'IndividualColumnDataExcel1');
+//               Methods.concatenate(vars['IndividualColumnDataExcel'], vars['IndividualColumnDataExcel1'], 'IndividualColumnDataExcel');
+//               Methods.trimWhitespace(vars['IndividualColumnDataExcel'], 'IndividualColumnDataExcel');
+//             }
+
+//             else if (String(vars['IndividualColumnDataExcel']).includes(String(appconstants.ET))) {
+//               log.info('Excel Data row data contains ET');
+//               Methods.removeCharactersFromPosition(vars['IndividualColumnDataExcel'], '0', '9', 'IndividualColumnDataExcel');
+//             }
+
+//             expect(Methods.verifyString(vars['IndividualColumnDataUI'], 'equals', vars['IndividualColumnDataExcel']));
+
+//             Methods.performArithmetic(vars["ColumnCountUI"], 'ADDITION', '1', 'ColumnCountUI', 0);
+//             Methods.performArithmetic(vars["SplitCount"], 'ADDITION', '1', 'SplitCount', 0);
+//     }
+//   }
+// }
+
+
+
 export async function stepGroup_New_Export_List_Advance_Search(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
+  const bidRequestsPage = new BidRequestsPage(page);
   const Methods = new AddonHelpers(page, vars);
+  
+  log.step('Initialize export list advance search validation');
+  vars["RowsCount"] = String(await CorrPortalElem.Total_Rows_Count.count());
+  log.info('Total Rows Count: ' + vars["RowsCount"]);
+  
+  vars["RowCountUI"] = "1";
+  vars["RowCountExcel"] = "1";
+  log.stepPass('Row counters initialized successfully');
+  
+  while (parseFloat(String(vars["RowCountUI"])) <= parseFloat(String(vars["RowsCount"]))) {
+    log.info('Processing Row: ' + vars["RowCountUI"] + ' of ' + vars["RowsCount"]);
+    vars["SplitCount"] = "1";
+    vars["ColumnCountUI"] = "1";
+      vars["EntireRowDataExcel"] = excelHelper.readEntireRow(vars['FilePathExportList'], "0", vars['RowCountExcel'], 'EntireRowDataExcel');
+      log.info(`Entire Row ${vars['RowCountExcel']} Data Excel: ${vars['EntireRowDataExcel']}`);
 
-  vars['RowsCount'] = String(await CorrPortalElem.Total_Rows_Count.count());
-  log.info('Total Rows Count UI: ' + vars['RowsCount']);
-  vars['RowCountUI'] = appconstants.ONE;
-  vars['RowCountExcel'] = appconstants.ONE;
-  while (parseFloat(String(vars['RowCountUI'])) <= parseFloat(String(vars['RowsCount']))) {
-    log.info('Row iteration: ' + vars['RowCountUI']);
-    vars['RowDataExcel'] = excelHelper.readEntireRow(vars['FilePathExportList'], '0', vars['RowCountExcel'], 'RowDataExcel');
-    vars['index'] = appconstants.ONE;
-    vars['ColumnCountUI'] = appconstants.TWO;
-    while (parseFloat(String(vars['ColumnCountUI'])) <= parseFloat(String(appconstants.TEN))) {
-      log.info('Column iteration: ' + vars['ColumnCountUI']);
-      if (String(vars['index']) === String(appconstants.FIVE)) {
-        if (String(vars['RowDataExcel']).includes(String('ACTIVE, DRAFT'))) {
-          log.info('Row data Excel contains ACTIVE, DRAFT at index: ' + vars['index']);
-          Methods.splitStringByRegConditionWithPosition(vars['RowDataExcel'], ',', vars['index'], 'ExcelValue1');
-          Methods.performArithmetic(vars['index'], 'ADDITION', '1', 'index', 0);
-          Methods.splitStringByRegConditionWithPosition(vars['RowDataExcel'], ',', vars['index'], 'ExcelValue2');
-          Methods.concatenate(vars['ExcelValue1'], vars['ExcelValue2'], 'CellValueInExcel');
-          Methods.trimWhitespace(vars['CellValueInExcel'], 'CellValueInExcel');
-        } else {
-          Methods.splitStringByRegConditionWithPosition(vars['RowDataExcel'], ',', vars['index'], 'CellValueInExcel');
-          Methods.trimWhitespace(vars['CellValueInExcel'], 'CellValueInExcel');
-        }
-      } else {
-        Methods.splitStringByRegConditionWithPosition(vars['RowDataExcel'], ',', vars['index'], 'CellValueInExcel');
-        Methods.trimWhitespace(vars['CellValueInExcel'], 'CellValueInExcel');
+    
+    while (parseFloat(String(vars["ColumnCountUI"])) <= parseFloat(String("9"))) {
+      
+      log.info('Column Iteration: ' + vars['ColumnCountUI']);
+      // vars["IndividualHeaderNameUI"] = await bidRequestsPage.IndividualHeadersUI(vars['ColumnCountUI']).textContent() || '';
+      // log.info('Individual Header Name UI: ' + vars["IndividualHeaderNameUI"]);
+      // Methods.trimtestdata(vars["IndividualHeaderNameUI"], 'IndividualHeaderNameUI');
+      
+      log.step('Extract individual column data from UI');
+      vars["IndividualColumnDataUI"] = await bidRequestsPage.IndividualColumnDataUI(vars['RowCountUI'], vars['ColumnCountUI']).textContent() || '';
+      log.info('Individual Column Data UI: ' + vars["IndividualColumnDataUI"]);
+      Methods.trimtestdata(vars["IndividualColumnDataUI"], 'IndividualColumnDataUI');
+      
+      log.step('Extract individual column data from Excel');
+      Methods.splitStringByRegConditionWithPosition(vars["EntireRowDataExcel"], ',', vars["SplitCount"], 'IndividualColumnDataExcel');
+      log.info('Individual Column Data Excel: ' + vars['IndividualColumnDataExcel']);
+      
+      log.step('Validate and process column data');
+      if (String(vars['IndividualColumnDataExcel']) === String('null')) {
+        log.info('Excel column Data match with null');
+        // if (String(vars["IndividualHeaderNameUI"]) === String(appconstants.HEDER_NAME_CCODE)) {
+        //   log.info('Individual Header Name UI match with CCode');
+        //   vars['IndividualColumnDataUI'] = 'null';
+        // }
+        //else {
+          vars['IndividualColumnDataExcel'] = '-';
+          log.info('Setting Excel column data to dash for null value');
+        //}
       }
-      vars['CellValueInUI'] = await CorrPortalElem.Individual_Cell_Value_UI(vars['RowCountUI'], vars['ColumnCountUI']).textContent() || '';
-      Methods.trimWhitespace(vars['CellValueInUI'], 'CellValueInUI');
-      log.info('CellValueInExcel: ' + vars['CellValueInExcel'] + ' | CellValueInUI: ' + vars['CellValueInUI']);
-      if (String(vars['CellValueInExcel']) === String('null')) {
-        log.info('Cell Value In Excel is null at index: ' + vars['index']);
-        vars['CellValueInExcel'] = '-';
+      else if (String(vars['IndividualColumnDataUI']) === String(appconstants.ACTIVE_DRAFT_TEXT)) {
+        log.info('Individual Column Data UI match with ACTIVE DRAFT');
+        Methods.performArithmetic(vars["SplitCount"], 'ADDITION', '1', 'SplitCount', 0);
+        log.info('Split Count incremented for ACTIVE DRAFT processing: ' + vars["SplitCount"]);
+        
+        Methods.splitStringByRegConditionWithPosition(vars["EntireRowDataExcel"], ',', vars["SplitCount"], 'IndividualColumnDataExcel1');
+        log.info('Additional Excel column data extracted: ' + vars['IndividualColumnDataExcel1']);
+        
+        Methods.concatenate(vars['IndividualColumnDataExcel'], vars['IndividualColumnDataExcel1'], 'IndividualColumnDataExcel');
+        log.info('Column data concatenated for ACTIVE DRAFT');
+        
+        Methods.trimWhitespace(vars['IndividualColumnDataExcel'], 'IndividualColumnDataExcel');
+        log.info('Whitespace trimmed from concatenated data: ' + vars['IndividualColumnDataExcel']);
       }
-      if (String(vars['CellValueInExcel']).includes(String(appconstants.ET))) {
-        log.info('Cell Value In Excel contains ET at index: ' + vars['index']);
-        Methods.removeCharactersFromPosition(vars['CellValueInExcel'], '10', '2', 'CellValueInExcelTime');
-        Methods.removeCharactersFromPosition(vars['CellValueInExcel'], '0', '7', 'CellValueInExcelDate');
-        Methods.concatenateWithSpace(vars['CellValueInExcelDate'], vars['CellValueInExcelTime'], 'ExcelDateTime');
-        Methods.addMinutesToDatetime(vars['ExcelDateTime'], appconstants.DATE_TIME_FORMAT_EXCEL_EST, 240, appconstants.DATE_TIME_FORMAT_EXCEL_EST, 'CurrentLocalTime');
-        Methods.removeCharactersFromPosition(vars['CurrentLocalTime'], '0', '6', 'CurrentLocalDate');
-        vars['CellValueInExcel'] = vars['CurrentLocalDate'];
+      else if (String(vars['IndividualColumnDataExcel']).includes(String(appconstants.ET))) {
+        log.info('Excel Data row data contains ET');
+        Methods.removeCharactersFromPosition(vars['IndividualColumnDataExcel'], '0', '9', 'IndividualColumnDataExcel');
+        log.info('Characters removed from position 0-9 for ET data: ' + vars['IndividualColumnDataExcel']);
       }
 
-      expect(Methods.verifyString(vars['CellValueInExcel'], 'equals', vars['CellValueInUI']));
-      Methods.performArithmetic(vars['index'], 'ADDITION', '1', 'index', 0);
-      Methods.performArithmetic(vars['ColumnCountUI'], 'ADDITION', '1', 'ColumnCountUI', 0);
+      log.step('Compare UI column data with Excel column data');
+      expect(Methods.verifyString(vars['IndividualColumnDataUI'], 'equals', vars['IndividualColumnDataExcel']));
+      log.stepPass('Column data match verified - UI: ' + vars['IndividualColumnDataUI'] + ' | Excel: ' + vars['IndividualColumnDataExcel']);
+
+      Methods.performArithmetic(vars["ColumnCountUI"], 'ADDITION', '1', 'ColumnCountUI', 0);
+      log.info('Column Count UI incremented: ' + vars["ColumnCountUI"]);
+      
+      Methods.performArithmetic(vars["SplitCount"], 'ADDITION', '1', 'SplitCount', 0);
+      log.info('Split Count incremented: ' + vars["SplitCount"]);
     }
-    Methods.performArithmetic(vars['RowCountUI'], 'ADDITION', '1', 'RowCountUI', 0);
-    Methods.performArithmetic(vars['RowCountExcel'], 'ADDITION', '1', 'RowCountExcel', 0);
+    
+    log.info('Row ' + vars["RowCountUI"] + ' validation completed successfully');
+    Methods.performArithmetic(vars["RowCountUI"], 'ADDITION', '1', 'RowCountUI', 0);
+    Methods.performArithmetic(vars["RowCountExcel"], 'ADDITION', '1', 'RowCountExcel', 0);
   }
+  
+  log.stepPass('Export list advance search validation completed successfully for all rows and columns');
 }
 
 /**

@@ -1,3 +1,4 @@
+
 export const APP_CONSTANTS = {
   ASIA_KOLKATA: "Asia/Kolkata",
   AMERICA_NEW_YORK: "America/New_York",
@@ -146,7 +147,25 @@ export const APP_CONSTANTS = {
   USERNAME_TESTING:'Username_tesing',
   ACTIVE_DRAFT_TEXT:'ACTIVEDRAFT',
   HEDER_NAME_CCODE:'CCode',
-  EXECUTION_TYPE_CHASE_DIRECT:'CHASE_DIRECT',
+  //EXECUTION_TYPE_CHASE_DIRECT:'CHASE_DIRECT',
+  RuleName1:'Rule_1',
+  RuleName2:'Rule_2',
+  RuleName3:'Rule_3',
+  ConditionBidField:'FICO Score',
+  Operation1: "LESS",
+  BidEnumeratedTapeValue1:"425000",
+  UniqueChaseFieldName1: "Street",
+  UniqueChaseValue1: "AndoverBirchDrive1",
+  Operation2: "GREATER",
+  BidEnumeratedTapeValue2:"425000",
+  UniqueChaseFieldName2: "State",
+  UniqueChaseValue2: "Kerala",
+  Operation3: "LESS",
+  BidEnumeratedTapeValue3:"425000",
+  UniqueChaseFieldName3: "Zip",
+  UniqueChaseValue3: "691001",
+  BidMapNameAdvancedSearch: "TS_AdvanceSearch",
+
   TS_SEARCHMAP:'TS_SEARCHMAP',
   TS_SEARCH:'TS_SEARCH',
 };
