@@ -7,8 +7,8 @@ import { SpinnerPage } from '../../../src/pages/correspondant/spinner';
 import { runPrereq_1394 } from '../../../src/helpers/prereqs/prereq-1394';
 import { AddonHelpers } from '../../../src/helpers/AddonHelpers';
 import { Logger as log } from '../../../src/helpers/log-helper';
-// import { ENV } from '@config/environments';
 import { testDataManager } from 'testdata/TestDataManager';
+import { APP_CONSTANTS as appconstants } from '../../../src/constants/app-constants';
 
 
 const TC_ID = 'REG_TS11_TC01';
@@ -21,12 +21,9 @@ test.describe('REG_PriceOffered', () => {
   let priceOfferedPage: PriceOfferedPage;
   let spinnerPage: SpinnerPage;
   let Methods: AddonHelpers;
-  // const credentials = ENV.getCredentials('internal');
 
   test.beforeEach(async ({ page }) => {
     vars = {};
-    // vars['Username'] = credentials.username;
-    // vars['Password'] = credentials.password;
     await runPrereq_1394(page, vars);
     commitmentListPage = new CommitmentListPage(page);
     correspondentPortalPage = new CorrespondentPortalPage(page);
@@ -36,7 +33,6 @@ test.describe('REG_PriceOffered', () => {
   });
 
   test(`${TC_ID} - ${TC_TITLE}`, async ({ page }) => {
-    // await stepGroups.stepGroup_Login_to_CORR_Portal(page, vars);
     log.tcStart(TC_ID, TC_TITLE);
     try {
 
@@ -76,6 +72,7 @@ test.describe('REG_PriceOffered', () => {
         await priceOfferedPage.Commit_Selected_1_Dropdown.click();
         await priceOfferedPage.Yes_Commit_ButtonPopup.click();
         await priceOfferedPage.Okay_ButtonPopup.waitFor({ state: 'visible' });
+        await expect(priceOfferedPage.Commitpopup_price_offered_screen).toContainText(appconstants.UPDATED_SUCCESSFULLY_TEXT_POPUP);
         await priceOfferedPage.Okay_ButtonPopup.click();
         vars['OpenAuthLimitAfterCommit'] = await correspondentPortalPage.Open_Auth_Limit_Total_Loan.textContent() || '';
         Methods.splitBySpecialChar(vars['OpenAuthLimitAfterCommit'], '(', '0', 'OpenAuthLimitAfterCommit');
@@ -106,13 +103,13 @@ test.describe('REG_PriceOffered', () => {
         vars['SelectedLoansCount'] = String(await priceOfferedPage.Checked_Row.count());
         vars['UncommittedLoanAmount'] = await priceOfferedPage.Selected_Uncommitted_Loan_Amount(vars["CommittedLoan"]).textContent() || '';
         vars['UncommittedLoanNum'] = await priceOfferedPage.Checked_Corr_Loan.textContent() || '';
-        await priceOfferedPage.Commit_Selected_1_Dropdown.click();
+        await priceOfferedPage.Uncommit_Selected_1_Button.click();
         await expect(priceOfferedPage.BidRequestIdPopup).toContainText(vars['BidReqIdPriceOffered']);
         await expect(priceOfferedPage.Loan_ValuePopup).toContainText(vars['UncommittedLoanAmount']);
         await expect(priceOfferedPage.Selected_LoansPopup).toContainText(vars['SelectedLoansCount']);
         await priceOfferedPage.Yes_Uncommit_Button.click();
         await priceOfferedPage.Okay_ButtonPopup.waitFor({ state: 'visible' });
-        await expect(priceOfferedPage.Uncommitted_successfully).toContainText('Uncommitted successfully');
+        await expect(priceOfferedPage.Uncommitted_successfully).toContainText(appconstants.UNCOMMITTED_SUCCESSFULLY_TEXT_POPUP);
         await priceOfferedPage.Okay_ButtonPopup.click();
         log.info('UncommittedLoanAmount: ' + vars['UncommittedLoanAmount']);
         log.stepPass('Uncommit action completed and success message verified');

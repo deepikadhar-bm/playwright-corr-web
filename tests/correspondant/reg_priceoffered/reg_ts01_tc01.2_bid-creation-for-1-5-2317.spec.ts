@@ -30,8 +30,7 @@ test.describe('Unassigned', () => {
   const credentials = ENV.getCredentials('internal');
 
   test.beforeEach(async ({ page }) => {
-    // vars = {};
-    vars['FilePath'] = path.resolve(__dirname, '../../../uploads', fileconstants.NEW_FILE_LOAN_POPUP_VERIFICATION);
+    vars['FilePath'] = path.join(process.cwd(),'uploads',fileconstants.NEW_FILE_LOAN_POPUP_VERIFICATION);
     await runPrereq_2318(page, vars);
     bidRequestDetailsPage = new BidRequestDetailsPage(page);
     bidRequestPage = new BidRequestPage(page);

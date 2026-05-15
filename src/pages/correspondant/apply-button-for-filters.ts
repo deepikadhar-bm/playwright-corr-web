@@ -15,8 +15,8 @@ export class ApplyButtonForFiltersPage {
     return this.page.locator("(//div[@class=\"flex-grow-1 text-start text-truncate\"])[3]");
   }
 
-  get Map_Name(): Locator {
-    return this.page.locator("//td[@data-title=\"Map Name\"][contains(.,\"$|Create New Map|\")]");
+  Map_Name(CreateNewMap:string): Locator {
+    return this.page.locator(`//td[@data-title=\"Map Name\"][contains(.,\"${CreateNewMap}\")]`);
   }
 
   get Search_Field_When_Bid_Field(): Locator {

@@ -2192,7 +2192,7 @@ export class CorrespondentPortalPage {
   }
 
   get Yes_Proceed_Button(): Locator {
-    return this.page.locator("(//button[@type=\"button\"])[last()]");
+    return this.page.locator("//button[@aria-label=\"Yes, proceed\"]");
   }
 
   get Yes_proceed_Button_BidRequest(): Locator {

@@ -60,6 +60,7 @@ test.describe('REG_PriceOffered', () => {
         await priceOfferedPage.Yes_Commit_Buttonpopup_price_offered_screen.click();
         await priceOfferedPage.Yes_Commit_Buttonpopup_price_offered_screen.waitFor({ state: 'hidden' });
         await priceOfferedPage.Okay_Buttonpopup_price_offered_screen.waitFor({ state: 'visible' });
+        await expect(priceOfferedPage.Commitpopup_price_offered_screen).toContainText(appconstants.UPDATED_SUCCESSFULLY_TEXT_POPUP);
         await priceOfferedPage.Okay_Buttonpopup_price_offered_screen.click();
         log.stepPass('Loan committed in Chase Direct');
       } catch (e) {
