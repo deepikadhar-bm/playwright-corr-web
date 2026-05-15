@@ -84,7 +84,7 @@ test.describe('REG_PriceOffered', () => {
         await download.saveAs(vars['RecentDownloadedFilePath']);
         vars['ExpectedDownloadedFileName'] = 'Price_Offer_details_' + vars['BidReqID'];
         expect(Methods.verifyString(vars['DownloadedFileName'], 'contains', vars['ExpectedDownloadedFileName'])); 
-        log.stepPass('File downloaded and filename verified: ' + vars['SavedFileName']);
+        log.stepPass('File downloaded and filename verified: ' + vars['DownloadedFileName']);
       } catch (e) {
         log.stepFail(page, 'Failed to download file or verify filename');
         throw e;

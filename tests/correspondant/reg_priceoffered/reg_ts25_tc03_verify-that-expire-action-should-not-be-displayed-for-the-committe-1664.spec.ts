@@ -32,19 +32,6 @@ test.describe('REG_PriceOffered', () => {
     Methods = new AddonHelpers(page, vars);
   });
 
-  test.afterEach(async ({ page }) => {
-    log.afterTestSteps(TC_ID, REG_TS25_TC03testFailed);
-    if (REG_TS25_TC03testFailed) {
-      try {
-      log.step('Executing after-test steps: verifying and deleting Early Close configuration if present');
-      await stepGroups.stepGroup_Deleting_Early_Config_Report_If_Present(page, vars);
-       log.stepPass('After-test steps executed successfully. Early Close configuration verified and deleted if present');
-      } catch (e) {
-        await log.stepFail(page, 'After-test steps execution failed while verifying or deleting Early Close configuration');
-        throw e;
-      }
-    }
-  });
 
   test(`${TC_ID} - ${TC_TITLE}`, async ({ page }) => {
     log.tcStart(TC_ID, TC_TITLE);
@@ -77,6 +64,7 @@ test.describe('REG_PriceOffered', () => {
         await priceOfferedPage.Commit_Selected_1_Dropdown.click();
         await priceOfferedPage.Yes_Commit_ButtonPopup.click();
         await priceOfferedPage.Okay_ButtonPopup.waitFor({ state: 'visible' });
+        await expect(priceOfferedPage.Commitpopup_price_offered_screen).toContainText(appconstants.UPDATED_SUCCESSFULLY_TEXT_POPUP);
         await priceOfferedPage.Okay_ButtonPopup.click();
         log.stepPass('Commit action performed successfully');
       } catch (e) {
@@ -139,16 +127,16 @@ test.describe('REG_PriceOffered', () => {
         expect(Methods.verifyString(vars['BidStatusPriceOfferedPage'], 'equals', appconstants.COMMITTED_STATUS));
         log.stepPass('Bid status remains Committed after expiry window');
       } catch (e) {
-        
+
         await log.stepFail(page, 'Bid status changed after expiry window. Status: ' + vars['BidStatusPriceOfferedPage']);
         throw e;
       }
-       log.step('Deleting early config if prent');
-        try {
-      await stepGroups.stepGroup_Deleting_Early_Config_Report_If_Present(page, vars);
-       log.stepPass('Successfully deleted the early config');
+      log.step('Deleting early config if prent');
+      try {
+        await stepGroups.stepGroup_Deleting_Early_Config_Report_If_Present(page, vars);
+        log.stepPass('Successfully deleted the early config');
       } catch (e) {
-        
+
         await log.stepFail(page, 'Failed to delete early config')
         throw e;
       }
@@ -158,6 +146,20 @@ test.describe('REG_PriceOffered', () => {
       await log.captureOnFailure(page, TC_ID, e);
       log.tcEnd('FAIL');
       throw e;
+    }
+  });
+
+  test.afterEach(async ({ page }) => {
+    log.afterTestSteps(TC_ID, REG_TS25_TC03testFailed);
+    if (REG_TS25_TC03testFailed) {
+      try {
+        log.step('Executing after-test steps: verifying and deleting Early Close configuration if present');
+        await stepGroups.stepGroup_Deleting_Early_Config_Report_If_Present(page, vars);
+        log.stepPass('After-test steps executed successfully. Early Close configuration verified and deleted if present');
+      } catch (e) {
+        await log.stepFail(page, 'After-test steps execution failed while verifying or deleting Early Close configuration');
+        throw e;
+      }
     }
   });
 });

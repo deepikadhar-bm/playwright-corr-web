@@ -6,8 +6,6 @@ import { runPrereq_1389 } from '../../../src/helpers/prereqs/prereq-1389';
 import { AddonHelpers } from '@helpers/AddonHelpers';
 import { Logger as log } from '@helpers/log-helper';
 import { APP_CONSTANTS as appconstants } from '../../../src/constants/app-constants';
-// import { ENV } from '@config/environments';
-// import * as stepGroups from '../../../src/helpers/step-groups';
 
 
 const TC_ID = 'REG_TS10_TC03';
@@ -20,13 +18,10 @@ test.describe('REG_PriceOffered', () => {
   let priceOfferedPage: PriceOfferedPage;
   let spinnerPage: SpinnerPage;
   let Methods: AddonHelpers;
-//   const credentials = ENV.getCredentials('internal');
 
   test.beforeEach(async ({ page }) => {
     vars = {};
     await runPrereq_1389(page, vars);
-    // vars['Username'] = credentials.username;
-    // vars['Password'] = credentials.password;
     correspondentPortalPage = new CorrespondentPortalPage(page);
     priceOfferedPage = new PriceOfferedPage(page);
     spinnerPage = new SpinnerPage(page);
@@ -35,14 +30,12 @@ test.describe('REG_PriceOffered', () => {
 
   test(`${TC_ID} - ${TC_TITLE}`, async ({ page }) => {
     log.tcStart(TC_ID, TC_TITLE);
-    // await stepGroups.stepGroup_Login_to_CORR_Portal(page, vars);
 
     try {
 
       log.step('Navigate to Price Offered list and search by Bid Request ID');
       try {
         vars['BidReqIdPriceOffered'] = vars['RequestIDDetails'];
-        // vars['BidReqIdPriceOffered'] ="87FG7C9D83E3";
         await correspondentPortalPage.Commitments_Side_Menu.click();
         await correspondentPortalPage.Price_Offered_List_Dropdown.click();
         await correspondentPortalPage.Search_By_Bid_Request_ID_Input.fill(vars['BidReqIdPriceOffered']);
@@ -65,6 +58,7 @@ test.describe('REG_PriceOffered', () => {
         await priceOfferedPage.Commit_Selected_1_Dropdown.click();
         await priceOfferedPage.Yes_Commit_ButtonPopup.click();
         await priceOfferedPage.Okay_ButtonPopup.waitFor({ state: 'visible' });
+        await expect(priceOfferedPage.Commitpopup_price_offered_screen).toContainText(appconstants.UPDATED_SUCCESSFULLY_TEXT_POPUP);
         await priceOfferedPage.Okay_ButtonPopup.click();
         await priceOfferedPage.All_Loans_Tabprice_offered_screen.click();
         await priceOfferedPage.Committed_Loan_NumStandard.waitFor({ state: 'visible' });

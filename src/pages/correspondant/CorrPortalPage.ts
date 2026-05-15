@@ -1445,6 +1445,14 @@ export class CorrPortalPage {
     return this.page.locator("//button[contains(text(),\"Okay\")]");
   }
 
+  get Uncommitted_Popup(): Locator {
+    return this.page.locator("//div[@class='modal-body']/div");
+  }
+
+  get Commitpopup_price_offered_screen(): Locator {
+    return this.page.locator("//div[@class=\"modal-body\"]/div\n\n");
+  }
+
   get On_Radio_Button(): Locator {
     return this.page.locator("label[for='bulk-bid-select-on']");
   }

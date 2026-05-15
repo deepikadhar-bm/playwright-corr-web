@@ -643,6 +643,10 @@ Column_Data_UI_DetainsScreen(IndividualHeaderUI:string): Locator {
     return this.page.locator("//div[@class=\"modal-body\"]/div\n\n");
   }
 
+  get Commitpopup_price_offered_screen(): Locator {
+    return this.page.locator("//div[@class=\"modal-body\"]/div\n\n");
+  }
+
   CommitedOrderStandard(CommittedLoanNumStandard:string): Locator {
     return this.page.locator(`//button[text()=\"${CommittedLoanNumStandard}\"]//ancestor::tr/td//div[contains(@class,\"commit-order\")]`);
   }
@@ -1087,6 +1091,10 @@ Column_Data_UI_DetainsScreen(IndividualHeaderUI:string): Locator {
 
   get Edit_Map_Button(): Locator {
     return this.page.locator("//td[@role=\"cell\"]//input[@type=\"checkbox\"]//..//..//button[contains(@aria-label,\"Edit Map\")]");
+  }
+
+  Edit_Req_Map_Button(ProductNamePriceOffered:string): Locator {
+    return this.page.locator(`//td[@data-title='Security Product']//div[normalize-space(text())='${ProductNamePriceOffered}']//ancestor::tr//td//button[@aria-label='Edit Map']`);
   }
 
   get Enabled_Loan_Numbers_In_Price_Offered(): Locator {

@@ -881,6 +881,10 @@ Column_Count_UICommitted_Loans1(count: string): Locator {
     return this.page.locator("//div[text()[normalize-space() = \"Total Loans\"]]");
   }
 
+  get Commit_Popup_ComitmentList(): Locator {
+    return this.page.locator("//div[@class=\"modal-body\"]/div\n\n");
+  }
+
   get Total_Rows_Count_UIFirst_Commitment(): Locator {
     return this.page.locator("(//table)[1]//tbody//tr[@role=\"row\"]");
   }

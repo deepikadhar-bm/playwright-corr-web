@@ -1088,7 +1088,7 @@ export async function stepGroup_Uploading_the_File(page: import('@playwright/tes
  */
 export async function stepGroup_Add_Actions_in_Rules_and_Actions(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
-  await CorrPortalElem.Chase_Field_Name.selectOption({ index: parseInt("16") });
+  await CorrPortalElem.Chase_Field_Name.selectOption({label: 'Ineligible'});
   await CorrPortalElem.Chase_Value.selectOption({ value: "false" });
   // await CorrPortalElem.Value_for_chase.click();
   vars["ChaseFieldNameonAddActions"] = await CorrPortalElem.Add_Actions_Chase_Field_Name.evaluate(el => { const s = el as HTMLSelectElement; return s.options[s.selectedIndex]?.text || ''; });
@@ -1585,7 +1585,7 @@ export async function stepGroup_Create_NewMap(page: import('@playwright/test').P
   await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
   await CorrPortalElem.Add_New_Mapping_Button.click();
   Methods.generateRandomNumber('2', "SearchMapNumber");
-  vars['CommonKeyword']=appconstants.TS_SEARCHMAP;
+  vars['CommonKeyword'] = appconstants.TS_SEARCHMAP;
   Methods.concatenate(appconstants.TS_SEARCHMAP, vars["SearchMapNumber"], 'SearchFieldInputMap');
   await CorrPortalElem.Map_Name_Field_in_Bid_Maps.fill(vars["SearchFieldInputMap"]);
   await expect(CorrPortalElem.Compare_Button).toBeEnabled();
@@ -4393,6 +4393,7 @@ export async function stepGroup_Verifying_the_bidsample_to_bidtape_mapping_in_En
   const Methods = new AddonHelpers(page, vars);
 
   vars["count1"] = appconstants.ONE;
+  await expect(CorrPortalElem.Chase_Enum_Names.first()).toBeVisible();
   vars["EnumFieldsCount"] = String(await CorrPortalElem.Chase_Enum_Names.count());
   log.info('Enum Fields Count: ' + vars["EnumFieldsCount"]);
   while (parseFloat(String(vars["count1"])) <= parseFloat(String(vars["EnumFieldsCount"]))) {
@@ -4417,6 +4418,7 @@ export async function stepGroup_Verifying_the_bidsample_to_bidtape_mapping_in_En
         vars["count2"] = appconstants.ONE;
         while (parseFloat(String(vars["count2"])) <= parseFloat(String(vars["BidTapeCount"]))) {
           vars["BidTapeValue"] = await CorrPortalElem.get_Individual_Bid_Tape_Value_2(vars['ColumnHeader'], vars['count2']).textContent() || '';
+          Methods.trimtestdata(vars["BidTapeValue"],'BidTapeValue');
           Methods.concatenateWithSpecialChar(vars["BidTapeValue"], vars["IndividualBidTapeValue"], ',', 'IndividualBidTapeValue');
           Methods.MathematicalOperation(vars['count2'], '+', 1, 'count2');
         }
@@ -4440,6 +4442,7 @@ export async function stepGroup_Verifying_the_Mapping_of_ChaseField_and_ChaseVal
   const Methods = new AddonHelpers(page, vars);
 
   vars["count1"] = appconstants.ONE;
+  await expect(CorrPortalElem.Chase_Enum_Names.first()).toBeVisible();
   vars["ChaseFieldsCountEnum"] = String(await CorrPortalElem.Chase_Enum_Names.count());
   log.info("Chase Fields Count Enum: " + vars["ChaseFieldsCountEnum"]);
 
@@ -4548,13 +4551,13 @@ export async function stepGroup_Storing_BidSample_and_BidTape_Values_from_Enum_P
     log.info('Iteration: ' + vars["count1"]);
     vars["IndividualBidSampleName"] = await CorrPortalElem.get_Individual_Bid_Sample_Name_Enum_Page(vars["count1"]).textContent() || '';
     vars["ColumnHeader"] = vars["IndividualBidSampleName"];
-    if (!(await enumerationMappingPage.get_BidTapeFieldCountForBidField(vars["ColumnHeader"]).first().isVisible())) /* Element BidTapeFieldCountForBidField is not visible */ {
+    if (!(await enumerationMappingPage.BidTapeFieldCountForBidField(vars["ColumnHeader"]).first().isVisible())) /* Element BidTapeFieldCountForBidField is not visible */ {
       log.info('Element BidTapeFieldCountForBidField is not visible');
       vars["IndividualBidTapeValue"] = "No BidTape";
     } else {
       log.info('Element BidTapeFieldCountForBidField is visible');
       vars["IndividualBidTapeValue"] = "Sample";
-      vars["BidTapeCount"] = String(await enumerationMappingPage.get_BidTapeFieldCountForBidField(vars["ColumnHeader"]).count());
+      vars["BidTapeCount"] = String(await enumerationMappingPage.BidTapeFieldCountForBidField(vars["ColumnHeader"]).count());
       vars["count2"] = appconstants.ONE;
       log.info('Bid Tape Count: ' + vars["BidTapeCount"]);
       while (parseFloat(String(vars["count2"])) <= parseFloat(String(vars["BidTapeCount"]))) {
@@ -4849,6 +4852,7 @@ export async function stepGroup_Commits_an_Fresh_Loan_Num_Chase_Direct(page: imp
   await CorrPortalElem.Yes_Commit_Button_Popup.click();
   await CorrPortalElem.Yes_Commit_Button_Popup.waitFor({ state: 'hidden' });
   await CorrPortalElem.Okay_Button_Popup.waitFor({ state: 'visible' });
+  await expect(CorrPortalElem.Commitpopup_price_offered_screen).toContainText(appconstants.UPDATED_SUCCESSFULLY_TEXT_POPUP);
   await CorrPortalElem.Okay_Button_Popup.click();
 }
 
@@ -5096,6 +5100,7 @@ export async function stepGroup_Commits_an_Fresh_Loan_Num_Standard(page: import(
   await CorrPortalElem.Yes_Commit_Button_Popup.click();
   await CorrPortalElem.Yes_Commit_Button_Popup.waitFor({ state: 'hidden' });
   await CorrPortalElem.Okay_Button_Popup.waitFor({ state: 'visible' });
+  await expect(CorrPortalElem.Commitpopup_price_offered_screen).toContainText(appconstants.UPDATED_SUCCESSFULLY_TEXT_POPUP);
   await CorrPortalElem.Okay_Button_Popup.click();
 }
 
@@ -5178,6 +5183,7 @@ export async function stepGroup_Commit_All_Loans_Chase_Direct(page: import('@pla
   await CorrPortalElem.Yes_Commit_Button_Popup.click();
   await CorrPortalElem.Yes_Commit_Button_Popup.waitFor({ state: 'hidden' });
   await CorrPortalElem.Okay_Button_Popup.waitFor({ state: 'visible' });
+  await expect(CorrPortalElem.Commitpopup_price_offered_screen).toContainText(appconstants.UPDATED_SUCCESSFULLY_TEXT_POPUP);
   await CorrPortalElem.Okay_Button_Popup.click();
 }
 
@@ -5255,6 +5261,7 @@ export async function stepGroup_Uncommits_the_Committed_Loans_One_Exe_Type(page:
     await CorrPortalElem.Uncommit_Selected_Button.click();
     await CorrPortalElem.Yes_Uncommit_Button.click();
     await CorrPortalElem.Okay_Button.waitFor({ state: 'visible' });
+    await expect(CorrPortalElem.Uncommitted_Popup).toContainText(appconstants.UNCOMMITTED_SUCCESSFULLY_TEXT_POPUP);
     await CorrPortalElem.Okay_Button.click();
     await CorrPortalElem.Total_Committed_Loans_Tab.waitFor({ state: 'visible' });
     await CorrPortalElem.Total_Committed_Loans_Tab.click();
@@ -5283,6 +5290,7 @@ export async function stepGroup_Uncommits_the_Committed_Loans_Two_Exe_Type(page:
     await CorrPortalElem.Uncommit_Selected_Button.click();
     await CorrPortalElem.Yes_Uncommit_Button.click();
     await CorrPortalElem.Okay_Button.waitFor({ state: 'visible' });
+    await expect(CorrPortalElem.Uncommitted_Popup).toContainText(appconstants.UNCOMMITTED_SUCCESSFULLY_TEXT_POPUP);
     await CorrPortalElem.Okay_Button.click();
     await CorrPortalElem.Total_Committed_Loans_Tab.waitFor({ state: 'visible' });
     await CorrPortalElem.Total_Committed_Loans_Tab.click();
@@ -5297,6 +5305,7 @@ export async function stepGroup_Uncommits_the_Committed_Loans_Two_Exe_Type(page:
     await CorrPortalElem.Uncommit_Selected_Button.click();
     await CorrPortalElem.Yes_Uncommit_Button.click();
     await CorrPortalElem.Okay_Button.waitFor({ state: 'visible' });
+    await expect(CorrPortalElem.Uncommitted_Popup).toContainText(appconstants.UNCOMMITTED_SUCCESSFULLY_TEXT_POPUP);
     await CorrPortalElem.Okay_Button.click();
     await CorrPortalElem.Total_Committed_Loans_Tab.waitFor({ state: 'visible' });
     await CorrPortalElem.Total_Committed_Loans_Tab.click();
@@ -5320,6 +5329,7 @@ export async function stepGroup_Commits_an_Fresh_Loan_Num(page: import('@playwri
   await CorrPortalElem.Yes_Commit_Button_Popup.click();
   await CorrPortalElem.Yes_Commit_Button_Popup.waitFor({ state: 'hidden' });
   await CorrPortalElem.Okay_Button_Popup.waitFor({ state: 'visible' });
+  await expect(CorrPortalElem.Commitpopup_price_offered_screen).toContainText(appconstants.UPDATED_SUCCESSFULLY_TEXT_POPUP);
   await CorrPortalElem.Okay_Button_Popup.click();
 }
 

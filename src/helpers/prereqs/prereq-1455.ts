@@ -97,6 +97,7 @@ export async function runPrereq_1455(page: Page, vars: Record<string, string>): 
         Methods.getCurrentTimestamp(appconstants. DATE_TIME_FORMAT_COMMIT, 'BidCommittedDateAndTime', appconstants.UTC);
         log.info('BidCommittedDateAndTime: ' + vars['BidCommittedDateAndTime']);
         await priceOfferedPage.Okay_ButtonPopup.waitFor({ state: 'visible' });
+        await expect(priceOfferedPage.Commitpopup_price_offered_screen).toContainText(appconstants.UPDATED_SUCCESSFULLY_TEXT_POPUP);
         vars['CommitmentUniqueNumPopup'] = await priceOfferedPage.Commitment_ID.textContent() || '';
         Methods.trimtestdata(vars['CommitmentUniqueNumPopup'], 'CommitmentUniqueNumPopup');
         vars['CommitmentIDLength'] = String(vars['CommitmentUniqueNumPopup'].length);

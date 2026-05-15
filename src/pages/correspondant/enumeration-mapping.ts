@@ -60,8 +60,8 @@ export class EnumerationMappingPage {
   }
 
 
-  get_BidTapeFieldCountForBidField(columnHeader: string): Locator {
-    return this.page.locator(`//div[text()="${columnHeader}" and not(@class="my-2")]/../..//div[contains(@class,"input-field-name")]`);
+  BidTapeFieldCountForBidField(ColumnHeader: string): Locator {
+    return this.page.locator(`//div[text()="${ColumnHeader}" and not(@class="my-2")]/../..//div[contains(@class,"input-field-name")]`);
 }
 
   get Chase_Enum_Names(): Locator {
