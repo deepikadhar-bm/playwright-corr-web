@@ -150,6 +150,28 @@ export class AddonHelpers {
     } catch (e) { log.fail(`[${METHOD}] String ${order} order | Error: ${e instanceof Error ? e.message : String(e)}`); throw (e instanceof Error ? e : new Error(String(e))); }
   }
 
+
+  async verifyStringOrderByFirstNChars(
+    strategyOrLocator: string | Locator, value: string | undefined, order: 'ascending' | 'descending', charCount: number = 4
+  ): Promise<void> {
+    const METHOD = 'verifyStringOrderByFirstNChars';
+    try {
+      const elements = await this.buildLocator(strategyOrLocator, value).all();
+      if (elements.length === 0) throw new Error(`No elements found`);
+      const texts: string[] = [];
+      for (const el of elements) texts.push((await el.textContent() ?? '').trim());
+      for (let i = 1; i < texts.length; i++) {
+        const prev = texts[i - 1].substring(0, charCount);
+        const curr = texts[i].substring(0, charCount);
+        const cmp = prev.localeCompare(curr);
+        if (order === 'ascending' && cmp > 0)
+          throw new Error(`Order broken at [${i}]: first ${charCount} chars "${prev}" > "${curr}" (full: "${texts[i - 1]}" > "${texts[i]}")`);
+        if (order === 'descending' && cmp < 0)
+          throw new Error(`Order broken at [${i}]: first ${charCount} chars "${prev}" < "${curr}" (full: "${texts[i - 1]}" < "${texts[i]}")`);
+      }
+      log.pass(`[${METHOD}] ${texts.length} strings in ${order} order by first ${charCount} chars`);
+    } catch (e) { log.fail(`[${METHOD}] String ${order} order by first ${charCount} chars | Error: ${e instanceof Error ? e.message : String(e)}`); throw (e instanceof Error ? e : new Error(String(e))); }
+  }
   // ==========================================================================
   // 4. Add days to a date → store in vars
   // ==========================================================================
