@@ -2620,17 +2620,6 @@ export async function stepGroup_Exporting_Map_list_for_Advance_Search_New(page: 
    await CorrPortalElem.Export_Selected.click();
 
   await CorrPortalElem.Export_List.waitFor({ state: 'visible' });
-  // await CorrPortalElem.Export_List.click();
-  // await expect(CorrPortalElem.Export_List).not.toBeVisible();
-  // const [download] = await Promise.all([
-  //           page.waitForEvent('download'),
-  //           CorrPortalElem.Export_List.click()
-  //         ]);
-  //         vars['SavedFileName'] = vars['TimeStamp'] + '_' + download.suggestedFilename();
-  //         vars['FilePathExportList'] = path.join(vars['DownloadDir'], vars['SavedFileName']);
-  //         await download.saveAs(vars['FilePathExportList']);
-  //         log.stepPass('Export list downloaded. FileName: ' + vars['SavedFileName']);
-  //await page.waitForTimeout(5000);
   const [download] = await Promise.all([
         page.waitForEvent('download'),
         CorrPortalElem.Export_List.click(),
@@ -5417,17 +5406,27 @@ export async function stepGroup_Verifying_and_Removing_If_the_Last_Digits_are_Ze
   Methods.getCharByIndex(vars['RuntimeValue'], vars['RefSecDigitsCount'], 'RefSecLastCharacter');
 
   // If the last character is '0', keep trimming until we hit a non-zero or reach '.'
+  log.info('Initial RefSecLastCharacter: ' + vars['RefSecLastCharacter']);
+  log.info('checking if last character is zero to trim trailing zeroes from RuntimeValue: ' + vars['RuntimeValue']);
   if (String(vars['RefSecLastCharacter']) === appconstants.ZERO) {
+    log.info('Last character is zero, entering loop to trim trailing zeroes');
+    let i = 0; // Loop counter for logging
     while (String(vars['RefSecLastCharacter']) !== '.') {
+      log.info('while loop condition passed, Last character is not . ');
+      i++; // Increment loop counter to prevent infinite loops in case of unexpected input
+      log.info(`iteration ${i}`);
+      log.info('Current RefSecLastCharacter: ' + vars['RefSecLastCharacter']);
       Methods.getCharByIndex(vars['RuntimeValue'], vars['RefSecDigitsCount'], 'RefSecLastCharacter');
 
       if (String(vars['RefSecLastCharacter']) === appconstants.ZERO) {
         // Remove the trailing zero from the end
+        log.info('Last character is zero, trimming it from RuntimeValue');
         Methods.removeCharactersFromPosition(vars['RuntimeValue'], '0', '1', 'RuntimeValue');
         // Move index back by one for next iteration
         Methods.MathematicalOperation(vars['RefSecDigitsCount'], '-', '1', 'RefSecDigitsCount');
       } else {
         // Reached a non-zero character — stop trimming
+        log.info('Last character is not zero, stopping trimming');
         Methods.verifyString(vars['RefSecLastCharacter'], 'notContains', appconstants.ZERO);
         break;
       }
