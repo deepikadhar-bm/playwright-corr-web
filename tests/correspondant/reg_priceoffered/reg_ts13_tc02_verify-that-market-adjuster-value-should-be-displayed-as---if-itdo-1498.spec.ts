@@ -74,6 +74,7 @@ test.describe('REG_PriceOffered', () => {
         await spinnerPage.Spinner.waitFor({ state: 'hidden' });
         await priceOfferedPage.Bid_Request_Idprice_offered(vars['BidIDPriceOffered']).click();
         await correspondentPortalPage.Get_Price_Button.waitFor({ state: 'visible' });
+        vars['ProductNamePriceOffered'] = await priceOfferedPage.Product_NameDetails.textContent() || '';
         await correspondentPortalPage.Get_Price_Button.click();
         await priceOfferedPage.Remaining_Timeprice_offered.waitFor({ state: 'visible' });
         await priceOfferedPage.Required_Loan_Num.first().click();
@@ -82,6 +83,8 @@ test.describe('REG_PriceOffered', () => {
         await priceOfferedPage.Commit_Selected_1_Dropdown.click();
         await priceOfferedPage.Yes_Commit_ButtonPopup.click();
         await priceOfferedPage.Commit_Selected_Loans_Successful_Popup.waitFor({ state: 'visible' });
+        await priceOfferedPage.Okay_Buttonpopup_price_offered_screen.waitFor({ state: 'visible' });
+        await expect(priceOfferedPage.Commitpopup_price_offered_screen).toContainText(appconstants.UPDATED_SUCCESSFULLY_TEXT_POPUP);
         await priceOfferedPage.Okay_Buttonpopup_price_offered_screen.click();
         await priceOfferedPage.Okay_Buttonpopup_price_offered_screen.waitFor({ state: 'hidden' });
         log.stepPass('Fresh loan committed successfully');
@@ -112,7 +115,7 @@ test.describe('REG_PriceOffered', () => {
         await generalSettingPage.General_Settings.click();
         await correspondentPortalPage.Market_Thresholds.scrollIntoViewIfNeeded();
         await correspondentPortalPage.Market_Thresholds.click();
-        await priceOfferedPage.Edit_Map_Button.click();
+        await priceOfferedPage.Edit_Req_Map_Button(vars['ProductNamePriceOffered']).first().click();
         vars['MinimumDisplayValue'] = await priceOfferedPage.Minimum_Display_value.textContent() || '';
         vars['MaximumDisplayValue'] = await priceOfferedPage.Maximum_Display_Value.textContent() || '';
         await priceOfferedPage.Minimum_Display_value.click();

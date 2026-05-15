@@ -63,7 +63,7 @@ export async function runPrereq_1424(page: Page, vars: Record<string, string>): 
       await expect(priceOfferedPage.Commit_Selected_Footer_Buttonprice_offered).toBeEnabled();
       await priceOfferedPage.Commit_Selected_Footer_Buttonprice_offered.click();
       await priceOfferedPage.Commit_Selected_Loanspopupprice_offered_screen.waitFor({ state: 'visible' });
-      await expect(priceOfferedPage.Commit_Selected_Loanspopupprice_offered_screen).toContainText(appconstants.COMMIT_SELECTED_LOANS_TEXT_POPUP);
+      await expect(priceOfferedPage.Commitpopup_price_offered_screen).toContainText(appconstants.COMMIT_SELECTED_LOANS_TEXT_POPUP);
       await expect(page.getByText(appconstants.YES_COMMIT_POPUP_MESSAGE_PRICEOFFERED)).toBeVisible();
       log.stepPass('First loan selected and Commit Selected popup displayed successfully');
     } catch (e) {
@@ -76,6 +76,7 @@ export async function runPrereq_1424(page: Page, vars: Record<string, string>): 
       await priceOfferedPage.Yes_Commit_ButtonPopup.click();
       await priceOfferedPage.Commit_Selected_Loans2popup_price_offered_screen.waitFor({ state: 'visible' });
       await priceOfferedPage.Okay_Buttonpopup_price_offered_screen.waitFor({ state: 'visible' });
+      await expect(priceOfferedPage.Commit_Selected_Loans2popup_price_offered_screen).toContainText(appconstants.UPDATED_SUCCESSFULLY_TEXT_POPUP);
       await priceOfferedPage.Okay_Buttonpopup_price_offered_screen.click();
       log.stepPass('Commit confirmed and success message verified successfully');
     } catch (e) {

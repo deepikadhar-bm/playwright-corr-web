@@ -8,6 +8,8 @@ import { AddonHelpers } from '../../../src/helpers/AddonHelpers';
 import { Logger as log } from '../../../src/helpers/log-helper';
 import { ENV } from '@config/environments';
 import { testDataManager } from 'testdata/TestDataManager';
+import { APP_CONSTANTS as appconstants } from '../../../src/constants/app-constants';
+
 
 const TC_ID = 'REG_TS11_TC02';
 const TC_TITLE = 'Perform add to commit action for a valid loan and verify the auth limit, open auth limit and the Last committed bid values along with the [+count in header]';
@@ -105,6 +107,7 @@ test.describe('REG_PriceOffered', () => {
         await priceOfferedPage.Commitment_Order_Dropdown.first().click();
         await correspondentPortalPage.Yes_Commit_Button.click();
         await correspondentPortalPage.Okay_Button1.waitFor({ state: 'visible' });
+        await expect(commitmentListPage.Commit_Popup_ComitmentList).toContainText(appconstants.UPDATED_SUCCESSFULLY_TEXT_POPUP);
         await correspondentPortalPage.Okay_Button1.click();
         log.stepPass('Add to commit action performed successfully for loan: ' + vars['CommittedCorrLoan']);
       } catch (e) {

@@ -136,7 +136,7 @@ test.describe('REG_Bid Maps', () => {
               vars["UniqueBidTapeValuesFromExcel"] = excelHelper.readEntireColumnByColIndex(vars['FilePathEnumMapping'], vars["ColumnNum"], 0);
               Methods.splitBySpecialChar(vars["UniqueBidTapeValuesFromExcel"], ',', '0', 'FirstValue');
               Methods.splitBySpecialChar(vars["UniqueBidTapeValuesFromExcel"], ',', '1', 'UniqueBidTapeValuesFromExcel');
-              vars["BidTapeCountUI"] = String(await enumerationMappingPage.get_BidTapeFieldCountForBidField(vars['columnHeader']).count());
+              vars["BidTapeCountUI"] = String(await enumerationMappingPage.BidTapeFieldCountForBidField(vars['ColumnHeader']).count());
               if (parseFloat(String(vars["BidTapeCountUI"])) > 1) {
                 vars["count1"] = appconstants.ONE;
                 while (parseFloat(String(vars["count1"])) <= parseFloat(String(vars["BidTapeCountUI"]))) {

@@ -75,10 +75,12 @@ test.describe('REG_PriceOffered', () => {
         vars['UncommittedLoanNum'] = await priceOfferedPage.Checked_Corr_Loan.textContent() || '';
         Methods.trimtestdata(vars['UncommittedLoanNum'], 'UncommittedLoanNum');
         log.info('Loan to uncommit: ' + vars['UncommittedLoanNum']);
-        await priceOfferedPage.Commit_Selected_1_Dropdown.waitFor({ state: 'visible' });
-        await priceOfferedPage.Commit_Selected_1_Dropdown.click();
+        await priceOfferedPage.Uncommit_Selected_1_Button.waitFor({ state: 'visible' });
+        await priceOfferedPage.Uncommit_Selected_1_Button.click();
+        await expect(priceOfferedPage.Uncommit_Selected_1_Button).toBeEnabled();
         await priceOfferedPage.Yes_Uncommit_Button.click();
         await correspondentPortalPage.Okay_Button1.waitFor({ state: 'visible' });
+        await expect(priceOfferedPage.Uncommitted_successfully).toContainText(appconstants.UNCOMMITTED_SUCCESSFULLY_TEXT_POPUP);
         await correspondentPortalPage.Okay_Button1.click();
         log.stepPass('Loan uncommitted: ' + vars['UncommittedLoanNum']);
       } catch (e) {

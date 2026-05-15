@@ -30,7 +30,7 @@ test.describe('REG_PriceOffered', () => {
     priceOfferedPage = new PriceOfferedPage(page);
     spinnerPage = new SpinnerPage(page);
     Methods = new AddonHelpers(page, vars);
-    
+
   });
   let REG_TS13_TC01testFailed = false;
   test(`${TC_ID} - ${TC_TITLE}`, async ({ page }) => {
@@ -50,6 +50,7 @@ test.describe('REG_PriceOffered', () => {
         await spinnerPage.Spinner.waitFor({ state: 'hidden' });
         await priceOfferedPage.BidRequestIDPrice_Offered(vars['BidReqIdPriceOffered']).click();
         await correspondentPortalPage.Get_Price_Button.waitFor({ state: 'visible' });
+        vars['ProductNamePriceOffered'] = await priceOfferedPage.Product_NameDetails.textContent() || '';
         await correspondentPortalPage.Get_Price_Button.click();
         await page.waitForTimeout(5000);
         vars['FirstMarkAdjValue'] = await correspondentPortalPage.First_Market_adjustment_Value.first().textContent() || '';
@@ -71,7 +72,7 @@ test.describe('REG_PriceOffered', () => {
         await correspondentPortalPage.GeneralSettings_Menu.click();
         await correspondentPortalPage.Market_Thresholds.scrollIntoViewIfNeeded();
         await correspondentPortalPage.Market_Thresholds.click();
-        await priceOfferedPage.Edit_Map_Button.click();
+        await priceOfferedPage.Edit_Req_Map_Button(vars['ProductNamePriceOffered']).first().click();
         await correspondentPortalPage.Enter_maximum_display_value_in_percentage_Input.click();
         await correspondentPortalPage.Enter_maximum_display_value_in_percentage_Input.clear();
         Methods.generateRandomInteger('1', '8', 'Number');
@@ -103,12 +104,10 @@ test.describe('REG_PriceOffered', () => {
         vars['CorrLoan'] = await correspondentPortalPage.First_Corr_loan_Value_Unchecked.first().textContent() || '';
         Methods.trimtestdata(vars['CorrLoan'], 'CorrLoan');
         log.info('Corr Loan: ' + vars['CorrLoan']);
-        // vars['ExpectedPopUpError1'] = 'Loan' + vars['space'] + vars['CorrLoan'] + vars['space'] + 'can not be committed. Market adjuster value' + vars['space'];
-        Methods.concatenateWithSpace(appconstants.LOAN_TEXT,vars['CorrLoan'],'ExpectedPopUpError1');
-        Methods.concatenateWithSpace(vars['ExpectedPopUpError1'],appconstants.MARKET_ADJ_ERROR_TEXT,'ExpectedPopUpError1');
+        Methods.concatenateWithSpace(appconstants.LOAN_TEXT, vars['CorrLoan'], 'ExpectedPopUpError1');
+        Methods.concatenateWithSpace(vars['ExpectedPopUpError1'], appconstants.MARKET_ADJ_ERROR_TEXT, 'ExpectedPopUpError1');
         log.info('Expected error 1: ' + vars['ExpectedPopUpError1']);
-        // vars['ExpectedPopUpError2'] = 'is greater than market threshold value' + vars['space'] + vars['NumLowerThanMarkAdjPopup'];
-        Methods.concatenateWithSpace(appconstants.MARKET_ADJ_REASON_TEXT,vars['NumLowerThanMarkAdjPopup'],'ExpectedPopUpError2');
+        Methods.concatenateWithSpace(appconstants.MARKET_ADJ_REASON_TEXT, vars['NumLowerThanMarkAdjPopup'], 'ExpectedPopUpError2');
         log.info('Expected error 2: ' + vars['ExpectedPopUpError2']);
         await correspondentPortalPage.Get_Price_Button.click();
         await expect(priceOfferedPage.Commit_Selected_1_Dropdown).toBeEnabled();
@@ -162,7 +161,7 @@ test.describe('REG_PriceOffered', () => {
       throw e;
     }
   });
-  
+
   test.afterEach(async ({ page }) => {
     log.afterTestSteps(TC_ID, REG_TS13_TC01testFailed);
     try {

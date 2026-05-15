@@ -1,7 +1,4 @@
-// [PREREQ-APPLIED]
-// [POM-APPLIED]
 import { test, expect } from '@playwright/test';
-import path from 'path';
 import * as stepGroups from '../../../src/helpers/step-groups';
 import { ApplyButtonForFiltersPage } from '../../../src/pages/correspondant/apply-button-for-filters';
 import { BidmapDashboardPage } from '../../../src/pages/correspondant/bidmap-dashboard';
@@ -19,8 +16,13 @@ import { RulesAndActionsPage } from '../../../src/pages/correspondant/rules-and-
 import { SaveAndPublishButtonPage } from '../../../src/pages/correspondant/save-and-publish-button';
 import { SpinnerPage } from '../../../src/pages/correspondant/spinner';
 import { runPrereq_1361 } from '../../../src/helpers/prereqs/prereq-1361';
+import { Logger as log } from '@helpers/log-helper';
 
-test.describe('Unassigned', () => {
+
+const TC_ID = 'REG_TS23_TC02';
+const TC_TITLE = 'Verify that user should be able to clone the required bid map and a new bid map should be created with the status draft.[Verification]';
+
+test.describe('REG_Bid Maps', () => {
   let vars: Record<string, string> = {};
   let applyButtonForFiltersPage: ApplyButtonForFiltersPage;
   let bidmapDashboardPage: BidmapDashboardPage;
@@ -38,8 +40,8 @@ test.describe('Unassigned', () => {
   let saveAndPublishButtonPage: SaveAndPublishButtonPage;
   let spinnerPage: SpinnerPage;
 
+
   test.beforeEach(async ({ page }) => {
-    vars = {};
     await runPrereq_1361(page, vars);
     applyButtonForFiltersPage = new ApplyButtonForFiltersPage(page);
     bidmapDashboardPage = new BidmapDashboardPage(page);
@@ -58,34 +60,105 @@ test.describe('Unassigned', () => {
     spinnerPage = new SpinnerPage(page);
   });
 
-  test('REG_TS23_TC02_Verify that user should be able to clone the required bid map and a new bid map should be created with the status draft.[Verification]', async ({ page }) => {
+  test(`${TC_ID} - ${TC_TITLE}`, async ({ page }) => {
+    log.tcStart(TC_ID, TC_TITLE);
 
-    await bidmapDashboardPage.Clone_Button_of_BidMap.waitFor({ state: 'visible' });
-    await bidmapDashboardPage.Clone_Button_of_BidMap.click();
-    await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-    await expect(correspondentPortalPage.Status).toContainText("DRAFT");
-    vars[""] = String("Copy of") + ' ' + String(vars["Create New Map"]);
-    await applyButtonForFiltersPage.Map_Name.click();
-    await expect(page.getByText(vars["Create New Map"])).toBeVisible();
-    await expect(companybidmapPage.New_Map_Name).toHaveValue(vars["Create New Map"]);
-    await expect(newMapPage.Individual_Selected_Company).toContainText(vars["SelectedCompanyName"]);
-    await expect(mapHeaderPage.Execution_Type_Dropdown_New).toHaveValue(vars["ExecutionType"]);
-    await expect(p1MoreButtonPage.Uploaded_FileName).toContainText(vars["UploadedFileName"]);
-    await mapHeadersButtonPage.Map_Headers_Button.click();
-    await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-    await stepGroups.stepGroup_Verification_Of_BidSampleNames_In_Header_Mapping_From_TDP(page, vars);
-    await enumerationMappingButtonPage.Enumeration_Mapping_Button.click();
-    await proceedWithSavingButtonPage.Proceed_with_Saving_Button.click();
-    await page.waitForLoadState('networkidle');
-    await stepGroups.stepGroup_Verifying_the_bidsample_to_bidtape_mapping_in_Enumpage_from_(page, vars);
-    await stepGroups.stepGroup_Verifying_the_Mapping_of_ChaseField_and_ChaseValues_in_Enum_(page, vars);
-    await rulesAndActionsButtonPage.Rules_and_Actions_Button.click();
-    await proceedWithSavingButtonPage.Proceed_with_Saving_Button.click();
-    await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-    await stepGroups.stepGroup_Verification_of_Rules_and_Action_Values_Before_EditingActive(page, vars);
-    await importRulePage.First_Active_Rule_Multiselected_Value.click();
-    await expect(rulesAndActionsPage.Category_In_Dropdown).toBeVisible();
-    await saveAndPublishButtonPage.Save_and_Publish_Button.click();
-    await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+    try {
+
+      log.step('Clone the Bid Map and verify DRAFT status');
+      try {
+        await bidmapDashboardPage.Clone_Button_of_BidMap(vars['BidMapName']).waitFor({ state: 'visible' });
+        await bidmapDashboardPage.Clone_Button_of_BidMap(vars['BidMapName']).click();
+        await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+        await expect(correspondentPortalPage.Status).toContainText("DRAFT");
+        vars["CreateNewMap"] = String("Copy of") + ' ' + String(vars["CreateNewMap"]);
+        log.stepPass('Bid Map cloned successfully. Clone Name: ' + vars["CreateNewMap"] + ', Status: DRAFT');
+      } catch (e) {
+        await log.stepFail(page, 'Failed to clone Bid Map or verify DRAFT status');
+        throw e;
+      }
+
+      log.step('Open cloned Bid Map and verify New Map screen fields');
+      try {
+        await applyButtonForFiltersPage.Map_Name(vars['CreateNewMap']).click();
+        await expect(page.getByText(vars["CreateNewMap"])).toBeVisible();
+        await expect(companybidmapPage.New_Map_Name).toHaveValue(vars["CreateNewMap"]);
+        await expect(newMapPage.Individual_Selected_Company).toContainText(vars["SelectedCompanyName"]);
+        await expect(mapHeaderPage.Execution_Type_Dropdown_New).toHaveValue(vars["ExecutionType"]);
+        await expect(p1MoreButtonPage.Uploaded_FileName).toContainText(vars["UploadedFileName"]);
+        log.stepPass('Cloned Bid Map New Map fields verified. Company: ' + vars["SelectedCompanyName"] + ', ExecutionType: ' + vars["ExecutionType"]);
+      } catch (e) {
+        await log.stepFail(page, 'Failed to verify New Map screen fields of cloned Bid Map');
+        throw e;
+      }
+
+      log.step('Verify Header Mapping Bid Sample Names from test data profile');
+      try {
+        await mapHeadersButtonPage.Map_Headers_Button.click();
+        await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+        await stepGroups.stepGroup_Verification_Of_BidSampleNames_In_Header_Mapping_From_TDP(page, vars);
+        log.stepPass('Header Mapping Bid Sample Names verified');
+      } catch (e) {
+        await log.stepFail(page, 'Failed to verify Header Mapping Bid Sample Names');
+        throw e;
+      }
+
+      log.step('Verify Enumeration Mapping — Bid Tape and Chase Field/Value mappings');
+      try {
+        await enumerationMappingButtonPage.Enumeration_Mapping_Button.click();
+        if (await correspondentPortalPage.Yes_Proceed_Button.isVisible()) {
+          log.info('Yes Proceed Button visible — clicking to proceed');
+          await correspondentPortalPage.Yes_Proceed_Button.click();
+        } else {
+          log.info('Yes Proceed Button not visible — clicking Proceed with Saving');
+          await proceedWithSavingButtonPage.Proceed_with_Saving_Button.click();
+        }
+        await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+        await stepGroups.stepGroup_Verifying_the_bidsample_to_bidtape_mapping_in_Enumpage_from_(page, vars);
+        await stepGroups.stepGroup_Verifying_the_Mapping_of_ChaseField_and_ChaseValues_in_Enum_(page, vars);
+        log.stepPass('Enumeration Mapping Bid Tape and Chase Field/Value mappings verified');
+      } catch (e) {
+        await log.stepFail(page, 'Failed to verify Enumeration Mapping values');
+        throw e;
+      }
+
+      log.step('Verify Rules and Actions values and Category');
+      try {
+        await rulesAndActionsButtonPage.Rules_and_Actions_Button.click();
+        if (await correspondentPortalPage.Yes_Proceed_Button.isVisible()) {
+          log.info('Yes Proceed Button visible — clicking to proceed');
+          await correspondentPortalPage.Yes_Proceed_Button.click();
+        } else {
+          log.info('Yes Proceed Button not visible — clicking Proceed with Saving');
+          await proceedWithSavingButtonPage.Proceed_with_Saving_Button.click();
+        }
+        await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+        vars["First Rule Name"] = vars['Rule Name'];
+        await stepGroups.stepGroup_Verification_of_Rules_and_Action_Values_Before_EditingActive(page, vars);
+        await importRulePage.First_Active_Rule_Multiselected_Value.click();
+        await expect(rulesAndActionsPage.get_Category_In_Dropdown(vars['CategoryName'])).toBeVisible();
+        log.stepPass('Rules and Actions values verified. Rule Name: ' + vars["First Rule Name"] + ', Category: ' + vars["CategoryName"]);
+      } catch (e) {
+        await log.stepFail(page, 'Failed to verify Rules and Actions values');
+        throw e;
+      }
+
+      log.step('Save and Publish the cloned Bid Map');
+      try {
+        await saveAndPublishButtonPage.Save_and_Publish_Button.click();
+        await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+        log.stepPass('Cloned Bid Map saved and published successfully');
+      } catch (e) {
+        await log.stepFail(page, 'Failed to Save and Publish the cloned Bid Map');
+        throw e;
+      }
+
+      log.tcEnd('PASS');
+
+    } catch (e) {
+      await log.captureOnFailure(page, TC_ID, e);
+      log.tcEnd('FAIL');
+      throw e;
+    }
   });
 });

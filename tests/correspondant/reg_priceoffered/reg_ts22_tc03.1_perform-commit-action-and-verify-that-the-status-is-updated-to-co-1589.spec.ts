@@ -88,6 +88,7 @@ test.describe('REG_PriceOffered', () => {
         await priceOfferedPage.Yes_Commit_ButtonPopup.click();
         await priceOfferedPage.Yes_Commit_ButtonPopup.waitFor({ state: 'hidden' });
         await priceOfferedPage.Okay_ButtonPopup.waitFor({ state: 'visible' });
+        await expect(priceOfferedPage.Commitpopup_price_offered_screen).toContainText(appconstants.UPDATED_SUCCESSFULLY_TEXT_POPUP);
         await priceOfferedPage.Okay_ButtonPopup.click();
         log.stepPass('All loans committed successfully for Bid Request ID: ' + vars['BidReqIdPriceOffered']);
       } catch (e) {

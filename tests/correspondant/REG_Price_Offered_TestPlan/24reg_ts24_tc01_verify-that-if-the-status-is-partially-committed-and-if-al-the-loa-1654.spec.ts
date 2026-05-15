@@ -75,6 +75,7 @@ test.describe('REG_PriceOffered', () => {
         await priceOfferedPage.Commit_Selected_1_Dropdown.click();
         await priceOfferedPage.Yes_Commit_ButtonPopup.click();
         await priceOfferedPage.Okay_ButtonPopup.waitFor({ state: 'visible' });
+        await expect(priceOfferedPage.Commitpopup_price_offered_screen).toContainText(appconstants.UPDATED_SUCCESSFULLY_TEXT_POPUP);
         await priceOfferedPage.Okay_ButtonPopup.click();
         await priceOfferedPage.LockedCommitted_Loans_2.click();
         await correspondentPortalPage.Paste_Loans_Button1.waitFor({ state: 'hidden' });
@@ -133,6 +134,7 @@ test.describe('REG_PriceOffered', () => {
           await priceOfferedPage.Commit_Selected_1_Dropdown.click();
           await priceOfferedPage.Yes_Uncommit_Button.click();
           await correspondentPortalPage.Okay_Button1.waitFor({ state: 'visible' });
+          await expect(priceOfferedPage.Uncommitted_successfully).toContainText(appconstants.UNCOMMITTED_SUCCESSFULLY_TEXT_POPUP);
           await correspondentPortalPage.Okay_Button1.click();
           await commitmentListPage.Total_Committed_Loans_Tab.waitFor({ state: 'visible' });
           await commitmentListPage.Total_Committed_Loans_Tab.click();

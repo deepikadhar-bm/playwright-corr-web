@@ -7,12 +7,12 @@ import { Page, Locator } from '@playwright/test';
 export class BidmapDashboardPage {
   constructor(private page: Page) {}
 
-  get Clone_Button_of_BidMap(): Locator {
-    return this.page.locator("//button[contains(text(),\"$|BidMapName|\")]/../..//button[@aria-label=\"Clone Map\"]");
+  Clone_Button_of_BidMap(BidMapName:string): Locator {
+    return this.page.locator(`//button[contains(text(),\"${BidMapName}\")]/../..//button[@aria-label=\"Clone Map\"]`);
   }
 
-  get Created_Bid_Map_In_the_List(): Locator {
-    return this.page.locator("//td[@data-title=\"Map Name\"]//button[text()=\" $|CreatedBidMap| \"]");
+  Created_Bid_Map_In_the_List(CreatedBidMap:string): Locator {
+    return this.page.locator(`//td[@data-title=\"Map Name\"]//button[text()=\" ${CreatedBidMap} \"]`);
   }
 
   get IF_Bid_Field_Dropdownnew(): Locator {
