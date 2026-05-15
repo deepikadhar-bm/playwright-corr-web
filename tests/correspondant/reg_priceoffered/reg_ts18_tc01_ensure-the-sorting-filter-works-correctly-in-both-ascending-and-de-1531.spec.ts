@@ -48,14 +48,30 @@ test.describe('REG_PriceOffered', () => {
         await correspondentPortalPage.Price_Offered_List_Dropdown.click();
         vars["CountOfColumnHeaders"] = String(await priceOfferedPage.Columns_Headers.count());
         vars["HeadersUI"] = appconstants.HEADERSUI_PRICEOFFERD;
-        vars["count"] = "1";
+        vars["count"] = appconstants.ONE;
         while (parseFloat(String(vars["count"])) <= parseFloat(String("8"))) {
           vars["IndividualHeaderUI"] = await priceOfferedPage.Individual_Column_Header_UI(vars["count"]).textContent() || '';
           Methods.trimtestdata(vars["IndividualHeaderUI"], "IndividualHeaderUI");
           if (String(vars["HeadersUI"]).includes(String(vars["IndividualHeaderUI"]))) {
             log.info("if condition passed");
             await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-          } else {
+          }
+          else if (String(vars['IndividualHeaderUI']) === String(appconstants.BID_REQ_ID)) {
+            await priceOfferedPage.Individual_Column_Header_UI(vars["count"]).click();
+            await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+            await expect(correspondentPortalPage.Header_Sort_Down).toBeVisible();
+            await priceOfferedPage.First_Column_Data_UI(vars["IndividualHeaderUI"]).first().waitFor({ state: 'visible' });
+            await Methods.verifyStringOrderByFirstNChars(priceOfferedPage.Column_Data_UI_Commom_xpath(vars["IndividualHeaderUI"]), undefined, 'ascending', 4);
+            log.info("Descending order -" + vars["IndividualHeaderUI"]);
+            await priceOfferedPage.Individual_Column_Header_UI(vars["count"]).click();
+            await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+            await expect(priceOfferedPage.Header_Sort_Up_Symbol).toBeVisible();
+            await priceOfferedPage.First_Column_Data_UI(vars["IndividualHeaderUI"]).waitFor({ state: 'visible' });
+            await page.waitForTimeout(4000);
+            await Methods.verifyStringOrderByFirstNChars(priceOfferedPage.Column_Data_UI_Commom_xpath(vars["IndividualHeaderUI"]), undefined, 'descending', 4);
+
+          }
+          else {
             log.info("else condition is passed");
             log.info("Ascending order -" + vars["IndividualHeaderUI"]);
             await priceOfferedPage.Individual_Column_Header_UI(vars["count"]).click();
@@ -103,6 +119,7 @@ test.describe('REG_PriceOffered', () => {
       }
       log.tcEnd('PASS');
     }
+
     catch (e) {
       await log.captureOnFailure(page, TC_ID, e);
       log.tcEnd('FAIL');

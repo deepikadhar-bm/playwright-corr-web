@@ -128,9 +128,11 @@ export interface ExcelSession {
 // ─────────────────────────────────────────────────────────────────────────────
 //  Private helpers
 // ─────────────────────────────────────────────────────────────────────────────
-
+function resolvePath(filePath: string): string {
+  return path.resolve(filePath.replace(/\\/g, '/'));
+}
 function loadWorkbook(filePath: string): XLSX.WorkBook {
-  const resolved = path.resolve(filePath);
+  const resolved = resolvePath(filePath);
   if (!fs.existsSync(resolved)) {
     throw new Error(`Excel file not found: ${resolved}`);
   }
@@ -384,7 +386,7 @@ export function getColumnCount(
   filePath: string,
   sheetIndex: string | number = 0
 ): number {
-  const resolved = path.resolve(filePath);
+  const resolved = resolvePath(filePath);
   if (!fs.existsSync(resolved)) {
     throw new Error(`Excel file not found: ${resolved}`);
   }
@@ -435,7 +437,7 @@ export function getColumnCount(
  */
 export function readCell(options: ReadCellOptions): CellValue | CellResult {
   const { filePath, sheetName, columnHeader, rowIndex, cellAddress, withType = false } = options;
-  const wb = XLSX.readFile(path.resolve(filePath), { cellDates: true, cellNF: true });
+  const wb = XLSX.readFile(resolvePath(filePath), { cellDates: true, cellNF: true });
   const sheet = resolveSheet(wb, sheetName);
 
   let cell: XLSX.CellObject | undefined;
@@ -473,7 +475,7 @@ export function readCell(options: ReadCellOptions): CellValue | CellResult {
  * // → [Date, Date, ...]
  */
 export function readColumn(filePath: string, columnHeader: string, sheetName?: string): CellValue[] {
-  const wb = XLSX.readFile(path.resolve(filePath), { cellDates: true });
+  const wb = XLSX.readFile(resolvePath(filePath), { cellDates: true });
   const sheet = resolveSheet(wb, sheetName);
   const rows: CellValue[][] = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: null });
   const headers = (rows[0] ?? []) as string[];
@@ -512,7 +514,7 @@ export function readRow(
   rowIndex: number,
   sheetName?: string
 ): Record<string, CellValue> {
-  let resolvedPath = path.resolve(filePath);
+  let resolvedPath = resolvePath(filePath);
 
   // If the path is a directory, find the most recently modified Excel file inside it
   const stat = fs.statSync(resolvedPath);
@@ -554,7 +556,7 @@ export function readRow(
  * const { headers, rows, rowCount } = readSheet(FILE, 'Orders');
  */
 export function readSheet(filePath: string, sheetName?: string): ExcelSheetData {
-  const wb = XLSX.readFile(path.resolve(filePath), { cellDates: true });
+  const wb = XLSX.readFile(resolvePath(filePath), { cellDates: true });
   const resolvedName = resolveSheetName(wb, sheetName);
   const sheet = wb.Sheets[resolvedName];
   const jsonRows: Record<string, CellValue>[] = XLSX.utils.sheet_to_json(sheet, { defval: null });
@@ -608,7 +610,7 @@ export function readSheet(filePath: string, sheetName?: string): ExcelSheetData 
  */
 export function updateCell(options: UpdateCellOptions): void {
   const { filePath, sheetName, columnHeader, rowIndex, cellAddress, value, cellType, dateFormat } = options;
-  const resolved = path.resolve(filePath);
+  const resolved = resolvePath(filePath);
   const wb = XLSX.readFile(resolved, { cellDates: true, cellNF: true });
   const name = resolveSheetName(wb, sheetName);
   const sheet = wb.Sheets[name];
@@ -648,7 +650,7 @@ export function updateCells(
   updates: Omit<UpdateCellOptions, 'filePath' | 'sheetName'>[],
   sheetName?: string
 ): void {
-  const resolved = path.resolve(filePath);
+  const resolved = resolvePath(filePath);
   const wb = XLSX.readFile(resolved, { cellDates: true, cellNF: true });
   const name = resolveSheetName(wb, sheetName);
   const sheet = wb.Sheets[name];
@@ -746,7 +748,7 @@ export function getSheetCount(filePath: string): number {
  * // ]
  */
 export function getAllSheetsInfo(filePath: string): SheetInfo[] {
-  const wb = XLSX.readFile(path.resolve(filePath), { cellDates: true });
+  const wb = XLSX.readFile(resolvePath(filePath), { cellDates: true });
   return wb.SheetNames.map((name, index) => {
     const sheet = wb.Sheets[name];
     const rawRows: CellValue[][] = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: null });
@@ -762,7 +764,7 @@ export function getAllSheetsInfo(filePath: string): SheetInfo[] {
  * Internal factory — builds a bound ExcelSession for a given sheet name.
  */
 function buildSession(filePath: string, activeSheetName: string): ExcelSession {
-  const wb = XLSX.readFile(path.resolve(filePath), { cellDates: true });
+  const wb = XLSX.readFile(resolvePath(filePath), { cellDates: true });
   const allSheetNames = wb.SheetNames;
   const sheetIndex = allSheetNames.indexOf(activeSheetName);
 
@@ -835,7 +837,7 @@ function buildSession(filePath: string, activeSheetName: string): ExcelSession {
  * 
  */
 export function switchToSheetByIndex(filePath: string, index: number): ExcelSession {
-  const wb = XLSX.readFile(path.resolve(filePath), { cellDates: true });
+  const wb = XLSX.readFile(resolvePath(filePath), { cellDates: true });
   const total = wb.SheetNames.length;
 
   if (index < 0 || index >= total) {
@@ -871,7 +873,7 @@ export function switchToSheetByIndex(filePath: string, index: number): ExcelSess
  * const next = session.switchToSheetByIndex(session.sheetIndex + 1);
  */
 export function switchToSheetByName(filePath: string, name: string): ExcelSession {
-  const wb = XLSX.readFile(path.resolve(filePath), { cellDates: true });
+  const wb = XLSX.readFile(resolvePath(filePath), { cellDates: true });
   const matched = wb.SheetNames.find(
     (s) => s.trim().toLowerCase() === name.trim().toLowerCase()
   );
@@ -923,7 +925,7 @@ export function getCellByPosition(
   withType: boolean = false
 ): CellValue | CellResult {
   // ── Validate file ─────────────────────────────────────────────────────────
-  const resolved = path.resolve(filePath);
+  const resolved = resolvePath(filePath);
   if (!fs.existsSync(resolved)) {
     throw new Error(`Excel file not found: ${resolved}`);
   }
@@ -979,7 +981,7 @@ export function getRowDataWithCommaSeperator(
   rowIndex: number, // 0 = Header, 1 = First Data Row
   sheetName?: string
 ): string {
-  const wb = XLSX.readFile(path.resolve(filePath), { cellDates: true });
+  const wb = XLSX.readFile(resolvePath(filePath), { cellDates: true });
   const sheet = resolveSheet(wb, sheetName);
 
   // Convert sheet to 2D array: [[A1, B1], [A2, B2]]
@@ -1039,7 +1041,7 @@ export function readEntireRow(
   rowIndex: string | number,
   varName: string
 ): string {
-  const wb = XLSX.readFile(path.resolve(filePath), { cellDates: true });
+  const wb = XLSX.readFile(resolvePath(filePath), { cellDates: true });
 
   const sheetIdx = typeof sheetIndex === 'string' ? parseInt(sheetIndex, 10) : sheetIndex;
   const rowIdx = typeof rowIndex === 'string' ? parseInt(rowIndex, 10) : rowIndex;
@@ -1083,7 +1085,7 @@ export function readEntireColumnByColIndex(
   colIndex: string | number,
   sheetIndex: string | number = 0
 ): string {
-  const wb = XLSX.readFile(path.resolve(filePath), { cellDates: true });
+  const wb = XLSX.readFile(resolvePath(filePath), { cellDates: true });
 
   const sheetIdx = typeof sheetIndex === 'string' ? parseInt(sheetIndex, 10) : sheetIndex;
   const columnIdx = typeof colIndex === 'string' ? parseInt(colIndex, 10) : colIndex;
@@ -1116,7 +1118,7 @@ export function readCellByColAndRowIndex(
   rowIndex: string | number,
   colIndex: string | number
 ): string {
-  const resolved = path.resolve(filePath);
+  const resolved = resolvePath(filePath);
 
   if (!fs.existsSync(resolved)) {
     throw new Error(`Excel file not found: ${resolved}`);
@@ -1206,7 +1208,7 @@ export function writeCellByColAndRowIndex(
   value: CellValue,
   cellType?: ExcelCellType
 ): void {
-  const resolved = path.resolve(filePath);
+  const resolved = resolvePath(filePath);
   if (!fs.existsSync(resolved)) {
     throw new Error(`Excel file not found: ${resolved}`);
   }
@@ -1249,7 +1251,7 @@ export function getNonEmptyCellCountPerRow(
   rowIndex: number,
   sheetName?: string
 ): number {
-  const wb = XLSX.readFile(path.resolve(filePath), { cellDates: true });
+  const wb = XLSX.readFile(resolvePath(filePath), { cellDates: true });
   const sheet = resolveSheet(wb, sheetName);
 
   // header: 1 returns a 2D array [row][column]

@@ -13,14 +13,14 @@ import { testDataManager } from 'testdata/TestDataManager';
 import { FILE_CONSTANTS as fileconstants } from '../../../src/constants/file-constants';
 import { BidRequestsPage } from '../../../src/pages/correspondant/bid-requests';
 import { CorrPortalPage } from '@pages/correspondant/CorrPortalPage';
-import path from 'path/win32';
+import path from 'path';
 
 
 const TC_ID = 'PREREQ_2317(REG_TS01_TC01.2)';
 const TC_TITLE = 'Bid Creation for 1-5';
 
 export async function runPrereq_2317(page: Page, vars: Record<string, string>): Promise<void> {
-  vars['FilePath'] = path.resolve(__dirname, '../../../uploads', fileconstants.NEW_FILE_LOAN_POPUP_VERIFICATION);
+vars['FilePath'] = path.join(process.cwd(),'uploads',fileconstants.NEW_FILE_LOAN_POPUP_VERIFICATION);
   await runPrereq_2318(page, vars);
 
   const bidRequestDetailsPage = new BidRequestDetailsPage(page);
