@@ -68,14 +68,15 @@ test.describe('REG_PriceOffered', () => {
         await correspondentPortalPage.Commitments_Side_Menu.click();
         await correspondentPortalPage.Price_Offered_List_Dropdown.click();
         await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-        await bidRequestsPage.Search_by_Bid_Request_ID_Field.fill("87TZAB69C7B8");
-        await page.keyboard.press('Enter');
-        await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-         await correspondentPortalPage.First_Bid_Request_ID.first().click();
-         await page.waitForLoadState('load');
+        // await bidRequestsPage.Search_by_Bid_Request_ID_Field.fill("87TZAB69C7B8");
+        // await page.keyboard.press('Enter');
+        // await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+        //  await correspondentPortalPage.First_Bid_Request_ID.first().click();
+        //  await page.waitForLoadState('load');
         //await spinnerPage.Spinner.waitFor({ state: 'hidden' });
       //  await expect(page.getByText("Bid Request Details")).toBeVisible();
-        //await priceOfferedPage.BidReqIDPartially_Committed_or_Committed.first().click();
+        await priceOfferedPage.BidReqIDPartially_Committed_or_Committed.first().click();
+        await page.waitForLoadState('load');
        // vars['RequestedDate(bid requests)'] = await bidRequestPage.First_Requested_Date.first().textContent() || '';
 
        // await priceOfferedPage.BidRequestIDTextDetails.first().waitFor({ state: 'visible' });
@@ -197,7 +198,7 @@ test.describe('REG_PriceOffered', () => {
         Methods.MathematicalOperation(vars['RefSecDigitsCount'], '-', '1', 'RefSecDigitsCount');
         Methods.getCharByIndex(vars['RuntimeValue'], vars['RefSecDigitsCount'], 'RefSecLastCharacter');
         if (String(vars['RefSecLastCharacter']) === '.') {
-              Methods.removeSpecialChar('.', vars['RefSecPriceLockedLoanUI'], 'RefSecPriceLockedLoansUI');
+              Methods.removeSpecialChar('.', vars['RefSecPriceLockedLoansUI'], 'RefSecPriceLockedLoansUI');
         }
         //Methods.getLastCharacters(vars['RefSecPriceLockedLoanUI'], '', 'LastCharRefSecPriceLockedLoan');
        // Methods.removeSpecialChar('.', vars['RefSecPriceLockedLoanUI'], 'RefSecPriceLockedLoansUI');
