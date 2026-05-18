@@ -168,4 +168,6 @@ export const APP_CONSTANTS = {
 
   TS_SEARCHMAP:'TS_SEARCHMAP',
   TS_SEARCH:'TS_SEARCH',
+
+  SecurityMonthJson:'referenceSecurityMonth":'
 };
