@@ -25,10 +25,10 @@ test.describe('REG_PriceOffered', () => {
   let priceOfferedDetailsPage: PriceOfferedDetailsPage;
   let priceOfferedPage: PriceOfferedPage;
   let spinnerPage: SpinnerPage;
+
   const credentials = ENV.getCredentials('internal');
 
   test.beforeEach(async ({ page }) => {
-    vars = {};
     vars['Username'] = credentials.username;
     vars['Password'] = credentials.password;
     bidRequestDetailsPage   = new BidRequestDetailsPage(page);
@@ -60,7 +60,7 @@ test.describe('REG_PriceOffered', () => {
         await correspondentPortalPage.Price_Offered_List_Dropdown.click();
         await spinnerPage.Spinner.waitFor({ state: 'hidden' });
         await priceOfferedPage.BidReqIDPartially_Committed_or_Committed.first().click();
-        await priceOfferedPage.BidRequestIDTextDetails.first().waitFor({ state: 'visible' });
+        await page.waitForLoadState('load');
         log.stepPass('Navigated to Price Offered list and opened first bid request');
       } catch (e) {
         await log.stepFail(page, 'Failed to navigate to Price Offered list');
@@ -93,7 +93,12 @@ test.describe('REG_PriceOffered', () => {
         vars['RuntimeValue'] = vars['RefSecPriceLoanUI'];
         await stepGroups.stepGroup_Verifying_and_Removing_If_the_Last_Digits_are_Zeroes(page, vars);
         vars['RefSecPriceLoanUI'] = vars['RuntimeValue'];
-        Methods.removeSpecialChar('.', vars['RefSecPriceLoanUI'], 'RefSecPriceLoanUI');
+        Methods.storeCharacterCount(vars['RuntimeValue'], 'RefSecDigitsCount');
+        Methods.MathematicalOperation(vars['RefSecDigitsCount'], '-', '1', 'RefSecDigitsCount');
+        Methods.getCharByIndex(vars['RuntimeValue'], vars['RefSecDigitsCount'], 'RefSecLastCharacter');
+        if (String(vars['RefSecLastCharacter']) === '.') {
+              Methods.removeSpecialChar('.', vars['RefSecPriceLoanUI'], 'RefSecPriceLoanUI');
+        }
         Methods.concatenateWithSpecialChar(appconstants.REF_SEC_PRICE, vars['RefSecPriceLoanUI'], '', 'RefSecPriceLoanUI');
         log.info('Ref security price processed: ' + vars['RefSecPriceLoanUI']);
         log.stepPass('Ref security price captured and processed for first loan');
@@ -108,6 +113,12 @@ test.describe('REG_PriceOffered', () => {
         log.info('Security month from UI: ' + vars['SecMonthName']);
         Methods.convertDateFormat(vars['SecMonthName'], appconstants.MONTH_FORMAT, appconstants.MONTH_NUM_FORMAT, 'MonthNumUI');
         log.info('Security month number resolved: ' + vars['MonthNumUI']);
+        Methods.getCharByIndex(vars['MonthNumUI'], '0', 'FirstCharMonthNum');
+        if (vars['FirstCharMonthNum'] === '0') {
+          Methods.removeCharactersFromPosition(vars['MonthNumUI'], '1', '0', 'MonthNumUI');
+          log.info('Leading zero removed from month number: ' + vars['MonthNumUI']);
+        }
+        Methods.concatenateWithSpecialChar(appconstants.SecurityMonthJson, vars['MonthNumUI'], '', 'MonthNumUI');
         log.stepPass('Security month resolved: ' + vars['SecMonthName'] + ' -> month number: ' + vars['MonthNumUI']);
       } catch (e) {
         await log.stepFail(page, 'Failed to resolve security month: ' + vars['SecMonthName']);
@@ -162,8 +173,13 @@ test.describe('REG_PriceOffered', () => {
         log.info('Locked loan ref security price raw: ' + vars['RefSecPriceLockedLoanUI']);
         vars['RuntimeValue'] = vars['RefSecPriceLockedLoanUI'];
         await stepGroups.stepGroup_Verifying_and_Removing_If_the_Last_Digits_are_Zeroes(page, vars);
-        vars['RefSecPriceLockedLoanUI'] = vars['RuntimeValue'];
-        Methods.removeSpecialChar('.', vars['RefSecPriceLockedLoanUI'], 'RefSecPriceLockedLoansUI');
+        vars['RefSecPriceLockedLoansUI'] = vars['RuntimeValue'];
+        Methods.storeCharacterCount(vars['RuntimeValue'], 'RefSecDigitsCount');
+        Methods.MathematicalOperation(vars['RefSecDigitsCount'], '-', '1', 'RefSecDigitsCount');
+        Methods.getCharByIndex(vars['RuntimeValue'], vars['RefSecDigitsCount'], 'RefSecLastCharacter');
+        if (String(vars['RefSecLastCharacter']) === '.') {
+              Methods.removeSpecialChar('.', vars['RefSecPriceLockedLoansUI'], 'RefSecPriceLockedLoansUI');
+        }
         Methods.concatenateWithSpecialChar(appconstants.REF_SEC_PRICE, vars['RefSecPriceLockedLoansUI'], '', 'RefSecPriceLockedLoansUI');
         log.info('Locked loan ref security price processed: ' + vars['RefSecPriceLockedLoansUI']);
         log.stepPass('Ref security price captured and processed for locked loan');

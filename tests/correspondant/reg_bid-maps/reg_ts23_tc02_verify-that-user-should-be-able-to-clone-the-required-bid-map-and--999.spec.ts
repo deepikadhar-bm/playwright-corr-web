@@ -137,7 +137,7 @@ test.describe('REG_Bid Maps', () => {
         await stepGroups.stepGroup_Verification_of_Rules_and_Action_Values_Before_EditingActive(page, vars);
         await importRulePage.First_Active_Rule_Multiselected_Value.click();
         await expect(rulesAndActionsPage.get_Category_In_Dropdown(vars['CategoryName'])).toBeVisible();
-        log.stepPass('Rules and Actions values verified. Rule Name: ' + vars["First Rule Name"] + ', Category: ' + vars["CategoryName"]);
+        log.stepPass('Rules and Actions values verified. Rule Name: ' + vars["First Rule Name"] + ', Category: ' + vars["CategoryName"]+', RuleBidField: '+vars['RuleBidField'] + ', RuleCondition: '+vars['RuleCondition'] + ', RuleBidTapeValue: '+vars['RuleBidTapeValue'] + ', ChaseFieldNameonAddActions: '+vars['ChaseFieldNameonAddActions'] + ', ChasevalueOnAddActions: '+vars['ChasevalueOnAddActions'] );
       } catch (e) {
         await log.stepFail(page, 'Failed to verify Rules and Actions values');
         throw e;

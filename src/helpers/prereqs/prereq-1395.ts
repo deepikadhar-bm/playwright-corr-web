@@ -59,7 +59,6 @@ export async function runPrereq_1395(page: Page, vars: Record<string, string>): 
       vars["RequestID(bid request details)"] = await bidRequestDetailsPage.Request_Id_From_Details.textContent() || '';
       vars["Status(bid request details)"] = await bidRequestDetailsPage.Statusbid_request_details.textContent() || '';
       vars["ExecutionFlow(SFL)"] = await bidRequestDetailsPage.Execution_Typesflbid_request_details.textContent() || '';
-      // Methods.splitByWhiteSpace(vars["ExecutionFlow(SFL)"],'0', "ExecutionFlow(SFL)");
       vars["SuccessLoan(SFL)"] = await bidRequestDetailsPage.Success_Loansfl_bid_request_details.textContent() || '';
       log.info('CCode: ' + vars["CCode(bid request details)"]);
       log.info('Company: ' + vars["Company(bid request details)"]);
@@ -140,9 +139,9 @@ export async function runPrereq_1395(page: Page, vars: Record<string, string>): 
     try {
       await expect(priceOfferedPage.Loans1price_offered_standard).toContainText(vars["SuccessLoan(SFL)"]);
       vars["ExecutionType(price offered)"] = await priceOfferedPage.Execution_Type1price_offered.textContent() || '';
-      await Methods.verifyElementContainsTextIgnoreCase(priceOfferedPage.Execution_Type1price_offered, vars["ExecutionFlow(SFL)"]);
-      await expect(priceOfferedPage.Status1price_offered_standard).toContainText(vars["Status(bid request details)"]);
       log.info('Execution Type (Price Offered): ' + vars["ExecutionType(price offered)"]);
+      expect(Methods.verifyTestdataIgnoreCase(vars["ExecutionFlow(SFL)"],'contains',vars["ExecutionType(price offered)"]));
+      await expect(priceOfferedPage.Status1price_offered_standard).toContainText(vars["Status(bid request details)"]);
       log.stepPass('Loans count, Execution Type, and Status verified on Price Offered screen');
     } catch (e) {
       await log.stepFail(page, 'Loans count, Execution Type, or Status mismatch on Price Offered screen');

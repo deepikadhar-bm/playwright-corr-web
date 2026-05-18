@@ -1103,6 +1103,10 @@ export class CorrPortalPage {
     return this.page.locator("(//div[contains(@aria-label,\"Sort by\")])[position() <= 12]");
   }
 
+  get Headers_Count_UI(): Locator {
+    return this.page.locator(`(//div[contains(@aria-label,'Sort by')])[position() != 9]`);
+  }
+
   get Headers_UI_Closed_List(): Locator {
     return this.page.locator("(//div[contains(@aria-label,\"Sort by\")])[position() <= 13]");
   }
