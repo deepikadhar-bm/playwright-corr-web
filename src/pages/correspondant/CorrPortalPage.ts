@@ -889,6 +889,10 @@ export class CorrPortalPage {
     return this.page.locator("//input[@aria-label=\"Enter maximum display value in percentage\"]");
   }
 
+  Edit_Req_Map_Button(ProductNamePriceOffered:string): Locator {
+    return this.page.locator(`//td[@data-title='Security Product']//div[normalize-space(text())='${ProductNamePriceOffered}']//ancestor::tr//td//button[@aria-label='Edit Map']`);
+  }
+
   get Enter_minimum_display_value_in_percentage(): Locator {
     return this.page.locator("//input[@aria-label=\"Enter minimum display value in percentage\"]");
   }

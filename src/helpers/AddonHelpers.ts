@@ -1495,4 +1495,80 @@ export class AddonHelpers {
 
     return isMatch;
   }
+  /**
+ * Converts a date/time value from one timezone to another timezone and formats the output.
+ * Useful for validating UI/API/DB dates when source and target systems use different timezones.
+ *
+ * Usage:
+ * this.convertDateTimeZone(
+ *   '05/18/2026 23:04',
+ *   'MM/dd/yyyy HH:mm',
+ *   'MM/dd/yyyy HH:mm',
+ *   'ConvertedDate',
+ *   'America/New_York',
+ *   'UTC'
+ * );
+ *
+ * @param dateString - Input date/time string to convert
+ * @param inputFormat - Format of the input date (e.g. 'MM/dd/yyyy HH:mm')
+ * @param outputFormat - Required output format after conversion
+ * @param fromTimeZone - Source timezone of input date (e.g. 'America/New_York')
+ * @param toTimeZone - Target timezone to convert into (e.g. 'UTC', 'Asia/Kolkata')
+ * @param varName - Variable name to store converted value in this.vars
+ * @returns void
+ */
+convertDateTimeZone(
+  dateString: string,
+  inputFormat: string,
+  fromTimeZone: string,
+  outputFormat: string,
+  toTimeZone: string,
+  varName: string
+): void {
+  const METHOD = 'convertDateTimeZone';
+  try {
+    if (!dateString?.trim()) throw new Error('dateString cannot be null, undefined, or empty');
+    if (!inputFormat?.trim()) throw new Error('inputFormat cannot be null, undefined, or empty');
+    if (!fromTimeZone?.trim()) throw new Error('fromTimeZone cannot be null, undefined, or empty');
+    if (!outputFormat?.trim()) throw new Error('outputFormat cannot be null, undefined, or empty');
+    if (!toTimeZone?.trim()) throw new Error('toTimeZone cannot be null, undefined, or empty');
+    if (!varName?.trim()) throw new Error('varName cannot be null, undefined, or empty');
+
+    // Step 1: Parse input string into a naive local Date using date-fns
+    const parsedDate = parse(dateString.trim(), inputFormat, new Date());
+    if (isNaN(parsedDate.getTime())) {
+      throw new Error(`Invalid date or format mismatch. dateString: "${dateString}", Expected format: "${inputFormat}"`);
+    }
+
+    // Step 2: Treat parsedDate wall-clock time as fromTimeZone
+    // toLocaleString gives us the wall-clock string in fromTimeZone
+    // new Date(...) re-interprets it as a local Date → same pattern as getCurrentTimestamp
+    const fromWallClock = parsedDate.toLocaleString('en-US', { timeZone: fromTimeZone });
+    const fromDate = new Date(fromWallClock);
+
+    // Step 3: Compute the offset between the naive parsedDate and its fromTimezone wall-clock
+    // This offset represents how many ms to shift to get real UTC
+    // e.g. EDT (UTC-4): parsedDate=23:00 local, fromDate=23:00 EDT wall → diff = 4h
+    const offsetMs = parsedDate.getTime() - fromDate.getTime();
+    const utcDate = new Date(parsedDate.getTime() + offsetMs);
+
+    // Step 4: Convert UTC instant → toTimeZone wall-clock string, then re-parse as local Date
+    // Same pattern as getCurrentTimestamp: toLocaleString → new Date(...)
+    const toWallClock = utcDate.toLocaleString('en-US', { timeZone: toTimeZone });
+    const targetDate = new Date(toWallClock);
+
+    // Step 5: Format using date-fns with the dynamic outputFormat
+    const converted = format(targetDate, outputFormat);
+
+    this.vars[varName] = converted;
+    log.info(
+      `[${METHOD}] "${dateString}" [${fromTimeZone}] (${inputFormat}) → "${converted}" [${toTimeZone}] (${outputFormat}) → vars['${varName}']`
+    );
+  } catch (e) {
+    log.error(
+      `[${METHOD}] Convert "${dateString}" from "${fromTimeZone}" to "${toTimeZone}" | Error: ${e instanceof Error ? e.message : String(e)}`
+    );
+    throw (e instanceof Error ? e : new Error(String(e)));
+  }
+}
 }

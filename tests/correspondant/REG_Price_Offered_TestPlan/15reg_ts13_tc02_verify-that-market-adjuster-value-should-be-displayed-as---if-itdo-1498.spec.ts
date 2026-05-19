@@ -75,6 +75,7 @@ test.describe('REG_PriceOffered', () => {
         await priceOfferedPage.Bid_Request_Idprice_offered(vars['BidIDPriceOffered']).click();
         await correspondentPortalPage.Get_Price_Button.waitFor({ state: 'visible' });
         vars['ProductNamePriceOffered'] = await priceOfferedPage.Product_NameDetails.textContent() || '';
+        log.info('Product Name Price Offered: '+vars['ProductNamePriceOffered']);
         await correspondentPortalPage.Get_Price_Button.click();
         await priceOfferedPage.Remaining_Timeprice_offered.waitFor({ state: 'visible' });
         await priceOfferedPage.Required_Loan_Num.first().click();
@@ -242,7 +243,7 @@ test.describe('REG_PriceOffered', () => {
         await correspondentPortalPage.Administration_Menu.click();
         await generalSettingPage.General_Settings.click();
         await correspondentPortalPage.Market_Thresholds.click();
-        await priceOfferedPage.Edit_Map_Button.click();
+        await priceOfferedPage.Edit_Req_Map_Button(vars['ProductNamePriceOffered']).first().click();
         await priceOfferedPage.Maximum_Display_Value.click();
         await priceOfferedPage.Minimum_Display_value.clear();
         await priceOfferedPage.Minimum_Display_value.fill(appconstants.ONE);
@@ -274,7 +275,7 @@ test.describe('REG_PriceOffered', () => {
         await correspondentPortalPage.Administration_Menu.click();
         await generalSettingPage.General_Settings.click();
         await correspondentPortalPage.Market_Thresholds.click();
-        await priceOfferedPage.Edit_Map_Button.click();
+        await priceOfferedPage.Edit_Req_Map_Button(vars['ProductNamePriceOffered']).first().click();
         await priceOfferedPage.Minimum_Display_value.clear();
         await priceOfferedPage.Minimum_Display_value.fill(appconstants.ONE);
         await priceOfferedPage.Maximum_Display_Value.clear();
