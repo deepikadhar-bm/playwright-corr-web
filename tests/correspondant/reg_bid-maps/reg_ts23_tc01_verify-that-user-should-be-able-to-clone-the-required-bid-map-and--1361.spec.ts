@@ -148,7 +148,8 @@ test.describe('REG_Bid Maps', () => {
         await enumerationMappingPage.First_Checkbox_Enum.check();
         await enumerationMappingPage.First_Checkbox_Enum.uncheck();
         while (parseFloat(String(vars["count1"])) <= parseFloat(String(vars["EnumFieldsCount"]))) {
-          log.info('Iteration (Enum Bid Sample) count1: ' + vars["count1"]);
+          log.info('Iteration (Enum Bid Sample): ' + vars["count1"]);
+          log.info('----------------------------------------------------');
           vars["IndividualBidSampleName"] = await enumerationMappingPage.Individual_Bid_Sample_NameEnum_Page(vars['count1']).textContent() || '';
           Methods.trimtestdata(vars["IndividualBidSampleName"], "IndividualBidSampleName");
           vars["ColumnHeader"] = vars["IndividualBidSampleName"];
@@ -186,7 +187,8 @@ test.describe('REG_Bid Maps', () => {
         vars["ChaseFieldsCountEnum"] = String(await enumerationMappingPage.Chase_Enum_Names.count());
         log.info('Chase Fields Count Enum: ' + vars["ChaseFieldsCountEnum"]);
         while (parseFloat(String(vars["count1"])) <= parseFloat(String(vars["ChaseFieldsCountEnum"]))) {
-          log.info('Iteration (Chase Field) count1: ' + vars["count1"]);
+          log.info('Iteration (Chase Field): ' + vars["count1"]);
+          log.info('----------------------------------------------------');
           await enumerationMappingPage.First_Checkbox_Enum.check();
           await enumerationMappingPage.First_Checkbox_Enum.uncheck();
           vars["IndividualChaseFieldName"] = await chaseFieldNamePage.get_Chase_Field_Name_common_one_Field(vars['count1']).textContent() || '';

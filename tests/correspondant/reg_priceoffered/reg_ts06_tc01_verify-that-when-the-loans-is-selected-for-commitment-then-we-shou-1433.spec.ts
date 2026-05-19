@@ -37,7 +37,6 @@ test.describe('REG_PriceOffered', () => {
     Methods = new AddonHelpers(page, vars);
   });
 
-  ``
 
   test(`${TC_ID} - ${TC_TITLE}`, async ({ page }) => {
     log.tcStart(TC_ID, TC_TITLE);

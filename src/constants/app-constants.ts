@@ -165,9 +165,11 @@ export const APP_CONSTANTS = {
   UniqueChaseFieldName3: "Zip",
   UniqueChaseValue3: "691001",
   BidMapNameAdvancedSearch: "TS_AdvanceSearch",
-
   TS_SEARCHMAP:'TS_SEARCHMAP',
   TS_SEARCH:'TS_SEARCH',
-
-  SecurityMonthJson:'referenceSecurityMonth":'
+  SecurityMonthJson:'referenceSecurityMonth":',
+  BIDREQID_HEADER_NAME_IN_EXCEL:'Bid Request ID',
+  EXECUTIONTYPE_HEADER_NAME_UI_PRICEOFFERED_LISTSCREEN:'Execution Type',
+  EXECUTIONTYPE_HEADER_NAME_IN_EXCEL:'Exe. Type',
+  STATUS_HEADER_NAME_UI_PRICEOFFERED_LISTSCREEN:'Status',
 };

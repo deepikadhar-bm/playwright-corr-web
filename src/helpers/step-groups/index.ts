@@ -1025,7 +1025,7 @@ export async function stepGroup_Add_Rule_For_Add_Condition_In_Rules_and_Actions(
   vars["Rule Name"] = await CorrPortalElem.Rule_Name_Field.inputValue() || '';
   await expect(CorrPortalElem.Rule_Name_Field).toHaveValue(vars["Rule Name"]);
   await CorrPortalElem.Select_Category_Dropdown.click();
-  vars["SelectCategory"] = await CorrPortalElem.Select_Category_On_Rules_and_Actions.textContent() || '';
+  vars["CategoryName"] = await CorrPortalElem.Select_Category_On_Rules_and_Actions.textContent() || '';
   await CorrPortalElem.Select_Category.check();
   await CorrPortalElem.Apply_Selected_1_button_in_Rule.click();
   await expect(CorrPortalElem.Add_Conditions).toBeVisible();
@@ -1917,6 +1917,7 @@ export async function stepGroup_Fetching_Bid_Sample_Names_and_Corresponding_Chas
   vars["count"] = appconstants.ONE;
   while (parseFloat(String(vars["count"])) <= parseFloat(String(vars["BidEnumValueCount"]))) {
     log.info('Iteration: ' + vars["count"]);
+    log.info('----------------------------------------------------');
     vars["BidSampleName"] = await CorrPortalElem.get_Individual_BidSample_Name(vars["count"]).textContent() || '';
     vars["ChaseValue"] = await CorrPortalElem.Mapped_Chase_Value(vars['BidSampleName']).evaluate(el => { const s = el as HTMLSelectElement; return s.options[s.selectedIndex]?.text || ''; });
     log.info('Bid Sample Name' + vars["count"] + ':' + vars["BidSampleName"]);
@@ -1946,6 +1947,7 @@ export async function stepGroup_Verification_Of_BidSampleNames_In_Header_Mapping
   vars["count"] = appconstants.ONE;
   for (let i = 0; i < Number(vars['BidEnumValueCount']); i++) {
     log.info('Iteration: ' + vars["count"]);
+    log.info('----------------------------------------------------');
     vars['Bid Sample Field Name'] = dataList[i]['Bid Sample Field Name'];
     log.info('Bid Sample Field Name: ' + vars["Bid Sample Field Name"]);
     vars['Correspondent Chase Field Name'] = dataList[i]['Correspondent Chase Field Name'];
@@ -4587,6 +4589,7 @@ export async function stepGroup_Verifying_the_bidsample_to_bidtape_mapping_in_En
   log.info('Enum Fields Count: ' + vars["EnumFieldsCount"]);
   while (parseFloat(String(vars["count1"])) <= parseFloat(String(vars["EnumFieldsCount"]))) {
     log.info('Iteration: ' + vars["count1"]);
+    log.info('----------------------------------------------------');
     for (let i = 0; i < Number(vars["EnumFieldsCount"]); i++) {
       log.info('Testdata Iteration: ' + vars["count1"]);
       vars['EnumBidSampleNames'] = dataList[i]['EnumBidSampleNames'];
@@ -4637,7 +4640,7 @@ export async function stepGroup_Verifying_the_Mapping_of_ChaseField_and_ChaseVal
 
   while (parseFloat(String(vars["count1"])) <= parseFloat(String(vars["ChaseFieldsCountEnum"]))) {
     log.info("Iteration: " + vars["count1"]);
-
+    log.info('----------------------------------------------------');
     await CorrPortalElem.First_Checkbox_Enum.check();
     await CorrPortalElem.First_Checkbox_Enum.uncheck();
 
@@ -4674,7 +4677,7 @@ export async function stepGroup_Verifying_the_Mapping_of_ChaseField_and_ChaseVal
           } else {
             vars["ChaseValue"] = await CorrPortalElem.Individual_ChaseValue_of_ChaseField(vars['IndividualChaseFieldName'], vars['count2']).textContent() || '';
           }
-
+          Methods.trimtestdata(vars['ChaseValue'],'ChaseValue');
           Methods.concatenateWithSpecialChar(vars["ChaseValue"], vars["IndividualChaseValueofChaseField"], ',', 'IndividualChaseValueofChaseField');
           Methods.MathematicalOperation(vars['count2'], '+', 1, 'count2');
         }
@@ -5333,7 +5336,7 @@ export async function stepGroup_Headers_Verification(page: import('@playwright/t
 
   vars["ExcelHeader"] = "0";
   vars["CountOfHeaders"] = String(await CorrPortalElem.Headers_UI.count());
-  console.log(`[Headers Verification] Found ${vars["CountOfHeaders"]} headers in the UI.`);
+  log.info(`[Headers Verification] Found ${vars["CountOfHeaders"]} headers in the UI.`);
 
   // readRow returns Record<string, CellValue> — extract header values as an ordered array
   const headerRowRecord = excelHelper.readRow(downloadPath, 0);
@@ -5352,7 +5355,7 @@ export async function stepGroup_Headers_Verification(page: import('@playwright/t
       uiHeader = 'BidRequestID';
     }
 
-    console.log(`[Header ${i + 1}] UI: "${uiHeader}" | Excel: "${excelHeader}"`);
+    log.info(`[Header ${i + 1}] UI: "${uiHeader}" | Excel: "${excelHeader}"`);
 
     expect(uiHeader.toLowerCase()).toContain(excelHeader.toLowerCase());
   }
@@ -6501,33 +6504,28 @@ export async function stepGroup_Waiting_until_the_Bid_Status_Changes_to_Price_Of
  */
 export async function stepGroup_Headers_Verification_Price_Offered(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
-  vars["Count"] = "1";
-  vars["count"] = "0";
-  vars["ExcelHeader"] = "0";
-  vars["CountOfHeaders"] = String(await CorrPortalElem.Headers_UI.count()); // 1 to 8. CCode to Status, count =8
-  const sheetData = excelHelper.readSheet(vars['_lastDownloadPath'] || '', "0");
-  const headerValuesExcelObj = sheetData.headers || [];
-  vars["HeaderValuesExcel"] = JSON.stringify(headerValuesExcelObj); // keep string copy for vars storage
-  while (parseFloat(String(vars["Count"])) <= parseFloat(String(vars["CountOfHeaders"]))) {
-    vars["IndividualHeaders"] = await CorrPortalElem.Individual_Headers(vars["Count"]).textContent() || '';
-    vars["IndividualHeadersUI"] = String(vars["IndividualHeaders"]).trim();
-    const _excelHeaderValues = Array.isArray(headerValuesExcelObj) ? headerValuesExcelObj : Object.values(headerValuesExcelObj || {});
-    vars["IndividualExcelHeaders"] = String(_excelHeaderValues[parseInt(String(vars["count"]))] ?? '').trim();
-    console.log("UI Header: " + vars["IndividualHeadersUI"] + " Excel Header: " + vars["IndividualExcelHeaders"]);
-    if (String(vars["IndividualHeadersUI"]) === String("Ccode")) {
-      vars["IndividualHeadersUI"] = "Ccode";
-    }
-    if (String(vars["IndividualHeadersUI"]) === String("Bid Req. ID")) {
-      vars["IndividualHeadersUI"] = "Bid Request ID";
-    }
-    if (String(vars["IndividualHeadersUI"]) === String("Execution Type")) {
-      vars["IndividualHeadersUI"] = "Exe. Type";
-    }
+  const Methods = new AddonHelpers(page, vars);
 
-    expect(String(vars["IndividualHeadersUI"]).toLowerCase()).toContain(String(vars["IndividualExcelHeaders"]).toLowerCase());
-    console.log("Matched UI Header: " + vars["IndividualHeadersUI"] + " Excel Header: " + vars["IndividualExcelHeaders"]);
-    vars["Count"] = (parseFloat(String("1")) + parseFloat(String(vars["Count"]))).toFixed(0);
-    vars["count"] = (parseFloat(String("1")) + parseFloat(String(vars["count"]))).toFixed(0);
+  vars["Count"] = appconstants.ONE;
+  vars["ExcelHeader"] = appconstants.ZERO;
+  vars["CountOfHeaders"] = String(await CorrPortalElem.Headers_Count_UI.count());
+  log.info('Total headers count UI: '+vars['CountOfHeaders']);
+  vars["EntireHeadersExcel"] = excelHelper.readEntireRow(vars["ExportFilePath"], 0, vars['ExcelHeader'], "EntireHeadersExcel");
+  while (parseFloat(String(vars["Count"])) <= parseFloat(String(vars["CountOfHeaders"]))) {
+    log.info('Headers verification Iteration: '+vars['Count']);
+    vars["IndividualHeaders"] = await CorrPortalElem.Individual_Headers(vars["Count"]).textContent() || '';
+    Methods.trimtestdata(vars["IndividualHeaders"], "IndividualHeadersUI");
+    log.info('Individual Header Name UI: '+vars['IndividualHeadersUI']);
+    Methods.splitStringByRegConditionWithPosition(vars["EntireHeadersExcel"], ",", vars["Count"], "IndividualExcelHeaders");
+    log.info("Individual Excel Header: " + vars["IndividualExcelHeaders"]);
+    if (String(vars["IndividualHeadersUI"]) === String(appconstants.BID_REQ_ID)) {
+      vars["IndividualHeadersUI"] = appconstants.BIDREQID_HEADER_NAME_IN_EXCEL;
+    }
+    else if (String(vars["IndividualHeadersUI"]) === String(appconstants.EXECUTIONTYPE_HEADER_NAME_UI_PRICEOFFERED_LISTSCREEN)) {
+      vars["IndividualHeadersUI"] = appconstants.EXECUTIONTYPE_HEADER_NAME_IN_EXCEL;
+    }
+    expect(Methods.verifyTestdataIgnoreCase(vars["IndividualHeadersUI"], "contains", vars["IndividualExcelHeaders"]));
+    Methods.MathematicalOperation(vars["Count"], "+", "1", "Count");
   }
 }
 
@@ -6972,7 +6970,7 @@ export async function stepGroup_Verification_of_Data_from_Excel_to_UI_Excluding_
 
   vars["RowCount"] = String(await CorrPortalElem.Total_Rows_Count_UITotal_Loans.count());
   vars["RowCountUI"] = "1";
-  vars["RowCountExcel"] = "1";
+  vars["RowCountExcel"] = "0";
 
   while (parseFloat(String(vars["RowCountUI"])) <= parseFloat(String(vars["RowCount"]))) {
     vars["ColumnCountUI"] = "2";
