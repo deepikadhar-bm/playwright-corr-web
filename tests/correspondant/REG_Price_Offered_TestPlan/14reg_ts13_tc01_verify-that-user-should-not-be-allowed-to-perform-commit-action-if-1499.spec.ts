@@ -30,7 +30,7 @@ test.describe('REG_PriceOffered', () => {
     priceOfferedPage = new PriceOfferedPage(page);
     spinnerPage = new SpinnerPage(page);
     Methods = new AddonHelpers(page, vars);
-
+    
   });
   let REG_TS13_TC01testFailed = false;
   test(`${TC_ID} - ${TC_TITLE}`, async ({ page }) => {
@@ -49,6 +49,7 @@ test.describe('REG_PriceOffered', () => {
         await page.keyboard.press('Enter');
         await spinnerPage.Spinner.waitFor({ state: 'hidden' });
         await priceOfferedPage.BidRequestIDPrice_Offered(vars['BidReqIdPriceOffered']).click();
+        log.info('Product Name Price Offered: '+vars['ProductNamePriceOffered']);
         await correspondentPortalPage.Get_Price_Button.waitFor({ state: 'visible' });
         vars['ProductNamePriceOffered'] = await priceOfferedPage.Product_NameDetails.textContent() || '';
         await correspondentPortalPage.Get_Price_Button.click();
@@ -104,10 +105,10 @@ test.describe('REG_PriceOffered', () => {
         vars['CorrLoan'] = await correspondentPortalPage.First_Corr_loan_Value_Unchecked.first().textContent() || '';
         Methods.trimtestdata(vars['CorrLoan'], 'CorrLoan');
         log.info('Corr Loan: ' + vars['CorrLoan']);
-        Methods.concatenateWithSpace(appconstants.LOAN_TEXT, vars['CorrLoan'], 'ExpectedPopUpError1');
-        Methods.concatenateWithSpace(vars['ExpectedPopUpError1'], appconstants.MARKET_ADJ_ERROR_TEXT, 'ExpectedPopUpError1');
+        Methods.concatenateWithSpace(appconstants.LOAN_TEXT,vars['CorrLoan'],'ExpectedPopUpError1');
+        Methods.concatenateWithSpace(vars['ExpectedPopUpError1'],appconstants.MARKET_ADJ_ERROR_TEXT,'ExpectedPopUpError1');
         log.info('Expected error 1: ' + vars['ExpectedPopUpError1']);
-        Methods.concatenateWithSpace(appconstants.MARKET_ADJ_REASON_TEXT, vars['NumLowerThanMarkAdjPopup'], 'ExpectedPopUpError2');
+        Methods.concatenateWithSpace(appconstants.MARKET_ADJ_REASON_TEXT,vars['NumLowerThanMarkAdjPopup'],'ExpectedPopUpError2');
         log.info('Expected error 2: ' + vars['ExpectedPopUpError2']);
         await correspondentPortalPage.Get_Price_Button.click();
         await expect(priceOfferedPage.Commit_Selected_1_Dropdown).toBeEnabled();
@@ -161,7 +162,7 @@ test.describe('REG_PriceOffered', () => {
       throw e;
     }
   });
-
+  
   test.afterEach(async ({ page }) => {
     log.afterTestSteps(TC_ID, REG_TS13_TC01testFailed);
     try {
