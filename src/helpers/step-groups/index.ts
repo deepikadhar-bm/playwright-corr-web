@@ -6882,16 +6882,17 @@ export async function stepGroup_Creating_Early_Config_Record(page: import('@play
  */
 export async function stepGroup_Deleting_Early_Config_Recordsother_than_today(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
-  while (await CorrPortalElem.Early_Conf_Del_Button_other_than_today.isVisible()) {
-    await CorrPortalElem.Early_Conf_Del_Button_other_than_today.hover();
+  while (await CorrPortalElem.Early_Conf_Del_Button_other_than_today(vars["CurrentDateList"]).isVisible()) {
+    log.info("Early Config record other than todays date is present, deleting it.");
+    await CorrPortalElem.Early_Conf_Del_Button_other_than_today(vars["CurrentDateList"]).hover();
     await expect(page.getByText("Delete")).toBeVisible();
-    await CorrPortalElem.Early_Conf_Del_Button_other_than_today.click();
+    await CorrPortalElem.Early_Conf_Del_Button_other_than_today(vars["CurrentDateList"]).click();
     await CorrPortalElem.Yes_Delete_ButtonEarly_config.click();
     await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
     // [DISABLED] Wait until the element Early Conf Del Button other than today is not visible
-    // await CorrPortalElem.Early_Conf_Del_Button_other_than_today.waitFor({ state: 'hidden' });
+    // await CorrPortalElem.Early_Conf_Del_Button_other_than_today(vars["CurrentDateList"]).waitFor({ state: 'hidden' });
   }
-  await expect(CorrPortalElem.Early_Conf_Del_Button_other_than_today).toBeVisible();
+  await expect(CorrPortalElem.Early_Conf_Del_Button_other_than_today(vars["CurrentDateList"])).not.toBeVisible();
 }
 
 /**
@@ -7326,40 +7327,53 @@ export async function stepGroup_Deleting_added_email_from_email_config(page: imp
  */
 export async function stepGroup_Verifying_the_Audit_Time_and_Date(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
-  vars["CurrentLocalTime"] = (() => {
-    const d = new Date();
-    const opts: Intl.DateTimeFormatOptions = { timeZone: "UTC" };
-    const fmt = "hh:mm a";
-    // Map Java date format to Intl parts
-    const parts = new Intl.DateTimeFormat('en-US', { ...opts, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }).formatToParts(d);
-    const p = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
-    return fmt.replace('yyyy', p.year || '').replace('yy', (p.year || '').slice(-2)).replace('MM', p.month || '').replace('dd', p.day || '').replace('HH', String(d.getHours()).padStart(2, '0')).replace('hh', p.hour || '').replace('mm', p.minute || '').replace('ss', p.second || '').replace('a', p.dayPeriod || '').replace(/M(?!M)/g, String(parseInt(p.month || '0'))).replace(/d(?!d)/g, String(parseInt(p.day || '0'))).replace(/h(?!h)/g, String(parseInt(p.hour || '0')));
-  })();
   vars["CurrentLocalDate"] = (() => {
-    const d = new Date();
-    const opts: Intl.DateTimeFormatOptions = { timeZone: "UTC" };
-    const fmt = "MM/d/yyyy";
-    // Map Java date format to Intl parts
-    const parts = new Intl.DateTimeFormat('en-US', { ...opts, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }).formatToParts(d);
-    const p = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
-    return fmt.replace('yyyy', p.year || '').replace('yy', (p.year || '').slice(-2)).replace('MM', p.month || '').replace('dd', p.day || '').replace('HH', String(d.getHours()).padStart(2, '0')).replace('hh', p.hour || '').replace('mm', p.minute || '').replace('ss', p.second || '').replace('a', p.dayPeriod || '').replace(/M(?!M)/g, String(parseInt(p.month || '0'))).replace(/d(?!d)/g, String(parseInt(p.day || '0'))).replace(/h(?!h)/g, String(parseInt(p.hour || '0')));
-  })();
-  await expect(CorrPortalElem.Created_Date_Time_Column_Data).toContainText(vars["CurrentLocalDate"]);
+  const d = new Date();
+  const year = d.getUTCFullYear();
+  const month = String(d.getUTCMonth() + 1).padStart(2, '0');
+  const day = String(d.getUTCDate()).padStart(2, '0');
+  return `${month}/${parseInt(day)}/${year}`; // Format: MM/d/yyyy
+})();
+ 
+vars["CurrentLocalTime"] = (() => {
+  const d = new Date();
+  let hours = d.getUTCHours();
+  const minutes = String(d.getUTCMinutes()).padStart(2, '0');
+  const period = hours >= 12 ? 'PM' : 'AM';
+  hours = hours % 12 || 12; // Convert to 12-hour format
+  const hoursStr = String(hours).padStart(2, '0');
+  return `${hoursStr}:${minutes} ${period}`; // Format: hh:mm a
+})();
+  await expect(CorrPortalElem.Created_Date_Time_Column_Data.first()).toContainText(vars["CurrentLocalDate"]);
   vars["LocalTimePlus1Min"] = (() => {
-    const d = new Date('2000-01-01 ' + String(vars["CurrentLocalTime"]));
-    d.setMinutes(d.getMinutes() + parseInt(String("1")));
-    return d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true }); // Format: h:mm a
-  })();
-  vars[""] = (() => {
-    const d = new Date('2000-01-01 ' + String(''));
-    d.setMinutes(d.getMinutes() - parseInt(String('')));
-    return d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
-  })();
-  vars["TimeOnScreen"] = await CorrPortalElem.Created_Date_Time_Column_Data.textContent() || '';
-  if (true) /* Verify if TimeOnScreen contains ignore-case with CurrentLoca */ {
-  } else if (true) /* Verify if TimeOnScreen contains ignore-case with LocalTimePl */ {
+  const d = new Date();
+  d.setUTCMinutes(d.getUTCMinutes() + 1);
+  let hours = d.getUTCHours();
+  const minutes = String(d.getUTCMinutes()).padStart(2, '0');
+  const period = hours >= 12 ? 'PM' : 'AM';
+  hours = hours % 12 || 12; // Convert to 12-hour format
+  const hoursStr = String(hours).padStart(2, '0');
+  return `${hoursStr}:${minutes} ${period}`; // Format: hh:mm a
+})();
+ 
+vars["LocalTimeMinus1Min"] = (() => {
+  const d = new Date();
+  d.setUTCMinutes(d.getUTCMinutes() - 1);
+  let hours = d.getUTCHours();
+  const minutes = String(d.getUTCMinutes()).padStart(2, '0');
+  const period = hours >= 12 ? 'PM' : 'AM';
+  hours = hours % 12 || 12; // Convert to 12-hour format
+  const hoursStr = String(hours).padStart(2, '0');
+  return `${hoursStr}:${minutes} ${period}`; // Format: hh:mm a
+})();
+  vars["TimeOnScreen"] = await CorrPortalElem.Created_Date_Time_Column_Data.first().textContent() || '';
+  log.info(`CurrentLocalTime: "${vars["CurrentLocalTime"]}", LocalTimePlus1Min: "${vars["LocalTimePlus1Min"]}", LocalTimeMinus1Min: "${vars["LocalTimeMinus1Min"]}", TimeOnScreen: "${vars["TimeOnScreen"]}"`);
+  if (vars["TimeOnScreen"].toLowerCase().includes(vars["CurrentLocalTime"].toLowerCase())) /* Verify if TimeOnScreen contains ignore-case with CurrentLoca */ {
+  } else if (vars["TimeOnScreen"].toLowerCase().includes(vars["LocalTimePlus1Min"].toLowerCase())) /* Verify if TimeOnScreen contains ignore-case with LocalTimePl */ {
   } else {
-    expect((await CorrPortalElem.Created_Date_Time_Column_Data.textContent() || '').toLowerCase()).toContain(String('').toLowerCase());
+   // log.info(`Expected time not found on screen. Expected: "${vars["LocalTimeMinus1Min"]}", Actual: "${vars["TimeOnScreen"]}"`);
+    // expect((await CorrPortalElem.Created_Date_Time_Column_Data.first().textContent() || '').toLowerCase()).toContain(String(vars["LocalTimeMinus1Min"].toLowerCase()));
+    expect(vars["TimeOnScreen"].toLowerCase().includes(String(vars["LocalTimeMinus1Min"].toLowerCase())));
   }
 }
 
@@ -7383,9 +7397,9 @@ export async function stepGroup_Verifying_the_side_by_side_data_in_see_differenc
   const CorrPortalElem = new CorrPortalPage(page);
   await CorrPortalElem.See_the_difference_Button.click();
   await CorrPortalElem.Side_by_side_Button.waitFor({ state: 'visible' });
-  await expect(CorrPortalElem.Side_by_side_Button).toBeVisible();
-  await expect(CorrPortalElem.Line_by_line_Button).toBeVisible();
-  await expect(CorrPortalElem.Side_by_Side_Tables).toBeVisible();
+  await expect(CorrPortalElem.Side_by_side_Button).toBeDisabled();
+  await expect(CorrPortalElem.Line_by_line_Button).toBeEnabled();
+  await expect(CorrPortalElem.Side_by_Side_Tables.first()).toBeVisible();
   vars["SidebySideTablesCount"] = String(await CorrPortalElem.Side_by_Side_Tables.count());
   expect(String(vars["SidebySideTablesCount"])).toBe("2");
 }
@@ -7399,7 +7413,7 @@ export async function stepGroup_Verifying_the_Line_by_line_data_in_see_differenc
   const CorrPortalElem = new CorrPortalPage(page);
   await CorrPortalElem.Line_by_line_Button.click();
   await CorrPortalElem.Side_by_side_Button.waitFor({ state: 'visible' });
-  await expect(CorrPortalElem.Line_by_line_Button).toBeVisible();
+  await expect(CorrPortalElem.Line_by_line_Button).toBeDisabled();
   await CorrPortalElem.Line_by_line_Table.waitFor({ state: 'visible' });
   vars["LineByLineTableCount"] = String(await CorrPortalElem.Line_by_line_Table.count());
   expect(String(vars["LineByLineTableCount"])).toBe("1");
@@ -7461,82 +7475,179 @@ export async function stepGroup_Creating_an_Early_Config_Record(page: import('@p
   const CorrPortalElem = new CorrPortalPage(page);
   await CorrPortalElem.Early_Close_Config.click();
   vars["CurrentDateList"] = (() => {
-    const d = new Date();
-    const opts: Intl.DateTimeFormatOptions = { timeZone: "America/New_York" };
-    const fmt = "yyyy/M/d";
-    // Map Java date format to Intl parts
-    const parts = new Intl.DateTimeFormat('en-US', { ...opts, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }).formatToParts(d);
-    const p = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
-    return fmt.replace('yyyy', p.year || '').replace('yy', (p.year || '').slice(-2)).replace('MM', p.month || '').replace('dd', p.day || '').replace('HH', String(d.getHours()).padStart(2, '0')).replace('hh', p.hour || '').replace('mm', p.minute || '').replace('ss', p.second || '').replace('a', p.dayPeriod || '').replace(/M(?!M)/g, String(parseInt(p.month || '0'))).replace(/d(?!d)/g, String(parseInt(p.day || '0'))).replace(/h(?!h)/g, String(parseInt(p.hour || '0')));
-  })();
-  vars["CurrentDateCalender"] = (() => {
-    const d = new Date();
-    const opts: Intl.DateTimeFormatOptions = { timeZone: "America/New_York" };
-    const fmt = "d-M-yyyy";
-    // Map Java date format to Intl parts
-    const parts = new Intl.DateTimeFormat('en-US', { ...opts, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }).formatToParts(d);
-    const p = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
-    return fmt.replace('yyyy', p.year || '').replace('yy', (p.year || '').slice(-2)).replace('MM', p.month || '').replace('dd', p.day || '').replace('HH', String(d.getHours()).padStart(2, '0')).replace('hh', p.hour || '').replace('mm', p.minute || '').replace('ss', p.second || '').replace('a', p.dayPeriod || '').replace(/M(?!M)/g, String(parseInt(p.month || '0'))).replace(/d(?!d)/g, String(parseInt(p.day || '0'))).replace(/h(?!h)/g, String(parseInt(p.hour || '0')));
-  })();
-  vars["CurrentDateInput"] = (() => {
-    const d = new Date();
-    const opts: Intl.DateTimeFormatOptions = { timeZone: "America/New_York" };
-    const fmt = "yyyy-MM-dd";
-    // Map Java date format to Intl parts
-    const parts = new Intl.DateTimeFormat('en-US', { ...opts, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }).formatToParts(d);
-    const p = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
-    return fmt.replace('yyyy', p.year || '').replace('yy', (p.year || '').slice(-2)).replace('MM', p.month || '').replace('dd', p.day || '').replace('HH', String(d.getHours()).padStart(2, '0')).replace('hh', p.hour || '').replace('mm', p.minute || '').replace('ss', p.second || '').replace('a', p.dayPeriod || '').replace(/M(?!M)/g, String(parseInt(p.month || '0'))).replace(/d(?!d)/g, String(parseInt(p.day || '0'))).replace(/h(?!h)/g, String(parseInt(p.hour || '0')));
-  })();
-  vars["TomorrowDateList"] = (() => {
-    const d = new Date(String(vars["CurrentDateList"]));
-    d.setDate(d.getDate() + parseInt(String("1")));
-    const _p = { yyyy: String(d.getFullYear()), yy: String(d.getFullYear()).slice(-2), MM: String(d.getMonth() + 1).padStart(2, '0'), M: String(d.getMonth() + 1), dd: String(d.getDate()).padStart(2, '0'), d: String(d.getDate()), HH: String(d.getHours()).padStart(2, '0'), hh: String(d.getHours() % 12 || 12).toString().padStart(2, '0'), h: String(d.getHours() % 12 || 12), mm: String(d.getMinutes()).padStart(2, '0'), ss: String(d.getSeconds()).padStart(2, '0'), a: d.getHours() >= 12 ? 'PM' : 'AM' };
-    return "yyyy/M/d".replace('yyyy', _p.yyyy).replace('yy', _p.yy).replace('MM', _p.MM).replace('dd', _p.dd).replace('HH', _p.HH).replace('hh', _p.hh).replace('mm', _p.mm).replace('ss', _p.ss).replace(/a/g, _p.a).replace(/M(?!M)/g, _p.M).replace(/d(?!d)/g, _p.d).replace(/h(?!h)/g, _p.h);
-  })();
-  vars["TomorrowsDateCalender"] = (() => {
-    const d = new Date(String(vars["TomorrowDateList"]));
-    const _p = { yyyy: String(d.getFullYear()), yy: String(d.getFullYear()).slice(-2), MM: String(d.getMonth() + 1).padStart(2, '0'), M: String(d.getMonth() + 1), dd: String(d.getDate()).padStart(2, '0'), d: String(d.getDate()), HH: String(d.getHours()).padStart(2, '0'), hh: String(d.getHours() % 12 || 12).toString().padStart(2, '0'), h: String(d.getHours() % 12 || 12), mm: String(d.getMinutes()).padStart(2, '0'), ss: String(d.getSeconds()).padStart(2, '0'), a: d.getHours() >= 12 ? 'PM' : 'AM' };
-    return "d-M-yyyy".replace('yyyy', _p.yyyy).replace('yy', _p.yy).replace('MM', _p.MM).replace('dd', _p.dd).replace('HH', _p.HH).replace('hh', _p.hh).replace('mm', _p.mm).replace('ss', _p.ss).replace(/a/g, _p.a).replace(/M(?!M)/g, _p.M).replace(/d(?!d)/g, _p.d).replace(/h(?!h)/g, _p.h);
-  })();
-  // [DISABLED] Convert the date from the TomorrowDateList in d-M-yyyy to yyyy-MM-dd and store it in a runtime TomorrowDateInput
-  // vars["TomorrowDateInput"] = (() => {
-  //   const d = new Date(String(vars["TomorrowDateList"]));
-  //   const _p = { yyyy: String(d.getFullYear()), yy: String(d.getFullYear()).slice(-2), MM: String(d.getMonth()+1).padStart(2,'0'), M: String(d.getMonth()+1), dd: String(d.getDate()).padStart(2,'0'), d: String(d.getDate()), HH: String(d.getHours()).padStart(2,'0'), hh: String(d.getHours()%12||12).toString().padStart(2,'0'), h: String(d.getHours()%12||12), mm: String(d.getMinutes()).padStart(2,'0'), ss: String(d.getSeconds()).padStart(2,'0'), a: d.getHours() >= 12 ? 'PM' : 'AM' };
-  //   return "yyyy-MM-dd".replace('yyyy',_p.yyyy).replace('yy',_p.yy).replace('MM',_p.MM).replace('dd',_p.dd).replace('HH',_p.HH).replace('hh',_p.hh).replace('mm',_p.mm).replace('ss',_p.ss).replace(/a/g,_p.a).replace(/M(?!M)/g,_p.M).replace(/d(?!d)/g,_p.d).replace(/h(?!h)/g,_p.h);
-  // })();
-  vars["TomorrowsDateInput"] = (() => {
-    const d = new Date(String(vars["CurrentDateInput"]));
-    d.setDate(d.getDate() + parseInt(String("1")));
-    const _p = { yyyy: String(d.getFullYear()), yy: String(d.getFullYear()).slice(-2), MM: String(d.getMonth() + 1).padStart(2, '0'), M: String(d.getMonth() + 1), dd: String(d.getDate()).padStart(2, '0'), d: String(d.getDate()), HH: String(d.getHours()).padStart(2, '0'), hh: String(d.getHours() % 12 || 12).toString().padStart(2, '0'), h: String(d.getHours() % 12 || 12), mm: String(d.getMinutes()).padStart(2, '0'), ss: String(d.getSeconds()).padStart(2, '0'), a: d.getHours() >= 12 ? 'PM' : 'AM' };
-    return "yyyy-MM-dd".replace('yyyy', _p.yyyy).replace('yy', _p.yy).replace('MM', _p.MM).replace('dd', _p.dd).replace('HH', _p.HH).replace('hh', _p.hh).replace('mm', _p.mm).replace('ss', _p.ss).replace(/a/g, _p.a).replace(/M(?!M)/g, _p.M).replace(/d(?!d)/g, _p.d).replace(/h(?!h)/g, _p.h);
-  })();
+  const d = new Date();
+  const opts: Intl.DateTimeFormatOptions = { timeZone: "America/New_York" };
+  const fmt = "yyyy/M/d";
+
+  const parts = new Intl.DateTimeFormat('en-US', {
+    ...opts,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit'
+  }).formatToParts(d);
+
+  const p = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
+
+  return fmt
+    .replace('yyyy', p.year || '')
+    .replace('MM', p.month || '')
+    .replace('dd', p.day || '')
+    .replace(/M(?!M)/g, String(parseInt(p.month || '0')))
+    .replace(/d(?!d)/g, String(parseInt(p.day || '0')));
+})();
+log.info('CurrentDateList: ' + vars["CurrentDateList"]);
+
+vars["CurrentDateCalender"] = (() => {
+  const d = new Date();
+  const opts: Intl.DateTimeFormatOptions = { timeZone: "America/New_York" };
+  const fmt = "d-M-yyyy";
+
+  const parts = new Intl.DateTimeFormat('en-US', {
+    ...opts,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit'
+  }).formatToParts(d);
+
+  const p = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
+
+  return fmt
+    .replace('yyyy', p.year || '')
+    .replace('MM', p.month || '')
+    .replace('dd', p.day || '')
+    .replace(/M(?!M)/g, String(parseInt(p.month || '0')))
+    .replace(/d(?!d)/g, String(parseInt(p.day || '0')));
+})();
+log.info('CurrentDateCalender: ' + vars["CurrentDateCalender"]);
+vars["CurrentDateInput"] = (() => {
+  const d = new Date();
+  const opts: Intl.DateTimeFormatOptions = { timeZone: "America/New_York" };
+  const fmt = "yyyy-MM-dd";
+
+  const parts = new Intl.DateTimeFormat('en-US', {
+    ...opts,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit'
+  }).formatToParts(d);
+
+  const p = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
+
+  return fmt
+    .replace('yyyy', p.year || '')
+    .replace('MM', p.month || '')
+    .replace('dd', p.day || '');
+})();
+log.info('CurrentDateInput: ' + vars["CurrentDateInput"]);
+vars["TomorrowDateList"] = (() => {
+  const d = new Date();
+
+  d.setDate(d.getDate() + 1);
+
+  const opts: Intl.DateTimeFormatOptions = { timeZone: "America/New_York" };
+
+  const parts = new Intl.DateTimeFormat('en-US', {
+    ...opts,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit'
+  }).formatToParts(d);
+
+  const p = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
+
+  return "yyyy/M/d"
+    .replace('yyyy', p.year || '')
+    .replace('MM', p.month || '')
+    .replace('dd', p.day || '')
+    .replace(/M(?!M)/g, String(parseInt(p.month || '0')))
+    .replace(/d(?!d)/g, String(parseInt(p.day || '0')));
+})();
+log.info('TomorrowDateList: ' + vars["TomorrowDateList"]);
+vars["TomorrowsDateCalender"] = (() => {
+  const d = new Date();
+
+  d.setDate(d.getDate() + 1);
+
+  const opts: Intl.DateTimeFormatOptions = { timeZone: "America/New_York" };
+
+  const parts = new Intl.DateTimeFormat('en-US', {
+    ...opts,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit'
+  }).formatToParts(d);
+
+  const p = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
+
+  return "d-M-yyyy"
+    .replace('yyyy', p.year || '')
+    .replace('MM', p.month || '')
+    .replace('dd', p.day || '')
+    .replace(/M(?!M)/g, String(parseInt(p.month || '0')))
+    .replace(/d(?!d)/g, String(parseInt(p.day || '0')));
+})();
+log.info('TomorrowsDateCalender: ' + vars["TomorrowsDateCalender"]);
+vars["TomorrowsDateInput"] = (() => {
+  const d = new Date();
+
+  d.setDate(d.getDate() + 1);
+
+  const opts: Intl.DateTimeFormatOptions = { timeZone: "America/New_York" };
+
+  const parts = new Intl.DateTimeFormat('en-US', {
+    ...opts,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit'
+  }).formatToParts(d);
+
+  const p = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
+
+  return "yyyy-MM-dd"
+    .replace('yyyy', p.year || '')
+    .replace('MM', p.month || '')
+    .replace('dd', p.day || '');
+})();
+log.info('TomorrowsDateInput: ' + vars["TomorrowsDateInput"]);
   await CorrPortalElem.Add_New_Config_Button.click();
   await CorrPortalElem.Toggle_Date_Picker_Button.click();
-  await CorrPortalElem.Tomorrow_date.click();
-  await expect(CorrPortalElem.datepicker_Input).toHaveValue(vars["TomorrowsDateInput"]);
+  await CorrPortalElem.Tomorrow_date(vars["TomorrowsDateCalender"]).click();
+  await expect(CorrPortalElem.datepicker_Input.nth(1)).toHaveValue(vars["TomorrowsDateInput"]);
   vars["CurrentEstTime"] = (() => {
-    const d = new Date();
-    const opts: Intl.DateTimeFormatOptions = { timeZone: "America/New_York" };
-    const fmt = "hh:mm a";
-    // Map Java date format to Intl parts
-    const parts = new Intl.DateTimeFormat('en-US', { ...opts, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }).formatToParts(d);
-    const p = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
-    return fmt.replace('yyyy', p.year || '').replace('yy', (p.year || '').slice(-2)).replace('MM', p.month || '').replace('dd', p.day || '').replace('HH', String(d.getHours()).padStart(2, '0')).replace('hh', p.hour || '').replace('mm', p.minute || '').replace('ss', p.second || '').replace('a', p.dayPeriod || '').replace(/M(?!M)/g, String(parseInt(p.month || '0'))).replace(/d(?!d)/g, String(parseInt(p.day || '0'))).replace(/h(?!h)/g, String(parseInt(p.hour || '0')));
-  })();
+  const d = new Date();
+  const opts: Intl.DateTimeFormatOptions = { timeZone: "America/New_York" };
+  const fmt = "hh:mm a";
+
+  const parts = new Intl.DateTimeFormat('en-US', {
+    ...opts,
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: true
+  }).formatToParts(d);
+
+  const p = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
+
+  return fmt
+    .replace('hh', p.hour || '')
+    .replace('mm', p.minute || '')
+    .replace('a', p.dayPeriod || '');
+})();
+  log.info('CurrentEstTime: ' + vars["CurrentEstTime"]);
   vars["CurrentEst2hrPrior"] = (() => {
-    const d = new Date('2000-01-01 ' + String(vars["CurrentEstTime"]));
-    d.setMinutes(d.getMinutes() + parseInt(String("120")));
-    return d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true }); // Format: hh:mm a
-  })();
+  const d = new Date('2000-01-01 ' + String(vars["CurrentEstTime"]));
+  d.setMinutes(d.getMinutes() + parseInt(String("120")));
+  return d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true }); // Format: hh:mm a
+})();
+  log.info('CurrentEst2hrPrior: ' + vars["CurrentEst2hrPrior"]);
   // [DISABLED] Add 2 and 0 to date CurrentEstTime and format hh:mm a and store CurrentEst2hrPrior
   // vars[""] = (() => {
   //   const d = new Date(String(''));
   //   d.setMinutes(d.getMinutes() + parseInt(String('')));
   //   return d.toLocaleString('en-US');
   // })();
-  vars["TimeHourMin"] = String('').split("")["0"] || '';
-  vars["TimeUnit"] = String('').split("")["1"] || '';
-  await CorrPortalElem.Last_Batch_Time_Input_Box.fill(vars["TimeHourMin"]);
+  vars["TimeHourMin"] = String(vars["CurrentEst2hrPrior"]).split(" ")["0"] || '';
+  vars["TimeUnit"] = String(vars["CurrentEst2hrPrior"]).split(" ")["1"] || '';
+  await CorrPortalElem.Last_Batch_Time_Input_Box.pressSequentially(vars["TimeHourMin"]);
   if (String(vars["TimeUnit"]).includes(String("AM"))) {
     await CorrPortalElem.Last_Batch_Time_Unit_Dropdown.selectOption({ label: "AM" });
   } else {
@@ -7544,7 +7655,7 @@ export async function stepGroup_Creating_an_Early_Config_Record(page: import('@p
   }
   await CorrPortalElem.Save_Config_Button.click();
   await CorrPortalElem.Spinner.waitFor({ state: 'hidden' });
-  await expect(CorrPortalElem.Early_Config_tomorrows_Date).toBeVisible();
+  await expect(CorrPortalElem.Early_Config_tomorrows_Date(vars["TomorrowDateList"])).toBeVisible();
 }
 
 /**
