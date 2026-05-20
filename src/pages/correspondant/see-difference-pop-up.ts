@@ -1,5 +1,5 @@
 import { Page, Locator } from '@playwright/test';
-
+import { APP_CONSTANTS } from 'src/constants/app-constants';
 /**
  * Page Object: see difference pop up
  * Elements: 27
@@ -24,11 +24,11 @@ export class SeeDifferencePopUpPage {
   }
 
   get Expected_New_Data_Standard_Execution(): Locator {
-    return this.page.locator("//*[text()=\"+\"]/following-sibling::span[contains(text(),\"executionTypes\")]/../../../following-sibling::tr//span[contains(text(),\"STANDARD\")]/../..");
+    return this.page.locator(`//*[text()="+"]/following-sibling::span[contains(text(),"executionTypes")]/../../../following-sibling::tr//span[contains(text(),"${APP_CONSTANTS.CustomerPermissionConfigStandard}")]/../..`);
   }
 
   get Expected_New_DataChase_Execution(): Locator {
-    return this.page.locator("//*[text()=\"+\"]/following-sibling::span[contains(text(),\"executionTypes\")]/../../../following-sibling::tr//span[contains(text(),\"CHASE_DIRECT\")]/../..");
+    return this.page.locator(`//*[text()="+"]/following-sibling::span[contains(text(),"executionTypes")]/../../../following-sibling::tr//span[contains(text(),"${APP_CONSTANTS.CustomerPermissionConfigChaseDirect}")]/../..`);
   }
 
   get Expected_Previous_DataCustomer_Permission_Config(): Locator {
@@ -73,6 +73,10 @@ export class SeeDifferencePopUpPage {
 
   get Previous_Data_Change_TextSide_by_Side(): Locator {
     return this.page.locator("(//td[@class=\"d2h-del d2h-change\"]//span[@class=\"d2h-code-line-ctn\"])[1]//del");
+  }
+
+  get Previous_Data_Change_Text_Line_by_Line_Minus(): Locator {
+    return this.page.locator("(//td[@class=\"d2h-del d2h-change\"]//span[@class=\"d2h-code-line-ctn\"])/..//span[text()=\"-\"]");
   }
 
   get Previous_data_empty_email_field(): Locator {
