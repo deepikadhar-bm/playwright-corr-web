@@ -5154,7 +5154,7 @@ export async function stepGroup_Storing_Loan_Popup_Details_From_All_Loans_Tab_in
  */
 export async function stepGroup_Market_Threshold(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
-  await CorrPortalElem.Edit_Map_Button.click();
+  await CorrPortalElem.Edit_Req_Map_Button(vars['ProductNamePriceOffered']).first().click();
   await CorrPortalElem.Enter_maximum_display_value_in_percentage_Input.click();
   await CorrPortalElem.Enter_maximum_display_value_in_percentage_Input.clear();
 }
@@ -5166,11 +5166,10 @@ export async function stepGroup_Market_Threshold(page: import('@playwright/test'
  */
 export async function stepGroup_If_Test_case_fail(page: import('@playwright/test').Page, vars: Record<string, string>) {
   const CorrPortalElem = new CorrPortalPage(page);
-  // if (REG_TS13_TC01testFailed) /* Test Case Result is Failed */ {
   await CorrPortalElem.Administration_Menu.click();
   await CorrPortalElem.General_Settings.click();
   await CorrPortalElem.Market_Thresholds.click();
-  await CorrPortalElem.Edit_Map_Button.click();
+  await CorrPortalElem.Edit_Req_Map_Button(vars['ProductNamePriceOffered']).first().click();
   await CorrPortalElem.Minimum_Display_value.clear();
   await CorrPortalElem.Minimum_Display_value.fill(appconstants.ONE);
   await CorrPortalElem.Maximum_Display_Value.click();
@@ -5178,7 +5177,6 @@ export async function stepGroup_If_Test_case_fail(page: import('@playwright/test
   await CorrPortalElem.Maximum_Display_Value.fill(appconstants.ONE_HUNDRED_TWEENTY);
   await expect(CorrPortalElem.Update_Threshold_Button).toBeEnabled();
   await CorrPortalElem.Update_Threshold_Button.click();
-  // }
 }
 
 /**
