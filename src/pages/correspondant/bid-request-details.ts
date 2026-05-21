@@ -5,7 +5,7 @@ import { Page, Locator } from '@playwright/test';
  * Elements: 140
  */
 export class BidRequestDetailsPage {
-  constructor(private page: Page) {}
+  constructor(private page: Page) { }
 
   get Bid_Enum_Check_Validation_On_Popup(): Locator {
     return this.page.locator("//div[text()=\" Bid Request Enumeration Mapping Validation \"]/../..//span");
@@ -15,12 +15,12 @@ export class BidRequestDetailsPage {
     return this.page.locator("//div[@class=\"flex-grow-1 d-flex gap-3\"]//div/div[@id=\"errorsCheckLabel\"]/..//h5[@aria-labelledby=\"errorsCheckLabel\"]");
   }
 
-  All_Success_Loan_Amount_Textbid_request_details_tbl1(count1:string): Locator {
+  All_Success_Loan_Amount_Textbid_request_details_tbl1(count1: string): Locator {
     return this.page.locator(`((//tbody)[1]//td[@data-title=\"Loan Status\"]//div[contains(text(),\"Success\")]/../..//td[@data-title=\"Loan Amount\"])[${count1}]`);
   }
 
   get Apply_Selected_Button_2_filter(): Locator {
-    return this.page.locator("(//button[contains(normalize-space(),\"Apply Selected 1\")])[2]");
+    return this.page.locator("(//button[@aria-label='Apply selected items'])[2]");
   }
 
   get Bid_Loan_Number_Loan_Details_Pop_up(): Locator {
@@ -43,7 +43,7 @@ export class BidRequestDetailsPage {
     return this.page.locator("//div[@class=\"modal-header\"]/div/h5");
   }
 
-  Bid_Value_From_list(RequestIDDetails:String): Locator {
+  Bid_Value_From_list(RequestIDDetails: String): Locator {
     return this.page.locator(`//button[contains(text(),\"${RequestIDDetails}\")]/../..//td[@data-title=\"Bid Value\"]`);
   }
 
@@ -71,7 +71,7 @@ export class BidRequestDetailsPage {
     return this.page.locator("//label[text()=\"Bid Requested Date\"]");
   }
 
-  Ccode_From_List(RequestIDDetails:String): Locator {
+  Ccode_From_List(RequestIDDetails: String): Locator {
     return this.page.locator(`//button[contains(text(),\"${RequestIDDetails}\")]/../..//td[@data-title=\"CCode\"]`);
   }
 
@@ -191,11 +191,11 @@ export class BidRequestDetailsPage {
     return this.page.locator("//div[@aria-labelledby=\"executionHeader\"]//div/h5[contains(text(),\"Standard\")]");
   }
 
-  ExecutionTypebid_requests_details_counter(count:string): Locator {
+  ExecutionTypebid_requests_details_counter(count: string): Locator {
     return this.page.locator(`(//div[text()=\" Execution Type \"]/..//h5)[${count}]`);
   }
 
-Expected_Execution_Type_Parsed_Row(SelectedLockTerm: string): Locator {
+  Expected_Execution_Type_Parsed_Row(SelectedLockTerm: string): Locator {
     return this.page.locator(`//h5[contains(@aria-label,"Execution Type") and text()=" Standard(${SelectedLockTerm}d) "]`);
   }
 
@@ -231,63 +231,63 @@ Expected_Execution_Type_Parsed_Row(SelectedLockTerm: string): Locator {
     return this.page.locator(" //div[@aria-labelledby=\"executionHeader\"]//div/h5[contains(text(),\"Chase\")]/../..//div[text()='Total Loan Rows']/..//span[contains(@aria-label,\"Successful Loan\")]");
   }
 
-  Individual_Cell_Data(RowsCount:string,ColumnCount:string): Locator {
+  Individual_Cell_Data(RowsCount: string, ColumnCount: string): Locator {
     return this.page.locator(`(//tr[${RowsCount}]//td)[${ColumnCount}]`);
   }
 
-  Individual_Cell_Data_from_table_2(RowsCount:string,ColumnCount:string): Locator {
+  Individual_Cell_Data_from_table_2(RowsCount: string, ColumnCount: string): Locator {
     return this.page.locator(`(//table)[2]//tr[${RowsCount}]//td[${ColumnCount}]`);
   }
 
-   Individual_Cell_Data_Table(ColumnHeaderUI:string,RowsCountTable:string): Locator {
+  Individual_Cell_Data_Table(ColumnHeaderUI: string, RowsCountTable: string): Locator {
     return this.page.locator(`(//td[@data-title=\"${ColumnHeaderUI}\"])[${RowsCountTable}]`);
   }
 
-  Individual_Cell_Data_Table_2(ColumnHeaderUI:string,RowsCountTable:string): Locator {
+  Individual_Cell_Data_Table_2(ColumnHeaderUI: string, RowsCountTable: string): Locator {
     return this.page.locator(`((//table)[2]//td[@data-title=\"${ColumnHeaderUI}\"])[${RowsCountTable}]`);
   }
 
-  Individual_Cell_Table(count:string,RowCountExcel:string,ColumnCount:string): Locator {
+  Individual_Cell_Table(count: string, RowCountExcel: string, ColumnCount: string): Locator {
     return this.page.locator(`(//table)[${count}]//tr[${RowCountExcel}]//td[${ColumnCount}]`);
   }
 
-  Individual_Chase_Field_Name_Popup(count:string): Locator {
+  Individual_Chase_Field_Name_Popup(count: string): Locator {
     return this.page.locator(`(//div[@class=\"border-bottom p-2\"])[${count}]`);
   }
 
-  Individual_Chase_Value_Popup(ChaseFieldNameBeforeSubmit:string): Locator {
+  Individual_Chase_Value_Popup(ChaseFieldNameBeforeSubmit: string): Locator {
     return this.page.locator(`(//div[@class=\"border-bottom p-2\" and contains(text(),\"${ChaseFieldNameBeforeSubmit}\")]/following-sibling::div)[1]`);
   }
 
-  Individual_Chase_Value_popup2(ChaseFieldPopupAfterSubmit:string): Locator {
+  Individual_Chase_Value_popup2(ChaseFieldPopupAfterSubmit: string): Locator {
     return this.page.locator(`(//div[@class=\"border-bottom p-2\" and contains(text(),\"${ChaseFieldPopupAfterSubmit}\")]/following-sibling::div)[1]`);
   }
 
-  Individual_Error_Danger_TextTool_Tip(ErrorCount:string): Locator {
+  Individual_Error_Danger_TextTool_Tip(ErrorCount: string): Locator {
     return this.page.locator(`(//div[@class=\"tooltip-inner\"]//div[@class=\"text-danger\"])[${ErrorCount}]`);
   }
 
-  Individual_Loan_Amount(count:string): Locator {
+  Individual_Loan_Amount(count: string): Locator {
     return this.page.locator(`(//td[@data-title=\"Loan Amount\"])[${count}]`);
   }
 
-  Individual_Loan_Amount_table_2(count:string): Locator {
+  Individual_Loan_Amount_table_2(count: string): Locator {
     return this.page.locator(`((//tbody)[2]//td[@data-title=\"Loan Amount\"])[${count}]`);
   }
 
-Individual_PQ_Button(RowsCount:string): Locator {
+  Individual_PQ_Button(RowsCount: string): Locator {
     return this.page.locator(`(//td//button[text()=\"PQ\"])[${RowsCount}]`);
   }
 
-  Individual_PQ_Button_table2(RowsCount:string): Locator {
+  Individual_PQ_Button_table2(RowsCount: string): Locator {
     return this.page.locator(`((//table)[2]//td//button[text()=\"PQ\"])[${RowsCount}]`);
   }
 
-  Individual_PS_Button(RowsCount:string): Locator {
+  Individual_PS_Button(RowsCount: string): Locator {
     return this.page.locator(`(//td//button[text()=\"PS\"])[${RowsCount}]`);
   }
 
-  Individual_PS_Button_Table2(RowsCount:string): Locator {
+  Individual_PS_Button_Table2(RowsCount: string): Locator {
     return this.page.locator(`((//table)[2]//td//button[text()=\"PS\"])[${RowsCount}]`);
   }
 
@@ -415,7 +415,7 @@ Individual_PQ_Button(RowsCount:string): Locator {
     return this.page.locator("//td[@data-title=\"Status\"]//*[text()=\" Price Offered \"]");
   }
 
-   Price_Offered_Status_of_searched_bid(RequestIDDetails: string): Locator {
+  Price_Offered_Status_of_searched_bid(RequestIDDetails: string): Locator {
     return this.page.locator(`//button[contains(text(),"${RequestIDDetails}")]/../..//td[@data-title="Status"]//span[contains(text(),"Price Offered")]`);
   }
 

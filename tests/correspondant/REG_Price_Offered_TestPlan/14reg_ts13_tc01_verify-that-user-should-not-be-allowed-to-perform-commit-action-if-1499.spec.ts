@@ -49,9 +49,9 @@ test.describe('REG_PriceOffered', () => {
         await page.keyboard.press('Enter');
         await spinnerPage.Spinner.waitFor({ state: 'hidden' });
         await priceOfferedPage.BidRequestIDPrice_Offered(vars['BidReqIdPriceOffered']).click();
-        log.info('Product Name Price Offered: '+vars['ProductNamePriceOffered']);
         await correspondentPortalPage.Get_Price_Button.waitFor({ state: 'visible' });
         vars['ProductNamePriceOffered'] = await priceOfferedPage.Product_NameDetails.textContent() || '';
+        log.info('Product Name Price Offered: '+vars['ProductNamePriceOffered']);
         await correspondentPortalPage.Get_Price_Button.click();
         await page.waitForTimeout(5000);
         vars['FirstMarkAdjValue'] = await correspondentPortalPage.First_Market_adjustment_Value.first().textContent() || '';

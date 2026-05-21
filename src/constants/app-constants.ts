@@ -175,5 +175,6 @@ export const APP_CONSTANTS = {
   CustomerPermissionAuditText: "Customer Permission Config",
   CustomerPermissionConfigStandard: "STANDARD",
   CustomerPermissionConfigChaseDirect: "CHASE_DIRECT",
-  EarlyConfigTextAuditPage: "Early Close Config"
+  EarlyConfigTextAuditPage: "Early Close Config",
+  EST_TIME_FORMAT_HHMMA:'hh:mm a',
 };

@@ -239,9 +239,9 @@ export class CorrespondentPortalPage {
     return this.page.locator("//button[contains(text(),\" Apply Selected \")]");
   }
 
-  get Apply_Selected_1_button_in_Rule(): Locator {
-    return this.page.locator("//button[contains(normalize-space(),\"Apply Selected 1\")]");
-  }
+get Apply_Selected_1_button_in_Rule(): Locator {
+  return this.page.locator("(//button[@aria-label='Apply selected items'])[1]");
+}
   get Apply_Selected_button_in_Rule(): Locator {
     return this.page.locator("//button[contains(normalize-space(),\"Apply Selected\")]");
   }
@@ -874,6 +874,18 @@ export class CorrespondentPortalPage {
 
   get Dropdown_selection_2(): Locator {
     return this.page.locator("//select[@aria-label=\"Dropdown selection\"]");
+  }
+
+  get Options_Pricing_Dropdown(): Locator {
+    return this.page.locator("//select//option[@aria-disabled]");
+  }
+
+  get Enabled_Options_Pricing_Dropdown(): Locator {
+    return this.page.locator("(//option[@aria-disabled=\"false\"])");
+  }
+
+  get Disabled_Options_Pricing_Dropdown(): Locator {
+    return this.page.locator("(//option[@aria-disabled=\"true\"])");
   }
 
   get Dropdown_Search_In_Commitments_Status(): Locator {
@@ -1524,6 +1536,10 @@ export class CorrespondentPortalPage {
 
   get Pricing_Return_Time(): Locator {
     return this.page.locator("(//select[@aria-label=\"Dropdown selection\"])[3]");
+  }
+
+  get Pricing_Return_Time_BidReqDetails(): Locator {
+    return this.page.locator("//select[@aria-label=\"Dropdown selection\"]");
   }
 
   get Processing_Failed_Checkbox(): Locator {

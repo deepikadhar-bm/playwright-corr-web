@@ -1,6 +1,7 @@
 // testdata/TestDataManager.ts
 import * as fs from 'fs';
 import * as path from 'path';
+import { Logger as log } from '@helpers/log-helper';
 
 export interface TestDataProfile {
   id: number;
@@ -170,21 +171,21 @@ public updatePartialProfileDataByDataIndex(
   // Update only the provided columns in the target row
   const targetRow = profile.data[dataIndex];
 
-  console.log(
-    `[updateProfileData1] Profile: '${profileName}' | ` +
-    `rowIndex param: ${rowIndex} | resolvedRowNumber: ${resolvedRowNumber} | dataIndex: ${dataIndex} | ` +
-    `Current data length: ${profile.data.length}`
-  );
+  // console.log(
+  //   `[updateProfileData1] Profile: '${profileName}' | ` +
+  //   `rowIndex param: ${rowIndex} | resolvedRowNumber: ${resolvedRowNumber} | dataIndex: ${dataIndex} | ` +
+  //   `Current data length: ${profile.data.length}`
+  // );
 
   Object.keys(updateRecord).forEach((col) => {
     targetRow[col] = updateRecord[col];
-    console.log(
+    log.info(
       `  → Set data[${dataIndex}]['${col}'] = '${updateRecord[col]}'`
     );
   });
 
-  console.log(`[updateProfileData1] Done. data[${dataIndex}] = ${JSON.stringify(targetRow)}`);
-  this.saveToFile();
+  // console.log(`[updateProfileData1] Done. data[${dataIndex}] = ${JSON.stringify(targetRow)}`);
+  // this.saveToFile();
 }
 }
 
