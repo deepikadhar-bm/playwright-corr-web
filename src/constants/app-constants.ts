@@ -172,5 +172,9 @@ export const APP_CONSTANTS = {
   EXECUTIONTYPE_HEADER_NAME_UI_PRICEOFFERED_LISTSCREEN:'Execution Type',
   EXECUTIONTYPE_HEADER_NAME_IN_EXCEL:'Exe. Type',
   STATUS_HEADER_NAME_UI_PRICEOFFERED_LISTSCREEN:'Status',
+  CustomerPermissionAuditText: "Customer Permission Config",
+  CustomerPermissionConfigStandard: "STANDARD",
+  CustomerPermissionConfigChaseDirect: "CHASE_DIRECT",
+  EarlyConfigTextAuditPage: "Early Close Config",
   EST_TIME_FORMAT_HHMMA:'hh:mm a',
 };
