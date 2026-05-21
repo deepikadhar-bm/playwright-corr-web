@@ -10,6 +10,15 @@ import { CorrespondentPortalPage } from '../../pages/correspondant/correspondent
 import { PriceOfferedPage } from '../../pages/correspondant/price-offered';
 import { SpinnerPage } from '../../pages/correspondant/spinner';
 import { StatusInactivePage } from '../../pages/correspondant/status-inactive-';
+import { Logger as log } from '@helpers/log-helper';
+import { ENV } from '@config/environments';
+import { AddonHelpers } from '@helpers/AddonHelpers';
+import { testDataManager } from 'testdata/TestDataManager';
+import { APP_CONSTANTS as appconstants } from '../../../src/constants/app-constants';
+
+
+const TC_ID = 'PREREQ_1306(REG_TS22_TC04_01)';
+const TC_TITLE = 'Perform the resubmit for pricing action for a bid with the Chase execution type, and validate all the values in the resubmitted record . (Target: Submit today, status :Expired)';
 
 export async function runPrereq_1306(page: Page, vars: Record<string, string>): Promise<void> {
   const applyFiltersButtonPage = new ApplyFiltersButtonPage(page);
@@ -21,140 +30,219 @@ export async function runPrereq_1306(page: Page, vars: Record<string, string>): 
   const priceOfferedPage = new PriceOfferedPage(page);
   const spinnerPage = new SpinnerPage(page);
   const statusInactivePage = new StatusInactivePage(page);
+  const Methods = new AddonHelpers(page, vars);
 
+  const credentials = ENV.getCredentials('internal');
+  vars['Username'] = credentials.username;
+  vars['Password'] = credentials.password;
 
-  await stepGroups.stepGroup_Login_to_CORR_Portal(page, vars);
-  await stepGroups.stepGroup_Deleting_Early_Config_Report_If_Present(page, vars);
-  await stepGroups.stepGroup_Navigating_to_Bulk_Batch_Timing(page, vars);
-  vars["BufferTime"] = await statusInactivePage.Pricing_Return_Time_Buffer.inputValue() || '';
-  await correspondentPortalPage.Bid_Requests_Side_Menu.click();
-  await page.waitForLoadState('networkidle');
-  await priceOfferedPage.Filter_Dropdown1.click();
-  await correspondentPortalPage.Select_CompanyCCode_Dropdown1.click();
-  await bidRequestListPage.Required_Company_Checkbox_filter.check();
-  await correspondentPortalPage.Apply_Selected_1_button_in_Rule.click();
-  vars["StatusToBeSelected"] = "Expired";
-  await correspondentPortalPage.Select_Bid_Request_Status_Dropdown1.click();
-  await bidRequestPage.Status_checkbox_Filter.check();
-  await expect(correspondentPortalPage.Apply_Selected_1_button_in_Rule).toBeVisible();
-  await bidRequestDetailsPage.Apply_Selected_Button_2_filter.click();
-  await applyFiltersButtonPage.Apply_Filters_Button.click();
-  await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-  await expect(correspondentPortalPage.Status).toContainText(vars["StatusToBeSelected"]);
-  vars["ExecutionType"] = "Chase Direct";
-  await stepGroups.stepGroup_Traversing_to_the_next_screens_until_the_bid_is_visible(page, vars);
-  await bidrequestPage.Filtered_Status_BidRequest_ID.click();
-  await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-  vars["CCodeBeforeResubmit"] = await correspondentPortalPage.CCode_Valuebid_request_details.textContent() || '';
-  vars["CompanyBeforeResubmit"] = await bidRequestDetailsPage.Company_ValueBid_Request_Details.textContent() || '';
-  vars["RequestIDBeforeResubmit"] = await bidRequestDetailsPage.Request_Id_From_Details.textContent() || '';
-  vars["RequestIDBeforeResubmit"] = String(vars["RequestIDBeforeResubmit"]).trim();
-  vars["StatusBeforeResubmit"] = await bidRequestDetailsPage.Statusbid_request_details.textContent() || '';
-  vars["BidValueBeforeResubmit"] = await bidRequestDetailsPage.Bid_Value_parsed_row.textContent() || '';
-  vars["ExecutionBeforeResubmit"] = await bidRequestDetailsPage.Execution_Type_Parsed_Row.textContent() || '';
-  vars["ParsedTotalLoansBeforeSubmit"] = await bidRequestDetailsPage.Parsed_Total_Loans.textContent() || '';
-  vars["ParsedSuccessLoansBeforeSubmit"] = await bidRequestDetailsPage.Parsed_Success_Loans.textContent() || '';
-  vars["ParsedErroredLoansBeforeSubmit"] = await bidRequestDetailsPage.Parsed_Errored_loans.textContent() || '';
-  vars["ExecutionTypeHeaderBeforeSubmit"] = await bidRequestDetailsPage.Execution_Type_from_Details_table1.textContent() || '';
-  vars["BidValueHeaderBeforeSubmit"] = await bidRequestDetailsPage.Bid_Value_From_Table_Header1.textContent() || '';
-  vars["TotalloansHeaderBeforeSubmit"] = await bidRequestDetailsPage.Total_loans_TableHeader_1.textContent() || '';
-  vars["SuccessLoansHeaderBeforeSubmit"] = await bidRequestDetailsPage.Success_Loans_Header_1.textContent() || '';
-  vars["ErrorredLoansHeaderBeforeSubmit"] = await bidRequestDetailsPage.Errored_Loans_Header1.textContent() || '';
-  vars["TotalRowsCount"] = String(await bidRequestDetailsPage.Rows_Count_Table_1.count());
-  vars["RowsCount"] = "1";
-  while (parseFloat(String(vars["RowsCount"])) <= parseFloat(String(vars["TotalRowsCount"]))) {
-    vars["ColumnCount"] = "1";
-    while (parseFloat(String(vars["ColumnCount"])) <= parseFloat(String("7"))) {
-      await bidRequestDetailsPage.Bid_Request_Details_Text.click();
-      vars["CellData"] = await bidRequestDetailsPage.Individual_Cell_Data.textContent() || '';
-      for (let dataIdx = parseInt(vars["RowsCount"]); dataIdx <= parseInt(vars["RowsCount"]); dataIdx++) {
-        if (String(vars["ColumnCount"]) === String("1")) {
-          // Write to test data profile: "Loan Number" = vars["CellData"]
-        } else if (String(vars["ColumnCount"]) === String("2")) {
-          // Write to test data profile: "Last Name" = vars["CellData"]
-        } else if (String(vars["ColumnCount"]) === String("3")) {
-          // Write to test data profile: "LoanAmount" = vars["CellData"]
-        } else if (String(vars["ColumnCount"]) === String("4")) {
-          // Write to test data profile: "Program" = vars["CellData"]
-        } else if (String(vars["ColumnCount"]) === String("5")) {
-          // Write to test data profile: "Loan Status" = vars["CellData"]
-        } else if (String(vars["ColumnCount"]) === String("6")) {
-          if (String(vars["CellData"]).includes(String("+"))) {
-            await bidRequestDetailsPage.Footer_Queued_For_Date.click();
-            await bidRequestDetailsPage.Individual_Cell_Data.hover();
-            vars["CellDataPopup"] = await bidRequestDetailsPage.Tool_Tip_Text.textContent() || '';
-            vars["CellData"] = String(vars["CellDataPopup"]) + "," + String(vars["CellData"]);
-          }
-          // Write to test data profile: "Errors" = vars["CellData"]
-        } else {
-          // Write to test data profile: "Error Description" = vars["CellData"]
-        }
-        if (true) /* Element Individual PQ Button is enabled */ {
-          // Write to test data profile: "PQ Status" = "PQ Enabled"
-        } else {
-          // Write to test data profile: "PQ Status" = "PQ Disabled"
-        }
-        if (true) /* Element Individual PS Button is enabled */ {
-          // Write to test data profile: "PS Status" = "PS Enabled"
-        } else {
-          // Write to test data profile: "PS Status" = "PS Disabled"
-        }
-        vars["ColumnCount"] = (parseFloat(String("1")) + parseFloat(String(vars["ColumnCount"]))).toFixed(0);
+  const profileName = 'Bid Requests';
+  const profile = testDataManager.getProfileByName(profileName);
+
+  log.tcStart(TC_ID, TC_TITLE);
+
+  try {
+
+    log.step('Load test data from profile');
+    try {
+      if (profile && profile.data) {
+        vars['CompanyName'] = profile.data[0]['Company Name'];
+        log.info('Company Name: ' + vars['CompanyName']);
       }
+      log.stepPass('Test data loaded from profile successfully');
+    } catch (e) {
+      await log.stepFail(page, 'Failed to load test data from profile');
+      throw e;
     }
-    vars["RowsCount"] = (parseFloat(String("1")) + parseFloat(String(vars["RowsCount"]))).toFixed(0);
-  }
-  // [DISABLED] Click on First loan Number In table
-  // await bidRequestDetailsPage.First_loan_Number_In_table.click();
-  // [DISABLED] Wait until the element Spinner is not visible
-  // await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-  // [DISABLED] Store text from the element Bid Request ID On Loan Details Popup into a variable RequestIdPopupBeforeSubmit
-  // vars["RequestIdPopupBeforeSubmit"] = await bidRequestDetailsPage.Bid_Request_ID_On_Loan_Details_Popup.textContent() || '';
-  // [DISABLED] Store text from the element Bid Loan Number Loan Details Pop up into a variable LoanNumberPopUpBeforeSubmit
-  // vars["LoanNumberPopUpBeforeSubmit"] = await bidRequestDetailsPage.Bid_Loan_Number_Loan_Details_Pop_up.textContent() || '';
-  // [DISABLED] Store text from the element Errors Check On Laon Details Popup into a variable ErrorsCheckPopupBeforeSubmit
-  // vars["ErrorsCheckPopupBeforeSubmit"] = await bidRequestDetailsPage.Errors_Check_On_Laon_Details_Popup.textContent() || '';
-  // [DISABLED] Store the count of elements identified by locator ChaseFields Count Popup (Loan Details) into a variable ChaseFieldCountPopup
-  // vars["ChaseFieldCountPopup"] = String(await bidRequestDetailsPage.ChaseFields_Count_Popup_Loan_Details.count());
-  // [DISABLED] Store 1 in count
-  // vars["count"] = "1";
-  while (true) /* Verify if count <= ChaseFieldCountPopup */ {
-    // [DISABLED] Click on Bid Request ID On Loan Details Popup
-    // await bidRequestDetailsPage.Bid_Request_ID_On_Loan_Details_Popup.click();
-    // [DISABLED] Store text from the element Individual Chase Field Name Popup into a variable ChaseFieldNameBeforeSubmit
-    // vars["ChaseFieldNameBeforeSubmit"] = await bidRequestDetailsPage.Individual_Chase_Field_Name_Popup.textContent() || '';
-    // [DISABLED] Store text from the element Individual Chase Value Popup into a variable ChaseValuePopupBeforeSubmit
-    // vars["ChaseValuePopupBeforeSubmit"] = await bidRequestDetailsPage.Individual_Chase_Value_Popup.textContent() || '';
-    if (true) /* Verify if ChaseValuePopupBeforeSubmit == Key_blank */ {
-      // [DISABLED] Store Null in ChaseValuePopupBeforeSubmit
-      // vars["ChaseValuePopupBeforeSubmit"] = "Null";
+
+    log.step('Login to CORR Portal and delete early config report if present');
+    try {
+      await stepGroups.stepGroup_Login_to_CORR_Portal(page, vars);
+      await stepGroups.stepGroup_Deleting_Early_Config_Report_If_Present(page, vars);
+      log.stepPass('Login to CORR Portal and early config report deleted successfully');
+    } catch (e) {
+      await log.stepFail(page, 'Failed to login to CORR Portal or delete early config report');
+      throw e;
     }
-    for (let i = 0; i < 1; i++) /* Loop over data set in Chase Field Names and Values On Loan D */ {
-      // [DISABLED] Write value ChaseFieldNameBeforeSubmit to Chase Field Names and Values On Loan Details Popup For ChaseDirect column ChaseFieldNameBeforeSubmit
-      // // Write to test data profile: "ChaseFieldNameBeforeSubmit" = vars["ChaseFieldNameBeforeSubmit"]
-      //      // [DISABLED] Write value ChaseValuePopupBeforeSubmit to Chase Field Names and Values On Loan Details Popup For ChaseDirect column ChaseValueBeforeSubmit
-      // // Write to test data profile: "ChaseValueBeforeSubmit" = vars["ChaseValuePopupBeforeSubmit"]
-      //    }
-    // [DISABLED] Perform addition on 1 and count and store the result inside a count considering 0 decimal places
-    // vars["count"] = (parseFloat(String("1")) + parseFloat(String(vars["count"]))).toFixed(0);
-  }
-  // [DISABLED] Click on Close Button Loan Details Popup
-  // await correspondentPortalPage.Close_Buttonemail_config.click();
-  // [DISABLED] Store text from the element Footer Submission Date into a variable FooterSubmssionBeforeSubmit
-  // vars["FooterSubmssionBeforeSubmit"] = await bidRequestDetailsPage.Footer_Submission_Date.textContent() || '';
-  // [DISABLED] Store text from the element Footer Queued For Date into a variable FooterQueuedBeforeSubmit
-  // vars["FooterQueuedBeforeSubmit"] = await bidRequestDetailsPage.Footer_Queued_For_Date.textContent() || '';
-  // [DISABLED] Click on Re-Submit For Pricing Button
-  // await correspondentPortalPage.ReSubmit_For_Pricing_Button.click();
-  // [DISABLED] Wait until the element Spinner is not visible
-  // await spinnerPage.Spinner.waitFor({ state: 'hidden' });
-  // [DISABLED] Verify that the element bidRequestDate Today Radio Button is enabled and With Scrollable TRUE
-  // await expect(bidRequestDetailsPage.bidRequestDate_Today_Radio_Button).toBeVisible();
-  // [DISABLED] Click on Pricing Dropdown
-  // await correspondentPortalPage.Dropdown_selection_2.click();
-  // [DISABLED] Wait for 5 seconds
-  // await page.waitForTimeout(5000);
-  if (true) /* Element Enabled Time is visible */ {
-  }
+
+    log.step('Navigate to Bulk Batch Timing and capture buffer time');
+    try {
+      await stepGroups.stepGroup_Navigating_to_Bulk_Batch_Timing(page, vars);
+      vars['BufferTime'] = await statusInactivePage.Pricing_Return_Time_Buffer.inputValue() || '';
+      log.info('BufferTime: ' + vars['BufferTime']);
+      log.stepPass('Navigated to Bulk Batch Timing and buffer time captured successfully');
+    } catch (e) {
+      await log.stepFail(page, 'Failed to navigate to Bulk Batch Timing or capture buffer time');
+      throw e;
+    }
+
+    log.step('Navigate to Bid Requests and apply company and status filters');
+    try {
+      await correspondentPortalPage.Bid_Requests_Side_Menu.click();
+      await page.waitForLoadState('load');
+      await priceOfferedPage.Filter_Dropdown1.click();
+      await correspondentPortalPage.Select_CompanyCCode_Dropdown1.click();
+      await bidRequestListPage.Required_Company_Checkbox_filter(vars['CompanyName']).check();
+      await correspondentPortalPage.Apply_Selected_1_button_in_Rule.first().click();
+      vars['StatusToBeSelected'] = appconstants.EXPIRED_STATUS;
+      log.info('StatusToBeSelected: ' + vars['StatusToBeSelected']);
+      await correspondentPortalPage.Select_Bid_Request_Status_Dropdown1.click();
+      await bidRequestPage.Status_checkbox_Filter(vars['StatusToBeSelected']).check();
+      await expect(correspondentPortalPage.Apply_Selected_1_button_in_Rule).toBeEnabled();
+      await bidRequestDetailsPage.Apply_Selected_Button_2_filter.click();
+      await applyFiltersButtonPage.Apply_Filters_Button.click();
+      await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+      await expect(correspondentPortalPage.Status).toContainText(vars['StatusToBeSelected']);
+      log.stepPass('Navigated to Bid Requests and company and status filters applied successfully');
+    } catch (e) {
+      await log.stepFail(page, 'Failed to navigate to Bid Requests or apply company and status filters');
+      throw e;
+    }
+
+    log.step('Traverse to Chase Direct bid with Expired status and open bid details');
+    try {
+      vars['ExecutionType'] = appconstants.ChaseDirectExecutionTableHeader;
+      log.info('ExecutionType: ' + vars['ExecutionType']);
+      await stepGroups.stepGroup_Traversing_to_the_next_screens_until_the_bid_is_visible(page, vars);
+
+      // await bidrequestPage.Filtered_Status_BidRequest_ID(vars['ExecutionType'], vars['StatusToBeSelected']).click();
+      await correspondentPortalPage.Change_Page_Size_Dropdown.click();
+      await correspondentPortalPage.Set_page_size_to_50_Dropdown.click();
+      await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+      await page.locator("//button[normalize-space(text())='87B959868C74']").click(); 
+      await spinnerPage.Spinner.waitFor({ state: 'hidden' });
+      log.stepPass('Traversed to Chase Direct bid with Expired status and bid details opened successfully');
+    } catch (e) {
+      await log.stepFail(page, 'Failed to traverse to Chase Direct bid or open bid details');
+      throw e;
+    }
+
+    log.step('Capture all bid details before resubmit');
+    try {
+      vars['CCodeBeforeResubmit'] = await correspondentPortalPage.CCode_Valuebid_request_details.textContent() || '';
+      vars['CompanyBeforeResubmit'] = await bidRequestDetailsPage.Company_ValueBid_Request_Details.textContent() || '';
+      vars['RequestIDBeforeResubmit'] = await bidRequestDetailsPage.Request_Id_From_Details.textContent() || '';
+      Methods.trimtestdata(vars['RequestIDBeforeResubmit'],'RequestIDBeforeResubmit');
+      vars['StatusBeforeResubmit'] = await bidRequestDetailsPage.Statusbid_request_details.textContent() || '';
+      vars['BidValueBeforeResubmit'] = await bidRequestDetailsPage.Bid_Value_parsed_row.textContent() || '';
+      vars['ExecutionBeforeResubmit'] = await bidRequestDetailsPage.Execution_Type_Parsed_Row.textContent() || '';
+      vars['ParsedTotalLoansBeforeSubmit'] = await bidRequestDetailsPage.Parsed_Total_Loans.textContent() || '';
+      vars['ParsedSuccessLoansBeforeSubmit'] = await bidRequestDetailsPage.Parsed_Success_Loans.textContent() || '';
+      vars['ParsedErroredLoansBeforeSubmit'] = await bidRequestDetailsPage.Parsed_Errored_loans.textContent() || '';
+      vars['ExecutionTypeHeaderBeforeSubmit'] = await bidRequestDetailsPage.Execution_Type_from_Details_table1.textContent() || '';
+      vars['BidValueHeaderBeforeSubmit'] = await bidRequestDetailsPage.Bid_Value_From_Table_Header1.textContent() || '';
+      vars['TotalloansHeaderBeforeSubmit'] = await bidRequestDetailsPage.Total_loans_TableHeader_1.textContent() || '';
+      vars['SuccessLoansHeaderBeforeSubmit'] = await bidRequestDetailsPage.Success_Loans_Header_1.textContent() || '';
+      vars['ErrorredLoansHeaderBeforeSubmit'] = await bidRequestDetailsPage.Errored_Loans_Header1.textContent() || '';
+      vars['TotalRowsCount'] = String(await bidRequestDetailsPage.Rows_Count_Table_1.count());
+      log.info('CCodeBeforeResubmit: ' + vars['CCodeBeforeResubmit']);
+      log.info('CompanyBeforeResubmit: ' + vars['CompanyBeforeResubmit']);
+      log.info('RequestIDBeforeResubmit: ' + vars['RequestIDBeforeResubmit']);
+      log.info('StatusBeforeResubmit: ' + vars['StatusBeforeResubmit']);
+      log.info('BidValueBeforeResubmit: ' + vars['BidValueBeforeResubmit']);
+      log.info('ExecutionBeforeResubmit: ' + vars['ExecutionBeforeResubmit']);
+      log.info('ParsedTotalLoansBeforeSubmit: ' + vars['ParsedTotalLoansBeforeSubmit']);
+      log.info('ParsedSuccessLoansBeforeSubmit: ' + vars['ParsedSuccessLoansBeforeSubmit']);
+      log.info('ParsedErroredLoansBeforeSubmit: ' + vars['ParsedErroredLoansBeforeSubmit']);
+      log.info('TotalRowsCount: ' + vars['TotalRowsCount']);
+      log.stepPass('All bid details captured before resubmit successfully');
+    } catch (e) {
+      await log.stepFail(page, 'Failed to capture bid details before resubmit');
+      throw e;
+    }
+
+    log.step('Iterate through all rows and columns to capture cell data and store in profile');
+    try {
+      vars['RowsCount'] = appconstants.ONE;
+      const profileChaseDirect = 'Bid Request Details Tables Data For ChaseDirect';
+      while (parseFloat(String(vars['RowsCount'])) <= parseFloat(String(vars['TotalRowsCount']))) {
+        log.info('Row iteration: ' + vars['RowsCount']);
+        vars['ColumnCount'] = appconstants.ONE;
+        while (parseFloat(String(vars['ColumnCount'])) <= parseFloat(String('7'))) {
+          log.info('Column iteration: ' + vars['ColumnCount']);
+          await bidRequestDetailsPage.Bid_Request_Details_Text.click();
+          vars['CellData'] = await bidRequestDetailsPage.Individual_Cell_Data(vars['RowsCount'], vars['ColumnCount']).textContent() || '';
+          log.info(`CellData at [Row:${vars['RowsCount']}, Column:${vars['ColumnCount']}]: ${vars['CellData']}`);
+          if (String(vars['ColumnCount']) === String('1')) {
+            testDataManager.updatePartialProfileDataByDataIndex(profileChaseDirect, {
+              'Loan Number': vars['CellData'],
+            }, vars['RowsCount']);
+            log.info('Loan Number: ' + vars['CellData']);
+          } else if (String(vars['ColumnCount']) === String('2')) {
+            testDataManager.updatePartialProfileDataByDataIndex(profileChaseDirect, {
+              'Last Name': vars['CellData'],
+            }, vars['RowsCount']);
+            log.info('Last Name: ' + vars['CellData']);
+          } else if (String(vars['ColumnCount']) === String('3')) {
+            testDataManager.updatePartialProfileDataByDataIndex(profileChaseDirect, {
+              'LoanAmount': vars['CellData'],
+            }, vars['RowsCount']);
+            log.info('LoanAmount: ' + vars['CellData']);
+          } else if (String(vars['ColumnCount']) === String('4')) {
+            testDataManager.updatePartialProfileDataByDataIndex(profileChaseDirect, {
+              'Program': vars['CellData'],
+            }, vars['RowsCount']);
+            log.info('Program: ' + vars['CellData']);
+          } else if (String(vars['ColumnCount']) === String('5')) {
+            vars['Loan Status'] = vars['CellData'];
+            testDataManager.updatePartialProfileDataByDataIndex(profileChaseDirect, {
+              'Loan Status': vars['CellData'],
+            }, vars['RowsCount']);
+            log.info('Loan Status: ' + vars['CellData']);
+          } else if (String(vars['ColumnCount']) === String('6')) {
+            if (String(vars['CellData']).includes(String('+'))) {
+              await bidRequestDetailsPage.Footer_Queued_For_Date.click();
+              await bidRequestDetailsPage.Individual_Cell_Data(vars['RowsCount'], vars['ColumnCount']).hover();
+              vars['CellDataPopup'] = await bidRequestDetailsPage.Tool_Tip_Text.textContent() || '';
+              Methods.concatenateWithSpecialChar(vars['CellDataPopup'], vars['CellData'], ',', 'CellData');
+              log.info('CellDataPopup (Errors with tooltip): ' + vars['CellDataPopup']);
+            }
+            testDataManager.updatePartialProfileDataByDataIndex(profileChaseDirect, {
+              'Errors': vars['CellData'],
+            }, vars['RowsCount']);
+            log.info('Errors: ' + vars['CellData']);
+          } else {
+            testDataManager.updatePartialProfileDataByDataIndex(profileChaseDirect, {
+              'Error Description': vars['CellData'],
+            }, vars['RowsCount']);
+            log.info('Error Description: ' + vars['CellData']);
+          }
+
+          if (await bidRequestDetailsPage.Individual_PQ_Button(vars['RowsCount']).isEnabled()) {
+            vars['PQ Status'] = 'PQ Enabled';
+          } else {
+            vars['PQ Status'] = 'PQ Disabled';
+          }
+          testDataManager.updatePartialProfileDataByDataIndex(profileChaseDirect, {
+            'PQ Status': vars['PQ Status'],
+          }, vars['RowsCount']);
+          log.info('PQ Status: ' + vars['PQ Status']);
+
+          if (await bidRequestDetailsPage.Individual_PS_Button(vars['RowsCount']).isEnabled()) {
+            vars['PS Status'] = 'PS Enabled';
+          } else {
+            vars['PS Status'] = 'PS Disabled';
+          }
+          testDataManager.updatePartialProfileDataByDataIndex(profileChaseDirect, {
+            'PS Status': vars['PS Status'],
+          }, vars['RowsCount']);
+          log.info('PS Status: ' + vars['PS Status']);
+
+          Methods.MathematicalOperation(vars['ColumnCount'], '+', 1, 'ColumnCount');
+        }
+        Methods.MathematicalOperation(vars['RowsCount'], '+', 1, 'RowsCount');
+      }
+      log.stepPass('All rows and columns iterated and cell data captured successfully');
+    } catch (e) {
+      await log.stepFail(page, 'Failed to iterate rows and columns or capture cell data at Row: ' + vars['RowsCount'] + ' Column: ' + vars['ColumnCount']);
+      throw e;
+    }
+
+    log.tcEnd('PASS');
+
+  } catch (e) {
+    await log.captureOnFailure(page, TC_ID, e);
+    log.tcEnd('FAIL');
+    throw e;
   }
 }
